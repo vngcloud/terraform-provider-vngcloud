@@ -43,6 +43,10 @@ func resourceSecgroupStateRefreshFunc(cli *client.Client, secgroupID string, pro
 		if err != nil {
 			return nil, "", fmt.Errorf("Error on network State Refresh: %s", err)
 		}
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
 		if !resp.Success {
 			return nil, "", fmt.Errorf("Error describing instance: %s", resp.ErrorMsg)
 		}
@@ -75,7 +79,7 @@ func resourceSecgroupCreate(d *schema.ResourceData, m interface{}) error {
 		Refresh:    resourceSecgroupStateRefreshFunc(cli, resp.Secgroups[0].Id, projectID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
-		MinTimeout: 3 * time.Second,
+		MinTimeout: 1 * time.Second,
 	}
 	_, err = stateConf.WaitForState()
 	if err != nil {

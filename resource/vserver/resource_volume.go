@@ -45,6 +45,10 @@ func resourceVolumeStateRefreshFunc(cli *client.Client, volumeID string, project
 		if err != nil {
 			return nil, "", fmt.Errorf("Error on network State Refresh: %s", err)
 		}
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
 		if !resp.Success {
 			return nil, "", fmt.Errorf("Error describing instance: %s", resp.ErrorMsg)
 		}
@@ -78,7 +82,7 @@ func resourceVolumeCreate(d *schema.ResourceData, m interface{}) error {
 		Refresh:    resourceVolumeStateRefreshFunc(cli, resp.Volumes[0].Id, projectID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
-		MinTimeout: 3 * time.Second,
+		MinTimeout: 1 * time.Second,
 	}
 	_, err = stateConf.WaitForState()
 	if err != nil {

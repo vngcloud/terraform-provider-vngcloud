@@ -9,6 +9,12 @@ var (
 	secgroupCreated      = []string{"ACTIVE"}
 	serverCreating       = []string{"CREATING"}
 	serverCreated        = []string{"ACTIVE"}
+	serverRebooting      = []string{"REBOOTING"}
+	serverRebooted       = []string{"ACTIVE"}
+	serverStopping       = []string{"ACTIVE"}
+	serverStopped        = []string{"STOPPED"}
+	serverStarting       = []string{"STOPPED"}
+	serverStarted        = []string{"ACTIVE"}
 	subnetCreating       = []string{"CREATING"}
 	subnetCreated        = []string{"ACTIVE"}
 	volumeCreating       = []string{"CREATING"}

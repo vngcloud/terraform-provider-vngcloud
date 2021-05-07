@@ -38,6 +38,11 @@ func Provider() *schema.Provider {
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("CLIENT_ID", ""),
 			},
+			"base_url": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("CLIENT_ID", ""),
+			},
 		},
 		ConfigureFunc: providerConfigvServer,
 	}
@@ -54,5 +59,6 @@ func providerConfigvServer(d *schema.ResourceData) (interface{}, error) {
 	tokenURL := d.Get("token_url").(string)
 	clientID := d.Get("client_id").(string)
 	clientSecret := d.Get("client_secret").(string)
-	return client.NewClient(clientID, clientSecret, tokenURL)
+	baseURL := d.Get("base_url").(string)
+	return client.NewClient(clientID, clientSecret, tokenURL, baseURL)
 }

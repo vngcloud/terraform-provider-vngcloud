@@ -10,13 +10,13 @@ type Client struct {
 	VserverClient *vserver.APIClient
 }
 
-func NewClient(ClientID string, ClientSecret string, TokenURL string) (*Client, error) {
+func NewClient(ClientID string, ClientSecret string, TokenURL string, baseURL string) (*Client, error) {
 	authenConfig := authen.NewConfiguration(ClientID, ClientSecret, TokenURL)
 	authenClient, err := authen.NewAuthenClient(authenConfig)
 	if err != nil {
 		return nil, err
 	}
-	vserverConfig := vserver.NewConfiguration("https://vcmc.vngcloud.tech/vserver-gateway/", authenClient.Client)
+	vserverConfig := vserver.NewConfiguration(baseURL, authenClient.Client)
 	vserverClient := vserver.NewAPIClient(vserverConfig)
 	client := &Client{
 		AuthenClient:  authenClient,

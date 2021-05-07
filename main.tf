@@ -11,6 +11,7 @@ provider "vserver" {
   token_url = "https://monitoring-agent.vngcloud.tech/v1/intake/oauth2/token"
   client_id = "7ozx6Q2woO1LfCS3zqqpPLvuTGrx4KW1"
   client_secret = "WfgMgu1RIVRSJi1wD0WaTA3QzrIdWOqe"
+  base_url = "https://vcmc.vngcloud.tech/vserver-gateway/"
 }
 
 resource "random_id" "server" {
@@ -25,7 +26,7 @@ resource "random_password" "password" {
 }
 
 resource "vserver_volume_resource" "volume" {
-    count = 0
+    count = 1
     name = "vinhph2"
     size = 20
     volume_type_id = "vtype-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
@@ -36,7 +37,7 @@ resource "vserver_volume_resource" "volume" {
 }
 //done
 resource "vserver_sshkey_resource" "sshkey" {
-    count = 0
+    count = 1
     project_id = "pro-26151c78-0470-4b4c-88a1-6ec41ef29492"
     name = "vinhph2-public-key-${count.index}"
     public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdKmZvGX63ftbWtwSZ7zjamQlHVuU5GpEquKNyoVqMLLG2DGAZASWm5PDtbFygGbjgLMz+zNnWWxMP+XvOE1JTkmSNRIXvW/gf9jRJzFxbgvveo55wkop4id2AX6s9MBLrqQOsF3HIiMMDpoVr5Bc/sHaPBj9IepaeiiFAIeyZxN7SZVV5M4Mz0vBB6bEsxexOJDWRsy64DrQ2O3qKqoV0zgXRqWcr7taxXZkTz+Boo1l1GpCZ4liQO4iovYlkuKj8nx2d9wI+37vWrTVvHkGHaUgmuPuFIWGl+qn17ME7HPePGEpKjfH3asHBI1mT2eoxRhii8K/rvhwywXSiM/o3 ubuntu@localhost.localdomain"
@@ -45,7 +46,7 @@ resource "vserver_sshkey_resource" "sshkey" {
     }
 }
 resource "vserver_network_resource" "network" {
-    count = 0
+    count = 1
     project_id = "pro-26151c78-0470-4b4c-88a1-6ec41ef29492"
     name = "vinhph2-terraform-2"
     cidr = "10.79.0.0/16"
@@ -55,7 +56,7 @@ resource "vserver_network_resource" "network" {
 }
 //done
 resource "vserver_subnet_resource" "subnet" {
-    count = 0
+    count = 1
     project_id = "pro-26151c78-0470-4b4c-88a1-6ec41ef29492"
     name = "vinhph2-subnet1"
     cidr = "10.79.${count.index}.0/24"
@@ -66,7 +67,7 @@ resource "vserver_subnet_resource" "subnet" {
 }
 //done
 resource "vserver_secgroup_resource" "secgroup" {
-    count = 0
+    count = 1
     project_id = "pro-26151c78-0470-4b4c-88a1-6ec41ef29492"
     name = "vinhph2-secgroup2"
     lifecycle {
@@ -75,7 +76,7 @@ resource "vserver_secgroup_resource" "secgroup" {
 }
 //done
 resource "vserver_secgrouprule_resource" "secgrouprule" {
-    count = 0
+    count = 1
     project_id = "pro-26151c78-0470-4b4c-88a1-6ec41ef29492"
     direction ="ingress"
     ethertype ="IPv4"
@@ -90,7 +91,7 @@ resource "vserver_secgrouprule_resource" "secgrouprule" {
     }
 }
 resource "vserver_server_resource" "server"{
-    count = 0
+    count = 1
     project_id = "pro-26151c78-0470-4b4c-88a1-6ec41ef29492"
     name = "vinhph2-test"
     encryption_volume = false
@@ -102,6 +103,7 @@ resource "vserver_server_resource" "server"{
     ssh_key = vserver_sshkey_resource.sshkey[0].id
     security_group = [vserver_secgroup_resource.secgroup[0].id]
     subnet_id = vserver_subnet_resource.subnet[0].id
+    action = "start"
     lifecycle {
         create_before_destroy = true
     }
