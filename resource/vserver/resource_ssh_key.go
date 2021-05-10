@@ -54,7 +54,7 @@ func resourceSSHKeyCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	d.SetId(resp.SshKeys[0].Id)
@@ -77,7 +77,7 @@ func resourceSSHKeyRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 	}
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	return nil
@@ -99,7 +99,7 @@ func resourceSSHKeyDelete(d *schema.ResourceData, m interface{}) error {
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	return resourceSSHKeyRead(d, m)

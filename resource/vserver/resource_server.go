@@ -167,7 +167,7 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	respJSON, _ := json.Marshal(resp)
@@ -204,7 +204,7 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	if len(resp.Servers) == 0 {
@@ -251,7 +251,7 @@ func resourceServerDelete(d *schema.ResourceData, m interface{}) error {
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 
@@ -284,7 +284,7 @@ func resourceServerResize(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	respJSON, _ := json.Marshal(resp)
@@ -317,7 +317,7 @@ func resourceServerReboot(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	respJSON, _ := json.Marshal(resp)
@@ -350,7 +350,7 @@ func resourceServerStop(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	respJSON, _ := json.Marshal(resp)
@@ -383,7 +383,7 @@ func resourceServerStart(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	respJSON, _ := json.Marshal(resp)
@@ -421,7 +421,7 @@ func resourceServerUpdateSecgroup(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	respJSON, _ := json.Marshal(resp)

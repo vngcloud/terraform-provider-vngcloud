@@ -78,7 +78,7 @@ func resourceSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	stateConf := &resource.StateChangeConf{
@@ -110,7 +110,7 @@ func resourceSubnetRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	if len(resp.Subnets) == 0 {
@@ -162,7 +162,7 @@ func resourceSubnetDelete(d *schema.ResourceData, m interface{}) error {
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {

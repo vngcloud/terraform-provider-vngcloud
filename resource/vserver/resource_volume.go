@@ -20,19 +20,31 @@ func ResourceVolume() *schema.Resource {
 		Update: resourceVolumeUpdate,
 		Delete: resourceVolumeDelete,
 		Schema: map[string]*schema.Schema{
-			"volume_type_id": {
+			"project_id": {
 				Type:     schema.TypeString,
 				Required: true,
+			},
+			"encryption_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"is_poc": {
+				Type:     schema.TypeBool,
+				Optional: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"period": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"size": {
 				Type:     schema.TypeInt,
 				Required: true,
 			},
-			"project_id": {
+			"volume_type_id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -59,9 +71,12 @@ func resourceVolumeStateRefreshFunc(cli *client.Client, volumeID string, project
 func resourceVolumeCreate(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	a := vserver.CreateVolumeRequest{
-		Name:         d.Get("name").(string),
-		Size:         int32(d.Get("size").(int)),
-		VolumeTypeId: d.Get("volume_type_id").(string),
+		EncryptionType: d.Get("encryption_type").(string),
+		IsPoc:          d.Get("is_poc").(bool),
+		Name:           d.Get("name").(string),
+		Period:         int32(d.Get("period").(int)),
+		Size:           int32(d.Get("size").(int)),
+		VolumeTypeId:   d.Get("volume_type_id").(string),
 	}
 	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.VolumeRestControllerApi.CreateVolumeUsingPOST(context.TODO(), a, projectID)
@@ -73,7 +88,7 @@ func resourceVolumeCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	stateConf := &resource.StateChangeConf{
@@ -105,7 +120,7 @@ func resourceVolumeRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	if len(resp.Volumes) == 0 {
@@ -157,7 +172,7 @@ func resourceVolumeDelete(d *schema.ResourceData, m interface{}) error {
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {

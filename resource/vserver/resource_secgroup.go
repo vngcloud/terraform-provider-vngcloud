@@ -70,7 +70,7 @@ func resourceSecgroupCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	stateConf := &resource.StateChangeConf{
@@ -102,7 +102,7 @@ func resourceSecgroupRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	if len(resp.Secgroups) == 0 {
@@ -153,7 +153,7 @@ func resourceSecgroupDelete(d *schema.ResourceData, m interface{}) error {
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 	if !resp.Success {
-		err := fmt.Errorf(resp.ErrorMsg)
+		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
 	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {

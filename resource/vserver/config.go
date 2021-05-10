@@ -18,5 +18,9 @@ var (
 	subnetCreating       = []string{"CREATING"}
 	subnetCreated        = []string{"ACTIVE"}
 	volumeCreating       = []string{"CREATING"}
-	volumeCreated        = []string{"AVAILABLE", "IN-USE"}
+	volumeCreated        = []string{"AVAILABLE"}
+	volumeAttaching      = []string{"AVAILABLE"}
+	volumeAttached       = []string{"IN-USE"}
+	volumeDetaching      = []string{"IN-USE"}
+	volumeDetached       = []string{"AVAILABLE"}
 )

@@ -14,13 +14,14 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			// "vdb_server_resource":  resourceServer(),
 			// "vdb_vserver_resource": resourcevServer(),
-			"vserver_volume_resource":       vserver.ResourceVolume(),
-			"vserver_server_resource":       vserver.ResourceServer(),
-			"vserver_sshkey_resource":       vserver.ResourceSSHKey(),
-			"vserver_network_resource":      vserver.ResourceNetwork(),
-			"vserver_secgroup_resource":     vserver.ResourceSecgroup(),
-			"vserver_subnet_resource":       vserver.ResourceSubnet(),
-			"vserver_secgrouprule_resource": vserver.ResourceSecgroupRule(),
+			"vserver_volume_resource":        vserver.ResourceVolume(),
+			"vserver_server_resource":        vserver.ResourceServer(),
+			"vserver_sshkey_resource":        vserver.ResourceSSHKey(),
+			"vserver_network_resource":       vserver.ResourceNetwork(),
+			"vserver_secgroup_resource":      vserver.ResourceSecgroup(),
+			"vserver_subnet_resource":        vserver.ResourceSubnet(),
+			"vserver_secgrouprule_resource":  vserver.ResourceSecgroupRule(),
+			"vserver_volume_attach_resource": vserver.ResourceAttachVolume(),
 		},
 		Schema: map[string]*schema.Schema{
 			"token_url": {
