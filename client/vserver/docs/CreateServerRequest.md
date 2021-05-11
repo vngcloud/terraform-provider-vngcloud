@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **DataVolumeName** | **string** | Name of data volume | [optional] [default to null]
 **EncryptionVolume** | **bool** | Encryption volume | [default to null]
 **EndTime** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
+**ExpirePassword** | **bool** | Skip change password: false, else: true | [optional] [default to null]
 **Extra** | [***interface{}**](interface{}.md) |  | [optional] [default to null]
 **FlavorId** | **string** | Id of the flavor | [default to null]
 **ImageId** | **string** | Id of the image | [default to null]

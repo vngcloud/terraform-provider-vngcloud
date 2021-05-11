@@ -164,7 +164,7 @@ func resourceNetworkDelete(d *schema.ResourceData, m interface{}) error {
 		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
-	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+	return resource.Retry(d.Timeout(schema.TimeoutDelete), func() *resource.RetryError {
 		resp, _, err := cli.VserverClient.NetworkRestControllerApi.GetNetworkUsingGET(context.TODO(), d.Id(), projectID)
 
 		if err != nil {

@@ -28,6 +28,8 @@ type CreateServerRequest struct {
 	// Encryption volume
 	EncryptionVolume bool `json:"encryptionVolume"`
 	EndTime time.Time `json:"endTime,omitempty"`
+	// Skip change password: false, else: true
+	ExpirePassword bool `json:"expirePassword,omitempty"`
 	Extra *interface{} `json:"extra,omitempty"`
 	// Id of the flavor
 	FlavorId string `json:"flavorId"`

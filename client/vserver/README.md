@@ -77,7 +77,6 @@ Class | Method | HTTP request | Description
 *VolumeRestControllerApi* | [**ListVolumeUsingGET**](docs/VolumeRestControllerApi.md#listvolumeusingget) | **Get** /v1/{project_id}/volumes | List volume
 *VolumeRestControllerApi* | [**RecoverVolumeUsingPUT**](docs/VolumeRestControllerApi.md#recovervolumeusingput) | **Put** /v1/{project_id}/volumes/recover | Recover volume
 *VolumeRestControllerApi* | [**ResizeVolumeUsingPUT**](docs/VolumeRestControllerApi.md#resizevolumeusingput) | **Put** /v1/{project_id}/volumes/resize | Resize volume
-*VolumeRestControllerApi* | [**TestUsingGET**](docs/VolumeRestControllerApi.md#testusingget) | **Get** /v1/{project_id}/volumes/test | Test
 *VolumeTypeRestControllerApi* | [**GetVolumeTypeUsingGET**](docs/VolumeTypeRestControllerApi.md#getvolumetypeusingget) | **Get** /v1/{project_id}/volume_types/{volume_type_id} | getVolumeType
 *VolumeTypeRestControllerApi* | [**ListVolumeTypeUsingGET**](docs/VolumeTypeRestControllerApi.md#listvolumetypeusingget) | **Get** /v1/{project_id}/{volume_type_zone_id}/volume_types | listVolumeType
 *VolumeTypeZoneRestControllerApi* | [**GetFlavorZoneUsingGET1**](docs/VolumeTypeZoneRestControllerApi.md#getflavorzoneusingget1) | **Get** /v1/{project_id}/volume_type_zones/{volume_type_zone_id} | getFlavorZone

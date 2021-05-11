@@ -165,7 +165,7 @@ func resourceSubnetDelete(d *schema.ResourceData, m interface{}) error {
 		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
-	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+	return resource.Retry(d.Timeout(schema.TimeoutDelete), func() *resource.RetryError {
 		resp, _, err := cli.VserverClient.SubnetRestControllerApi.GetSubnetUsingGET(context.TODO(), projectID, d.Id())
 		if err != nil {
 			return resource.NonRetryableError(fmt.Errorf("Error describing instance: %s", err))

@@ -1903,31 +1903,6 @@ paths:
         "404":
           description: "Not Found"
       deprecated: false
-  /v1/{project_id}/volumes/test:
-    get:
-      tags:
-      - "volume-rest-controller"
-      summary: "Test"
-      operationId: "testUsingGET"
-      produces:
-      - "*/*"
-      parameters:
-      - name: "project_id"
-        in: "path"
-        description: "The project id"
-        required: true
-        type: "string"
-        x-exportParamName: "ProjectId"
-      responses:
-        "200":
-          description: "OK"
-        "401":
-          description: "Unauthorized"
-        "403":
-          description: "Forbidden"
-        "404":
-          description: "Not Found"
-      deprecated: false
   /v1/{project_id}/volumes/trash:
     delete:
       tags:
@@ -2311,6 +2286,10 @@ definitions:
       endTime:
         type: "string"
         format: "date-time"
+      expirePassword:
+        type: "boolean"
+        example: true
+        description: "Skip change password: false, else: true"
       extra:
         type: "object"
         properties: {}
@@ -2384,26 +2363,27 @@ definitions:
     example:
       dataDiskSize: 20
       subnetId: "sub-b7716e75-10fa-4d18-9987-d68273f49386"
+      attachFloating: false
+      isPoc: false
+      flavorId: "flav-c41b827e-730a-475f-b181-c0d1c7acc6d4"
+      rootDiskTypeId: "vtype-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
+      encryptionVolume: false
+      expirePassword: true
+      extra: "{}"
+      rootDiskEncryptionType: "aes-xts-plain64_256"
+      networkId: "net-d1314dfd-31ac-4b5f-ad9a-a5a489ecfa5d"
+      startTime: "2000-01-23T04:56:07.000+00:00"
       period: 0
       imageId: "img-5c6639ad-8b02-4402-8be4-5bc0c6a57d32"
       dataDiskTypeId: "vtype-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
-      attachFloating: false
       rootDiskSize: 20
-      isPoc: false
-      flavorId: "flav-c41b827e-730a-475f-b181-c0d1c7acc6d4"
       securityGroup:
       - "secg-5c1e8e96-d106-4a91-8047-a76d1ae5ba9b"
       userId: 11212
       sshKeyId: "SSH_Key"
       osLicence: false
-      rootDiskTypeId: "vtype-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
-      encryptionVolume: false
       sourceType: "sourceType"
-      extra: "{}"
       name: "Server_01"
-      rootDiskEncryptionType: "aes-xts-plain64_256"
-      networkId: "net-d1314dfd-31ac-4b5f-ad9a-a5a489ecfa5d"
-      startTime: "2000-01-23T04:56:07.000+00:00"
       endTime: "2000-01-23T04:56:07.000+00:00"
       dataVolumeName: "Data_volume"
       dataDiskEncryptionType: "aes-xts-plain64_256"

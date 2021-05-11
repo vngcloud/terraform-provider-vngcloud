@@ -14,7 +14,6 @@ Method | HTTP request | Description
 [**ListVolumeUsingGET**](VolumeRestControllerApi.md#ListVolumeUsingGET) | **Get** /v1/{project_id}/volumes | List volume
 [**RecoverVolumeUsingPUT**](VolumeRestControllerApi.md#RecoverVolumeUsingPUT) | **Put** /v1/{project_id}/volumes/recover | Recover volume
 [**ResizeVolumeUsingPUT**](VolumeRestControllerApi.md#ResizeVolumeUsingPUT) | **Put** /v1/{project_id}/volumes/resize | Resize volume
-[**TestUsingGET**](VolumeRestControllerApi.md#TestUsingGET) | **Get** /v1/{project_id}/volumes/test | Test
 
 
 # **AttachVolumeUsingPUT**
@@ -281,32 +280,6 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: application/json
- - **Accept**: */*
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **TestUsingGET**
-> TestUsingGET(ctx, projectId)
-Test
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **projectId** | **string**| The project id | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
  - **Accept**: */*
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
