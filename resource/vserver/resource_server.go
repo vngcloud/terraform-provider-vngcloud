@@ -112,6 +112,42 @@ func ResourceServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"external_interfaces": {
+				Computed: true,
+				Type:     schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeMap,
+					Elem: &schema.Schema{
+						Type: schema.TypeString,
+					},
+				},
+			},
+			"internal_interfaces": {
+				Computed: true,
+				Type:     schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeMap,
+					Elem: &schema.Schema{
+						Type: schema.TypeString,
+					},
+				},
+			},
+			"os_info": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"owner_email": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"share": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+			"ssh_key_name": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -210,7 +246,44 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	if len(resp.Servers) == 0 {
 		d.SetId("")
 	}
-	// d.Set("status", resp.Servers[0].Status)
+	server := resp.Servers[0]
+	d.Set("encryption_volume", server.EncryptionVolume)
+	d.Set("flavor_id", server.FlavorId)
+	d.Set("image_id", server.ImageId)
+	d.Set("os_info", server.OsInfo)
+	d.Set("owner_email", server.OwnerEmail)
+	d.Set("share", server.Share)
+	d.Set("ssh_key_name", server.SshKeyName)
+	var internalInterfaces []map[string]string
+	for _, internalInterface := range server.InternalInterfaces {
+		internalInterfaceMap := make(map[string]string)
+		internalInterfaceMap["fixed_ip"] = internalInterface.FixedIp
+		internalInterfaceMap["floating_ip"] = internalInterface.FloatingIp
+		internalInterfaceMap["interface_type"] = internalInterface.InterfaceType
+		internalInterfaceMap["mac"] = internalInterface.Mac
+		internalInterfaceMap["network_uuid"] = internalInterface.NetworkUuid
+		internalInterfaceMap["port_uuid"] = internalInterface.PortUuid
+		internalInterfaceMap["status"] = internalInterface.Status
+		internalInterfaceMap["subnet_uuid"] = internalInterface.SubnetUuid
+		internalInterfaceMap["type"] = internalInterface.Status
+		internalInterfaces = append(internalInterfaces, internalInterfaceMap)
+	}
+	d.Set("internal_interfaces", internalInterfaces)
+	var externalInterfaces []map[string]string
+	for _, externalInterface := range server.ExternalInterfaces {
+		externalInterfaceMap := make(map[string]string)
+		externalInterfaceMap["fixed_ip"] = externalInterface.FixedIp
+		externalInterfaceMap["floating_ip"] = externalInterface.FloatingIp
+		externalInterfaceMap["interface_type"] = externalInterface.InterfaceType
+		externalInterfaceMap["mac"] = externalInterface.Mac
+		externalInterfaceMap["network_uuid"] = externalInterface.NetworkUuid
+		externalInterfaceMap["port_uuid"] = externalInterface.PortUuid
+		externalInterfaceMap["status"] = externalInterface.Status
+		externalInterfaceMap["subnet_uuid"] = externalInterface.SubnetUuid
+		externalInterfaceMap["type"] = externalInterface.Status
+		externalInterfaces = append(externalInterfaces, externalInterfaceMap)
+	}
+	d.Set("external_interfaces", externalInterfaces)
 	return nil
 }
 

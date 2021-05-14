@@ -69,8 +69,8 @@ func dataSourceVolumeTypeRead(d *schema.ResourceData, m interface{}) error {
 	for _, volumeType := range resp.VolumeTypes {
 		if volumeType.Name == name {
 			d.Set("iops", volumeType.Iops)
-			d.Set("maxSize", volumeType.MaxSize)
-			d.Set("minSize", volumeType.MinSize)
+			d.Set("max_size", volumeType.MaxSize)
+			d.Set("min_size", volumeType.MinSize)
 			d.Set("through_put", volumeType.ThroughPut)
 			d.SetId(volumeType.Id)
 			return nil
