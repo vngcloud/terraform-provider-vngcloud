@@ -115,6 +115,7 @@ func resourceNetworkRead(d *schema.ResourceData, m interface{}) error {
 	if len(resp.Networks) == 0 {
 		d.SetId("")
 		return nil
+		return nil
 	}
 	network := resp.Networks[0]
 	d.Set("name", network.Name)
@@ -177,6 +178,7 @@ func resourceNetworkDelete(d *schema.ResourceData, m interface{}) error {
 		}
 		if len(resp.Networks) == 0 {
 			d.SetId("")
+			return nil
 			return nil
 		}
 		return resource.RetryableError(fmt.Errorf("Expected instance to be created but was in state %s", resp.Networks[0].Status))

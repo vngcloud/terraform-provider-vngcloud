@@ -59,7 +59,7 @@ resource "vserver_volume" "volume" {
 }
 //done
 resource "vserver_sshkey" "sshkey" {
-    count = 1
+    count = 0
     #project_id = "pro-462803f3-6858-466f-bf05-df2b33faa360"
     project_id = data.vserver_project.project.id
     name = "vinhph2-sshkey"
@@ -69,7 +69,7 @@ resource "vserver_sshkey" "sshkey" {
     }
 }
 resource "vserver_network" "network" {
-    count = 1
+    count = 0
     #project_id = "pro-462803f3-6858-466f-bf05-df2b33faa360"
     project_id = data.vserver_project.project.id
     name = "vinhph2-network"
@@ -80,7 +80,7 @@ resource "vserver_network" "network" {
 }
 //done
 resource "vserver_subnet" "subnet" {
-    count = 1
+    count = 0
     #project_id = "pro-462803f3-6858-466f-bf05-df2b33faa360"
     project_id = data.vserver_project.project.id
     name = "vinhph2-subnet"
@@ -93,7 +93,7 @@ resource "vserver_subnet" "subnet" {
 }
 //done
 resource "vserver_secgroup" "secgroup" {
-    count = 1
+    count = 0
     #project_id = "pro-462803f3-6858-466f-bf05-df2b33faa360"
     project_id = data.vserver_project.project.id
     name = "vinhph2-secgroup"
@@ -103,7 +103,7 @@ resource "vserver_secgroup" "secgroup" {
 }
 //done
 resource "vserver_secgrouprule" "secgrouprule" {
-    count = 1
+    count = 0
     #project_id = "pro-462803f3-6858-466f-bf05-df2b33faa360"
     project_id = data.vserver_project.project.id
     direction ="egress"
@@ -119,12 +119,12 @@ resource "vserver_secgrouprule" "secgrouprule" {
     # }
 }
 resource "vserver_server" "server"{
-    count = 1
+    count = 0
     #project_id = "pro-462803f3-6858-466f-bf05-df2b33faa360"
     project_id = data.vserver_project.project.id
     name = "vinhph2-server-${count.index}"
     encryption_volume = false
-    attach_floating = true
+    attach_floating = false
     #flavor_id = "flav-437f64a6-f55e-4f42-b861-65bcc62420de"
     flavor_id = data.vserver_flavor.flavor.id
     image_id = "img-1c29f7df-fa23-4dd2-bcfb-9de14dee72e7"
@@ -142,7 +142,7 @@ resource "vserver_server" "server"{
     }
 }
 # resource "vserver_volume_attach" "attach_volume" {
-#     project_id = "pro-462803f3-6858-466f-bf05-df2b33faa360"
+#     project_id = data.vserver_project.project.id
 #     volume_id = vserver_volume.volume[0].id
 #     instance_id = vserver_server.server[0].id
 # }

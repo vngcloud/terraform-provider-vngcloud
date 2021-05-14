@@ -105,4 +105,5 @@ func resourceVolumeDetach(d *schema.ResourceData, m interface{}) error {
 	}
 	d.SetId("")
 	return nil
+	return nil
 }

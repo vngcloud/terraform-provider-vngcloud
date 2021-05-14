@@ -79,6 +79,7 @@ func resourceSSHKeyRead(d *schema.ResourceData, m interface{}) error {
 	}
 	if len(resp.SshKeys) == 0 {
 		d.SetId("")
+		return nil
 	}
 	sshKey := resp.SshKeys[0]
 	d.Set("name", sshKey.Name)

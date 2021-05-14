@@ -124,6 +124,7 @@ func resourceSubnetRead(d *schema.ResourceData, m interface{}) error {
 	}
 	if len(resp.Subnets) == 0 {
 		d.SetId("")
+		return nil
 	}
 	subnet := resp.Subnets[0]
 	d.Set("name", subnet.Name)
@@ -163,6 +164,7 @@ func resourceSubnetDelete(d *schema.ResourceData, m interface{}) error {
 		}
 		if len(resp.Subnets) == 0 {
 			d.SetId("")
+			return nil
 			return nil
 		}
 		return resource.RetryableError(fmt.Errorf("Expected instance to be created but was in state %s", resp.Subnets[0].Status))

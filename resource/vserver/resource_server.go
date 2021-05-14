@@ -245,6 +245,7 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	}
 	if len(resp.Servers) == 0 {
 		d.SetId("")
+		return nil
 	}
 	server := resp.Servers[0]
 	d.Set("encryption_volume", server.EncryptionVolume)
@@ -338,6 +339,7 @@ func resourceServerDelete(d *schema.ResourceData, m interface{}) error {
 		}
 		if len(resp.Servers) == 0 {
 			d.SetId("")
+			return nil
 			return nil
 		}
 		return resource.RetryableError(fmt.Errorf("Expected instance to be created but was in state %s", resp.Servers[0].Status))
