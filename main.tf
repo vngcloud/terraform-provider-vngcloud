@@ -46,7 +46,7 @@ data "vserver_volume_type" "volume_type" {
     volume_type_zone_id = data.vserver_volume_type_zone.volume_type_zone.id
 }
 resource "vserver_volume" "volume" {
-    count = 1
+    count = 0
     name = "vinhph2-volume"
     size = 20
     #volume_type_id = "vtype-bacd68a4-8758-4fb6-a739-b047665e05d5"
@@ -119,11 +119,12 @@ resource "vserver_secgrouprule" "secgrouprule" {
     # }
 }
 resource "vserver_server" "server"{
-    count = 0
+    count = 1
     #project_id = "pro-462803f3-6858-466f-bf05-df2b33faa360"
     project_id = data.vserver_project.project.id
     name = "vinhph2-server-${count.index}"
     encryption_volume = false
+    attach_floating = true
     #flavor_id = "flav-437f64a6-f55e-4f42-b861-65bcc62420de"
     flavor_id = data.vserver_flavor.flavor.id
     image_id = "img-1c29f7df-fa23-4dd2-bcfb-9de14dee72e7"

@@ -116,7 +116,9 @@ func resourceNetworkRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	//d.Set("status", resp.Networks[0].Status)
+	network := resp.Networks[0]
+	d.Set("name", network.Name)
+	d.Set("cidr", network.Cidr)
 	return nil
 }
 

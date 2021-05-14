@@ -49,6 +49,10 @@ func ResourceServer() *schema.Resource {
 				Type:     schema.TypeBool,
 				Required: true,
 			},
+			"expire_password": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
 			"flavor_id": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -71,10 +75,6 @@ func ResourceServer() *schema.Resource {
 			},
 			"os_licence": {
 				Type:     schema.TypeBool,
-				Optional: true,
-			},
-			"period": {
-				Type:     schema.TypeInt,
 				Optional: true,
 			},
 			"root_disk_encryption_type": {
@@ -146,13 +146,13 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		DataDiskTypeId:         d.Get("data_disk_type_id").(string),
 		DataVolumeName:         d.Get("data_volume_name").(string),
 		EncryptionVolume:       d.Get("encryption_volume").(bool),
+		ExpirePassword:         d.Get("expire_password").(bool),
 		FlavorId:               d.Get("flavor_id").(string),
 		ImageId:                d.Get("image_id").(string),
 		IsPoc:                  d.Get("is_poc").(bool),
 		Name:                   d.Get("name").(string),
 		NetworkId:              d.Get("flavor_id").(string),
 		OsLicence:              d.Get("os_licence").(bool),
-		Period:                 int32(d.Get("period").(int)),
 		RootDiskEncryptionType: d.Get("root_disk_encryption_type").(string),
 		RootDiskSize:           int32(d.Get("root_disk_size").(int)),
 		RootDiskTypeId:         d.Get("root_disk_type_id").(string),

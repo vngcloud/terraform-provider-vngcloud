@@ -108,6 +108,9 @@ func resourceSecgroupRead(d *schema.ResourceData, m interface{}) error {
 	if len(resp.Secgroups) == 0 {
 		d.SetId("")
 	}
+	secgroup := resp.Secgroups[0]
+	d.Set("name", secgroup.Name)
+	d.Set("description", secgroup.Description)
 	return nil
 }
 

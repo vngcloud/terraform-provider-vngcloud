@@ -9,20 +9,12 @@
 
 package vserver
 
-import (
-	"time"
-)
-
 // Recover Volume Request
 type RecoverVolumeRequest struct {
 	// Id of volume
 	DataDiskId string `json:"dataDiskId"`
-	EndTime time.Time `json:"endTime,omitempty"`
-	Extra *interface{} `json:"extra,omitempty"`
 	// POC wallet
 	IsPoc bool `json:"isPoc,omitempty"`
-	Period int32 `json:"period,omitempty"`
-	StartTime time.Time `json:"startTime,omitempty"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`
 }

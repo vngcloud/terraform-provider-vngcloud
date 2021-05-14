@@ -73,13 +73,16 @@ func resourceSSHKeyRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if len(resp.SshKeys) == 0 {
-		d.SetId("")
-	}
 	if !resp.Success {
 		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
+	if len(resp.SshKeys) == 0 {
+		d.SetId("")
+	}
+	sshKey := resp.SshKeys[0]
+	d.Set("name", sshKey.Name)
+	d.Set("public_key", sshKey.PubKey)
 	return nil
 }
 

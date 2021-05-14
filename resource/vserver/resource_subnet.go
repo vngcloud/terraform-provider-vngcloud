@@ -17,7 +17,6 @@ func ResourceSubnet() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceSubnetCreate,
 		Read:   resourceSubnetRead,
-		//Update: resourceSubnetUpdate,
 		Delete: resourceSubnetDelete,
 
 		Schema: map[string]*schema.Schema{
@@ -40,6 +39,16 @@ func ResourceSubnet() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+			},
+			"interface_acl_policy_uuid": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"route_table_uuid": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 		},
 	}
@@ -84,16 +93,16 @@ func resourceSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	stateConf := &resource.StateChangeConf{
 		Pending:    subnetCreating,
 		Target:     subnetCreated,
-		Refresh:    resourceSubnetStateRefreshFunc(cli, resp.Subnets[0].Uuid, projectID),
+		Refresh:    resourceSubnetStateRefreshFunc(cli, resp.Subnets[0].Id, projectID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
 	_, err = stateConf.WaitForState()
 	if err != nil {
-		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", resp.Subnets[0].Uuid, err)
+		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", resp.Subnets[0].Id, err)
 	}
-	d.SetId(resp.Subnets[0].Uuid)
+	d.SetId(resp.Subnets[0].Id)
 	return resourceSubnetRead(d, m)
 }
 
@@ -116,34 +125,13 @@ func resourceSubnetRead(d *schema.ResourceData, m interface{}) error {
 	if len(resp.Subnets) == 0 {
 		d.SetId("")
 	}
+	subnet := resp.Subnets[0]
+	d.Set("name", subnet.Name)
+	d.Set("cidr", subnet.Cidr)
+	d.Set("network_id", subnet.NetworkId)
+	d.Set("route_table_uuid", subnet.RouteTableId)
+	d.Set("interface_acl_policy_uuid", subnet.InterfaceAclPolicyId)
 	return nil
-}
-
-func resourceSubnetUpdate(d *schema.ResourceData, m interface{}) error {
-	// if d.HasChange("size") || d.HasChange("volume_type_id") {
-	// 	projectID := d.Get("project_id").(string)
-	// 	resizeVolume := vSubnet.ResizeVolumeRequest{
-	// 		NewSize:         int32(d.Get("size").(int)),
-	// 		VolumeId:        d.Id(),
-	// 		NewVolumeTypeId: d.Get("volume_type_id").(string),
-	// 	}
-	// 	cli := m.(*client.Client)
-	// 	resp, _, err := cli.VSubnetClient.VolumeRestControllerApi.ResizeVolumeUsingPUT(context.TODO(), projectID, resizeVolume)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	if !resp.Success {
-	// 		err := fmt.Errorf(resp.ErrorMsg)
-	// 		return err
-	// 	}
-	// 	respJSON, _ := json.Marshal(resp)
-	// 	log.Printf("-------------------------------------\n")
-	// 	log.Printf("%s\n", string(respJSON))
-	// 	log.Printf("-------------------------------------\n")
-	// 	return nil
-	// }
-	return resourceSubnetRead(d, m)
-
 }
 
 func resourceSubnetDelete(d *schema.ResourceData, m interface{}) error {

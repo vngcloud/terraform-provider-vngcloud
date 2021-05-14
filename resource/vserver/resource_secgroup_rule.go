@@ -17,7 +17,6 @@ func ResourceSecgroupRule() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceSecgroupRuleCreate,
 		Read:   resourceSecgroupRuleRead,
-		//Update: resourceSecgroupRuleUpdate,
 		Delete: resourceSecgroupRuleDelete,
 
 		Schema: map[string]*schema.Schema{
@@ -147,34 +146,15 @@ func resourceSecgroupRuleRead(d *schema.ResourceData, m interface{}) error {
 	if len(resp.SecgroupRules) == 0 {
 		d.SetId("")
 	}
+	secGroupRule := resp.SecgroupRules[0]
+	d.Set("direction", secGroupRule.Direction)
+	d.Set("ethertype", secGroupRule.EtherType)
+	d.Set("port_range_max", int(secGroupRule.PortRangeMax))
+	d.Set("port_range_min", int(secGroupRule.PortRangeMin))
+	d.Set("protocol", secGroupRule.Protocol)
+	d.Set("remote_ip_prefix", secGroupRule.RemoteIpPrefix)
+	d.Set("description", secGroupRule.Description)
 	return nil
-}
-
-func resourceSecgroupRuleUpdate(d *schema.ResourceData, m interface{}) error {
-	// if d.HasChange("size") || d.HasChange("volume_type_id") {
-	// 	projectID := d.Get("project_id").(string)
-	// 	resizeVolume := vSecgroupRule.ResizeVolumeRequest{
-	// 		NewSize:         int32(d.Get("size").(int)),
-	// 		VolumeId:        d.Id(),
-	// 		NewVolumeTypeId: d.Get("volume_type_id").(string),
-	// 	}
-	// 	cli := m.(*client.Client)
-	// 	resp, _, err := cli.VSecgroupRuleClient.VolumeRestControllerApi.ResizeVolumeUsingPUT(context.TODO(), projectID, resizeVolume)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	if !resp.Success {
-	// 		err := fmt.Errorf(resp.ErrorMsg)
-	// 		return err
-	// 	}
-	// 	respJSON, _ := json.Marshal(resp)
-	// 	log.Printf("-------------------------------------\n")
-	// 	log.Printf("%s\n", string(respJSON))
-	// 	log.Printf("-------------------------------------\n")
-	// 	return nil
-	// }
-	return resourceSecgroupRuleRead(d, m)
-
 }
 
 func resourceSecgroupRuleDelete(d *schema.ResourceData, m interface{}) error {

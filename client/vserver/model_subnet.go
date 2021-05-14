@@ -18,13 +18,11 @@ type Subnet struct {
 	CreatedAt time.Time `json:"createdAt,omitempty"`
 	DeletedAt time.Time `json:"deletedAt,omitempty"`
 	DisplayCreatedAt string `json:"displayCreatedAt,omitempty"`
-	Id int32 `json:"id,omitempty"`
-	InterfaceAclPolicyUuid string `json:"interfaceAclPolicyUuid,omitempty"`
+	Id string `json:"id,omitempty"`
+	InterfaceAclPolicyId string `json:"interfaceAclPolicyId,omitempty"`
 	Name string `json:"name,omitempty"`
-	NetworkUuid string `json:"networkUuid,omitempty"`
-	RouteTableUuid string `json:"routeTableUuid,omitempty"`
+	NetworkId string `json:"networkId,omitempty"`
+	RouteTableId string `json:"routeTableId,omitempty"`
 	Status string `json:"status,omitempty"`
-	SubnetId int32 `json:"subnetId,omitempty"`
 	UpdatedAt time.Time `json:"updatedAt,omitempty"`
-	Uuid string `json:"uuid,omitempty"`
 }

@@ -4,13 +4,13 @@ All URIs are relative to *https://api.vngcloud.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**GetFlavorZoneUsingGET1**](VolumeTypeZoneRestControllerApi.md#GetFlavorZoneUsingGET1) | **Get** /v1/{project_id}/volume_type_zones/{volume_type_zone_id} | getFlavorZone
+[**GetVolumeTypeZoneUsingGET**](VolumeTypeZoneRestControllerApi.md#GetVolumeTypeZoneUsingGET) | **Get** /v1/{project_id}/volume_type_zones/{volume_type_zone_id} | getVolumeTypeZone
 [**ListVolumeTypeZoneUsingGET**](VolumeTypeZoneRestControllerApi.md#ListVolumeTypeZoneUsingGET) | **Get** /v1/{project_id}/volume_type_zones | listVolumeTypeZone
 
 
-# **GetFlavorZoneUsingGET1**
-> VolumeTypeZoneResponse GetFlavorZoneUsingGET1(ctx, projectId, volumeTypeZoneId)
-getFlavorZone
+# **GetVolumeTypeZoneUsingGET**
+> VolumeTypeZoneResponse GetVolumeTypeZoneUsingGET(ctx, projectId, volumeTypeZoneId)
+getVolumeTypeZone
 
 ### Required Parameters
 

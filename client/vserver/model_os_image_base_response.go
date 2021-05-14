@@ -10,16 +10,9 @@
 package vserver
 
 type OsImageBaseResponse struct {
-	CentOS []OsImage `json:"centOS,omitempty"`
-	CentOSGPU []OsImage `json:"centOS_GPU,omitempty"`
-	DebianOS []OsImage `json:"debianOS,omitempty"`
-	DebianOSGPU []OsImage `json:"debianOS_GPU,omitempty"`
 	ErrorCode int32 `json:"errorCode,omitempty"`
 	ErrorMsg string `json:"errorMsg,omitempty"`
 	Extra *interface{} `json:"extra,omitempty"`
+	Images []OsImage `json:"images,omitempty"`
 	Success bool `json:"success,omitempty"`
-	UbuntuOS []OsImage `json:"ubuntuOS,omitempty"`
-	UbuntuOSGPU []OsImage `json:"ubuntuOS_GPU,omitempty"`
-	WindowsOS []OsImage `json:"windowsOS,omitempty"`
-	WindowsOSGPU []OsImage `json:"windowsOS_GPU,omitempty"`
 }

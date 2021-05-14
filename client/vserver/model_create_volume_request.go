@@ -9,24 +9,16 @@
 
 package vserver
 
-import (
-	"time"
-)
-
 // Create Volume Request
 type CreateVolumeRequest struct {
 	// Type encryption of volume
 	EncryptionType string `json:"encryptionType,omitempty"`
-	EndTime time.Time `json:"endTime,omitempty"`
-	Extra *interface{} `json:"extra,omitempty"`
 	// POC wallet
 	IsPoc bool `json:"isPoc,omitempty"`
 	// Name of the server
 	Name string `json:"name"`
-	Period int32 `json:"period,omitempty"`
 	// Size of volume
 	Size int32 `json:"size"`
-	StartTime time.Time `json:"startTime,omitempty"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`
 	// Id of volume type

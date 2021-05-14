@@ -27,14 +27,14 @@ var (
 type VolumeTypeZoneRestControllerApiService service
 
 /*
-VolumeTypeZoneRestControllerApiService getFlavorZone
+VolumeTypeZoneRestControllerApiService getVolumeTypeZone
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param projectId project_id
  * @param volumeTypeZoneId volume_type_zone_id
 
 @return VolumeTypeZoneResponse
 */
-func (a *VolumeTypeZoneRestControllerApiService) GetFlavorZoneUsingGET1(ctx context.Context, projectId string, volumeTypeZoneId string) (VolumeTypeZoneResponse, *http.Response, error) {
+func (a *VolumeTypeZoneRestControllerApiService) GetVolumeTypeZoneUsingGET(ctx context.Context, projectId string, volumeTypeZoneId string) (VolumeTypeZoneResponse, *http.Response, error) {
 	var (
 		localVarHttpMethod = strings.ToUpper("Get")
 		localVarPostBody   interface{}

@@ -9,18 +9,10 @@
 
 package vserver
 
-import (
-	"time"
-)
-
 // Recover Server Request
 type RecoverServerRequest struct {
-	EndTime time.Time `json:"endTime,omitempty"`
-	Extra *interface{} `json:"extra,omitempty"`
-	Period int32 `json:"period,omitempty"`
 	// Id of server
 	ServerId string `json:"serverId"`
-	StartTime time.Time `json:"startTime,omitempty"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`
 }

@@ -36,10 +36,6 @@ func ResourceVolume() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"period": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
 			"size": {
 				Type:     schema.TypeInt,
 				Required: true,
@@ -47,6 +43,21 @@ func ResourceVolume() *schema.Resource {
 			"volume_type_id": {
 				Type:     schema.TypeString,
 				Required: true,
+			},
+			"bootable": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+			"share": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+			"owner_email": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 		},
 	}
@@ -74,7 +85,6 @@ func resourceVolumeCreate(d *schema.ResourceData, m interface{}) error {
 		EncryptionType: d.Get("encryption_type").(string),
 		IsPoc:          d.Get("is_poc").(bool),
 		Name:           d.Get("name").(string),
-		Period:         int32(d.Get("period").(int)),
 		Size:           int32(d.Get("size").(int)),
 		VolumeTypeId:   d.Get("volume_type_id").(string),
 	}
@@ -119,13 +129,21 @@ func resourceVolumeRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
+	if len(resp.Volumes) == 0 {
+		d.SetId("")
+	}
 	if !resp.Success {
 		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
-	if len(resp.Volumes) == 0 {
-		d.SetId("")
-	}
+	volume := resp.Volumes[0]
+	d.Set("encryption_type", volume.EncryptionType)
+	d.Set("name", volume.Name)
+	d.Set("size", int(volume.Size))
+	d.Set("volume_type_id", volume.VolumeTypeId)
+	d.Set("bootable", volume.Bootable)
+	d.Set("share", volume.Share)
+	d.Set("owner_email", volume.OwnerEmail)
 	return nil
 }
 

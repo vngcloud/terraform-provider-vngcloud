@@ -1565,8 +1565,8 @@ paths:
     get:
       tags:
       - "volume-type-zone-rest-controller"
-      summary: "getFlavorZone"
-      operationId: "getFlavorZoneUsingGET_1"
+      summary: "getVolumeTypeZone"
+      operationId: "getVolumeTypeZoneUsingGET"
       produces:
       - "*/*"
       parameters:
@@ -2283,16 +2283,10 @@ definitions:
         type: "boolean"
         example: false
         description: "Encryption volume"
-      endTime:
-        type: "string"
-        format: "date-time"
       expirePassword:
         type: "boolean"
         example: true
         description: "Skip change password: false, else: true"
-      extra:
-        type: "object"
-        properties: {}
       flavorId:
         type: "string"
         example: "flav-c41b827e-730a-475f-b181-c0d1c7acc6d4"
@@ -2317,9 +2311,6 @@ definitions:
         type: "boolean"
         example: false
         description: "Licence of OS"
-      period:
-        type: "integer"
-        format: "int32"
       rootDiskEncryptionType:
         type: "string"
         example: "aes-xts-plain64_256"
@@ -2346,9 +2337,6 @@ definitions:
         type: "string"
         example: "SSH_Key"
         description: "Id of SSH key"
-      startTime:
-        type: "string"
-        format: "date-time"
       subnetId:
         type: "string"
         example: "sub-b7716e75-10fa-4d18-9987-d68273f49386"
@@ -2363,28 +2351,24 @@ definitions:
     example:
       dataDiskSize: 20
       subnetId: "sub-b7716e75-10fa-4d18-9987-d68273f49386"
-      attachFloating: false
-      isPoc: false
-      flavorId: "flav-c41b827e-730a-475f-b181-c0d1c7acc6d4"
-      rootDiskTypeId: "vtype-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
-      encryptionVolume: false
-      expirePassword: true
-      extra: "{}"
-      rootDiskEncryptionType: "aes-xts-plain64_256"
-      networkId: "net-d1314dfd-31ac-4b5f-ad9a-a5a489ecfa5d"
-      startTime: "2000-01-23T04:56:07.000+00:00"
-      period: 0
       imageId: "img-5c6639ad-8b02-4402-8be4-5bc0c6a57d32"
       dataDiskTypeId: "vtype-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
+      attachFloating: false
       rootDiskSize: 20
+      isPoc: false
+      flavorId: "flav-c41b827e-730a-475f-b181-c0d1c7acc6d4"
       securityGroup:
       - "secg-5c1e8e96-d106-4a91-8047-a76d1ae5ba9b"
       userId: 11212
       sshKeyId: "SSH_Key"
       osLicence: false
+      rootDiskTypeId: "vtype-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
+      encryptionVolume: false
+      expirePassword: true
       sourceType: "sourceType"
       name: "Server_01"
-      endTime: "2000-01-23T04:56:07.000+00:00"
+      rootDiskEncryptionType: "aes-xts-plain64_256"
+      networkId: "net-d1314dfd-31ac-4b5f-ad9a-a5a489ecfa5d"
       dataVolumeName: "Data_volume"
       dataDiskEncryptionType: "aes-xts-plain64_256"
   CreateSubnetRequest:
@@ -2426,12 +2410,6 @@ definitions:
         type: "string"
         example: "aes-xts-plain64_256"
         description: "Type encryption of volume"
-      endTime:
-        type: "string"
-        format: "date-time"
-      extra:
-        type: "object"
-        properties: {}
       isPoc:
         type: "boolean"
         example: false
@@ -2440,17 +2418,11 @@ definitions:
         type: "string"
         example: "Server_01"
         description: "Name of the server"
-      period:
-        type: "integer"
-        format: "int32"
       size:
         type: "integer"
         format: "int32"
         example: 20
         description: "Size of volume"
-      startTime:
-        type: "string"
-        format: "date-time"
       userId:
         type: "integer"
         format: "int32"
@@ -2463,15 +2435,11 @@ definitions:
     title: "CreateVolumeRequest"
     description: "Create Volume Request"
     example:
-      period: 0
       size: 20
-      extra: "{}"
       isPoc: false
       volumeTypeId: "vtype-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
       encryptionType: "aes-xts-plain64_256"
       name: "Server_01"
-      startTime: "2000-01-23T04:56:07.000+00:00"
-      endTime: "2000-01-23T04:56:07.000+00:00"
       userId: 11212
   DeleteNetworkRequest:
     type: "object"
@@ -2915,22 +2883,6 @@ definitions:
   OSImageBaseResponse:
     type: "object"
     properties:
-      centOS:
-        type: "array"
-        items:
-          $ref: "#/definitions/OSImage"
-      centOS_GPU:
-        type: "array"
-        items:
-          $ref: "#/definitions/OSImage"
-      debianOS:
-        type: "array"
-        items:
-          $ref: "#/definitions/OSImage"
-      debianOS_GPU:
-        type: "array"
-        items:
-          $ref: "#/definitions/OSImage"
       errorCode:
         type: "integer"
         format: "int32"
@@ -2939,24 +2891,12 @@ definitions:
       extra:
         type: "object"
         properties: {}
+      images:
+        type: "array"
+        items:
+          $ref: "#/definitions/OSImage"
       success:
         type: "boolean"
-      ubuntuOS:
-        type: "array"
-        items:
-          $ref: "#/definitions/OSImage"
-      ubuntuOS_GPU:
-        type: "array"
-        items:
-          $ref: "#/definitions/OSImage"
-      windowsOS:
-        type: "array"
-        items:
-          $ref: "#/definitions/OSImage"
-      windowsOS_GPU:
-        type: "array"
-        items:
-          $ref: "#/definitions/OSImage"
     title: "OSImageBaseResponse"
   Project:
     type: "object"
@@ -2989,22 +2929,10 @@ definitions:
     required:
     - "serverId"
     properties:
-      endTime:
-        type: "string"
-        format: "date-time"
-      extra:
-        type: "object"
-        properties: {}
-      period:
-        type: "integer"
-        format: "int32"
       serverId:
         type: "string"
         example: "ins-a332cc50-8e24-4a45-ad9f-4136c7358503"
         description: "Id of server"
-      startTime:
-        type: "string"
-        format: "date-time"
       userId:
         type: "integer"
         format: "int32"
@@ -3013,10 +2941,6 @@ definitions:
     title: "RecoverServerRequest"
     description: "Recover Server Request"
     example:
-      period: 0
-      extra: "{}"
-      startTime: "2000-01-23T04:56:07.000+00:00"
-      endTime: "2000-01-23T04:56:07.000+00:00"
       serverId: "ins-a332cc50-8e24-4a45-ad9f-4136c7358503"
       userId: 11212
   RecoverVolumeRequest:
@@ -3028,22 +2952,10 @@ definitions:
         type: "string"
         example: "vol-a332cc50-8e24-4a45-ad9f-4136c7358503"
         description: "Id of volume"
-      endTime:
-        type: "string"
-        format: "date-time"
-      extra:
-        type: "object"
-        properties: {}
       isPoc:
         type: "boolean"
         example: false
         description: "POC wallet"
-      period:
-        type: "integer"
-        format: "int32"
-      startTime:
-        type: "string"
-        format: "date-time"
       userId:
         type: "integer"
         format: "int32"
@@ -3052,12 +2964,8 @@ definitions:
     title: "RecoverVolumeRequest"
     description: "Recover Volume Request"
     example:
-      period: 0
-      extra: "{}"
       isPoc: false
       dataDiskId: "vol-a332cc50-8e24-4a45-ad9f-4136c7358503"
-      startTime: "2000-01-23T04:56:07.000+00:00"
-      endTime: "2000-01-23T04:56:07.000+00:00"
       userId: 11212
   ResizeServerRequest:
     type: "object"
@@ -3365,26 +3273,20 @@ definitions:
       displayCreatedAt:
         type: "string"
       id:
-        type: "integer"
-        format: "int32"
-      interfaceAclPolicyUuid:
+        type: "string"
+      interfaceAclPolicyId:
         type: "string"
       name:
         type: "string"
-      networkUuid:
+      networkId:
         type: "string"
-      routeTableUuid:
+      routeTableId:
         type: "string"
       status:
         type: "string"
-      subnetId:
-        type: "integer"
-        format: "int32"
       updatedAt:
         type: "string"
         format: "date-time"
-      uuid:
-        type: "string"
     title: "Subnet"
   SubnetResponse:
     type: "object"
