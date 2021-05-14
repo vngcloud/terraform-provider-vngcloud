@@ -205,7 +205,6 @@ func resourceVolumeDelete(d *schema.ResourceData, m interface{}) error {
 		if len(resp.Volumes) == 0 {
 			d.SetId("")
 			return nil
-			return nil
 		}
 		return resource.RetryableError(fmt.Errorf("Expected instance to be created but was in state %s", resp.Volumes[0].Status))
 	})

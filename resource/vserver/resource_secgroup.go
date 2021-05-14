@@ -171,7 +171,6 @@ func resourceSecgroupDelete(d *schema.ResourceData, m interface{}) error {
 		if len(resp.Secgroups) == 0 {
 			d.SetId("")
 			return nil
-			return nil
 		}
 		return resource.RetryableError(fmt.Errorf("Expected instance to be created but was in state %s", resp.Secgroups[0].Status))
 	})
