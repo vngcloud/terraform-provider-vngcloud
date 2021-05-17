@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -18,7 +19,19 @@ func ResourceSubnet() *schema.Resource {
 		Create: resourceSubnetCreate,
 		Read:   resourceSubnetRead,
 		Delete: resourceSubnetDelete,
-
+		Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+				idParts := strings.Split(d.Id(), ":")
+				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
+					return nil, fmt.Errorf("Unexpected format of ID (%q), expected ProjectID:SubnetID", d.Id())
+				}
+				projectID := idParts[0]
+				subnetID := idParts[1]
+				d.SetId(subnetID)
+				d.Set("project_id", projectID)
+				return []*schema.ResourceData{d}, nil
+			},
+		},
 		Schema: map[string]*schema.Schema{
 			"project_id": {
 				Type:     schema.TypeString,

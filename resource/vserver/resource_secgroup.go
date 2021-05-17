@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -19,7 +20,19 @@ func ResourceSecgroup() *schema.Resource {
 		Read:   resourceSecgroupRead,
 		Update: resourceSecgroupUpdate,
 		Delete: resourceSecgroupDelete,
-
+		Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+				idParts := strings.Split(d.Id(), ":")
+				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
+					return nil, fmt.Errorf("Unexpected format of ID (%q), expected ProjectID:SecgroupID", d.Id())
+				}
+				projectID := idParts[0]
+				secgroupID := idParts[1]
+				d.SetId(secgroupID)
+				d.Set("project_id", projectID)
+				return []*schema.ResourceData{d}, nil
+			},
+		},
 		Schema: map[string]*schema.Schema{
 			"project_id": {
 				Type:     schema.TypeString,

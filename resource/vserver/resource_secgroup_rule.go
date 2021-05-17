@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -18,7 +19,19 @@ func ResourceSecgroupRule() *schema.Resource {
 		Create: resourceSecgroupRuleCreate,
 		Read:   resourceSecgroupRuleRead,
 		Delete: resourceSecgroupRuleDelete,
-
+		Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+				idParts := strings.Split(d.Id(), ":")
+				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
+					return nil, fmt.Errorf("Unexpected format of ID (%q), expected ProjectID:SecgroupRuleID", d.Id())
+				}
+				projectID := idParts[0]
+				secgroupRuleID := idParts[1]
+				d.SetId(secgroupRuleID)
+				d.Set("project_id", projectID)
+				return []*schema.ResourceData{d}, nil
+			},
+		},
 		Schema: map[string]*schema.Schema{
 			"project_id": {
 				Type:     schema.TypeString,

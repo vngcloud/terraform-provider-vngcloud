@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -19,6 +20,19 @@ func ResourceNetwork() *schema.Resource {
 		Read:   resourceNetworkRead,
 		Update: resourceNetworkUpdate,
 		Delete: resourceNetworkDelete,
+		Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+				idParts := strings.Split(d.Id(), ":")
+				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
+					return nil, fmt.Errorf("Unexpected format of ID (%q), expected ProjectID:NetworkID", d.Id())
+				}
+				projectID := idParts[0]
+				networkID := idParts[1]
+				d.SetId(networkID)
+				d.Set("project_id", projectID)
+				return []*schema.ResourceData{d}, nil
+			},
+		},
 
 		Schema: map[string]*schema.Schema{
 			"project_id": {
