@@ -36,6 +36,11 @@ data "vserver_flavor" "flavor" {
     project_id = data.vserver_project.project.id
     flavor_zone_id =  data.vserver_flavor_zone.flavor_zone.id
 }
+data "vserver_image" "image" {
+    name = "1-Ubuntu-14.04.5x64"
+    project_id = data.vserver_project.project.id
+    flavor_zone_id =  data.vserver_flavor_zone.flavor_zone.id
+}
 data "vserver_volume_type_zone" "volume_type_zone" {
     name = "SSD"
     project_id = data.vserver_project.project.id
@@ -79,11 +84,6 @@ resource "vserver_network" "network" {
         create_before_destroy = true
     }
 }
-resource "vserver_network" "network1" {
-    project_id = data.vserver_project.project.id
-    name = "vinhph2-network"
-    cidr = "10.76.0.0/16"
-}
 //done
 resource "vserver_subnet" "subnet" {
     count = 1
@@ -124,28 +124,6 @@ resource "vserver_secgrouprule" "secgrouprule" {
     #     create_before_destroy = true
     # }
 }
-resource "vserver_server" "server1"{
-    #project_id = "pro-462803f3-6858-466f-bf05-df2b33faa360"
-    project_id = data.vserver_project.project.id
-    name = "vinhph2-server-0"
-    encryption_volume = false
-    attach_floating = true
-    #flavor_id = "flav-437f64a6-f55e-4f42-b861-65bcc62420de"
-    flavor_id = data.vserver_flavor.flavor.id
-    image_id = "img-1c29f7df-fa23-4dd2-bcfb-9de14dee72e7"
-    network_id = vserver_network.network[0].id
-    #network_id = "net-26afee25-75db-4ce2-8e13-8e0d65d6c31c"
-    root_disk_size = 20
-    #root_disk_type_id = "vtype-bacd68a4-8758-4fb6-a739-b047665e05d5"
-    root_disk_type_id = data.vserver_volume_type.volume_type.id
-    ssh_key = vserver_sshkey.sshkey[0].id
-    security_group = [vserver_secgroup.secgroup[0].id]
-    subnet_id = vserver_subnet.subnet[0].id
-    #action = "start"
-    lifecycle {
-        create_before_destroy = true
-    }
-}
 resource "vserver_server" "server"{
     count = 0
     #project_id = "pro-462803f3-6858-466f-bf05-df2b33faa360"
@@ -155,7 +133,7 @@ resource "vserver_server" "server"{
     attach_floating = true
     #flavor_id = "flav-437f64a6-f55e-4f42-b861-65bcc62420de"
     flavor_id = data.vserver_flavor.flavor.id
-    image_id = "img-1c29f7df-fa23-4dd2-bcfb-9de14dee72e7"
+    image_id = data.vserver_image.image.id
     network_id = vserver_network.network[0].id
     #network_id = "net-26afee25-75db-4ce2-8e13-8e0d65d6c31c"
     root_disk_size = 20

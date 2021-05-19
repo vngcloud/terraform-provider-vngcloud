@@ -12,9 +12,10 @@ func Provider() *schema.Provider {
 	log.SetFlags(log.Lshortfile)
 	return &schema.Provider{
 		DataSourcesMap: map[string]*schema.Resource{
+			"vserver_project":          vserver.DataSourceProject(),
 			"vserver_flavor_zone":      vserver.DataSourceFlavorZone(),
 			"vserver_flavor":           vserver.DataSourceFlavor(),
-			"vserver_project":          vserver.DataSourceProject(),
+			"vserver_image":            vserver.DataSourceImage(),
 			"vserver_volume_type_zone": vserver.DataSourceVolumeTypeZone(),
 			"vserver_volume_type":      vserver.DataSourceVolumeType(),
 		},
