@@ -10,8 +10,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vngcloud/terraform/client"
-	"github.com/vngcloud/terraform/client/vserver"
+	"github.com/vngcloud/terraform-provider-vngcloud/client"
+	"github.com/vngcloud/terraform-provider-vngcloud/client/vserver"
 )
 
 func ResourceSecgroup() *schema.Resource {

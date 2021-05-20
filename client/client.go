@@ -1,8 +1,8 @@
 package client
 
 import (
-	"github.com/vngcloud/terraform/client/authen"
-	"github.com/vngcloud/terraform/client/vserver"
+	"github.com/vngcloud/terraform-provider-vngcloud/client/authen"
+	"github.com/vngcloud/terraform-provider-vngcloud/client/vserver"
 )
 
 type Client struct {
