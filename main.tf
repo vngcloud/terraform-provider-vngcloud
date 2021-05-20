@@ -28,11 +28,11 @@ data "vserver_project" "project" {
     name = "ZxYAwsDx1620620539811"
 }
 data "vserver_flavor_zone" "flavor_zone" {
-    name = "General v1 Instances"
+    name = "DEV General v1 Instances"
     project_id = data.vserver_project.project.id
 } 
 data "vserver_flavor" "flavor" {
-    name = "v1.small1x1.b100"
+    name = "dev.v1.small1x1"
     project_id = data.vserver_project.project.id
     flavor_zone_id =  data.vserver_flavor_zone.flavor_zone.id
 }
@@ -64,7 +64,7 @@ resource "vserver_volume" "volume" {
 }
 //done
 resource "vserver_sshkey" "sshkey" {
-    count = 0
+    count = 1
     #project_id = "pro-462803f3-6858-466f-bf05-df2b33faa360"
     project_id = data.vserver_project.project.id
     name = "vinhph2-sshkey"
@@ -99,7 +99,7 @@ resource "vserver_subnet" "subnet" {
 }
 //done
 resource "vserver_secgroup" "secgroup" {
-    count = 0
+    count = 1
     #project_id = "pro-462803f3-6858-466f-bf05-df2b33faa360"
     project_id = data.vserver_project.project.id
     name = "vinhph2-secgroup"
@@ -115,7 +115,7 @@ resource "vserver_secgrouprule" "secgrouprule" {
     direction ="ingress"
     ethertype ="IPv4"
     port_range_max = 65535
-    port_range_min = 1
+    port_range_min = count.index
     protocol = "TCP"
     remote_ip_prefix = "0.0.0.0/0"
     //security_group_id = "secg-ce0669a5-28c8-4263-8a0a-01adc93fc5a3"
@@ -130,7 +130,7 @@ resource "vserver_server" "server"{
     project_id = data.vserver_project.project.id
     name = "vinhph2-server-${count.index}"
     encryption_volume = false
-    attach_floating = true
+    attach_floating = false
     #flavor_id = "flav-437f64a6-f55e-4f42-b861-65bcc62420de"
     flavor_id = data.vserver_flavor.flavor.id
     image_id = data.vserver_image.image.id
