@@ -17,12 +17,12 @@ func DataSourceFlavorZone() *schema.Resource {
 			"project_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "id of project",
+				Description: "ID of project",
 			},
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "name of flavor zone",
+				Description: "Name of flavor zone.",
 			},
 		},
 	}
