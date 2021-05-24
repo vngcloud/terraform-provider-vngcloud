@@ -28,9 +28,9 @@ The following arguments are supported:
 - **project_id** (String, Required) ID of project.
 - **volume_type_zone_id** (String, Required) Id of volume type zone.
 
-## Argument Reference
+## Attributes Reference
 
-The following arguments are supported:
+The following attributes are exported:
 
 - **id** (String) The ID of this volume type.
 - **iops** (Number) Number iops of this volume type.
