@@ -23,11 +23,14 @@ description: |-
 
 ### Optional
 
+- **id** (String) The ID of this resource.
+
+### Read-Only
+
 - **bandwidth** (Number)
 - **bandwidth_unit** (String)
 - **cpu** (Number)
 - **gpu** (Number)
-- **id** (String) The ID of this resource.
 - **memory** (Number)
 
 

@@ -17,8 +17,8 @@ description: |-
 
 ### Required
 
-- **name** (String)
-- **project_id** (String)
+- **name** (String) name of flavor zone
+- **project_id** (String) id of project
 
 ### Optional
 

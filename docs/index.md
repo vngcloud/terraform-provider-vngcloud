@@ -17,7 +17,7 @@ description: |-
 
 ### Optional
 
-- **base_url** (String)
-- **client_id** (String)
-- **client_secret** (String)
-- **token_url** (String)
+- **base_url** (String) endpoint to connection with provider resource
+- **client_id** (String) client id for auth get access token
+- **client_secret** (String) client secret for auth get access token
+- **token_url** (String) endpoint for terraform request token

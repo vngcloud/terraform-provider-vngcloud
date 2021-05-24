@@ -25,14 +25,16 @@ func ResourceAttachVolume() *schema.Resource {
 				ForceNew: true,
 			},
 			"volume_id": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    true,
+				Description: "id of volume acttach",
 			},
 			"instance_id": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    true,
+				Description: "id of server acttach",
 			},
 		},
 	}

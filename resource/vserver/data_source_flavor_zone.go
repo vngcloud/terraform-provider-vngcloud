@@ -15,12 +15,14 @@ func DataSourceFlavorZone() *schema.Resource {
 		Read: dataSourceFlavorZoneRead,
 		Schema: map[string]*schema.Schema{
 			"project_id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "id of project",
 			},
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "name of flavor zone",
 			},
 		},
 	}

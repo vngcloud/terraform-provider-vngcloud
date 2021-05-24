@@ -28,22 +28,18 @@ func DataSourceVolumeType() *schema.Resource {
 			},
 			"iops": {
 				Type:     schema.TypeInt,
-				Optional: true,
 				Computed: true,
 			},
 			"max_size": {
 				Type:     schema.TypeInt,
-				Optional: true,
 				Computed: true,
 			},
 			"min_size": {
 				Type:     schema.TypeInt,
-				Optional: true,
 				Computed: true,
 			},
 			"through_put": {
 				Type:     schema.TypeInt,
-				Optional: true,
 				Computed: true,
 			},
 		},

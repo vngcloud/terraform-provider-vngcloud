@@ -24,6 +24,9 @@ description: |-
 ### Optional
 
 - **id** (String) The ID of this resource.
+
+### Read-Only
+
 - **iops** (Number)
 - **max_size** (Number)
 - **min_size** (Number)

@@ -17,9 +17,9 @@ description: |-
 
 ### Required
 
-- **instance_id** (String)
+- **instance_id** (String) id of server acttach
 - **project_id** (String)
-- **volume_id** (String)
+- **volume_id** (String) id of volume acttach
 
 ### Optional
 
