@@ -60,17 +60,14 @@ func ResourceVolume() *schema.Resource {
 			},
 			"bootable": {
 				Type:     schema.TypeBool,
-				Optional: true,
 				Computed: true,
 			},
 			"share": {
 				Type:     schema.TypeBool,
-				Optional: true,
 				Computed: true,
 			},
 			"owner_email": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 		},
