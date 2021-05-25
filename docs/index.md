@@ -4,7 +4,7 @@ description: |-
     The VNG Cloud provider is used to interact with the resources supported by VNG Cloud. The provider needs to be configured with the clientID and client secret before it can be used.
 ---
 
-# vngcloud Provider
+# VNGCloud Provider
 
 
 
