@@ -11,6 +11,14 @@ description: |-
 ## Example Usage
 
 ```terraform
+terraform {
+  required_providers {
+    vngcloud = {
+      source = "vngcloud/vngcloud"
+      version = "0.0.4"
+    }
+  }
+}
 provider "vngcloud" {
     token_url = "https://monitoring-agent.vngcloud.vn/v1/intake/oauth2/token"
     client_id = "client_id"
