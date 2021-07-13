@@ -260,6 +260,9 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 	server := resp.Servers[0]
+	d.Set("name", server.Name)
+	d.Set("network_id", server.InternalInterfaces[0].NetworkUuid)
+	d.Set("subnet_id", server.InternalInterfaces[0].SubnetUuid)
 	d.Set("encryption_volume", server.EncryptionVolume)
 	d.Set("flavor_id", server.FlavorId)
 	d.Set("image_id", server.ImageId)
