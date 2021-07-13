@@ -95,12 +95,12 @@ func ResourceServer() *schema.Resource {
 				Optional: true,
 			},
 			"root_disk_size": {
-				Type: schema.TypeInt,
-				//Required: true,
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"root_disk_type_id": {
-				Type: schema.TypeString,
-				//Required: true,
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"security_group": {
 				Type: schema.TypeList,
