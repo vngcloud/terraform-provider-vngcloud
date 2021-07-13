@@ -95,12 +95,12 @@ func ResourceServer() *schema.Resource {
 				Optional: true,
 			},
 			"root_disk_size": {
-				Type:     schema.TypeInt,
-				Required: true,
+				Type: schema.TypeInt,
+				//Required: true,
 			},
 			"root_disk_type_id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type: schema.TypeString,
+				//Required: true,
 			},
 			"security_group": {
 				Type: schema.TypeList,
@@ -187,6 +187,12 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 	var securityGroup []string
 	for _, s := range securityGroupInterface {
 		securityGroup = append(securityGroup, s.(string))
+	}
+	if _, ok := d.GetOk("root_disk_size"); !ok {
+		return fmt.Errorf(`The argument "root_disk_size" is required, but no definition was found.`)
+	}
+	if _, ok := d.GetOk("root_disk_type_id"); !ok {
+		return fmt.Errorf(`The argument "root_disk_type_id" is required, but no definition was found.`)
 	}
 	server := vserver.CreateServerRequest{
 		AttachFloating:         d.Get("attach_floating").(bool),
