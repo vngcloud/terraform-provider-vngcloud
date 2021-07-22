@@ -206,7 +206,7 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		ImageId:                d.Get("image_id").(string),
 		IsPoc:                  d.Get("is_poc").(bool),
 		Name:                   d.Get("name").(string),
-		NetworkId:              d.Get("flavor_id").(string),
+		NetworkId:              d.Get("network_id").(string),
 		OsLicence:              d.Get("os_licence").(bool),
 		RootDiskEncryptionType: d.Get("root_disk_encryption_type").(string),
 		RootDiskSize:           int32(d.Get("root_disk_size").(int)),
