@@ -12,7 +12,7 @@ The Terraform VNG Cloud provider is a plugin for Terraform that allows for the f
 
 ## Quick Starts
 
-- [Example](https://docs.vngcloud.vn/display/ONVINA/Terraform)
+- [Example](https://docs.vngcloud.vn/pages/viewpage.action?pageId=31555959)
 - [Using the provider](https://registry.terraform.io/providers/vngcloud/vngcloud/latest/docs)
 
 ## Documentation
