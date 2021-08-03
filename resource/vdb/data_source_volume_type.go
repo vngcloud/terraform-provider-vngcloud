@@ -3,8 +3,8 @@ package vdb
 import (
 	"context"
 	"fmt"
-	"git.vngcloud.tech/vdb/vdb-terraform/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/vngcloud/terraform/client"
 	"log"
 	"strconv"
 )

@@ -28,7 +28,7 @@ func DataSourceFlavorZone() *schema.Resource {
 func dataSourceFlavorZoneRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	name := d.Get("name").(string)
-	cli := m.(*client.VSRClient)
+	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.FlavorZoneRestControllerApi.ListFlavorZoneUsingGET(context.TODO(), projectID)
 	if err != nil {
 		return err

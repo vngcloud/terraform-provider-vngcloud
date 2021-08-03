@@ -37,7 +37,7 @@ func dataSourceImageRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	name := d.Get("name").(string)
 	flavorID := d.Get("flavor_zone_id")
-	cli := m.(*client.VSRClient)
+	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.ImageRestControllerApi.ListOSImageUsingGET(context.TODO(), projectID)
 	if err != nil {
 		return err

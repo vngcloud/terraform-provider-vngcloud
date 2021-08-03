@@ -14,15 +14,15 @@ import (
 )
 
 type Subnet struct {
-	Cidr string `json:"cidr,omitempty"`
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	DeletedAt time.Time `json:"deletedAt,omitempty"`
-	DisplayCreatedAt string `json:"displayCreatedAt,omitempty"`
-	Id string `json:"id,omitempty"`
-	InterfaceAclPolicyId string `json:"interfaceAclPolicyId,omitempty"`
-	Name string `json:"name,omitempty"`
-	NetworkId string `json:"networkId,omitempty"`
-	RouteTableId string `json:"routeTableId,omitempty"`
-	Status string `json:"status,omitempty"`
-	UpdatedAt time.Time `json:"updatedAt,omitempty"`
+	Cidr                 string    `json:"cidr,omitempty"`
+	CreatedAt            time.Time `json:"createdAt,omitempty"`
+	DeletedAt            time.Time `json:"deletedAt,omitempty"`
+	DisplayCreatedAt     string    `json:"displayCreatedAt,omitempty"`
+	Id                   string    `json:"id,omitempty"`
+	InterfaceAclPolicyId string    `json:"interfaceAclPolicyId,omitempty"`
+	Name                 string    `json:"name,omitempty"`
+	NetworkId            string    `json:"networkId,omitempty"`
+	RouteTableId         string    `json:"routeTableId,omitempty"`
+	Status               string    `json:"status,omitempty"`
+	UpdatedAt            time.Time `json:"updatedAt,omitempty"`
 }

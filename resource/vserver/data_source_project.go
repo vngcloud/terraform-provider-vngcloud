@@ -23,7 +23,7 @@ func DataSourceProject() *schema.Resource {
 }
 func dataSourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("name").(string)
-	cli := m.(*client.VSRClient)
+	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.ProjectRestControllerApi.ListProjectUsingGET(context.TODO())
 	if err != nil {
 		return err

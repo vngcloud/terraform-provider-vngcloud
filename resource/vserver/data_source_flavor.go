@@ -58,7 +58,7 @@ func dataSourceFlavorRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	name := d.Get("name").(string)
 	flavorZoneId := d.Get("flavor_zone_id").(string)
-	cli := m.(*client.VSRClient)
+	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.FlavorRestControllerApi.ListFlavorUsingGET(context.TODO(), flavorZoneId, projectID)
 	if err != nil {
 		return err

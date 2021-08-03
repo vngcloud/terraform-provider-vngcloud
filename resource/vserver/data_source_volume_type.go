@@ -53,7 +53,7 @@ func dataSourceVolumeTypeRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	zoneID := d.Get("volume_type_zone_id").(string)
 	name := d.Get("name").(string)
-	cli := m.(*client.VSRClient)
+	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.VolumeTypeRestControllerApi.ListVolumeTypeUsingGET(context.TODO(), projectID, zoneID)
 	if err != nil {
 		return err

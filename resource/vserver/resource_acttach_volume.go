@@ -43,7 +43,7 @@ func resourceVolumeAttach(d *schema.ResourceData, m interface{}) error {
 		VolumeId:   d.Get("volume_id").(string),
 		InstanceId: d.Get("instance_id").(string),
 	}
-	cli := m.(*client.VSRClient)
+	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.VolumeRestControllerApi.AttachVolumeUsingPUT(context.TODO(), attachVolume, projectID)
 	if err != nil {
 		return err
@@ -78,7 +78,7 @@ func resourceVolumeDetach(d *schema.ResourceData, m interface{}) error {
 		VolumeId:   d.Get("volume_id").(string),
 		InstanceId: d.Get("instance_id").(string),
 	}
-	cli := m.(*client.VSRClient)
+	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.VolumeRestControllerApi.DetachVolumeUsingPUT(context.TODO(), detachVolume, projectID)
 	if err != nil {
 		return err

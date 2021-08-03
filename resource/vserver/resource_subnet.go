@@ -66,7 +66,7 @@ func ResourceSubnet() *schema.Resource {
 		},
 	}
 }
-func resourceSubnetStateRefreshFunc(cli *client.VSRClient, subnetID string, projectID string) resource.StateRefreshFunc {
+func resourceSubnetStateRefreshFunc(cli *client.Client, subnetID string, projectID string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		resp, _, err := cli.VserverClient.SubnetRestControllerApi.GetSubnetUsingGET(context.TODO(), projectID, subnetID)
 		if err != nil {
@@ -90,7 +90,7 @@ func resourceSubnetCreate(d *schema.ResourceData, m interface{}) error {
 		Cidr:      d.Get("cidr").(string),
 		NetworkId: d.Get("network_id").(string),
 	}
-	cli := m.(*client.VSRClient)
+	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.SubnetRestControllerApi.CreateSubnetUsingPOST(context.TODO(), subnet, projectID)
 	if err != nil {
 		return err
@@ -122,7 +122,7 @@ func resourceSubnetCreate(d *schema.ResourceData, m interface{}) error {
 func resourceSubnetRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	subnetID := d.Id()
-	cli := m.(*client.VSRClient)
+	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.SubnetRestControllerApi.GetSubnetUsingGET(context.TODO(), projectID, subnetID)
 	if err != nil {
 		return err
@@ -154,7 +154,7 @@ func resourceSubnetDelete(d *schema.ResourceData, m interface{}) error {
 		SubnetId:  d.Id(),
 		NetworkId: d.Get("network_id").(string),
 	}
-	cli := m.(*client.VSRClient)
+	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.SubnetRestControllerApi.DeleteSubnetUsingDELETE(context.TODO(), deleteSubnet, projectID)
 	if err != nil {
 		return err

@@ -20,7 +20,7 @@ type CreateSecurityGroupRuleRequest struct {
 	PortRangeMax int32 `json:"portRangeMax"`
 	// upper bound of range port.
 	PortRangeMin int32 `json:"portRangeMin"`
-	// \"TCP\", \"UDP\", \"ICMP\", ... 
+	// \"TCP\", \"UDP\", \"ICMP\", ...
 	Protocol string `json:"protocol"`
 	// Ip Prefix of source/target.
 	RemoteIpPrefix string `json:"remoteIpPrefix"`

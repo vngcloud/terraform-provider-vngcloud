@@ -14,19 +14,19 @@ import (
 )
 
 type Server struct {
-	Action []string `json:"action,omitempty"`
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	EncryptionVolume bool `json:"encryptionVolume,omitempty"`
+	Action             []string                    `json:"action,omitempty"`
+	CreatedAt          time.Time                   `json:"createdAt,omitempty"`
+	EncryptionVolume   bool                        `json:"encryptionVolume,omitempty"`
 	ExternalInterfaces []InterfaceNetworkInterface `json:"externalInterfaces,omitempty"`
-	FlavorId string `json:"flavorId,omitempty"`
-	ImageId string `json:"imageId,omitempty"`
+	FlavorId           string                      `json:"flavorId,omitempty"`
+	ImageId            string                      `json:"imageId,omitempty"`
 	InternalInterfaces []InterfaceNetworkInterface `json:"internalInterfaces,omitempty"`
-	Licence bool `json:"licence,omitempty"`
-	Name string `json:"name,omitempty"`
-	OsInfo string `json:"osInfo,omitempty"`
-	OwnerEmail string `json:"ownerEmail,omitempty"`
-	Share bool `json:"share,omitempty"`
-	SshKeyName string `json:"sshKeyName,omitempty"`
-	Status string `json:"status,omitempty"`
-	Uuid string `json:"uuid,omitempty"`
+	Licence            bool                        `json:"licence,omitempty"`
+	Name               string                      `json:"name,omitempty"`
+	OsInfo             string                      `json:"osInfo,omitempty"`
+	OwnerEmail         string                      `json:"ownerEmail,omitempty"`
+	Share              bool                        `json:"share,omitempty"`
+	SshKeyName         string                      `json:"sshKeyName,omitempty"`
+	Status             string                      `json:"status,omitempty"`
+	Uuid               string                      `json:"uuid,omitempty"`
 }

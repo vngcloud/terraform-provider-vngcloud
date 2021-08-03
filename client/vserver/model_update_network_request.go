@@ -10,7 +10,7 @@
 package vserver
 
 type UpdateNetworkRequest struct {
-	Extra *interface{} `json:"extra,omitempty"`
-	Name string `json:"name,omitempty"`
-	NetworkId string `json:"networkId,omitempty"`
+	Extra     *interface{} `json:"extra,omitempty"`
+	Name      string       `json:"name,omitempty"`
+	NetworkId string       `json:"networkId,omitempty"`
 }

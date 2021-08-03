@@ -8,10 +8,10 @@ import (
 	"log"
 	"time"
 
-	"git.vngcloud.tech/vdb/vdb-terraform/client"
-	"git.vngcloud.tech/vdb/vdb-terraform/client/vdb"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/vngcloud/terraform/client"
+	"github.com/vngcloud/terraform/client/vdb"
 )
 
 func ResourceDatabase() *schema.Resource {

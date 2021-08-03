@@ -10,17 +10,17 @@
 package vserver
 
 type UserService struct {
-	ArtifactId string `json:"artifactId,omitempty"`
-	ArtifactName string `json:"artifactName,omitempty"`
-	ArtifactType string `json:"artifactType,omitempty"`
-	CreatedTime int64 `json:"createdTime,omitempty"`
-	CreatedTimeFmt string `json:"createdTimeFmt,omitempty"`
-	EndBillingTime int64 `json:"endBillingTime,omitempty"`
-	EndTimeFmt string `json:"endTimeFmt,omitempty"`
-	IsPoc bool `json:"isPoc,omitempty"`
-	MonthlyCost float64 `json:"monthlyCost,omitempty"`
-	StartBillingTime int64 `json:"startBillingTime,omitempty"`
-	StartTimeFmt string `json:"startTimeFmt,omitempty"`
-	Trial bool `json:"trial,omitempty"`
-	UserServiceId int32 `json:"userServiceId,omitempty"`
+	ArtifactId       string  `json:"artifactId,omitempty"`
+	ArtifactName     string  `json:"artifactName,omitempty"`
+	ArtifactType     string  `json:"artifactType,omitempty"`
+	CreatedTime      int64   `json:"createdTime,omitempty"`
+	CreatedTimeFmt   string  `json:"createdTimeFmt,omitempty"`
+	EndBillingTime   int64   `json:"endBillingTime,omitempty"`
+	EndTimeFmt       string  `json:"endTimeFmt,omitempty"`
+	IsPoc            bool    `json:"isPoc,omitempty"`
+	MonthlyCost      float64 `json:"monthlyCost,omitempty"`
+	StartBillingTime int64   `json:"startBillingTime,omitempty"`
+	StartTimeFmt     string  `json:"startTimeFmt,omitempty"`
+	Trial            bool    `json:"trial,omitempty"`
+	UserServiceId    int32   `json:"userServiceId,omitempty"`
 }

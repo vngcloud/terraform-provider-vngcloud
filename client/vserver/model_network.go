@@ -14,12 +14,12 @@ import (
 )
 
 type Network struct {
-	Cidr string `json:"cidr,omitempty"`
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	DisplayCreatedAt string `json:"displayCreatedAt,omitempty"`
+	Cidr              string            `json:"cidr,omitempty"`
+	CreatedAt         time.Time         `json:"createdAt,omitempty"`
+	DisplayCreatedAt  string            `json:"displayCreatedAt,omitempty"`
 	ElasticIpEntities []ElasticIpEntity `json:"elasticIpEntities,omitempty"`
-	Id string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Status string `json:"status,omitempty"`
-	Subnets []Subnet `json:"subnets,omitempty"`
+	Id                string            `json:"id,omitempty"`
+	Name              string            `json:"name,omitempty"`
+	Status            string            `json:"status,omitempty"`
+	Subnets           []Subnet          `json:"subnets,omitempty"`
 }
