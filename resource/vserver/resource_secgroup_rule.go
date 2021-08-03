@@ -82,7 +82,7 @@ func ResourceSecgroupRule() *schema.Resource {
 	}
 }
 
-func resourceSecgroupRuleStateRefreshFunc(cli *client.Client, secgroupRuleID string, projectID string) resource.StateRefreshFunc {
+func resourceSecgroupRuleStateRefreshFunc(cli *client.VSRClient, secgroupRuleID string, projectID string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		resp, _, err := cli.VserverClient.SecgroupRuleRestControllerApi.GetSecgroupRuleUsingGET(context.TODO(), projectID, secgroupRuleID)
 		if err != nil {
@@ -111,7 +111,7 @@ func resourceSecgroupRuleCreate(d *schema.ResourceData, m interface{}) error {
 		SecurityGroupId: d.Get("security_group_id").(string),
 		Description:     d.Get("description").(string),
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.SecgroupRuleRestControllerApi.CreateSecgroupRuleUsingPOST(context.TODO(), secGroupRule, projectID)
 	if err != nil {
 		return err
@@ -143,7 +143,7 @@ func resourceSecgroupRuleCreate(d *schema.ResourceData, m interface{}) error {
 func resourceSecgroupRuleRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	SecgroupRuleID := d.Id()
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.SecgroupRuleRestControllerApi.GetSecgroupRuleUsingGET(context.TODO(), projectID, SecgroupRuleID)
 	if err != nil {
 		return err
@@ -176,7 +176,7 @@ func resourceSecgroupRuleDelete(d *schema.ResourceData, m interface{}) error {
 	deleteSecgroupRule := vserver.DeleteSecurityGroupRuleRequest{
 		SecgroupRuleId: d.Id(),
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.SecgroupRuleRestControllerApi.DeleteSecgroupRuleUsingDELETE(context.TODO(), deleteSecgroupRule, projectID)
 	if err != nil {
 		return err

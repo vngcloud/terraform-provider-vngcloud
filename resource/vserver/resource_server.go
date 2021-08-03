@@ -164,7 +164,7 @@ func ResourceServer() *schema.Resource {
 		},
 	}
 }
-func resourceServerStateRefreshFunc(cli *client.Client, serverID string, projectID string) resource.StateRefreshFunc {
+func resourceServerStateRefreshFunc(cli *client.VSRClient, serverID string, projectID string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		resp, _, err := cli.VserverClient.ServerRestControllerApi.GetServerUsingGET(context.TODO(), projectID, serverID)
 		if err != nil {
@@ -210,7 +210,7 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		SshKeyId:               d.Get("ssh_key").(string),
 		SubnetId:               d.Get("subnet_id").(string),
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.ServerRestControllerApi.CreateServerUsingPOST(context.TODO(), server, projectID)
 	if err != nil {
 		return err
@@ -242,7 +242,7 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	serverID := d.Id()
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.ServerRestControllerApi.GetServerUsingGET(context.TODO(), projectID, serverID)
 	if err != nil {
 		return err
@@ -327,7 +327,7 @@ func resourceServerDelete(d *schema.ResourceData, m interface{}) error {
 		ServerId:    d.Id(),
 		ForceDelete: true,
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.ServerRestControllerApi.DeleteServerInTrashUsingDELETE(context.TODO(), deleteServer, projectID)
 	if err != nil {
 		return err
@@ -364,7 +364,7 @@ func resourceServerResize(d *schema.ResourceData, m interface{}) error {
 		ServerId: d.Id(),
 		FlavorId: d.Get("flavor_id").(string),
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.ServerRestControllerApi.ResizeServerUsingPUT(context.TODO(), projectID, serverResize)
 	if err != nil {
 		return err
@@ -397,7 +397,7 @@ func resourceServerReboot(d *schema.ResourceData, m interface{}) error {
 	serverReboot := vserver.UpdateServerRequest{
 		ServerId: d.Id(),
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.ServerRestControllerApi.RebootServerUsingPUT(context.TODO(), projectID, serverReboot)
 	if err != nil {
 		return err
@@ -430,7 +430,7 @@ func resourceServerStop(d *schema.ResourceData, m interface{}) error {
 	serverStop := vserver.UpdateServerRequest{
 		ServerId: d.Id(),
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.ServerRestControllerApi.StopServerUsingPUT(context.TODO(), projectID, serverStop)
 	if err != nil {
 		return err
@@ -463,7 +463,7 @@ func resourceServerStart(d *schema.ResourceData, m interface{}) error {
 	serverStart := vserver.UpdateServerRequest{
 		ServerId: d.Id(),
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.ServerRestControllerApi.StartServerUsingPUT(context.TODO(), projectID, serverStart)
 	if err != nil {
 		return err
@@ -501,7 +501,7 @@ func resourceServerUpdateSecgroup(d *schema.ResourceData, m interface{}) error {
 		ServerId:      d.Id(),
 		SecurityGroup: securityGroup,
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.ServerRestControllerApi.UpdateSecGroupServerUsingPUT(context.TODO(), serverChangeSecGroup, projectID)
 	if err != nil {
 		return err

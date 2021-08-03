@@ -1,4 +1,4 @@
-package provider
+package vserver
 
 import (
 	"log"
@@ -59,7 +59,7 @@ func Provider() *schema.Provider {
 //	address := d.Get("address").(string)
 //	user := d.Get("user").(string)
 //	accessKey := d.Get("access_key").(string)
-//	return client.NewClient(address, user, accessKey), nil
+//	return client.NewVDBClient(address, user, accessKey), nil
 //}
 
 func providerConfigvServer(d *schema.ResourceData) (interface{}, error) {
@@ -67,5 +67,5 @@ func providerConfigvServer(d *schema.ResourceData) (interface{}, error) {
 	clientID := d.Get("client_id").(string)
 	clientSecret := d.Get("client_secret").(string)
 	baseURL := d.Get("base_url").(string)
-	return client.NewClient(clientID, clientSecret, tokenURL, baseURL)
+	return client.NewVServerClient(clientID, clientSecret, tokenURL, baseURL)
 }

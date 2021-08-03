@@ -57,7 +57,7 @@ func ResourceNetwork() *schema.Resource {
 		},
 	}
 }
-func resourceNetworkStateRefreshFunc(cli *client.Client, networkID string, projectID string) resource.StateRefreshFunc {
+func resourceNetworkStateRefreshFunc(cli *client.VSRClient, networkID string, projectID string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		resp, _, err := cli.VserverClient.NetworkRestControllerApi.GetNetworkUsingGET(context.TODO(), networkID, projectID)
 		if err != nil {
@@ -81,7 +81,7 @@ func resourceNetworkCreate(d *schema.ResourceData, m interface{}) error {
 		Cidr:                d.Get("cidr").(string),
 		RouteTableDefaultId: d.Get("route_table_default_id").(string),
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.NetworkRestControllerApi.CreateNetworkUsingPOST(context.TODO(), network, projectID)
 	if err != nil {
 		return err
@@ -113,7 +113,7 @@ func resourceNetworkCreate(d *schema.ResourceData, m interface{}) error {
 func resourceNetworkRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	networkID := d.Id()
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.NetworkRestControllerApi.GetNetworkUsingGET(context.TODO(), networkID, projectID)
 	if err != nil {
 		return err
@@ -139,7 +139,7 @@ func resourceNetworkRead(d *schema.ResourceData, m interface{}) error {
 func resourceNetworkUpdate(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	networkID := d.Id()
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	if d.HasChange("name") {
 		networkUpdate := vserver.UpdateNetworkRequest{
 			Name:      d.Get("name").(string),
@@ -167,7 +167,7 @@ func resourceNetworkDelete(d *schema.ResourceData, m interface{}) error {
 	deleteNetwork := vserver.DeleteNetworkRequest{
 		NetworkId: d.Id(),
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.NetworkRestControllerApi.DeleteNetworkUsingDELETE(context.TODO(), deleteNetwork, projectID)
 	if err != nil {
 		return err

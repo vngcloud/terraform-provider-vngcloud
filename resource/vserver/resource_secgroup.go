@@ -50,7 +50,7 @@ func ResourceSecgroup() *schema.Resource {
 		},
 	}
 }
-func resourceSecgroupStateRefreshFunc(cli *client.Client, secgroupID string, projectID string) resource.StateRefreshFunc {
+func resourceSecgroupStateRefreshFunc(cli *client.VSRClient, secgroupID string, projectID string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		resp, _, err := cli.VserverClient.SecgroupRestControllerApi.GetSecgroupUsingGET(context.TODO(), projectID, secgroupID)
 		if err != nil {
@@ -73,7 +73,7 @@ func resourceSecgroupCreate(d *schema.ResourceData, m interface{}) error {
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.SecgroupRestControllerApi.CreateSecgroupUsingPOST(context.TODO(), secgroup, projectID)
 	if err != nil {
 		return err
@@ -105,7 +105,7 @@ func resourceSecgroupCreate(d *schema.ResourceData, m interface{}) error {
 func resourceSecgroupRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	secgroupID := d.Id()
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.SecgroupRestControllerApi.GetSecgroupUsingGET(context.TODO(), projectID, secgroupID)
 	if err != nil {
 		return err
@@ -137,7 +137,7 @@ func resourceSecgroupUpdate(d *schema.ResourceData, m interface{}) error {
 			Description: d.Get("description").(string),
 			SecgroupId:  secgroupID,
 		}
-		cli := m.(*client.Client)
+		cli := m.(*client.VSRClient)
 		resp, _, err := cli.VserverClient.SecgroupRestControllerApi.EditSecgroupUsingPUT(context.TODO(), secgroupUpdate, projectID)
 		if err != nil {
 			return err
@@ -160,7 +160,7 @@ func resourceSecgroupDelete(d *schema.ResourceData, m interface{}) error {
 	deleteSecgroup := vserver.DeleteSecurityGroupRequest{
 		SecgroupId: d.Id(),
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.SecgroupRestControllerApi.DeleteSecgroupUsingDELETE(context.TODO(), deleteSecgroup, projectID)
 	if err != nil {
 		return err

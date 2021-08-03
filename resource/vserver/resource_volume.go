@@ -76,7 +76,7 @@ func ResourceVolume() *schema.Resource {
 		},
 	}
 }
-func resourceVolumeStateRefreshFunc(cli *client.Client, volumeID string, projectID string) resource.StateRefreshFunc {
+func resourceVolumeStateRefreshFunc(cli *client.VSRClient, volumeID string, projectID string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		resp, _, err := cli.VserverClient.VolumeRestControllerApi.GetVolumeUsingGET(context.TODO(), projectID, volumeID)
 		if err != nil {
@@ -102,7 +102,7 @@ func resourceVolumeCreate(d *schema.ResourceData, m interface{}) error {
 		Size:           int32(d.Get("size").(int)),
 		VolumeTypeId:   d.Get("volume_type_id").(string),
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.VolumeRestControllerApi.CreateVolumeUsingPOST(context.TODO(), a, projectID)
 	if err != nil {
 		return err
@@ -134,7 +134,7 @@ func resourceVolumeCreate(d *schema.ResourceData, m interface{}) error {
 func resourceVolumeRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	volumeID := d.Id()
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.VolumeRestControllerApi.GetVolumeUsingGET(context.TODO(), projectID, volumeID)
 	if err != nil {
 		return err
@@ -170,7 +170,7 @@ func resourceVolumeUpdate(d *schema.ResourceData, m interface{}) error {
 			VolumeId:        d.Id(),
 			NewVolumeTypeId: d.Get("volume_type_id").(string),
 		}
-		cli := m.(*client.Client)
+		cli := m.(*client.VSRClient)
 		resp, _, err := cli.VserverClient.VolumeRestControllerApi.ResizeVolumeUsingPUT(context.TODO(), projectID, resizeVolume)
 		if err != nil {
 			return err
@@ -195,7 +195,7 @@ func resourceVolumeDelete(d *schema.ResourceData, m interface{}) error {
 		VolumeId:    d.Id(),
 		ForceDelete: true,
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.VolumeRestControllerApi.DeleteVolumeInTrashUsingDELETE(context.TODO(), deleteVolume, projectID)
 	if err != nil {
 		return err

@@ -57,7 +57,7 @@ func resourceSSHKeyCreate(d *schema.ResourceData, m interface{}) error {
 		Name:   d.Get("name").(string),
 		PubKey: d.Get("public_key").(string),
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.SshKeyRestControllerApi.ImportSSHKeyUsingPOST(context.TODO(), sshKey, projectID)
 	if err != nil {
 		return err
@@ -77,7 +77,7 @@ func resourceSSHKeyCreate(d *schema.ResourceData, m interface{}) error {
 func resourceSSHKeyRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	sshKeyID := d.Id()
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.SshKeyRestControllerApi.GetSSHKeyUsingGET(context.TODO(), projectID, sshKeyID)
 	if err != nil {
 		return err
@@ -106,7 +106,7 @@ func resourceSSHKeyDelete(d *schema.ResourceData, m interface{}) error {
 		Id:   d.Id(),
 		Name: d.Get("name").(string),
 	}
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.SshKeyRestControllerApi.DeleteSSHKeyUsingDELETE(context.TODO(), deleteSSHKey, projectID)
 	if err != nil {
 		return err

@@ -5,12 +5,12 @@ import (
 	"github.com/vngcloud/terraform/client/vserver"
 )
 
-type Client struct {
+type VSRClient struct {
 	AuthenClient  *authen.AuthenClient
 	VserverClient *vserver.APIClient
 }
 
-func NewClient(ClientID string, ClientSecret string, TokenURL string, baseURL string) (*Client, error) {
+func NewVServerClient(ClientID string, ClientSecret string, TokenURL string, baseURL string) (*VSRClient, error) {
 	authenConfig := authen.NewConfiguration(ClientID, ClientSecret, TokenURL)
 	authenClient, err := authen.NewAuthenClient(authenConfig)
 	if err != nil {
@@ -18,7 +18,7 @@ func NewClient(ClientID string, ClientSecret string, TokenURL string, baseURL st
 	}
 	vserverConfig := vserver.NewConfiguration(baseURL, authenClient.Client)
 	vserverClient := vserver.NewAPIClient(vserverConfig)
-	client := &Client{
+	client := &VSRClient{
 		AuthenClient:  authenClient,
 		VserverClient: vserverClient,
 	}

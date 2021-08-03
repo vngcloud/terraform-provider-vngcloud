@@ -28,7 +28,7 @@ func DataSourceVolumeTypeZone() *schema.Resource {
 func dataSourceVolumeTypeZoneRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	name := d.Get("name").(string)
-	cli := m.(*client.Client)
+	cli := m.(*client.VSRClient)
 	resp, _, err := cli.VserverClient.VolumeTypeZoneRestControllerApi.ListVolumeTypeZoneUsingGET(context.TODO(), projectID)
 	if err != nil {
 		return err
