@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vngcloud/terraform-provider-vngcloud/client"
-	"github.com/vngcloud/terraform-provider-vngcloud/client/vserver"
+	"github.com/vngcloud/terraform/client"
+	"github.com/vngcloud/terraform/client/vserver"
 )
 
 func ResourceSSHKey() *schema.Resource {

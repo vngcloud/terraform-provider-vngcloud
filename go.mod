@@ -1,10 +1,10 @@
-module github.com/vngcloud/terraform-provider-vngcloud
+module github.com/vngcloud/terraform
 
 go 1.16
 
 require (
 	github.com/hashicorp/go-plugin v1.4.0 // indirect
-	github.com/hashicorp/terraform-plugin-docs v0.4.0
+	github.com/hashicorp/terraform-plugin-docs v0.4.0 // indirect
 	github.com/hashicorp/terraform-plugin-sdk v1.17.2 // indirect
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.6.1
 	github.com/spf13/viper v1.7.1 // indirect
