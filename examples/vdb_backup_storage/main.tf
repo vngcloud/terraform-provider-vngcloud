@@ -39,11 +39,11 @@ data "vngcloud_vdb_backup_storage_package" "backup_storage_package_2"{
 }
 
 resource "vngcloud_vdb_backup_storage" "backup_storage_2" {
-  backup_storage_package_id = data.vngcloud_vdb_backup_storage_package.backup_storage_package_1.id
-  backup_storage_package_name = data.vngcloud_vdb_backup_storage_package.backup_storage_package_1.name
-  engine_group = data.vngcloud_vdb_backup_storage_package.backup_storage_package_1.engine_group
+  backup_storage_package_id = data.vngcloud_vdb_backup_storage_package.backup_storage_package_2.id
+  backup_storage_package_name = data.vngcloud_vdb_backup_storage_package.backup_storage_package_2.name
+  engine_group = data.vngcloud_vdb_backup_storage_package.backup_storage_package_2.engine_group
   period = 0
   monthly_cost = 0
   name = "memory_store_backup_storage"
-  quota = data.vngcloud_vdb_backup_storage_package.backup_storage_package_1.quota
+  quota = data.vngcloud_vdb_backup_storage_package.backup_storage_package_2.quota
 }
