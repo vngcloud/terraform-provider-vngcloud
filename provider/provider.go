@@ -20,7 +20,6 @@ func Provider() *schema.Provider {
 			"vngcloud_vserver_image":              vserver.DataSourceImage(),
 			"vngcloud_vserver_volume_type_zone":   vserver.DataSourceVolumeTypeZone(),
 			"vngcloud_vserver_volume_type":        vserver.DataSourceVolumeType(),
-			"vngcloud_vdb_db":                     vdb.DataSourceDb(),
 			"vngcloud_vdb_network":                vdb.DataSourceNetwork(),
 			"vngcloud_vdb_package":                vdb.DataSourcePackage(),
 			"vngcloud_vdb_subnet":                 vdb.DataSourceSubnet(),
