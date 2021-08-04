@@ -13,17 +13,17 @@ type Client struct {
 	ProjectId     string
 }
 
-func NewClient(baseURL string, projectId string, userId string, ClientID string, ClientSecret string, TokenURL string) (*Client, error) {
+func NewClient(vdbBaseURL string, vserverBaseURL string, projectId string, userId string, ClientID string, ClientSecret string, TokenURL string) (*Client, error) {
 	authenConfig := authen.NewConfiguration(ClientID, ClientSecret, TokenURL)
 	authenClient, err := authen.NewAuthenClient(authenConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	vserverConfig := vserver.NewConfiguration("https://vserverapi.vngcloud.vn/vserver-gateway", authenClient.Client)
+	vserverConfig := vserver.NewConfiguration(vserverBaseURL, authenClient.Client)
 	vserverClient := vserver.NewAPIClient(vserverConfig)
 
-	vdbConfig := vdb.NewConfiguration("https://vcmc-internal.vngcloud.tech/vdb-gateway", authenClient.Client)
+	vdbConfig := vdb.NewConfiguration(vdbBaseURL, authenClient.Client)
 	vdbClient := vdb.NewAPIClient(vdbConfig)
 
 	vdbConfig.AddDefaultHeader("user_id", userId)

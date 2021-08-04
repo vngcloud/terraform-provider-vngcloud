@@ -64,7 +64,12 @@ func Provider() *schema.Provider {
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("CLIENT_ID", ""),
 			},
-			"base_url": {
+			"vdb_base_url": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("CLIENT_ID", ""),
+			},
+			"vserver_base_url": {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("CLIENT_ID", ""),
@@ -82,11 +87,12 @@ func Provider() *schema.Provider {
 //}
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-	baseURL := d.Get("base_url").(string)
+	vdbBaseURL := d.Get("vdb_base_url").(string)
+	vserverBaseURL := d.Get("vserver_base_url").(string)
 	projectId := d.Get("project_id").(string)
 	userId := d.Get("user_id").(string)
 	tokenURL := d.Get("token_url").(string)
 	clientID := d.Get("client_id").(string)
 	clientSecret := d.Get("client_secret").(string)
-	return client.NewClient(baseURL, projectId, userId, clientID, clientSecret, tokenURL)
+	return client.NewClient(vdbBaseURL, vserverBaseURL, projectId, userId, clientID, clientSecret, tokenURL)
 }
