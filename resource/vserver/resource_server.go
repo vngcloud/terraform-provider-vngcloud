@@ -10,8 +10,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vngcloud/terraform/client"
-	"github.com/vngcloud/terraform/client/vserver"
+	"github.com/vngcloud/terraform-provider-vngcloud/client"
+	"github.com/vngcloud/terraform-provider-vngcloud/client/vserver"
 )
 
 func ResourceServer() *schema.Resource {
@@ -96,11 +96,11 @@ func ResourceServer() *schema.Resource {
 			},
 			"root_disk_size": {
 				Type:     schema.TypeInt,
-				Required: true,
+				Optional: true,
 			},
 			"root_disk_type_id": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"security_group": {
 				Type: schema.TypeList,
@@ -188,6 +188,12 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 	for _, s := range securityGroupInterface {
 		securityGroup = append(securityGroup, s.(string))
 	}
+	if _, ok := d.GetOk("root_disk_size"); !ok {
+		return fmt.Errorf(`The argument "root_disk_size" is required, but no definition was found.`)
+	}
+	if _, ok := d.GetOk("root_disk_type_id"); !ok {
+		return fmt.Errorf(`The argument "root_disk_type_id" is required, but no definition was found.`)
+	}
 	server := vserver.CreateServerRequest{
 		AttachFloating:         d.Get("attach_floating").(bool),
 		DataDiskEncryptionType: d.Get("data_disk_encryption_type").(string),
@@ -200,7 +206,7 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		ImageId:                d.Get("image_id").(string),
 		IsPoc:                  d.Get("is_poc").(bool),
 		Name:                   d.Get("name").(string),
-		NetworkId:              d.Get("flavor_id").(string),
+		NetworkId:              d.Get("network_id").(string),
 		OsLicence:              d.Get("os_licence").(bool),
 		RootDiskEncryptionType: d.Get("root_disk_encryption_type").(string),
 		RootDiskSize:           int32(d.Get("root_disk_size").(int)),
@@ -260,6 +266,9 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 	server := resp.Servers[0]
+	d.Set("name", server.Name)
+	d.Set("network_id", server.InternalInterfaces[0].NetworkUuid)
+	d.Set("subnet_id", server.InternalInterfaces[0].SubnetUuid)
 	d.Set("encryption_volume", server.EncryptionVolume)
 	d.Set("flavor_id", server.FlavorId)
 	d.Set("image_id", server.ImageId)

@@ -7,7 +7,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vngcloud/terraform/client"
+	"github.com/vngcloud/terraform-provider-vngcloud/client"
 )
 
 func DataSourceFlavor() *schema.Resource {
@@ -28,27 +28,22 @@ func DataSourceFlavor() *schema.Resource {
 			},
 			"bandwidth": {
 				Type:     schema.TypeInt,
-				Optional: true,
 				Computed: true,
 			},
 			"bandwidth_unit": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"cpu": {
 				Type:     schema.TypeInt,
-				Optional: true,
 				Computed: true,
 			},
 			"gpu": {
 				Type:     schema.TypeInt,
-				Optional: true,
 				Computed: true,
 			},
 			"memory": {
 				Type:     schema.TypeInt,
-				Optional: true,
 				Computed: true,
 			},
 		},

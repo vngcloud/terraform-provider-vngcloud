@@ -7,7 +7,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vngcloud/terraform/client"
+	"github.com/vngcloud/terraform-provider-vngcloud/client"
 )
 
 func DataSourceVolumeType() *schema.Resource {
@@ -28,22 +28,18 @@ func DataSourceVolumeType() *schema.Resource {
 			},
 			"iops": {
 				Type:     schema.TypeInt,
-				Optional: true,
 				Computed: true,
 			},
 			"max_size": {
 				Type:     schema.TypeInt,
-				Optional: true,
 				Computed: true,
 			},
 			"min_size": {
 				Type:     schema.TypeInt,
-				Optional: true,
 				Computed: true,
 			},
 			"through_put": {
 				Type:     schema.TypeInt,
-				Optional: true,
 				Computed: true,
 			},
 		},

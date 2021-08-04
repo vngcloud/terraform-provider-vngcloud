@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vngcloud/terraform/client"
-	"github.com/vngcloud/terraform/resource/vserver"
+	"github.com/vngcloud/terraform-provider-vngcloud/client"
+	"github.com/vngcloud/terraform-provider-vngcloud/resource/vserver"
 )
 
 func Provider() *schema.Provider {
@@ -53,16 +53,19 @@ func Provider() *schema.Provider {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("TOKEN_ADDRESS", ""),
+				Description: "endpoint for terraform request token",
 			},
 			"client_secret": {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("CLIENT_SECRET", ""),
+				Description: "client secret for auth get access token",
 			},
 			"client_id": {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("CLIENT_ID", ""),
+				Description: "client id for auth get access token",
 			},
 			"vdb_base_url": {
 				Type:        schema.TypeString,
@@ -72,7 +75,8 @@ func Provider() *schema.Provider {
 			"vserver_base_url": {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("CLIENT_ID", ""),
+				DefaultFunc: schema.EnvDefaultFunc("BASE_URL", ""),
+				Description: "endpoint to connection with provider resource",
 			},
 		},
 		ConfigureFunc: providerConfigure,

@@ -7,7 +7,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vngcloud/terraform/client"
+	"github.com/vngcloud/terraform-provider-vngcloud/client"
 )
 
 func DataSourceFlavorZone() *schema.Resource {
@@ -15,12 +15,14 @@ func DataSourceFlavorZone() *schema.Resource {
 		Read: dataSourceFlavorZoneRead,
 		Schema: map[string]*schema.Schema{
 			"project_id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "ID of project",
 			},
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Name of flavor zone.",
 			},
 		},
 	}
