@@ -15,6 +15,7 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 terraform-provider-vngcloud
+terraform
 .terraform.lock.hcl
 terraform.tfstate
 k8s-create-cluster.sh
