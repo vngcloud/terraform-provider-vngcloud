@@ -10,9 +10,9 @@
 package vserver
 
 type SshKeyResponse struct {
-	ErrorCode int32 `json:"errorCode,omitempty"`
-	ErrorMsg string `json:"errorMsg,omitempty"`
-	Extra *interface{} `json:"extra,omitempty"`
-	SshKeys []SshKey `json:"sshKeys,omitempty"`
-	Success bool `json:"success,omitempty"`
+	ErrorCode int32        `json:"errorCode,omitempty"`
+	ErrorMsg  string       `json:"errorMsg,omitempty"`
+	Extra     *interface{} `json:"extra,omitempty"`
+	SshKeys   []SshKey     `json:"sshKeys,omitempty"`
+	Success   bool         `json:"success,omitempty"`
 }

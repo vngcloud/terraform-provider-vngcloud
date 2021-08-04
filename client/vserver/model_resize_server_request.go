@@ -13,7 +13,7 @@ package vserver
 type ResizeServerRequest struct {
 	// Id of flavor
 	FlavorId string `json:"flavorId"`
-	Poc bool `json:"poc,omitempty"`
+	Poc      bool   `json:"poc,omitempty"`
 	// Id of server
 	ServerId string `json:"serverId"`
 	// Id of user

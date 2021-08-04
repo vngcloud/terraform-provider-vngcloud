@@ -14,16 +14,16 @@ import (
 )
 
 type Volume struct {
-	Action []string `json:"action,omitempty"`
-	Bootable bool `json:"bootable,omitempty"`
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	EncryptionType string `json:"encryptionType,omitempty"`
-	Id string `json:"id,omitempty"`
-	InstanceUuid string `json:"instanceUuid,omitempty"`
-	Name string `json:"name,omitempty"`
-	OwnerEmail string `json:"ownerEmail,omitempty"`
-	Share bool `json:"share,omitempty"`
-	Size int32 `json:"size,omitempty"`
-	Status string `json:"status,omitempty"`
-	VolumeTypeId string `json:"volumeTypeId,omitempty"`
+	Action         []string  `json:"action,omitempty"`
+	Bootable       bool      `json:"bootable,omitempty"`
+	CreatedAt      time.Time `json:"createdAt,omitempty"`
+	EncryptionType string    `json:"encryptionType,omitempty"`
+	Id             string    `json:"id,omitempty"`
+	InstanceUuid   string    `json:"instanceUuid,omitempty"`
+	Name           string    `json:"name,omitempty"`
+	OwnerEmail     string    `json:"ownerEmail,omitempty"`
+	Share          bool      `json:"share,omitempty"`
+	Size           int32     `json:"size,omitempty"`
+	Status         string    `json:"status,omitempty"`
+	VolumeTypeId   string    `json:"volumeTypeId,omitempty"`
 }

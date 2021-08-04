@@ -10,9 +10,9 @@
 package vserver
 
 type FlavorZoneResponse struct {
-	ErrorCode int32 `json:"errorCode,omitempty"`
-	ErrorMsg string `json:"errorMsg,omitempty"`
-	Extra *interface{} `json:"extra,omitempty"`
+	ErrorCode   int32        `json:"errorCode,omitempty"`
+	ErrorMsg    string       `json:"errorMsg,omitempty"`
+	Extra       *interface{} `json:"extra,omitempty"`
 	FlavorZones []FlavorZone `json:"flavorZones,omitempty"`
-	Success bool `json:"success,omitempty"`
+	Success     bool         `json:"success,omitempty"`
 }

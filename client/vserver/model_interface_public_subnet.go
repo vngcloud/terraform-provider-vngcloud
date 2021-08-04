@@ -14,16 +14,16 @@ import (
 )
 
 type InterfacePublicSubnet struct {
-	BackendStatus string `json:"backendStatus,omitempty"`
-	Cidr string `json:"cidr,omitempty"`
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	DeletedAt time.Time `json:"deletedAt,omitempty"`
-	GatewayIp string `json:"gatewayIp,omitempty"`
-	Id int32 `json:"id,omitempty"`
-	ProjectId string `json:"projectId,omitempty"`
-	Status string `json:"status,omitempty"`
-	SubnetBackendId int32 `json:"subnetBackendId,omitempty"`
-	UpdatedAt time.Time `json:"updatedAt,omitempty"`
-	Uuid string `json:"uuid,omitempty"`
-	VpcBackendId int32 `json:"vpcBackendId,omitempty"`
+	BackendStatus   string    `json:"backendStatus,omitempty"`
+	Cidr            string    `json:"cidr,omitempty"`
+	CreatedAt       time.Time `json:"createdAt,omitempty"`
+	DeletedAt       time.Time `json:"deletedAt,omitempty"`
+	GatewayIp       string    `json:"gatewayIp,omitempty"`
+	Id              int32     `json:"id,omitempty"`
+	ProjectId       string    `json:"projectId,omitempty"`
+	Status          string    `json:"status,omitempty"`
+	SubnetBackendId int32     `json:"subnetBackendId,omitempty"`
+	UpdatedAt       time.Time `json:"updatedAt,omitempty"`
+	Uuid            string    `json:"uuid,omitempty"`
+	VpcBackendId    int32     `json:"vpcBackendId,omitempty"`
 }

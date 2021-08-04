@@ -11,8 +11,8 @@ package vserver
 
 type CreateSecurityGroupRequest struct {
 	// description for secgroup.
-	Description string `json:"description,omitempty"`
-	Extra *interface{} `json:"extra,omitempty"`
+	Description string       `json:"description,omitempty"`
+	Extra       *interface{} `json:"extra,omitempty"`
 	// Name of the Secgroup
 	Name string `json:"name"`
 }

@@ -45,7 +45,7 @@ type CreateServerRequest struct {
 	RootDiskTypeId string `json:"rootDiskTypeId"`
 	// Id of the SecGroups
 	SecurityGroup []string `json:"securityGroup,omitempty"`
-	SourceType string `json:"sourceType,omitempty"`
+	SourceType    string   `json:"sourceType,omitempty"`
 	// Id of SSH key
 	SshKeyId string `json:"sshKeyId,omitempty"`
 	// Id of the subnet

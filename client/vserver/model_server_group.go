@@ -14,11 +14,11 @@ import (
 )
 
 type ServerGroup struct {
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	Description string `json:"description,omitempty"`
-	Name string `json:"name,omitempty"`
-	Policy string `json:"policy,omitempty"`
-	ProjectId string `json:"projectId,omitempty"`
-	UpdatedAt time.Time `json:"updatedAt,omitempty"`
-	Uuid string `json:"uuid,omitempty"`
+	CreatedAt   time.Time `json:"createdAt,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Name        string    `json:"name,omitempty"`
+	Policy      string    `json:"policy,omitempty"`
+	ProjectId   string    `json:"projectId,omitempty"`
+	UpdatedAt   time.Time `json:"updatedAt,omitempty"`
+	Uuid        string    `json:"uuid,omitempty"`
 }
