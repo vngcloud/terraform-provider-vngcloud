@@ -17,6 +17,7 @@
 terraform-provider-vngcloud
 .terraform.lock.hcl
 terraform.tfstate
+k8s-create-cluster.sh
 /main.tf
 terraform.tfstate.backup
 /example terraform/main_dev.tf

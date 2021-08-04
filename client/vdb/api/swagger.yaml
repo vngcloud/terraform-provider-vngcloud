@@ -1,0 +1,3488 @@
+---
+swagger: "2.0"
+info:
+  description: "Api Documentation"
+  version: "1.0"
+  title: "Api Documentation"
+  termsOfService: "urn:tos"
+  contact: {}
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0"
+host: "localhost:8101"
+basePath: "/"
+tags:
+- name: "vdb-backup-end-point"
+  description: "VDB Backup End Point"
+- name: "vdb-backup-storage-end-point"
+  description: "VDB Backup Storage End Point"
+- name: "vdb-common-point"
+  description: "VDB Common Point"
+- name: "vdb-configuration-group-end-point"
+  description: "VDB Configuration Group End Point"
+- name: "vdb-datastore-end-point"
+  description: "VDB Datastore End Point"
+- name: "vdb-instance-end-point"
+  description: "VDB Instance End Point"
+- name: "vdb-network-end-point"
+  description: "VDB Network End Point"
+- name: "vdb-package-endpoint"
+  description: "VDB Package Endpoint"
+- name: "vdb-volume-type-end-point"
+  description: "VDB Volume Type End Point"
+paths:
+  /v1/neutron/{projectId}/networksv2:
+    get:
+      tags:
+      - "vdb-network-end-point"
+      summary: "getListNetwork"
+      operationId: "getListNetworkUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ListNetworkResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/neutron/{projectId}/subnet/networkId/{networkId}:
+    get:
+      tags:
+      - "vdb-network-end-point"
+      summary: "getListSubnet"
+      operationId: "getListSubnetUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "networkId"
+        in: "path"
+        description: "networkId"
+        required: true
+        type: "string"
+        x-exportParamName: "NetworkId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ListSubnetResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/backups:
+    get:
+      tags:
+      - "vdb-backup-end-point"
+      summary: "getListBackups"
+      operationId: "getListBackupsUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ListBackupResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    post:
+      tags:
+      - "vdb-backup-end-point"
+      summary: "createBackup"
+      operationId: "createBackupUsingPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "request"
+        description: "request"
+        required: true
+        schema:
+          $ref: "#/definitions/BackupRequest"
+        x-exportParamName: "Request"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BackupResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/backups/instance/{dbInstanceId}:
+    get:
+      tags:
+      - "vdb-backup-end-point"
+      summary: "getListBackupsByInstance"
+      operationId: "getListBackupsByInstanceUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ListBackupResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/backups/restore:
+    post:
+      tags:
+      - "vdb-backup-end-point"
+      summary: "restoreBackup"
+      operationId: "restoreBackupUsingPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "request"
+        description: "request"
+        required: true
+        schema:
+          $ref: "#/definitions/RestoreRequest"
+        x-exportParamName: "Request"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DbInstanceResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/backups/{backupId}:
+    get:
+      tags:
+      - "vdb-backup-end-point"
+      summary: "getBackupById"
+      operationId: "getBackupByIdUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "backupId"
+        in: "path"
+        description: "backupId"
+        required: true
+        type: "string"
+        x-exportParamName: "BackupId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BackupResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    delete:
+      tags:
+      - "vdb-backup-end-point"
+      summary: "deleteBackup"
+      operationId: "deleteBackupUsingDELETE"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "backupId"
+        in: "path"
+        description: "backupId"
+        required: true
+        type: "string"
+        x-exportParamName: "BackupId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BackupResponse"
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+      deprecated: false
+  /v1/trv/{projectId}/configuration:
+    get:
+      tags:
+      - "vdb-configuration-group-end-point"
+      summary: "getAllConfigs"
+      operationId: "getAllConfigsUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ListConfigGroupResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    post:
+      tags:
+      - "vdb-configuration-group-end-point"
+      summary: "createConfig"
+      operationId: "createConfigUsingPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "request"
+        description: "request"
+        required: true
+        schema:
+          $ref: "#/definitions/ConfigurationRequest"
+        x-exportParamName: "Request"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ConfigGroupResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/configuration/params/{datastoreType}/{datastoreVersion}:
+    get:
+      tags:
+      - "vdb-configuration-group-end-point"
+      summary: "getConfigParams"
+      operationId: "getConfigParamsUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "datastoreType"
+        in: "path"
+        description: "datastoreType"
+        required: true
+        type: "string"
+        x-exportParamName: "DatastoreType"
+      - name: "datastoreVersion"
+        in: "path"
+        description: "datastoreVersion"
+        required: true
+        type: "string"
+        x-exportParamName: "DatastoreVersion"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ListConfigParamResult"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/configuration/{configId}:
+    get:
+      tags:
+      - "vdb-configuration-group-end-point"
+      summary: "getConfigById"
+      operationId: "getConfigByIdUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "configId"
+        in: "path"
+        description: "configId"
+        required: true
+        type: "string"
+        x-exportParamName: "ConfigId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ConfigGroupResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    put:
+      tags:
+      - "vdb-configuration-group-end-point"
+      summary: "updateConfigValues"
+      operationId: "updateConfigValuesUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "configId"
+        in: "path"
+        description: "configId"
+        required: true
+        type: "string"
+        x-exportParamName: "ConfigId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "request"
+        description: "request"
+        required: true
+        schema:
+          $ref: "#/definitions/ConfigurationRequest"
+        x-exportParamName: "Request"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ConfigGroupResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    delete:
+      tags:
+      - "vdb-configuration-group-end-point"
+      summary: "deleteConfig"
+      operationId: "deleteConfigUsingDELETE"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "configId"
+        in: "path"
+        description: "configId"
+        required: true
+        type: "string"
+        x-exportParamName: "ConfigId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "request"
+        description: "request"
+        required: true
+        schema:
+          $ref: "#/definitions/ConfigurationRequest"
+        x-exportParamName: "Request"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DeleteConfigGroupResponse"
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+      deprecated: false
+  /v1/trv/{projectId}/database-config-map:
+    get:
+      tags:
+      - "vdb-common-point"
+      summary: "getDbConfigMap"
+      operationId: "getDbConfigMapUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/database-status-to-actions:
+    get:
+      tags:
+      - "vdb-common-point"
+      summary: "getDbStatusToAction"
+      operationId: "getDbStatusToActionUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/datastore:
+    get:
+      tags:
+      - "vdb-datastore-end-point"
+      summary: "getListDatastoreByEngineGroup"
+      operationId: "getListDatastoreByEngineGroupUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "engineGroup"
+        in: "query"
+        description: "engineGroup"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "EngineGroup"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances:
+    get:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "getListDbInstanceByEngineGroup"
+      operationId: "getListDbInstanceByEngineGroupUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "engineGroup"
+        in: "query"
+        description: "engineGroup"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "EngineGroup"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ListDbInstanceResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    post:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "createDbInstance"
+      operationId: "createDbInstanceUsingPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - in: "body"
+        name: "createDbInstanceRequest"
+        description: "createDbInstanceRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateDbInstanceRequest"
+        x-exportParamName: "CreateDbInstanceRequest"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DbInstanceResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/all-zone:
+    get:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "getAllAvailableZone"
+      operationId: "getAllAvailableZoneUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/from-database/{dbInstanceId}:
+    get:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "getDbInstanceDetailFromDatabase"
+      operationId: "getDbInstanceDetailFromDatabaseUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/metadata:
+    post:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "addMonitorMetadata"
+      operationId: "addMonitorMetadataUsingPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - in: "body"
+        name: "metadataRequest"
+        description: "metadataRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/MetadataRequest"
+        x-exportParamName: "MetadataRequest"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    delete:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "removeMonitorMetadata"
+      operationId: "removeMonitorMetadataUsingDELETE"
+      produces:
+      - "*/*"
+      parameters:
+      - in: "body"
+        name: "metadataRequest"
+        description: "metadataRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/MetadataRequest"
+        x-exportParamName: "MetadataRequest"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+      deprecated: false
+  /v1/trv/{projectId}/instances/partial:
+    get:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "getListPartialDbInstance"
+      operationId: "getListPartialDbInstanceUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/{dbInstanceId}:
+    get:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "getDbInstanceDetail"
+      operationId: "getDbInstanceDetailUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DbInstanceResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/{dbInstanceId}/auto-renew:
+    put:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "updateDbInstanceAutoRenew"
+      operationId: "updateDbInstanceAutoRenewUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - in: "body"
+        name: "dbAutoRenewChangeRequest"
+        description: "dbAutoRenewChangeRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/DbAutoRenewChangeRequest"
+        x-exportParamName: "DbAutoRenewChangeRequest"
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/{dbInstanceId}/delete:
+    put:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "deleteDbInstance"
+      operationId: "deleteDbInstanceUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - in: "body"
+        name: "deleteDBInstanceRequest"
+        description: "deleteDBInstanceRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/DeleteDBInstanceRequest"
+        x-exportParamName: "DeleteDBInstanceRequest"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DbInstanceResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/{dbInstanceId}/delete-in-trash:
+    delete:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "deleteDbInstanceInTrash"
+      operationId: "deleteDbInstanceInTrashUsingDELETE"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - in: "body"
+        name: "deleteDBInstanceInTrashRequest"
+        description: "deleteDBInstanceInTrashRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/DeleteDBInstanceInTrashRequest"
+        x-exportParamName: "DeleteDBInstanceInTrashRequest"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DbInstanceResponse"
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+      deprecated: false
+  /v1/trv/{projectId}/instances/{dbInstanceId}/detach-replica:
+    post:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "detachReplica"
+      operationId: "detachReplicaUsingPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/{dbInstanceId}/history:
+    get:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "getDbInstanceHistory"
+      operationId: "getDbInstanceHistoryUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/{dbInstanceId}/poc/stop:
+    post:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "stopDbInstancePoc"
+      operationId: "stopDbInstancePocUsingPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "request"
+        description: "request"
+        required: true
+        schema:
+          $ref: "#/definitions/StopDbPocRequest"
+        x-exportParamName: "Request"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/{dbInstanceId}/recover:
+    put:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "recoverDbInstance"
+      operationId: "recoverDbInstanceUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "recoverDBRequest"
+        description: "recoverDBRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/RecoverDbRequest"
+        x-exportParamName: "RecoverDBRequest"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/{dbInstanceId}/renew:
+    put:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "renewDbInstance"
+      operationId: "renewDbInstanceUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "updateDbInstanceRequest"
+        description: "updateDbInstanceRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/UpdateDbInstanceRequest"
+        x-exportParamName: "UpdateDbInstanceRequest"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/{dbInstanceId}/restart:
+    put:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "restartDbInstance"
+      operationId: "restartDbInstanceUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/{dbInstanceId}/security-group-rule:
+    get:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "getDbInstanceSecurityGroupRule"
+      operationId: "getDbInstanceSecurityGroupRuleUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DbSecurityGroupRuleResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    put:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "updateDbInstanceSecurityGroupRule"
+      operationId: "updateDbInstanceSecurityGroupRuleUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "rules"
+        description: "rules"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/SecurityGroupRuleInfo"
+        x-exportParamName: "Rules"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DbSecurityGroupRuleResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/{dbInstanceId}/start:
+    put:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "startDbInstance"
+      operationId: "startDbInstanceUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/{dbInstanceId}/stop:
+    put:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "stopDbInstance"
+      operationId: "stopDbInstanceUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/instances/{dbInstanceId}/update:
+    put:
+      tags:
+      - "vdb-instance-end-point"
+      summary: "updateDbInstance"
+      operationId: "updateDbInstanceUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "dbInstanceId"
+        in: "path"
+        description: "dbInstanceId"
+        required: true
+        type: "string"
+        x-exportParamName: "DbInstanceId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "updateDbInstanceRequest"
+        description: "updateDbInstanceRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/UpdateDbInstanceRequest"
+        x-exportParamName: "UpdateDbInstanceRequest"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DbInstanceResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/package:
+    get:
+      tags:
+      - "vdb-package-endpoint"
+      summary: "getListPackageByEngineTypeAndVersion"
+      operationId: "getListPackageByEngineTypeAndVersionUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "engineType"
+        in: "query"
+        description: "engineType"
+        required: true
+        type: "string"
+        x-exportParamName: "EngineType"
+      - name: "engineVersion"
+        in: "query"
+        description: "engineVersion"
+        required: true
+        type: "string"
+        x-exportParamName: "EngineVersion"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/PackageResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/volume-type:
+    get:
+      tags:
+      - "vdb-volume-type-end-point"
+      summary: "getListActiveVolumeType"
+      operationId: "getListActiveVolumeTypeUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/VolumeTypeResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/volume-type/{volumeTypeZoneId}:
+    get:
+      tags:
+      - "vdb-volume-type-end-point"
+      summary: "getListActiveVolumeTypeInZone"
+      operationId: "getListActiveVolumeTypeInZoneUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - name: "volumeTypeZoneId"
+        in: "path"
+        description: "volumeTypeZoneId"
+        required: true
+        type: "string"
+        x-exportParamName: "VolumeTypeZoneId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/{engineGroup}/backup-storage:
+    post:
+      tags:
+      - "vdb-backup-storage-end-point"
+      summary: "createBackupStorage"
+      operationId: "createBackupStorageUsingPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "engineGroup"
+        in: "path"
+        description: "engineGroup"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "EngineGroup"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "request"
+        description: "request"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateBackupStorageRequest"
+        x-exportParamName: "Request"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BackupStorageResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/{engineGroup}/backup-storage/:
+    get:
+      tags:
+      - "vdb-backup-storage-end-point"
+      summary: "getBackupStorageByEngineGroup"
+      operationId: "getBackupStorageByEngineGroupUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "engineGroup"
+        in: "path"
+        description: "engineGroup"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "EngineGroup"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BackupStorageResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/{engineGroup}/backup-storage/backup-package:
+    get:
+      tags:
+      - "vdb-backup-storage-end-point"
+      summary: "getListPackageByEngineGroup"
+      operationId: "getListPackageByEngineGroupUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "engineGroup"
+        in: "path"
+        description: "engineGroup"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "EngineGroup"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ListBackupStoragePackageResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/{engineGroup}/backup-storage/delete:
+    put:
+      tags:
+      - "vdb-backup-storage-end-point"
+      summary: "deleteBackupStorage"
+      operationId: "deleteBackupStorageUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "request"
+        description: "request"
+        required: true
+        schema:
+          $ref: "#/definitions/DeleteBackupStorageRequest"
+        x-exportParamName: "Request"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BackupStorageResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/{engineGroup}/backup-storage/delete-in-trash:
+    delete:
+      tags:
+      - "vdb-backup-storage-end-point"
+      summary: "deleteInTrashBackupStorage"
+      operationId: "deleteInTrashBackupStorageUsingDELETE"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "request"
+        description: "request"
+        required: true
+        schema:
+          $ref: "#/definitions/DeleteInTrashBackupStorageRequest"
+        x-exportParamName: "Request"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BackupStorageResponse"
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+      deprecated: false
+  /v1/trv/{projectId}/{engineGroup}/backup-storage/recover:
+    put:
+      tags:
+      - "vdb-backup-storage-end-point"
+      summary: "recoverBackupStorage"
+      operationId: "recoverBackupStorageUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "request"
+        description: "request"
+        required: true
+        schema:
+          $ref: "#/definitions/RecoverBackupStorageRequest"
+        x-exportParamName: "Request"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BackupStorageResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/{engineGroup}/backup-storage/renew:
+    put:
+      tags:
+      - "vdb-backup-storage-end-point"
+      summary: "renewBackupStorage"
+      operationId: "renewBackupStorageUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "request"
+        description: "request"
+        required: true
+        schema:
+          $ref: "#/definitions/RenewBackupStorageRequest"
+        x-exportParamName: "Request"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BackupStorageResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/{engineGroup}/backup-storage/resize:
+    put:
+      tags:
+      - "vdb-backup-storage-end-point"
+      summary: "resizeBackupStorage"
+      operationId: "resizeBackupStorageUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "request"
+        description: "request"
+        required: true
+        schema:
+          $ref: "#/definitions/ResizeBackupStorageRequest"
+        x-exportParamName: "Request"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BackupStorageResponse"
+        "201":
+          description: "Created"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/trv/{projectId}/{engineGroup}/backup-storage/{backupStorageId}:
+    get:
+      tags:
+      - "vdb-backup-storage-end-point"
+      summary: "getBackupStorageById"
+      operationId: "getBackupStorageByIdUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "backupStorageId"
+        in: "path"
+        description: "backupStorageId"
+        required: true
+        type: "string"
+        x-exportParamName: "BackupStorageId"
+      - name: "projectId"
+        in: "path"
+        description: "projectId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BackupStorageResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+definitions:
+  AddressInfo:
+    type: "object"
+    properties:
+      addr:
+        type: "string"
+      subnet:
+        type: "string"
+      type:
+        type: "string"
+    title: "AddressInfo"
+  BackupInfo:
+    type: "object"
+    properties:
+      backendId:
+        type: "integer"
+        format: "int64"
+      backupDuration:
+        type: "integer"
+        format: "int32"
+      backupTier:
+        type: "string"
+      backupType:
+        type: "string"
+      configId:
+        type: "string"
+      configName:
+        type: "string"
+      created:
+        type: "string"
+      datastoreType:
+        type: "string"
+      datastoreVersion:
+        type: "string"
+      dbInstanceId:
+        type: "string"
+      description:
+        type: "string"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      id:
+        type: "string"
+      instanceName:
+        type: "string"
+      isRestoring:
+        type: "boolean"
+      name:
+        type: "string"
+      netIds:
+        type: "array"
+        items:
+          type: "string"
+      netName:
+        type: "string"
+      parent:
+        type: "string"
+      parentName:
+        type: "string"
+      priceKey:
+        type: "string"
+      projectId:
+        type: "string"
+      ram:
+        type: "integer"
+        format: "int32"
+      sharedBy:
+        type: "string"
+      size:
+        type: "number"
+        format: "float"
+      status:
+        type: "string"
+      storageSize:
+        type: "integer"
+        format: "int32"
+      storageType:
+        type: "string"
+      type:
+        type: "string"
+      username:
+        type: "string"
+      vcpu:
+        type: "integer"
+        format: "int32"
+    title: "BackupInfo"
+  BackupRequest:
+    type: "object"
+    properties:
+      backupType:
+        type: "string"
+      dbInstanceId:
+        type: "string"
+      description:
+        type: "string"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      extra:
+        type: "object"
+        properties: {}
+      name:
+        type: "string"
+      parentId:
+        type: "string"
+      projectId:
+        type: "string"
+    title: "BackupRequest"
+    example:
+      extra: "{}"
+      dbInstanceId: "dbInstanceId"
+      name: "name"
+      description: "description"
+      projectId: "projectId"
+      parentId: "parentId"
+      backupType: "backupType"
+      engineGroup: 0
+  BackupResponse:
+    type: "object"
+    properties:
+      backupId:
+        type: "string"
+      code:
+        type: "integer"
+        format: "int32"
+      data:
+        $ref: "#/definitions/BackupInfo"
+      dbInstanceId:
+        type: "string"
+      errorMsg:
+        type: "string"
+      projectId:
+        type: "string"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "BackupResponse"
+  BackupStorageInfo:
+    type: "object"
+    properties:
+      backupPackageId:
+        type: "string"
+      backupPackageName:
+        type: "string"
+      endDate:
+        type: "string"
+        format: "date-time"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      id:
+        type: "string"
+      name:
+        type: "string"
+      period:
+        type: "integer"
+        format: "int32"
+      projectId:
+        type: "string"
+      quota:
+        type: "integer"
+        format: "int32"
+      startDate:
+        type: "string"
+        format: "date-time"
+      status:
+        type: "string"
+      usage:
+        type: "number"
+        format: "float"
+      userId:
+        type: "integer"
+        format: "int32"
+    title: "BackupStorageInfo"
+  BackupStorageResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/BackupStorageInfo"
+      errorMsg:
+        type: "string"
+      projectId:
+        type: "string"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "BackupStorageResponse"
+  BaseResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      errorMsg:
+        type: "string"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "BaseResponse"
+  ConfigGroupInfo:
+    type: "object"
+    properties:
+      created:
+        type: "string"
+      datastoreName:
+        type: "string"
+      datastoreVersionName:
+        type: "string"
+      description:
+        type: "string"
+      id:
+        type: "string"
+      instanceCount:
+        type: "integer"
+        format: "int32"
+      instances:
+        type: "array"
+        items:
+          $ref: "#/definitions/DbInstancePartialInfo"
+      name:
+        type: "string"
+      updated:
+        type: "string"
+      values:
+        type: "object"
+        properties: {}
+    title: "ConfigGroupInfo"
+  ConfigGroupPartialInfo:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+    title: "ConfigGroupPartialInfo"
+  ConfigGroupResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      data:
+        $ref: "#/definitions/ConfigGroupInfo"
+      errorMsg:
+        type: "string"
+      projectId:
+        type: "string"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "ConfigGroupResponse"
+  ConfigParamInfo:
+    type: "object"
+    properties:
+      description:
+        type: "string"
+      max:
+        type: "string"
+      min:
+        type: "string"
+      modifiable:
+        type: "boolean"
+      name:
+        type: "string"
+      restartRequired:
+        type: "boolean"
+      type:
+        type: "string"
+      values:
+        type: "array"
+        items:
+          type: "string"
+    title: "ConfigParamInfo"
+  ConfigurationRequest:
+    type: "object"
+    properties:
+      datastoreType:
+        type: "string"
+      datastoreVersion:
+        type: "string"
+      description:
+        type: "string"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      id:
+        type: "string"
+      name:
+        type: "string"
+      values:
+        type: "object"
+        properties: {}
+    title: "ConfigurationRequest"
+    example:
+      datastoreVersion: "datastoreVersion"
+      values: "{}"
+      name: "name"
+      description: "description"
+      id: "id"
+      datastoreType: "datastoreType"
+      engineGroup: 0
+  CreateBackupStorageRequest:
+    type: "object"
+    properties:
+      backupPackageId:
+        type: "string"
+      backupPackageName:
+        type: "string"
+      endDate:
+        type: "string"
+        format: "date-time"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      extra:
+        type: "object"
+        properties: {}
+      monthlyCost:
+        type: "number"
+        format: "double"
+      name:
+        type: "string"
+      period:
+        type: "integer"
+        format: "int32"
+      projectId:
+        type: "string"
+      quota:
+        type: "integer"
+        format: "int32"
+      startDate:
+        type: "string"
+        format: "date-time"
+    title: "CreateBackupStorageRequest"
+    example:
+      period: 1
+      endDate: "2000-01-23T04:56:07.000+00:00"
+      extra: "{}"
+      quota: 5
+      backupPackageName: "backupPackageName"
+      name: "name"
+      backupPackageId: "backupPackageId"
+      projectId: "projectId"
+      monthlyCost: 6.027456183070403
+      startDate: "2000-01-23T04:56:07.000+00:00"
+      engineGroup: 0
+  CreateDbInstanceRequest:
+    type: "object"
+    properties:
+      autoRenewPeriod:
+        type: "integer"
+        format: "int32"
+      backupAuto:
+        type: "boolean"
+      backupDuration:
+        type: "integer"
+        format: "int32"
+      backupTime:
+        type: "string"
+      cartItemId:
+        type: "integer"
+        format: "int32"
+      cartItemState:
+        type: "integer"
+        format: "int32"
+      configId:
+        type: "string"
+      cost:
+        type: "number"
+        format: "double"
+      databases:
+        type: "array"
+        items:
+          $ref: "#/definitions/DatabaseRequest"
+      datastoreType:
+        type: "string"
+      datastoreVersion:
+        type: "string"
+      enableAutoRenew:
+        type: "boolean"
+      endTime:
+        type: "string"
+        format: "date-time"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      extra:
+        type: "object"
+        properties: {}
+      flavorId:
+        type: "string"
+      id:
+        type: "string"
+      invoiceId:
+        type: "integer"
+        format: "int32"
+      name:
+        type: "string"
+      netIds:
+        type: "array"
+        items:
+          type: "string"
+      packageId:
+        type: "string"
+      period:
+        type: "integer"
+        format: "int32"
+      poc:
+        type: "boolean"
+      priceKey:
+        type: "string"
+      projectId:
+        type: "string"
+      publicAccess:
+        type: "boolean"
+      ram:
+        type: "integer"
+        format: "int32"
+      redisPassword:
+        type: "string"
+      redisPasswordEnabled:
+        type: "boolean"
+      replicaSourceId:
+        type: "string"
+      startTime:
+        type: "string"
+        format: "date-time"
+      useTrial:
+        type: "boolean"
+      user:
+        $ref: "#/definitions/UserRequest"
+      vcpus:
+        type: "integer"
+        format: "int32"
+      volumeSize:
+        type: "integer"
+        format: "int32"
+      volumeType:
+        type: "string"
+      volumeTypeZoneId:
+        type: "string"
+      zoneId:
+        type: "integer"
+        format: "int32"
+    title: "CreateDbInstanceRequest"
+    example:
+      backupDuration: 6
+      volumeType: "volumeType"
+      poc: true
+      publicAccess: true
+      flavorId: "flavorId"
+      useTrial: true
+      volumeSize: 4
+      engineGroup: 2
+      priceKey: "priceKey"
+      autoRenewPeriod: 0
+      configId: "configId"
+      extra: "{}"
+      zoneId: 7
+      backupAuto: true
+      startTime: "2000-01-23T04:56:07.000+00:00"
+      id: "id"
+      datastoreType: "datastoreType"
+      cartItemId: 1
+      ram: 3
+      databases:
+      - collate: "collate"
+        characterSet: "characterSet"
+        name: "name"
+      - collate: "collate"
+        characterSet: "characterSet"
+        name: "name"
+      netIds:
+      - "netIds"
+      - "netIds"
+      period: 9
+      cost: 5.637376656633329
+      replicaSourceId: "replicaSourceId"
+      volumeTypeZoneId: "volumeTypeZoneId"
+      datastoreVersion: "datastoreVersion"
+      packageId: "packageId"
+      enableAutoRenew: true
+      vcpus: 2
+      redisPassword: "redisPassword"
+      redisPasswordEnabled: true
+      name: "name"
+      invoiceId: 7
+      endTime: "2000-01-23T04:56:07.000+00:00"
+      backupTime: "backupTime"
+      cartItemState: 5
+      projectId: "projectId"
+      user:
+        databases:
+        - name: "name"
+        - name: "name"
+        password: "password"
+        name: "name"
+  Database:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+    title: "Database"
+    example:
+      name: "name"
+  DatabaseRequest:
+    type: "object"
+    properties:
+      characterSet:
+        type: "string"
+      collate:
+        type: "string"
+      name:
+        type: "string"
+    title: "DatabaseRequest"
+    example:
+      collate: "collate"
+      characterSet: "characterSet"
+      name: "name"
+  DbAutoRenewChangeRequest:
+    type: "object"
+    properties:
+      autoRenewPeriod:
+        type: "integer"
+        format: "int32"
+      dbInstanceId:
+        type: "string"
+      enableAutoRenew:
+        type: "boolean"
+      projectId:
+        type: "string"
+    title: "DbAutoRenewChangeRequest"
+    example:
+      autoRenewPeriod: 0
+      dbInstanceId: "dbInstanceId"
+      enableAutoRenew: true
+      projectId: "projectId"
+  DbInstanceInfo:
+    type: "object"
+    properties:
+      address:
+        type: "object"
+        additionalProperties:
+          type: "array"
+          items:
+            $ref: "#/definitions/AddressInfo"
+      autoRenewPeriod:
+        type: "integer"
+        format: "int32"
+      backupAuto:
+        type: "boolean"
+      backupDuration:
+        type: "integer"
+        format: "int32"
+      backupTime:
+        type: "string"
+      backupUsage:
+        type: "number"
+        format: "float"
+      bandwidth:
+        type: "integer"
+        format: "int32"
+      configuration:
+        $ref: "#/definitions/ConfigGroupPartialInfo"
+      cost:
+        type: "number"
+        format: "double"
+      created:
+        type: "string"
+      datastoreType:
+        type: "string"
+      datastoreVersion:
+        type: "string"
+      dbBackendId:
+        type: "integer"
+        format: "int32"
+      disabledAt:
+        type: "string"
+        format: "date-time"
+      enableAutoRenew:
+        type: "boolean"
+      endTime:
+        type: "string"
+        format: "date-time"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      freeBackupSize:
+        type: "integer"
+        format: "int32"
+      hostname:
+        type: "string"
+      id:
+        type: "string"
+      ip:
+        type: "array"
+        items:
+          type: "string"
+      license:
+        type: "string"
+      name:
+        type: "string"
+      packageName:
+        type: "string"
+      period:
+        type: "integer"
+        format: "int32"
+      poc:
+        type: "boolean"
+      port:
+        type: "integer"
+        format: "int32"
+      priceKey:
+        type: "string"
+      projectId:
+        type: "string"
+      publicAccess:
+        type: "boolean"
+      quotaPackageId:
+        type: "string"
+      ram:
+        type: "integer"
+        format: "int32"
+      redisPasswordEnabled:
+        type: "boolean"
+      replicaSourceId:
+        type: "string"
+      replicas:
+        type: "array"
+        items:
+          type: "string"
+      role:
+        type: "string"
+      securityGroup:
+        type: "array"
+        items:
+          $ref: "#/definitions/SecurityGroupInfo"
+      serverId:
+        type: "string"
+      startTime:
+        type: "string"
+        format: "date-time"
+      status:
+        type: "string"
+      updated:
+        type: "string"
+      userId:
+        type: "integer"
+        format: "int32"
+      vcpus:
+        type: "integer"
+        format: "int32"
+      volumeId:
+        type: "string"
+      volumeSize:
+        type: "integer"
+        format: "int32"
+      volumeType:
+        type: "string"
+      volumeTypeZoneId:
+        type: "string"
+      volumeUsed:
+        type: "number"
+        format: "float"
+      zoneType:
+        type: "string"
+      zoneUUID:
+        type: "string"
+    title: "DbInstanceInfo"
+  DbInstancePartialInfo:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+    title: "DbInstancePartialInfo"
+  DbInstanceResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      data:
+        $ref: "#/definitions/DbInstanceInfo"
+      dbInstanceId:
+        type: "string"
+      errorMsg:
+        type: "string"
+      projectId:
+        type: "string"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "DbInstanceResponse"
+  DbSecurityGroupRuleResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      dbInstanceId:
+        type: "string"
+      errorMsg:
+        type: "string"
+      projectId:
+        type: "string"
+      securityGroupRules:
+        type: "array"
+        items:
+          $ref: "#/definitions/SecurityGroupRuleInfo"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "DbSecurityGroupRuleResponse"
+  DbaasBackupPackageInfo:
+    type: "object"
+    properties:
+      config:
+        type: "string"
+      description:
+        type: "string"
+      id:
+        type: "integer"
+        format: "int32"
+      name:
+        type: "string"
+      quota:
+        type: "integer"
+        format: "int32"
+    title: "DbaasBackupPackageInfo"
+  DeleteBackupStorageRequest:
+    type: "object"
+    properties:
+      backupStorageId:
+        type: "string"
+      backupStorageName:
+        type: "string"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      extra:
+        type: "object"
+        properties: {}
+      projectId:
+        type: "string"
+    title: "DeleteBackupStorageRequest"
+    example:
+      backupStorageId: "backupStorageId"
+      backupStorageName: "backupStorageName"
+      extra: "{}"
+      projectId: "projectId"
+      engineGroup: 0
+  DeleteConfigGroupResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      configId:
+        type: "string"
+      errorMsg:
+        type: "string"
+      projectId:
+        type: "string"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "DeleteConfigGroupResponse"
+  DeleteDBInstanceInTrashRequest:
+    type: "object"
+    properties:
+      dbInstanceId:
+        type: "string"
+      extra:
+        type: "object"
+        properties: {}
+      projectId:
+        type: "string"
+    title: "DeleteDBInstanceInTrashRequest"
+  DeleteDBInstanceRequest:
+    type: "object"
+    properties:
+      createFinalBackup:
+        type: "boolean"
+      dbInstanceId:
+        type: "string"
+      deleteAllBackup:
+        type: "boolean"
+      extra:
+        type: "object"
+        properties: {}
+      isMetadataCreated:
+        type: "boolean"
+      projectId:
+        type: "string"
+    title: "DeleteDBInstanceRequest"
+  DeleteInTrashBackupStorageRequest:
+    type: "object"
+    properties:
+      backupStorageId:
+        type: "string"
+      backupStorageName:
+        type: "string"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      extra:
+        type: "object"
+        properties: {}
+      projectId:
+        type: "string"
+    title: "DeleteInTrashBackupStorageRequest"
+  InterfaceSubnet:
+    type: "object"
+    properties:
+      cidr:
+        type: "string"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      deletedAt:
+        type: "string"
+        format: "date-time"
+      id:
+        type: "integer"
+        format: "int32"
+      interfaceAclPolicyUuid:
+        type: "string"
+      name:
+        type: "string"
+      networkUuid:
+        type: "string"
+      routeTableUuid:
+        type: "string"
+      status:
+        type: "string"
+      subnetId:
+        type: "integer"
+        format: "int32"
+      updatedAt:
+        type: "string"
+        format: "date-time"
+      uuid:
+        type: "string"
+    title: "InterfaceSubnet"
+  ListBackupResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/BackupInfo"
+      dbInstanceId:
+        type: "string"
+      errorMsg:
+        type: "string"
+      projectId:
+        type: "string"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "ListBackupResponse"
+  ListBackupStoragePackageResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/DbaasBackupPackageInfo"
+      errorMsg:
+        type: "string"
+      projectId:
+        type: "string"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "ListBackupStoragePackageResponse"
+  ListConfigGroupResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/ConfigGroupInfo"
+      errorMsg:
+        type: "string"
+      projectId:
+        type: "string"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "ListConfigGroupResponse"
+  ListConfigParamResult:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/ConfigParamInfo"
+      datastoreType:
+        type: "string"
+      datastoreVersion:
+        type: "string"
+      errorMsg:
+        type: "string"
+      projectId:
+        type: "string"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "ListConfigParamResult"
+  ListDbInstanceResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/DbInstanceInfo"
+      errorMsg:
+        type: "string"
+      projectId:
+        type: "string"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "ListDbInstanceResponse"
+  ListNetworkResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      errorMsg:
+        type: "string"
+      listNetwork:
+        type: "array"
+        items:
+          $ref: "#/definitions/NetworkV2Info"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "ListNetworkResponse"
+  ListSubnetResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      errorMsg:
+        type: "string"
+      interfaceSubnetList:
+        type: "array"
+        items:
+          $ref: "#/definitions/InterfaceSubnet"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "ListSubnetResponse"
+  MetadataRequest:
+    type: "object"
+    properties:
+      endTime:
+        type: "string"
+        format: "date-time"
+      extra:
+        type: "object"
+        properties: {}
+      metadata:
+        type: "object"
+        additionalProperties:
+          type: "string"
+      period:
+        type: "integer"
+        format: "int32"
+      projectId:
+        type: "string"
+      resourceId:
+        type: "string"
+      startTime:
+        type: "string"
+        format: "date-time"
+    title: "MetadataRequest"
+    example:
+      metadata:
+        key: "metadata"
+      period: 0
+      resourceId: "resourceId"
+      extra: "{}"
+      startTime: "2000-01-23T04:56:07.000+00:00"
+      endTime: "2000-01-23T04:56:07.000+00:00"
+      projectId: "projectId"
+  NetworkV2Info:
+    type: "object"
+    properties:
+      cidr:
+        type: "string"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      id:
+        type: "string"
+      name:
+        type: "string"
+      status:
+        type: "string"
+      subnets:
+        type: "array"
+        items:
+          $ref: "#/definitions/Subnet"
+    title: "NetworkV2Info"
+  PackageInfo:
+    type: "object"
+    properties:
+      config:
+        type: "string"
+      description:
+        type: "string"
+      id:
+        type: "integer"
+        format: "int32"
+      instanceTypeId:
+        type: "integer"
+        format: "int32"
+      name:
+        type: "string"
+      priceKey:
+        type: "string"
+      volumeType:
+        type: "string"
+      zoneId:
+        type: "integer"
+        format: "int32"
+      zoneUUID:
+        type: "string"
+    title: "PackageInfo"
+  PackageResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/PackageInfo"
+      errorMsg:
+        type: "string"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "PackageResponse"
+  RecoverBackupStorageRequest:
+    type: "object"
+    properties:
+      backupStorageId:
+        type: "string"
+      backupStorageName:
+        type: "string"
+      endTime:
+        type: "string"
+        format: "date-time"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      extra:
+        type: "object"
+        properties: {}
+      period:
+        type: "integer"
+        format: "int32"
+      projectId:
+        type: "string"
+      startTime:
+        type: "string"
+        format: "date-time"
+    title: "RecoverBackupStorageRequest"
+    example:
+      backupStorageId: "backupStorageId"
+      backupStorageName: "backupStorageName"
+      period: 6
+      extra: "{}"
+      startTime: "2000-01-23T04:56:07.000+00:00"
+      endTime: "2000-01-23T04:56:07.000+00:00"
+      projectId: "projectId"
+      engineGroup: 0
+  RecoverDbRequest:
+    type: "object"
+    properties:
+      dbInstanceId:
+        type: "string"
+      endTime:
+        type: "string"
+        format: "date-time"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      extra:
+        type: "object"
+        properties: {}
+      monthlyCost:
+        type: "number"
+        format: "double"
+      period:
+        type: "integer"
+        format: "int32"
+      poc:
+        type: "boolean"
+      pocInfo:
+        type: "object"
+        properties: {}
+      priceKey:
+        type: "string"
+      projectId:
+        type: "string"
+      startTime:
+        type: "string"
+        format: "date-time"
+    title: "RecoverDbRequest"
+    example:
+      period: 1
+      poc: true
+      extra: "{}"
+      dbInstanceId: "dbInstanceId"
+      startTime: "2000-01-23T04:56:07.000+00:00"
+      endTime: "2000-01-23T04:56:07.000+00:00"
+      pocInfo: "{}"
+      projectId: "projectId"
+      monthlyCost: 6.027456183070403
+      engineGroup: 0
+      priceKey: "priceKey"
+  RenewBackupStorageRequest:
+    type: "object"
+    properties:
+      backupStorageId:
+        type: "string"
+      backupStorageName:
+        type: "string"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      extra:
+        type: "object"
+        properties: {}
+      period:
+        type: "integer"
+        format: "int32"
+      projectId:
+        type: "string"
+    title: "RenewBackupStorageRequest"
+    example:
+      backupStorageId: "backupStorageId"
+      backupStorageName: "backupStorageName"
+      period: 6
+      extra: "{}"
+      projectId: "projectId"
+      engineGroup: 0
+  ResizeBackupStorageRequest:
+    type: "object"
+    properties:
+      backupPackageId:
+        type: "string"
+      backupPackageName:
+        type: "string"
+      backupStorageId:
+        type: "string"
+      backupStorageName:
+        type: "string"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      extra:
+        type: "object"
+        properties: {}
+      monthlyCost:
+        type: "number"
+        format: "double"
+      projectId:
+        type: "string"
+      quota:
+        type: "integer"
+        format: "int32"
+      startDate:
+        type: "string"
+        format: "date-time"
+    title: "ResizeBackupStorageRequest"
+    example:
+      backupStorageId: "backupStorageId"
+      backupStorageName: "backupStorageName"
+      extra: "{}"
+      quota: 1
+      backupPackageName: "backupPackageName"
+      backupPackageId: "backupPackageId"
+      projectId: "projectId"
+      monthlyCost: 6.027456183070403
+      startDate: "2000-01-23T04:56:07.000+00:00"
+      engineGroup: 0
+  RestoreRequest:
+    type: "object"
+    properties:
+      autoRenewPeriod:
+        type: "integer"
+        format: "int32"
+      backupAuto:
+        type: "boolean"
+      backupDuration:
+        type: "integer"
+        format: "int32"
+      backupId:
+        type: "string"
+      backupTime:
+        type: "string"
+      cartItemId:
+        type: "integer"
+        format: "int32"
+      cartItemState:
+        type: "integer"
+        format: "int32"
+      configId:
+        type: "string"
+      cost:
+        type: "number"
+        format: "double"
+      datastoreType:
+        type: "string"
+      datastoreVersion:
+        type: "string"
+      enableAutoRenew:
+        type: "boolean"
+      endTime:
+        type: "string"
+        format: "date-time"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      extra:
+        type: "object"
+        properties: {}
+      flavorId:
+        type: "string"
+      id:
+        type: "string"
+      invoiceId:
+        type: "integer"
+        format: "int32"
+      name:
+        type: "string"
+      netIds:
+        type: "array"
+        items:
+          type: "string"
+      packageId:
+        type: "string"
+      period:
+        type: "integer"
+        format: "int32"
+      poc:
+        type: "boolean"
+      priceKey:
+        type: "string"
+      projectId:
+        type: "string"
+      publicAccess:
+        type: "boolean"
+      ram:
+        type: "integer"
+        format: "int32"
+      redisPassword:
+        type: "string"
+      redisPasswordEnabled:
+        type: "boolean"
+      startTime:
+        type: "string"
+        format: "date-time"
+      useTrial:
+        type: "boolean"
+      vcpus:
+        type: "integer"
+        format: "int32"
+      volumeSize:
+        type: "integer"
+        format: "int32"
+      volumeType:
+        type: "string"
+      volumeTypeZoneId:
+        type: "string"
+      zoneId:
+        type: "integer"
+        format: "int32"
+    title: "RestoreRequest"
+    example:
+      backupDuration: 6
+      volumeType: "volumeType"
+      poc: true
+      publicAccess: true
+      backupId: "backupId"
+      flavorId: "flavorId"
+      useTrial: true
+      volumeSize: 4
+      engineGroup: 2
+      priceKey: "priceKey"
+      autoRenewPeriod: 0
+      configId: "configId"
+      extra: "{}"
+      zoneId: 7
+      backupAuto: true
+      startTime: "2000-01-23T04:56:07.000+00:00"
+      id: "id"
+      datastoreType: "datastoreType"
+      cartItemId: 1
+      ram: 3
+      netIds:
+      - "netIds"
+      - "netIds"
+      period: 9
+      cost: 5.637376656633329
+      volumeTypeZoneId: "volumeTypeZoneId"
+      datastoreVersion: "datastoreVersion"
+      packageId: "packageId"
+      enableAutoRenew: true
+      vcpus: 2
+      redisPassword: "redisPassword"
+      redisPasswordEnabled: true
+      name: "name"
+      invoiceId: 7
+      endTime: "2000-01-23T04:56:07.000+00:00"
+      backupTime: "backupTime"
+      cartItemState: 5
+      projectId: "projectId"
+  SecurityGroupInfo:
+    type: "object"
+    properties:
+      createdAt:
+        type: "string"
+        format: "date-time"
+      description:
+        type: "string"
+      id:
+        type: "string"
+      name:
+        type: "string"
+      status:
+        type: "string"
+      system:
+        type: "boolean"
+    title: "SecurityGroupInfo"
+  SecurityGroupRuleInfo:
+    type: "object"
+    properties:
+      createdAt:
+        type: "string"
+        format: "date-time"
+      description:
+        type: "string"
+      direction:
+        type: "string"
+      displayCreatedAt:
+        type: "string"
+      etherType:
+        type: "string"
+      id:
+        type: "string"
+      portRangeMax:
+        type: "integer"
+        format: "int32"
+      portRangeMin:
+        type: "integer"
+        format: "int32"
+      protocol:
+        type: "string"
+      remoteGroupId:
+        type: "string"
+      remoteGroupName:
+        type: "string"
+      remoteIpPrefix:
+        type: "string"
+      status:
+        type: "string"
+    title: "SecurityGroupRuleInfo"
+  StopDbPocRequest:
+    type: "object"
+    properties:
+      dbInstanceId:
+        type: "string"
+      extra:
+        type: "object"
+        properties: {}
+      projectId:
+        type: "string"
+    title: "StopDbPocRequest"
+    example:
+      extra: "{}"
+      dbInstanceId: "dbInstanceId"
+      projectId: "projectId"
+  Subnet:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      projectId:
+        type: "integer"
+        format: "int64"
+      subnet:
+        type: "string"
+      subnetId:
+        type: "integer"
+        format: "int64"
+      vpcId:
+        type: "integer"
+        format: "int64"
+    title: "Subnet"
+  UpdateDbInstanceRequest:
+    type: "object"
+    properties:
+      backupAuto:
+        type: "boolean"
+      backupDuration:
+        type: "integer"
+        format: "int32"
+      backupTime:
+        type: "string"
+      cartItemId:
+        type: "integer"
+        format: "int32"
+      cartItemState:
+        type: "integer"
+        format: "int32"
+      configId:
+        type: "string"
+      cost:
+        type: "number"
+        format: "double"
+      dbInstanceId:
+        type: "string"
+      editRedisPassword:
+        type: "boolean"
+      endTime:
+        type: "string"
+        format: "date-time"
+      engineGroup:
+        type: "integer"
+        format: "int32"
+      extra:
+        type: "object"
+        properties: {}
+      flavorId:
+        type: "string"
+      invoiceId:
+        type: "integer"
+        format: "int32"
+      isResized:
+        type: "boolean"
+      isUserTrial:
+        type: "boolean"
+      newStartDate:
+        type: "integer"
+        format: "int64"
+      packageId:
+        type: "string"
+      packageName:
+        type: "string"
+      password:
+        type: "string"
+      period:
+        type: "integer"
+        format: "int32"
+      poc:
+        type: "boolean"
+      projectId:
+        type: "string"
+      publicAccess:
+        type: "boolean"
+      ram:
+        type: "integer"
+        format: "int32"
+      redisPassword:
+        type: "string"
+      redisPasswordEnabled:
+        type: "boolean"
+      updateType:
+        type: "string"
+      vcpus:
+        type: "integer"
+        format: "int32"
+      volumeSize:
+        type: "integer"
+        format: "int32"
+      volumeType:
+        type: "string"
+      volumeTypeZoneId:
+        type: "string"
+    title: "UpdateDbInstanceRequest"
+    example:
+      backupDuration: 0
+      volumeType: "volumeType"
+      newStartDate: 7
+      poc: true
+      publicAccess: true
+      flavorId: "flavorId"
+      volumeSize: 4
+      engineGroup: 5
+      password: "password"
+      configId: "configId"
+      extra: "{}"
+      backupAuto: true
+      packageName: "packageName"
+      cartItemId: 6
+      isUserTrial: true
+      ram: 3
+      period: 9
+      cost: 5.962133916683182
+      volumeTypeZoneId: "volumeTypeZoneId"
+      dbInstanceId: "dbInstanceId"
+      packageId: "packageId"
+      vcpus: 2
+      editRedisPassword: true
+      redisPassword: "redisPassword"
+      redisPasswordEnabled: true
+      isResized: true
+      invoiceId: 2
+      endTime: "2000-01-23T04:56:07.000+00:00"
+      backupTime: "backupTime"
+      cartItemState: 1
+      projectId: "projectId"
+      updateType: "updateType"
+  UserRequest:
+    type: "object"
+    properties:
+      databases:
+        type: "array"
+        items:
+          $ref: "#/definitions/Database"
+      name:
+        type: "string"
+      password:
+        type: "string"
+    title: "UserRequest"
+    example:
+      databases:
+      - name: "name"
+      - name: "name"
+      password: "password"
+      name: "name"
+  VolumeTypeInfo:
+    type: "object"
+    properties:
+      description:
+        type: "string"
+      id:
+        type: "integer"
+        format: "int32"
+      iopsId:
+        type: "integer"
+        format: "int32"
+      maxVolumeSize:
+        type: "integer"
+        format: "int32"
+      minVolumeSize:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      volumeTypeZoneId:
+        type: "string"
+    title: "VolumeTypeInfo"
+  VolumeTypeResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/VolumeTypeInfo"
+      errorMsg:
+        type: "string"
+      success:
+        type: "boolean"
+      total:
+        type: "integer"
+        format: "int32"
+    title: "VolumeTypeResponse"
