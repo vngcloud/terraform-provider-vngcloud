@@ -26,21 +26,19 @@ resource "vngcloud_vdb_backup_storage" "backup_storage" {
 
 ### Required
 
-- **backup_storage_package_id** (String)
-- **backup_storage_package_name** (String)
-- **engine_group** (Number)
-- **quota** (Number)
+- **backup_storage_package_id** (String): The package id of selected package
+- **backup_storage_package_name** (String): The package name of selected package
+- **engine_group** (Number): The engine group of this resource
+- **quota** (Number): The quota of this resource
 
 ### Optional
 
 - **id** (String) The ID of this resource.
-- **monthly_cost** (Number)
-- **period** (Number)
 
 ### Read-Only
 
-- **name** (String)
-- **usage** (Number)
+- **name** (String): The name of this resource
+- **usage** (Number): The usage of this resource
 
 
 

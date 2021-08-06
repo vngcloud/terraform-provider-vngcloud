@@ -36,18 +36,18 @@ func ResourceBackupStorage() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"period": {
+			/*"period": {
 				Type:     schema.TypeInt,
 				Optional: true,
-			},
+			},*/
 			"engine_group": {
 				Type:     schema.TypeInt,
 				Required: true,
 			},
-			"monthly_cost": {
+			/*"monthly_cost": {
 				Type:     schema.TypeFloat,
 				Optional: true,
-			},
+			},*/
 			"name": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -81,7 +81,7 @@ func resourceBackupStorageRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("backup_storage_package_name", backupStorageInfo.BackupPackageName)
 	d.Set("name", backupStorageInfo.Name)
 	d.Set("quota", backupStorageInfo.Quota)
-	d.Set("period", backupStorageInfo.Period)
+	/*d.Set("period", backupStorageInfo.Period)*/
 	d.Set("engine_group", backupStorageInfo.EngineGroup)
 	d.Set("usage", backupStorageInfo.Usage)
 
@@ -134,14 +134,6 @@ func generateCreateBackupStorageRequest(projectId string, d *schema.ResourceData
 }
 
 func resourceBackupStorageUpdate(d *schema.ResourceData, m interface{}) error {
-	/*if d.HasChange("action") {
-		switch d.Get("action").(string) {
-		case "resize":
-			return resourceBackupStorageResizeQuota(d, m)
-			break
-		}
-	}
-	return nil*/
 	return resourceBackupStorageResizeQuota(d, m)
 }
 

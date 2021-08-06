@@ -1,0 +1,522 @@
+2021-08-06T09:49:49.765+0700 [DEBUG] Adding temp file log sink: /tmp/terraform-log428403916
+2021-08-06T09:49:49.765+0700 [INFO]  Terraform version: 1.0.3
+2021-08-06T09:49:49.765+0700 [INFO]  Go runtime version: go1.16.4
+2021-08-06T09:49:49.765+0700 [INFO]  CLI args: []string{"/usr/bin/terraform", "init"}
+2021-08-06T09:49:49.765+0700 [DEBUG] Attempting to open CLI config file: /home/lap13015/.terraformrc
+2021-08-06T09:49:49.765+0700 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2021-08-06T09:49:49.765+0700 [DEBUG] checking for credentials in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T09:49:49.765+0700 [DEBUG] ignoring non-existing provider search directory terraform.d/plugins
+2021-08-06T09:49:49.765+0700 [DEBUG] will search for provider plugins in /home/lap13015/.terraform.d/plugins
+2021-08-06T09:49:49.766+0700 [DEBUG] ignoring non-existing provider search directory /home/lap13015/.local/share/terraform/plugins
+2021-08-06T09:49:49.767+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/ubuntu/terraform/plugins
+2021-08-06T09:49:49.767+0700 [DEBUG] ignoring non-existing provider search directory /usr/local/share/terraform/plugins
+2021-08-06T09:49:49.767+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/terraform/plugins
+2021-08-06T09:49:49.767+0700 [DEBUG] ignoring non-existing provider search directory /var/lib/snapd/desktop/terraform/plugins
+2021-08-06T09:49:49.767+0700 [INFO]  CLI command args: []string{"init"}
+2021-08-06T09:49:49.776+0700 [DEBUG] New state was assigned lineage "cf3fab8c-0349-19b4-fd54-ce9e9e12e786"
+2021-08-06T09:49:49.776+0700 [DEBUG] checking for provisioner in "."
+2021-08-06T09:49:49.798+0700 [DEBUG] checking for provisioner in "/usr/bin"
+2021-08-06T09:49:49.798+0700 [DEBUG] checking for provisioner in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T09:49:49.798+0700 [INFO]  Failed to read plugin lock file .terraform/plugins/linux_amd64/lock.json: open .terraform/plugins/linux_amd64/lock.json: no such file or directory
+2021-08-06T09:49:49.799+0700 [DEBUG] Service discovery for registry.terraform.io at https://registry.terraform.io/.well-known/terraform.json
+2021-08-06T09:49:50.033+0700 [DEBUG] GET https://registry.terraform.io/v1/providers/vngcloud/vngcloud/versions
+2021-08-06T09:49:50.433+0700 [DEBUG] GET https://registry.terraform.io/v1/providers/vngcloud/vngcloud/0.0.5/download/linux/amd64
+2021-08-06T09:49:50.829+0700 [DEBUG] GET https://github.com/vngcloud/terraform-provider-vngcloud/releases/download/v0.0.5/terraform-provider-vngcloud_0.0.5_SHA256SUMS
+2021-08-06T09:49:51.660+0700 [DEBUG] GET https://github.com/vngcloud/terraform-provider-vngcloud/releases/download/v0.0.5/terraform-provider-vngcloud_0.0.5_SHA256SUMS.sig
+2021-08-06T09:49:53.985+0700 [DEBUG] Provider signed by A6A27B3126EF15EB Vinh Pham-Huu (vinhph2) <vinhph2@vng.com.vn>
+2021-08-06T09:49:54.392+0700 [DEBUG] Adding temp file log sink: /tmp/terraform-log218124598
+2021-08-06T09:49:54.392+0700 [INFO]  Terraform version: 1.0.3
+2021-08-06T09:49:54.392+0700 [INFO]  Go runtime version: go1.16.4
+2021-08-06T09:49:54.392+0700 [INFO]  CLI args: []string{"/usr/bin/terraform", "apply"}
+2021-08-06T09:49:54.392+0700 [DEBUG] Attempting to open CLI config file: /home/lap13015/.terraformrc
+2021-08-06T09:49:54.392+0700 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2021-08-06T09:49:54.392+0700 [DEBUG] checking for credentials in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T09:49:54.392+0700 [DEBUG] ignoring non-existing provider search directory terraform.d/plugins
+2021-08-06T09:49:54.392+0700 [DEBUG] will search for provider plugins in /home/lap13015/.terraform.d/plugins
+2021-08-06T09:49:54.393+0700 [DEBUG] ignoring non-existing provider search directory /home/lap13015/.local/share/terraform/plugins
+2021-08-06T09:49:54.393+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/ubuntu/terraform/plugins
+2021-08-06T09:49:54.393+0700 [DEBUG] ignoring non-existing provider search directory /usr/local/share/terraform/plugins
+2021-08-06T09:49:54.393+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/terraform/plugins
+2021-08-06T09:49:54.393+0700 [DEBUG] ignoring non-existing provider search directory /var/lib/snapd/desktop/terraform/plugins
+2021-08-06T09:49:54.393+0700 [INFO]  CLI command args: []string{"apply"}
+2021-08-06T09:49:54.394+0700 [DEBUG] New state was assigned lineage "ba4af804-8a69-a44c-6e6a-f3c0f5435a49"
+2021-08-06T09:49:54.548+0700 [DEBUG] checking for provisioner in "."
+2021-08-06T09:49:54.553+0700 [DEBUG] checking for provisioner in "/usr/bin"
+2021-08-06T09:49:54.553+0700 [DEBUG] checking for provisioner in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T09:49:54.553+0700 [INFO]  Failed to read plugin lock file .terraform/plugins/linux_amd64/lock.json: open .terraform/plugins/linux_amd64/lock.json: no such file or directory
+2021-08-06T09:49:54.554+0700 [INFO]  backend/local: starting Apply operation
+2021-08-06T09:49:54.556+0700 [DEBUG] created provider logger: level=debug
+2021-08-06T09:49:54.556+0700 [INFO]  provider: configuring client automatic mTLS
+2021-08-06T09:49:54.592+0700 [DEBUG] provider: starting plugin: path=.terraform/providers/registry.terraform.io/vngcloud/vngcloud/0.0.5/linux_amd64/terraform-provider-vngcloud_v0.0.5 args=[.terraform/providers/registry.terraform.io/vngcloud/vngcloud/0.0.5/linux_amd64/terraform-provider-vngcloud_v0.0.5]
+2021-08-06T09:49:54.592+0700 [DEBUG] provider: plugin started: path=.terraform/providers/registry.terraform.io/vngcloud/vngcloud/0.0.5/linux_amd64/terraform-provider-vngcloud_v0.0.5 pid=22880
+2021-08-06T09:49:54.593+0700 [DEBUG] provider: waiting for RPC address: path=.terraform/providers/registry.terraform.io/vngcloud/vngcloud/0.0.5/linux_amd64/terraform-provider-vngcloud_v0.0.5
+2021-08-06T09:49:54.600+0700 [INFO]  provider.terraform-provider-vngcloud_v0.0.5: configuring server automatic mTLS: timestamp=2021-08-06T09:49:54.600+0700
+2021-08-06T09:49:54.627+0700 [DEBUG] provider: using plugin: version=5
+2021-08-06T09:49:54.627+0700 [DEBUG] provider.terraform-provider-vngcloud_v0.0.5: plugin address: address=/tmp/plugin355629558 network=unix timestamp=2021-08-06T09:49:54.627+0700
+2021-08-06T09:49:54.683+0700 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = transport is closing"
+2021-08-06T09:49:54.684+0700 [DEBUG] provider: plugin process exited: path=.terraform/providers/registry.terraform.io/vngcloud/vngcloud/0.0.5/linux_amd64/terraform-provider-vngcloud_v0.0.5 pid=22880
+2021-08-06T09:49:54.684+0700 [DEBUG] provider: plugin exited
+2021-08-06T09:49:54.684+0700 [DEBUG] created provider logger: level=debug
+2021-08-06T09:49:54.684+0700 [INFO]  provider: configuring client automatic mTLS
+2021-08-06T09:49:54.720+0700 [DEBUG] provider: starting plugin: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud args=[.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud]
+2021-08-06T09:49:54.720+0700 [DEBUG] provider: plugin started: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=22893
+2021-08-06T09:49:54.721+0700 [DEBUG] provider: waiting for RPC address: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud
+2021-08-06T09:49:54.729+0700 [INFO]  provider.terraform-provider-vngcloud: configuring server automatic mTLS: timestamp=2021-08-06T09:49:54.729+0700
+2021-08-06T09:49:54.766+0700 [DEBUG] provider.terraform-provider-vngcloud: plugin address: address=/tmp/plugin768251726 network=unix timestamp=2021-08-06T09:49:54.766+0700
+2021-08-06T09:49:54.766+0700 [DEBUG] provider: using plugin: version=5
+2021-08-06T09:49:54.813+0700 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = transport is closing"
+2021-08-06T09:49:54.813+0700 [DEBUG] provider: plugin process exited: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=22893
+2021-08-06T09:49:54.813+0700 [DEBUG] provider: plugin exited
+2021-08-06T09:49:54.814+0700 [INFO]  terraform: building graph: GraphTypeValidate
+2021-08-06T09:49:54.815+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_1" (*terraform.NodeValidatableResource) needs provider["registry.terraform.io/vngcloud/vngcloud"]
+2021-08-06T09:49:54.815+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_2" (*terraform.NodeValidatableResource) needs provider["registry.terraform.io/vngcloud/vngcloud"]
+2021-08-06T09:49:54.815+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1" (*terraform.NodeValidatableResource) needs provider["registry.terraform.io/vngcloud/vngcloud"]
+2021-08-06T09:49:54.815+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2" (*terraform.NodeValidatableResource) needs provider["registry.terraform.io/vngcloud/vngcloud"]
+2021-08-06T09:49:54.815+0700 [ERROR] AttachSchemaTransformer: No resource schema available for data.vngcloud_vdb_backup_storage_package.backup_storage_package_1
+2021-08-06T09:49:54.815+0700 [ERROR] AttachSchemaTransformer: No resource schema available for data.vngcloud_vdb_backup_storage_package.backup_storage_package_2
+2021-08-06T09:49:54.815+0700 [ERROR] AttachSchemaTransformer: No resource schema available for vngcloud_vdb_backup_storage.backup_storage_1
+2021-08-06T09:49:54.815+0700 [ERROR] AttachSchemaTransformer: No resource schema available for vngcloud_vdb_backup_storage.backup_storage_2
+2021-08-06T09:49:54.815+0700 [WARN]  no schema is attached to vngcloud_vdb_backup_storage.backup_storage_2, so config references cannot be detected
+2021-08-06T09:49:54.815+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_2" references: []
+2021-08-06T09:49:54.815+0700 [WARN]  no schema is attached to data.vngcloud_vdb_backup_storage_package.backup_storage_package_1, so config references cannot be detected
+2021-08-06T09:49:54.815+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1" references: []
+2021-08-06T09:49:54.815+0700 [WARN]  no schema is attached to data.vngcloud_vdb_backup_storage_package.backup_storage_package_2, so config references cannot be detected
+2021-08-06T09:49:54.815+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2" references: []
+2021-08-06T09:49:54.815+0700 [DEBUG] ReferenceTransformer: "provider[\"registry.terraform.io/vngcloud/vngcloud\"]" references: []
+2021-08-06T09:49:54.815+0700 [WARN]  no schema is attached to vngcloud_vdb_backup_storage.backup_storage_1, so config references cannot be detected
+2021-08-06T09:49:54.815+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_1" references: []
+2021-08-06T09:49:54.815+0700 [WARN]  no schema is attached to data.vngcloud_vdb_backup_storage_package.backup_storage_package_2, so config references cannot be detected
+2021-08-06T09:49:54.815+0700 [WARN]  no schema is attached to data.vngcloud_vdb_backup_storage_package.backup_storage_package_1, so config references cannot be detected
+2021-08-06T09:49:54.816+0700 [DEBUG] Starting graph walk: walkValidate
+2021-08-06T09:49:54.816+0700 [DEBUG] created provider logger: level=debug
+2021-08-06T09:49:54.816+0700 [INFO]  provider: configuring client automatic mTLS
+2021-08-06T09:49:54.853+0700 [DEBUG] provider: starting plugin: path=.terraform/providers/registry.terraform.io/vngcloud/vngcloud/0.0.5/linux_amd64/terraform-provider-vngcloud_v0.0.5 args=[.terraform/providers/registry.terraform.io/vngcloud/vngcloud/0.0.5/linux_amd64/terraform-provider-vngcloud_v0.0.5]
+2021-08-06T09:49:54.853+0700 [DEBUG] provider: plugin started: path=.terraform/providers/registry.terraform.io/vngcloud/vngcloud/0.0.5/linux_amd64/terraform-provider-vngcloud_v0.0.5 pid=22908
+2021-08-06T09:49:54.853+0700 [DEBUG] provider: waiting for RPC address: path=.terraform/providers/registry.terraform.io/vngcloud/vngcloud/0.0.5/linux_amd64/terraform-provider-vngcloud_v0.0.5
+2021-08-06T09:49:54.860+0700 [INFO]  provider.terraform-provider-vngcloud_v0.0.5: configuring server automatic mTLS: timestamp=2021-08-06T09:49:54.860+0700
+2021-08-06T09:49:54.889+0700 [DEBUG] provider.terraform-provider-vngcloud_v0.0.5: plugin address: network=unix address=/tmp/plugin513025807 timestamp=2021-08-06T09:49:54.888+0700
+2021-08-06T09:49:54.889+0700 [DEBUG] provider: using plugin: version=5
+2021-08-06T09:49:54.944+0700 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = transport is closing"
+2021-08-06T09:49:54.945+0700 [DEBUG] provider: plugin process exited: path=.terraform/providers/registry.terraform.io/vngcloud/vngcloud/0.0.5/linux_amd64/terraform-provider-vngcloud_v0.0.5 pid=22908
+2021-08-06T09:49:54.945+0700 [DEBUG] provider: plugin exited
+2021-08-06T15:36:48.964+0700 [DEBUG] Adding temp file log sink: /tmp/terraform-log719865672
+2021-08-06T15:36:48.964+0700 [INFO]  Terraform version: 1.0.4
+2021-08-06T15:36:48.964+0700 [INFO]  Go runtime version: go1.16.4
+2021-08-06T15:36:48.964+0700 [INFO]  CLI args: []string{"/usr/bin/terraform", "init"}
+2021-08-06T15:36:48.964+0700 [DEBUG] Attempting to open CLI config file: /home/lap13015/.terraformrc
+2021-08-06T15:36:48.964+0700 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2021-08-06T15:36:48.965+0700 [DEBUG] checking for credentials in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T15:36:48.965+0700 [DEBUG] ignoring non-existing provider search directory terraform.d/plugins
+2021-08-06T15:36:48.965+0700 [DEBUG] will search for provider plugins in /home/lap13015/.terraform.d/plugins
+2021-08-06T15:36:48.967+0700 [DEBUG] ignoring non-existing provider search directory /home/lap13015/.local/share/terraform/plugins
+2021-08-06T15:36:48.967+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/ubuntu/terraform/plugins
+2021-08-06T15:36:48.967+0700 [DEBUG] ignoring non-existing provider search directory /usr/local/share/terraform/plugins
+2021-08-06T15:36:48.967+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/terraform/plugins
+2021-08-06T15:36:48.967+0700 [DEBUG] ignoring non-existing provider search directory /var/lib/snapd/desktop/terraform/plugins
+2021-08-06T15:36:48.968+0700 [INFO]  CLI command args: []string{"init"}
+2021-08-06T15:36:48.973+0700 [DEBUG] New state was assigned lineage "96a8f970-226b-e6a2-9b5a-395d42f2caa7"
+2021-08-06T15:36:48.974+0700 [DEBUG] checking for provisioner in "."
+2021-08-06T15:36:48.996+0700 [DEBUG] checking for provisioner in "/usr/bin"
+2021-08-06T15:36:48.996+0700 [DEBUG] checking for provisioner in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T15:36:48.996+0700 [INFO]  Failed to read plugin lock file .terraform/plugins/linux_amd64/lock.json: open .terraform/plugins/linux_amd64/lock.json: no such file or directory
+2021-08-06T15:36:49.148+0700 [DEBUG] Adding temp file log sink: /tmp/terraform-log774505039
+2021-08-06T15:36:49.149+0700 [INFO]  Terraform version: 1.0.4
+2021-08-06T15:36:49.149+0700 [INFO]  Go runtime version: go1.16.4
+2021-08-06T15:36:49.149+0700 [INFO]  CLI args: []string{"/usr/bin/terraform", "apply"}
+2021-08-06T15:36:49.149+0700 [DEBUG] Attempting to open CLI config file: /home/lap13015/.terraformrc
+2021-08-06T15:36:49.149+0700 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2021-08-06T15:36:49.149+0700 [DEBUG] checking for credentials in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T15:36:49.149+0700 [DEBUG] ignoring non-existing provider search directory terraform.d/plugins
+2021-08-06T15:36:49.149+0700 [DEBUG] will search for provider plugins in /home/lap13015/.terraform.d/plugins
+2021-08-06T15:36:49.149+0700 [DEBUG] ignoring non-existing provider search directory /home/lap13015/.local/share/terraform/plugins
+2021-08-06T15:36:49.149+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/ubuntu/terraform/plugins
+2021-08-06T15:36:49.149+0700 [DEBUG] ignoring non-existing provider search directory /usr/local/share/terraform/plugins
+2021-08-06T15:36:49.149+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/terraform/plugins
+2021-08-06T15:36:49.149+0700 [DEBUG] ignoring non-existing provider search directory /var/lib/snapd/desktop/terraform/plugins
+2021-08-06T15:36:49.150+0700 [INFO]  CLI command args: []string{"apply"}
+2021-08-06T15:36:49.151+0700 [DEBUG] New state was assigned lineage "243f9a12-de59-bd96-d82b-8a16b361b7bb"
+2021-08-06T15:36:49.244+0700 [DEBUG] checking for provisioner in "."
+2021-08-06T15:36:49.250+0700 [DEBUG] checking for provisioner in "/usr/bin"
+2021-08-06T15:36:49.250+0700 [DEBUG] checking for provisioner in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T15:36:49.250+0700 [INFO]  Failed to read plugin lock file .terraform/plugins/linux_amd64/lock.json: open .terraform/plugins/linux_amd64/lock.json: no such file or directory
+2021-08-06T15:36:49.251+0700 [INFO]  backend/local: starting Apply operation
+2021-08-06T15:36:49.253+0700 [DEBUG] created provider logger: level=debug
+2021-08-06T15:36:49.253+0700 [INFO]  provider: configuring client automatic mTLS
+2021-08-06T15:36:49.300+0700 [DEBUG] provider: starting plugin: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud args=[.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud]
+2021-08-06T15:36:49.301+0700 [DEBUG] provider: plugin started: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=131248
+2021-08-06T15:36:49.301+0700 [DEBUG] provider: waiting for RPC address: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud
+2021-08-06T15:36:49.310+0700 [INFO]  provider.terraform-provider-vngcloud: configuring server automatic mTLS: timestamp=2021-08-06T15:36:49.310+0700
+2021-08-06T15:36:49.358+0700 [DEBUG] provider: using plugin: version=5
+2021-08-06T15:36:49.358+0700 [DEBUG] provider.terraform-provider-vngcloud: plugin address: address=/tmp/plugin119802151 network=unix timestamp=2021-08-06T15:36:49.358+0700
+2021-08-06T15:36:49.425+0700 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = transport is closing"
+2021-08-06T15:36:49.427+0700 [DEBUG] provider: plugin process exited: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=131248
+2021-08-06T15:36:49.427+0700 [DEBUG] provider: plugin exited
+2021-08-06T15:36:49.427+0700 [INFO]  terraform: building graph: GraphTypeValidate
+2021-08-06T15:36:49.428+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_2" (*terraform.NodeValidatableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:36:49.428+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1" (*terraform.NodeValidatableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:36:49.428+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2" (*terraform.NodeValidatableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:36:49.428+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_1" (*terraform.NodeValidatableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:36:49.428+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_1" references: [data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 data.vngcloud_vdb_backup_storage_package.backup_storage_package_1]
+2021-08-06T15:36:49.428+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_2" references: [data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 data.vngcloud_vdb_backup_storage_package.backup_storage_package_2]
+2021-08-06T15:36:49.428+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1" references: []
+2021-08-06T15:36:49.429+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2" references: []
+2021-08-06T15:36:49.429+0700 [DEBUG] ReferenceTransformer: "provider[\"vngcloud.vn/terraform/vngcloud\"]" references: []
+2021-08-06T15:36:49.429+0700 [DEBUG] Starting graph walk: walkValidate
+2021-08-06T15:36:49.430+0700 [DEBUG] created provider logger: level=debug
+2021-08-06T15:36:49.430+0700 [INFO]  provider: configuring client automatic mTLS
+2021-08-06T15:36:49.472+0700 [DEBUG] provider: starting plugin: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud args=[.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud]
+2021-08-06T15:36:49.472+0700 [DEBUG] provider: plugin started: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=131261
+2021-08-06T15:36:49.472+0700 [DEBUG] provider: waiting for RPC address: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud
+2021-08-06T15:36:49.483+0700 [INFO]  provider.terraform-provider-vngcloud: configuring server automatic mTLS: timestamp=2021-08-06T15:36:49.483+0700
+2021-08-06T15:36:49.525+0700 [DEBUG] provider.terraform-provider-vngcloud: plugin address: address=/tmp/plugin644361419 network=unix timestamp=2021-08-06T15:36:49.525+0700
+2021-08-06T15:36:49.525+0700 [DEBUG] provider: using plugin: version=5
+2021-08-06T15:36:49.600+0700 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = transport is closing"
+2021-08-06T15:36:49.601+0700 [DEBUG] provider: plugin process exited: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=131261
+2021-08-06T15:36:49.601+0700 [DEBUG] provider: plugin exited
+2021-08-06T15:36:49.601+0700 [INFO]  backend/local: apply calling Plan
+2021-08-06T15:36:49.601+0700 [INFO]  terraform: building graph: GraphTypePlan
+2021-08-06T15:36:49.602+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)" (*terraform.nodeExpandPlannableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:36:49.602+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)" (*terraform.nodeExpandPlannableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:36:49.602+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_1 (expand)" (*terraform.nodeExpandPlannableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:36:49.602+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_2 (expand)" (*terraform.nodeExpandPlannableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:36:49.602+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_2 (expand)" references: [data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)]
+2021-08-06T15:36:49.602+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)" references: []
+2021-08-06T15:36:49.602+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)" references: []
+2021-08-06T15:36:49.602+0700 [DEBUG] ReferenceTransformer: "provider[\"vngcloud.vn/terraform/vngcloud\"]" references: []
+2021-08-06T15:36:49.602+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_1 (expand)" references: [data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)]
+2021-08-06T15:36:49.603+0700 [DEBUG] Starting graph walk: walkPlan
+2021-08-06T15:36:49.603+0700 [DEBUG] created provider logger: level=debug
+2021-08-06T15:36:49.603+0700 [INFO]  provider: configuring client automatic mTLS
+2021-08-06T15:36:49.678+0700 [DEBUG] provider: starting plugin: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud args=[.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud]
+2021-08-06T15:36:49.680+0700 [DEBUG] provider: plugin started: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=131285
+2021-08-06T15:36:49.680+0700 [DEBUG] provider: waiting for RPC address: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud
+2021-08-06T15:36:49.695+0700 [INFO]  provider.terraform-provider-vngcloud: configuring server automatic mTLS: timestamp=2021-08-06T15:36:49.695+0700
+2021-08-06T15:36:49.788+0700 [DEBUG] provider: using plugin: version=5
+2021-08-06T15:36:49.788+0700 [DEBUG] provider.terraform-provider-vngcloud: plugin address: address=/tmp/plugin067586408 network=unix timestamp=2021-08-06T15:36:49.788+0700
+2021-08-06T15:36:49.874+0700 [WARN]  ValidateProviderConfig from "provider[\"vngcloud.vn/terraform/vngcloud\"]" changed the config value, but that value is unused
+2021-08-06T15:36:50.092+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1" references: []
+2021-08-06T15:36:50.093+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2" references: []
+2021-08-06T15:36:50.097+0700 [INFO]  provider.terraform-provider-vngcloud: data_source_backup_storage_package.go:41: [DEBUG] Data source backup storage package read: timestamp=2021-08-06T15:36:50.097+0700
+2021-08-06T15:36:50.097+0700 [INFO]  provider.terraform-provider-vngcloud: data_source_backup_storage_package.go:41: [DEBUG] Data source backup storage package read: timestamp=2021-08-06T15:36:50.097+0700
+2021-08-06T15:36:50.771+0700 [INFO]  provider.terraform-provider-vngcloud: data_source_backup_storage_package.go:51: [DEBUG] Num backup storage packages: 7: timestamp=2021-08-06T15:36:50.770+0700
+2021-08-06T15:36:50.771+0700 [INFO]  provider.terraform-provider-vngcloud: data_source_backup_storage_package.go:51: [DEBUG] Num backup storage packages: 7: timestamp=2021-08-06T15:36:50.771+0700
+2021-08-06T15:36:50.773+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_1" references: []
+2021-08-06T15:36:50.773+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_2" references: []
+2021-08-06T15:36:50.774+0700 [DEBUG] UpgradeResourceState: attribute "monthly_cost" no longer present in schema
+2021-08-06T15:36:50.774+0700 [DEBUG] UpgradeResourceState: attribute "period" no longer present in schema
+2021-08-06T15:36:50.774+0700 [DEBUG] UpgradeResourceState: attribute "monthly_cost" no longer present in schema
+2021-08-06T15:36:50.774+0700 [DEBUG] UpgradeResourceState: attribute "period" no longer present in schema
+2021-08-06T15:36:50.777+0700 [INFO]  provider.terraform-provider-vngcloud: resource_backup_storage.go:68: [DEBUG] Backup storage read: timestamp=2021-08-06T15:36:50.777+0700
+2021-08-06T15:36:50.777+0700 [INFO]  provider.terraform-provider-vngcloud: resource_backup_storage.go:68: [DEBUG] Backup storage read: timestamp=2021-08-06T15:36:50.777+0700
+2021-08-06T15:36:50.958+0700 [WARN]  Provider "vngcloud.vn/terraform/vngcloud" produced an unexpected new value for vngcloud_vdb_backup_storage.backup_storage_2 during refresh.
+      - .name: was null, but now cty.StringVal("memory_store_backup_storage")
+      - .usage: was null, but now cty.NumberIntVal(0)
+2021-08-06T15:36:50.958+0700 [WARN]  Provider "vngcloud.vn/terraform/vngcloud" produced an unexpected new value for vngcloud_vdb_backup_storage.backup_storage_1 during refresh.
+      - .name: was null, but now cty.StringVal("relational_backup_storage")
+      - .usage: was null, but now cty.NumberIntVal(0)
+2021-08-06T15:36:50.964+0700 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = transport is closing"
+2021-08-06T15:36:50.966+0700 [DEBUG] provider: plugin process exited: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=131285
+2021-08-06T15:36:50.966+0700 [DEBUG] provider: plugin exited
+2021-08-06T15:36:50.968+0700 [INFO]  backend/local: apply calling Apply
+2021-08-06T15:36:50.969+0700 [INFO]  terraform: building graph: GraphTypeApply
+2021-08-06T15:36:50.970+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)" (*terraform.nodeExpandApplyableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:36:50.970+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)" (*terraform.nodeExpandApplyableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:36:50.970+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_1 (expand)" (*terraform.nodeExpandApplyableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:36:50.970+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_2 (expand)" (*terraform.nodeExpandApplyableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:36:50.971+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_1 (expand)" references: []
+2021-08-06T15:36:50.971+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_2 (expand)" references: []
+2021-08-06T15:36:50.971+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)" references: []
+2021-08-06T15:36:50.971+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)" references: []
+2021-08-06T15:36:50.971+0700 [DEBUG] ReferenceTransformer: "provider[\"vngcloud.vn/terraform/vngcloud\"]" references: []
+2021-08-06T15:36:50.972+0700 [DEBUG] pruneUnusedNodes: vngcloud_vdb_backup_storage.backup_storage_1 (expand) is no longer needed, removing
+2021-08-06T15:36:50.972+0700 [DEBUG] pruneUnusedNodes: vngcloud_vdb_backup_storage.backup_storage_2 (expand) is no longer needed, removing
+2021-08-06T15:36:50.972+0700 [DEBUG] pruneUnusedNodes: data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand) is no longer needed, removing
+2021-08-06T15:36:50.972+0700 [DEBUG] pruneUnusedNodes: data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand) is no longer needed, removing
+2021-08-06T15:36:50.972+0700 [DEBUG] pruneUnusedNodes: provider["vngcloud.vn/terraform/vngcloud"] is no longer needed, removing
+2021-08-06T15:36:50.972+0700 [DEBUG] Starting graph walk: walkApply
+2021-08-06T15:37:01.572+0700 [DEBUG] Adding temp file log sink: /tmp/terraform-log303735536
+2021-08-06T15:37:01.572+0700 [INFO]  Terraform version: 1.0.4
+2021-08-06T15:37:01.572+0700 [INFO]  Go runtime version: go1.16.4
+2021-08-06T15:37:01.572+0700 [INFO]  CLI args: []string{"/usr/bin/terraform", "init"}
+2021-08-06T15:37:01.572+0700 [DEBUG] Attempting to open CLI config file: /home/lap13015/.terraformrc
+2021-08-06T15:37:01.572+0700 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2021-08-06T15:37:01.572+0700 [DEBUG] checking for credentials in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T15:37:01.572+0700 [DEBUG] ignoring non-existing provider search directory terraform.d/plugins
+2021-08-06T15:37:01.572+0700 [DEBUG] will search for provider plugins in /home/lap13015/.terraform.d/plugins
+2021-08-06T15:37:01.573+0700 [DEBUG] ignoring non-existing provider search directory /home/lap13015/.local/share/terraform/plugins
+2021-08-06T15:37:01.573+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/ubuntu/terraform/plugins
+2021-08-06T15:37:01.573+0700 [DEBUG] ignoring non-existing provider search directory /usr/local/share/terraform/plugins
+2021-08-06T15:37:01.573+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/terraform/plugins
+2021-08-06T15:37:01.573+0700 [DEBUG] ignoring non-existing provider search directory /var/lib/snapd/desktop/terraform/plugins
+2021-08-06T15:37:01.573+0700 [INFO]  CLI command args: []string{"init"}
+2021-08-06T15:37:01.575+0700 [DEBUG] New state was assigned lineage "802d4190-d796-b4b4-c02b-f7654e5638d4"
+2021-08-06T15:37:01.575+0700 [DEBUG] checking for provisioner in "."
+2021-08-06T15:37:01.579+0700 [DEBUG] checking for provisioner in "/usr/bin"
+2021-08-06T15:37:01.579+0700 [DEBUG] checking for provisioner in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T15:37:01.579+0700 [INFO]  Failed to read plugin lock file .terraform/plugins/linux_amd64/lock.json: open .terraform/plugins/linux_amd64/lock.json: no such file or directory
+2021-08-06T15:37:01.729+0700 [DEBUG] Adding temp file log sink: /tmp/terraform-log117925315
+2021-08-06T15:37:01.729+0700 [INFO]  Terraform version: 1.0.4
+2021-08-06T15:37:01.729+0700 [INFO]  Go runtime version: go1.16.4
+2021-08-06T15:37:01.729+0700 [INFO]  CLI args: []string{"/usr/bin/terraform", "apply"}
+2021-08-06T15:37:01.729+0700 [DEBUG] Attempting to open CLI config file: /home/lap13015/.terraformrc
+2021-08-06T15:37:01.729+0700 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2021-08-06T15:37:01.729+0700 [DEBUG] checking for credentials in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T15:37:01.729+0700 [DEBUG] ignoring non-existing provider search directory terraform.d/plugins
+2021-08-06T15:37:01.729+0700 [DEBUG] will search for provider plugins in /home/lap13015/.terraform.d/plugins
+2021-08-06T15:37:01.730+0700 [DEBUG] ignoring non-existing provider search directory /home/lap13015/.local/share/terraform/plugins
+2021-08-06T15:37:01.730+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/ubuntu/terraform/plugins
+2021-08-06T15:37:01.730+0700 [DEBUG] ignoring non-existing provider search directory /usr/local/share/terraform/plugins
+2021-08-06T15:37:01.730+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/terraform/plugins
+2021-08-06T15:37:01.730+0700 [DEBUG] ignoring non-existing provider search directory /var/lib/snapd/desktop/terraform/plugins
+2021-08-06T15:37:01.730+0700 [INFO]  CLI command args: []string{"apply"}
+2021-08-06T15:37:01.732+0700 [DEBUG] New state was assigned lineage "0758d105-99e1-951e-d1a6-d0cc0b23cbc0"
+2021-08-06T15:37:01.830+0700 [DEBUG] checking for provisioner in "."
+2021-08-06T15:37:01.835+0700 [DEBUG] checking for provisioner in "/usr/bin"
+2021-08-06T15:37:01.835+0700 [DEBUG] checking for provisioner in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T15:37:01.835+0700 [INFO]  Failed to read plugin lock file .terraform/plugins/linux_amd64/lock.json: open .terraform/plugins/linux_amd64/lock.json: no such file or directory
+2021-08-06T15:37:01.835+0700 [INFO]  backend/local: starting Apply operation
+2021-08-06T15:37:01.837+0700 [DEBUG] created provider logger: level=debug
+2021-08-06T15:37:01.837+0700 [INFO]  provider: configuring client automatic mTLS
+2021-08-06T15:37:01.885+0700 [DEBUG] provider: starting plugin: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud args=[.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud]
+2021-08-06T15:37:01.886+0700 [DEBUG] provider: plugin started: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=131525
+2021-08-06T15:37:01.886+0700 [DEBUG] provider: waiting for RPC address: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud
+2021-08-06T15:37:01.896+0700 [INFO]  provider.terraform-provider-vngcloud: configuring server automatic mTLS: timestamp=2021-08-06T15:37:01.896+0700
+2021-08-06T15:37:01.940+0700 [DEBUG] provider: using plugin: version=5
+2021-08-06T15:37:01.940+0700 [DEBUG] provider.terraform-provider-vngcloud: plugin address: address=/tmp/plugin208140196 network=unix timestamp=2021-08-06T15:37:01.940+0700
+2021-08-06T15:37:02.002+0700 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = transport is closing"
+2021-08-06T15:37:02.003+0700 [DEBUG] provider: plugin process exited: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=131525
+2021-08-06T15:37:02.003+0700 [DEBUG] provider: plugin exited
+2021-08-06T15:37:02.003+0700 [INFO]  terraform: building graph: GraphTypeValidate
+2021-08-06T15:37:02.004+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_1" (*terraform.NodeValidatableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:37:02.004+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1" (*terraform.NodeValidatableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:37:02.004+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2" (*terraform.NodeValidatableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:37:02.004+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_1" references: [data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 data.vngcloud_vdb_backup_storage_package.backup_storage_package_1]
+2021-08-06T15:37:02.004+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1" references: []
+2021-08-06T15:37:02.004+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2" references: []
+2021-08-06T15:37:02.004+0700 [DEBUG] ReferenceTransformer: "provider[\"vngcloud.vn/terraform/vngcloud\"]" references: []
+2021-08-06T15:37:02.005+0700 [DEBUG] Starting graph walk: walkValidate
+2021-08-06T15:37:02.005+0700 [DEBUG] created provider logger: level=debug
+2021-08-06T15:37:02.005+0700 [INFO]  provider: configuring client automatic mTLS
+2021-08-06T15:37:02.046+0700 [DEBUG] provider: starting plugin: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud args=[.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud]
+2021-08-06T15:37:02.046+0700 [DEBUG] provider: plugin started: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=131538
+2021-08-06T15:37:02.046+0700 [DEBUG] provider: waiting for RPC address: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud
+2021-08-06T15:37:02.055+0700 [INFO]  provider.terraform-provider-vngcloud: configuring server automatic mTLS: timestamp=2021-08-06T15:37:02.055+0700
+2021-08-06T15:37:02.095+0700 [DEBUG] provider.terraform-provider-vngcloud: plugin address: address=/tmp/plugin139970946 network=unix timestamp=2021-08-06T15:37:02.095+0700
+2021-08-06T15:37:02.095+0700 [DEBUG] provider: using plugin: version=5
+2021-08-06T15:37:02.147+0700 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = transport is closing"
+2021-08-06T15:37:02.149+0700 [DEBUG] provider: plugin process exited: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=131538
+2021-08-06T15:37:02.149+0700 [DEBUG] provider: plugin exited
+2021-08-06T15:37:02.149+0700 [INFO]  backend/local: apply calling Plan
+2021-08-06T15:37:02.149+0700 [INFO]  terraform: building graph: GraphTypePlan
+2021-08-06T15:37:02.149+0700 [DEBUG] adding implicit provider configuration provider["registry.terraform.io/hashicorp/vngcloud"], implied first by vngcloud_vdb_backup_storage.backup_storage_2 (orphan)
+2021-08-06T15:37:02.149+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_1 (expand)" (*terraform.nodeExpandPlannableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:37:02.149+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)" (*terraform.nodeExpandPlannableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:37:02.149+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)" (*terraform.nodeExpandPlannableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:37:02.149+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_2 (orphan)" (*terraform.NodePlannableResourceInstanceOrphan) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:37:02.149+0700 [DEBUG] pruning unused provider["registry.terraform.io/hashicorp/vngcloud"]
+2021-08-06T15:37:02.149+0700 [ERROR] AttachSchemaTransformer: No resource schema available for vngcloud_vdb_backup_storage.backup_storage_2
+2021-08-06T15:37:02.149+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_1 (expand)" references: [data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)]
+2021-08-06T15:37:02.149+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)" references: []
+2021-08-06T15:37:02.149+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)" references: []
+2021-08-06T15:37:02.149+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_2 (orphan)" references: []
+2021-08-06T15:37:02.149+0700 [DEBUG] ReferenceTransformer: "provider[\"vngcloud.vn/terraform/vngcloud\"]" references: []
+2021-08-06T15:37:02.151+0700 [DEBUG] Starting graph walk: walkPlan
+2021-08-06T15:37:02.151+0700 [DEBUG] created provider logger: level=debug
+2021-08-06T15:37:02.151+0700 [INFO]  provider: configuring client automatic mTLS
+2021-08-06T15:37:02.186+0700 [DEBUG] provider: starting plugin: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud args=[.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud]
+2021-08-06T15:37:02.187+0700 [DEBUG] provider: plugin started: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=131551
+2021-08-06T15:37:02.187+0700 [DEBUG] provider: waiting for RPC address: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud
+2021-08-06T15:37:02.196+0700 [INFO]  provider.terraform-provider-vngcloud: configuring server automatic mTLS: timestamp=2021-08-06T15:37:02.196+0700
+2021-08-06T15:37:02.234+0700 [DEBUG] provider.terraform-provider-vngcloud: plugin address: address=/tmp/plugin277765938 network=unix timestamp=2021-08-06T15:37:02.233+0700
+2021-08-06T15:37:02.234+0700 [DEBUG] provider: using plugin: version=5
+2021-08-06T15:37:02.285+0700 [WARN]  ValidateProviderConfig from "provider[\"vngcloud.vn/terraform/vngcloud\"]" changed the config value, but that value is unused
+2021-08-06T15:37:02.503+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1" references: []
+2021-08-06T15:37:02.503+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2" references: []
+2021-08-06T15:37:02.505+0700 [INFO]  provider.terraform-provider-vngcloud: resource_backup_storage.go:68: [DEBUG] Backup storage read: timestamp=2021-08-06T15:37:02.505+0700
+2021-08-06T15:37:02.505+0700 [INFO]  provider.terraform-provider-vngcloud: data_source_backup_storage_package.go:41: [DEBUG] Data source backup storage package read: timestamp=2021-08-06T15:37:02.505+0700
+2021-08-06T15:37:02.505+0700 [INFO]  provider.terraform-provider-vngcloud: data_source_backup_storage_package.go:41: [DEBUG] Data source backup storage package read: timestamp=2021-08-06T15:37:02.505+0700
+2021-08-06T15:37:02.557+0700 [INFO]  provider.terraform-provider-vngcloud: data_source_backup_storage_package.go:51: [DEBUG] Num backup storage packages: 7: timestamp=2021-08-06T15:37:02.557+0700
+2021-08-06T15:37:02.559+0700 [INFO]  provider.terraform-provider-vngcloud: data_source_backup_storage_package.go:51: [DEBUG] Num backup storage packages: 7: timestamp=2021-08-06T15:37:02.559+0700
+2021-08-06T15:37:02.560+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_1" references: []
+2021-08-06T15:37:02.562+0700 [INFO]  provider.terraform-provider-vngcloud: resource_backup_storage.go:68: [DEBUG] Backup storage read: timestamp=2021-08-06T15:37:02.562+0700
+2021-08-06T15:37:02.626+0700 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = transport is closing"
+2021-08-06T15:37:02.628+0700 [DEBUG] provider: plugin process exited: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=131551
+2021-08-06T15:37:02.628+0700 [DEBUG] provider: plugin exited
+2021-08-06T15:37:02.629+0700 [DEBUG] command: asking for input: "\nDo you want to perform these actions?"
+2021-08-06T15:37:04.806+0700 [INFO]  backend/local: apply calling Apply
+2021-08-06T15:37:04.806+0700 [INFO]  terraform: building graph: GraphTypeApply
+2021-08-06T15:37:04.808+0700 [DEBUG] adding implicit provider configuration provider["registry.terraform.io/hashicorp/vngcloud"], implied first by vngcloud_vdb_backup_storage.backup_storage_2 (destroy)
+2021-08-06T15:37:04.808+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)" (*terraform.nodeExpandApplyableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:37:04.808+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)" (*terraform.nodeExpandApplyableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:37:04.808+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_2 (destroy)" (*terraform.NodeDestroyResourceInstance) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:37:04.808+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_1 (expand)" (*terraform.nodeExpandApplyableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:37:04.809+0700 [DEBUG] pruning unused provider["registry.terraform.io/hashicorp/vngcloud"]
+2021-08-06T15:37:04.809+0700 [ERROR] AttachSchemaTransformer: No resource schema available for vngcloud_vdb_backup_storage.backup_storage_2
+2021-08-06T15:37:04.810+0700 [DEBUG] ReferenceTransformer: "provider[\"vngcloud.vn/terraform/vngcloud\"]" references: []
+2021-08-06T15:37:04.810+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_1 (expand)" references: []
+2021-08-06T15:37:04.810+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)" references: []
+2021-08-06T15:37:04.810+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)" references: []
+2021-08-06T15:37:04.810+0700 [DEBUG] pruneUnusedNodes: data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand) is no longer needed, removing
+2021-08-06T15:37:04.810+0700 [DEBUG] pruneUnusedNodes: data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand) is no longer needed, removing
+2021-08-06T15:37:04.810+0700 [DEBUG] pruneUnusedNodes: vngcloud_vdb_backup_storage.backup_storage_1 (expand) is no longer needed, removing
+2021-08-06T15:37:04.811+0700 [DEBUG] Starting graph walk: walkApply
+2021-08-06T15:37:04.811+0700 [DEBUG] created provider logger: level=debug
+2021-08-06T15:37:04.812+0700 [INFO]  provider: configuring client automatic mTLS
+2021-08-06T15:37:04.875+0700 [DEBUG] provider: starting plugin: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud args=[.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud]
+2021-08-06T15:37:04.876+0700 [DEBUG] provider: plugin started: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=131568
+2021-08-06T15:37:04.876+0700 [DEBUG] provider: waiting for RPC address: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud
+2021-08-06T15:37:04.883+0700 [INFO]  provider.terraform-provider-vngcloud: configuring server automatic mTLS: timestamp=2021-08-06T15:37:04.883+0700
+2021-08-06T15:37:04.921+0700 [DEBUG] provider.terraform-provider-vngcloud: plugin address: address=/tmp/plugin175714568 network=unix timestamp=2021-08-06T15:37:04.921+0700
+2021-08-06T15:37:04.921+0700 [DEBUG] provider: using plugin: version=5
+2021-08-06T15:37:04.972+0700 [WARN]  ValidateProviderConfig from "provider[\"vngcloud.vn/terraform/vngcloud\"]" changed the config value, but that value is unused
+2021-08-06T15:37:05.067+0700 [INFO]  Starting apply for vngcloud_vdb_backup_storage.backup_storage_2
+2021-08-06T15:37:05.067+0700 [DEBUG] vngcloud_vdb_backup_storage.backup_storage_2: applying the planned Delete change
+2021-08-06T15:37:05.068+0700 [INFO]  provider.terraform-provider-vngcloud: resource_backup_storage.go:176: [DEBUG] Backup storage delete: timestamp=2021-08-06T15:37:05.068+0700
+2021-08-06T15:37:05.069+0700 [INFO]  provider.terraform-provider-vngcloud: resource_backup_storage.go:188: [DEBUG] Delete request body {"backupStorageId":"db-bk-storage-4b79e23d-eb3f-45e7-983d-4862bee22619","backupStorageName":"memory_store_backup_storage","engineGroup":2,"extra":{},"projectId":"pro-5c16c28a-07fa-4836-bc83-daba5a907d86"}: timestamp=2021-08-06T15:37:05.069+0700
+2021-08-06T15:37:06.481+0700 [INFO]  provider.terraform-provider-vngcloud: resource_backup_storage.go:203: [DEBUG] Delete in trash request body {"backupStorageId":"db-bk-storage-4b79e23d-eb3f-45e7-983d-4862bee22619","backupStorageName":"memory_store_backup_storage","engineGroup":2,"extra":{},"projectId":"pro-5c16c28a-07fa-4836-bc83-daba5a907d86"}: timestamp=2021-08-06T15:37:06.481+0700
+2021-08-06T15:37:07.544+0700 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = transport is closing"
+2021-08-06T15:37:07.547+0700 [DEBUG] provider: plugin process exited: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=131568
+2021-08-06T15:37:07.547+0700 [DEBUG] provider: plugin exited
+2021-08-06T15:51:34.723+0700 [DEBUG] Adding temp file log sink: /tmp/terraform-log017335684
+2021-08-06T15:51:34.726+0700 [INFO]  Terraform version: 1.0.4
+2021-08-06T15:51:34.726+0700 [INFO]  Go runtime version: go1.16.4
+2021-08-06T15:51:34.726+0700 [INFO]  CLI args: []string{"/usr/bin/terraform", "init"}
+2021-08-06T15:51:34.726+0700 [DEBUG] Attempting to open CLI config file: /home/lap13015/.terraformrc
+2021-08-06T15:51:34.726+0700 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2021-08-06T15:51:34.726+0700 [DEBUG] checking for credentials in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T15:51:34.726+0700 [DEBUG] ignoring non-existing provider search directory terraform.d/plugins
+2021-08-06T15:51:34.726+0700 [DEBUG] will search for provider plugins in /home/lap13015/.terraform.d/plugins
+2021-08-06T15:51:34.727+0700 [DEBUG] ignoring non-existing provider search directory /home/lap13015/.local/share/terraform/plugins
+2021-08-06T15:51:34.727+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/ubuntu/terraform/plugins
+2021-08-06T15:51:34.727+0700 [DEBUG] ignoring non-existing provider search directory /usr/local/share/terraform/plugins
+2021-08-06T15:51:34.727+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/terraform/plugins
+2021-08-06T15:51:34.727+0700 [DEBUG] ignoring non-existing provider search directory /var/lib/snapd/desktop/terraform/plugins
+2021-08-06T15:51:34.730+0700 [INFO]  CLI command args: []string{"init"}
+2021-08-06T15:51:34.735+0700 [DEBUG] New state was assigned lineage "af07d638-a715-d838-a5d1-5970bb55cdd6"
+2021-08-06T15:51:34.736+0700 [DEBUG] checking for provisioner in "."
+2021-08-06T15:51:34.753+0700 [DEBUG] checking for provisioner in "/usr/bin"
+2021-08-06T15:51:34.753+0700 [DEBUG] checking for provisioner in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T15:51:34.753+0700 [INFO]  Failed to read plugin lock file .terraform/plugins/linux_amd64/lock.json: open .terraform/plugins/linux_amd64/lock.json: no such file or directory
+2021-08-06T15:51:35.095+0700 [DEBUG] Adding temp file log sink: /tmp/terraform-log671695037
+2021-08-06T15:51:35.095+0700 [INFO]  Terraform version: 1.0.4
+2021-08-06T15:51:35.095+0700 [INFO]  Go runtime version: go1.16.4
+2021-08-06T15:51:35.095+0700 [INFO]  CLI args: []string{"/usr/bin/terraform", "apply"}
+2021-08-06T15:51:35.095+0700 [DEBUG] Attempting to open CLI config file: /home/lap13015/.terraformrc
+2021-08-06T15:51:35.095+0700 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2021-08-06T15:51:35.095+0700 [DEBUG] checking for credentials in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T15:51:35.095+0700 [DEBUG] ignoring non-existing provider search directory terraform.d/plugins
+2021-08-06T15:51:35.095+0700 [DEBUG] will search for provider plugins in /home/lap13015/.terraform.d/plugins
+2021-08-06T15:51:35.096+0700 [DEBUG] ignoring non-existing provider search directory /home/lap13015/.local/share/terraform/plugins
+2021-08-06T15:51:35.096+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/ubuntu/terraform/plugins
+2021-08-06T15:51:35.096+0700 [DEBUG] ignoring non-existing provider search directory /usr/local/share/terraform/plugins
+2021-08-06T15:51:35.096+0700 [DEBUG] ignoring non-existing provider search directory /usr/share/terraform/plugins
+2021-08-06T15:51:35.096+0700 [DEBUG] ignoring non-existing provider search directory /var/lib/snapd/desktop/terraform/plugins
+2021-08-06T15:51:35.096+0700 [INFO]  CLI command args: []string{"apply"}
+2021-08-06T15:51:35.097+0700 [DEBUG] New state was assigned lineage "5639de64-afbb-e035-5730-786005f02b4c"
+2021-08-06T15:51:35.248+0700 [DEBUG] checking for provisioner in "."
+2021-08-06T15:51:35.256+0700 [DEBUG] checking for provisioner in "/usr/bin"
+2021-08-06T15:51:35.256+0700 [DEBUG] checking for provisioner in "/home/lap13015/.terraform.d/plugins"
+2021-08-06T15:51:35.257+0700 [INFO]  Failed to read plugin lock file .terraform/plugins/linux_amd64/lock.json: open .terraform/plugins/linux_amd64/lock.json: no such file or directory
+2021-08-06T15:51:35.257+0700 [INFO]  backend/local: starting Apply operation
+2021-08-06T15:51:35.264+0700 [DEBUG] created provider logger: level=debug
+2021-08-06T15:51:35.264+0700 [INFO]  provider: configuring client automatic mTLS
+2021-08-06T15:51:35.335+0700 [DEBUG] provider: starting plugin: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud args=[.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud]
+2021-08-06T15:51:35.335+0700 [DEBUG] provider: plugin started: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=137166
+2021-08-06T15:51:35.335+0700 [DEBUG] provider: waiting for RPC address: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud
+2021-08-06T15:51:35.345+0700 [INFO]  provider.terraform-provider-vngcloud: configuring server automatic mTLS: timestamp=2021-08-06T15:51:35.345+0700
+2021-08-06T15:51:35.462+0700 [DEBUG] provider: using plugin: version=5
+2021-08-06T15:51:35.462+0700 [DEBUG] provider.terraform-provider-vngcloud: plugin address: address=/tmp/plugin550125272 network=unix timestamp=2021-08-06T15:51:35.462+0700
+2021-08-06T15:51:35.584+0700 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = transport is closing"
+2021-08-06T15:51:35.587+0700 [DEBUG] provider: plugin process exited: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=137166
+2021-08-06T15:51:35.587+0700 [DEBUG] provider: plugin exited
+2021-08-06T15:51:35.587+0700 [INFO]  terraform: building graph: GraphTypeValidate
+2021-08-06T15:51:35.588+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1" (*terraform.NodeValidatableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:51:35.588+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_1" (*terraform.NodeValidatableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:51:35.588+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_2" (*terraform.NodeValidatableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:51:35.588+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2" (*terraform.NodeValidatableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:51:35.589+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_1" references: [data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 data.vngcloud_vdb_backup_storage_package.backup_storage_package_1]
+2021-08-06T15:51:35.589+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_2" references: [data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 data.vngcloud_vdb_backup_storage_package.backup_storage_package_2]
+2021-08-06T15:51:35.589+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2" references: []
+2021-08-06T15:51:35.589+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1" references: []
+2021-08-06T15:51:35.589+0700 [DEBUG] ReferenceTransformer: "provider[\"vngcloud.vn/terraform/vngcloud\"]" references: []
+2021-08-06T15:51:35.590+0700 [DEBUG] Starting graph walk: walkValidate
+2021-08-06T15:51:35.590+0700 [DEBUG] created provider logger: level=debug
+2021-08-06T15:51:35.590+0700 [INFO]  provider: configuring client automatic mTLS
+2021-08-06T15:51:35.701+0700 [DEBUG] provider: starting plugin: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud args=[.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud]
+2021-08-06T15:51:35.708+0700 [DEBUG] provider: plugin started: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=137179
+2021-08-06T15:51:35.708+0700 [DEBUG] provider: waiting for RPC address: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud
+2021-08-06T15:51:35.726+0700 [INFO]  provider.terraform-provider-vngcloud: configuring server automatic mTLS: timestamp=2021-08-06T15:51:35.726+0700
+2021-08-06T15:51:35.827+0700 [DEBUG] provider: using plugin: version=5
+2021-08-06T15:51:35.827+0700 [DEBUG] provider.terraform-provider-vngcloud: plugin address: address=/tmp/plugin886565795 network=unix timestamp=2021-08-06T15:51:35.827+0700
+2021-08-06T15:51:35.967+0700 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = transport is closing"
+2021-08-06T15:51:35.976+0700 [DEBUG] provider: plugin process exited: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=137179
+2021-08-06T15:51:35.976+0700 [DEBUG] provider: plugin exited
+2021-08-06T15:51:35.976+0700 [INFO]  backend/local: apply calling Plan
+2021-08-06T15:51:35.976+0700 [INFO]  terraform: building graph: GraphTypePlan
+2021-08-06T15:51:35.977+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)" (*terraform.nodeExpandPlannableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:51:35.977+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_1 (expand)" (*terraform.nodeExpandPlannableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:51:35.977+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_2 (expand)" (*terraform.nodeExpandPlannableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:51:35.977+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)" (*terraform.nodeExpandPlannableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:51:35.977+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_1 (expand)" references: [data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)]
+2021-08-06T15:51:35.977+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_2 (expand)" references: [data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)]
+2021-08-06T15:51:35.977+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)" references: []
+2021-08-06T15:51:35.978+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)" references: []
+2021-08-06T15:51:35.978+0700 [DEBUG] ReferenceTransformer: "provider[\"vngcloud.vn/terraform/vngcloud\"]" references: []
+2021-08-06T15:51:35.979+0700 [DEBUG] Starting graph walk: walkPlan
+2021-08-06T15:51:35.979+0700 [DEBUG] created provider logger: level=debug
+2021-08-06T15:51:35.979+0700 [INFO]  provider: configuring client automatic mTLS
+2021-08-06T15:51:36.073+0700 [DEBUG] provider: starting plugin: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud args=[.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud]
+2021-08-06T15:51:36.077+0700 [DEBUG] provider: plugin started: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=137191
+2021-08-06T15:51:36.077+0700 [DEBUG] provider: waiting for RPC address: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud
+2021-08-06T15:51:36.102+0700 [INFO]  provider.terraform-provider-vngcloud: configuring server automatic mTLS: timestamp=2021-08-06T15:51:36.100+0700
+2021-08-06T15:51:36.223+0700 [DEBUG] provider: using plugin: version=5
+2021-08-06T15:51:36.223+0700 [DEBUG] provider.terraform-provider-vngcloud: plugin address: address=/tmp/plugin563708072 network=unix timestamp=2021-08-06T15:51:36.220+0700
+2021-08-06T15:51:36.294+0700 [WARN]  ValidateProviderConfig from "provider[\"vngcloud.vn/terraform/vngcloud\"]" changed the config value, but that value is unused
+2021-08-06T15:51:36.408+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1" references: []
+2021-08-06T15:51:36.409+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2" references: []
+2021-08-06T15:51:36.411+0700 [INFO]  provider.terraform-provider-vngcloud: data_source_backup_storage_package.go:41: [DEBUG] Data source backup storage package read: timestamp=2021-08-06T15:51:36.411+0700
+2021-08-06T15:51:36.411+0700 [INFO]  provider.terraform-provider-vngcloud: data_source_backup_storage_package.go:41: [DEBUG] Data source backup storage package read: timestamp=2021-08-06T15:51:36.411+0700
+2021-08-06T15:51:36.515+0700 [INFO]  provider.terraform-provider-vngcloud: data_source_backup_storage_package.go:51: [DEBUG] Num backup storage packages: 7: timestamp=2021-08-06T15:51:36.515+0700
+2021-08-06T15:51:36.516+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_1" references: []
+2021-08-06T15:51:36.518+0700 [INFO]  provider.terraform-provider-vngcloud: data_source_backup_storage_package.go:51: [DEBUG] Num backup storage packages: 7: timestamp=2021-08-06T15:51:36.517+0700
+2021-08-06T15:51:36.521+0700 [INFO]  provider.terraform-provider-vngcloud: resource_backup_storage.go:68: [DEBUG] Backup storage read: timestamp=2021-08-06T15:51:36.521+0700
+2021-08-06T15:51:36.522+0700 [DEBUG] Resource instance state not found for node "vngcloud_vdb_backup_storage.backup_storage_2", instance vngcloud_vdb_backup_storage.backup_storage_2
+2021-08-06T15:51:36.522+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_2" references: []
+2021-08-06T15:51:36.522+0700 [DEBUG] refresh: vngcloud_vdb_backup_storage.backup_storage_2: no state, so not refreshing
+2021-08-06T15:51:36.706+0700 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = transport is closing"
+2021-08-06T15:51:36.708+0700 [DEBUG] provider: plugin process exited: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=137191
+2021-08-06T15:51:36.708+0700 [DEBUG] provider: plugin exited
+2021-08-06T15:51:36.710+0700 [DEBUG] command: asking for input: "\nDo you want to perform these actions?"
+2021-08-06T15:51:59.518+0700 [INFO]  backend/local: apply calling Apply
+2021-08-06T15:51:59.518+0700 [INFO]  terraform: building graph: GraphTypeApply
+2021-08-06T15:51:59.518+0700 [DEBUG] Resource state not found for node "vngcloud_vdb_backup_storage.backup_storage_2", instance vngcloud_vdb_backup_storage.backup_storage_2
+2021-08-06T15:51:59.519+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_2" (*terraform.NodeApplyableResourceInstance) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:51:59.519+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_1 (expand)" (*terraform.nodeExpandApplyableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:51:59.519+0700 [DEBUG] ProviderTransformer: "vngcloud_vdb_backup_storage.backup_storage_2 (expand)" (*terraform.nodeExpandApplyableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:51:59.519+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)" (*terraform.nodeExpandApplyableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:51:59.519+0700 [DEBUG] ProviderTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)" (*terraform.nodeExpandApplyableResource) needs provider["vngcloud.vn/terraform/vngcloud"]
+2021-08-06T15:51:59.519+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_1 (expand)" references: []
+2021-08-06T15:51:59.519+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_2 (expand)" references: []
+2021-08-06T15:51:59.519+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand)" references: []
+2021-08-06T15:51:59.519+0700 [DEBUG] ReferenceTransformer: "data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)" references: []
+2021-08-06T15:51:59.520+0700 [DEBUG] ReferenceTransformer: "vngcloud_vdb_backup_storage.backup_storage_2" references: [data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand) data.vngcloud_vdb_backup_storage_package.backup_storage_package_2 (expand)]
+2021-08-06T15:51:59.520+0700 [DEBUG] ReferenceTransformer: "provider[\"vngcloud.vn/terraform/vngcloud\"]" references: []
+2021-08-06T15:51:59.520+0700 [DEBUG] pruneUnusedNodes: vngcloud_vdb_backup_storage.backup_storage_1 (expand) is no longer needed, removing
+2021-08-06T15:51:59.520+0700 [DEBUG] pruneUnusedNodes: data.vngcloud_vdb_backup_storage_package.backup_storage_package_1 (expand) is no longer needed, removing
+2021-08-06T15:51:59.521+0700 [DEBUG] Starting graph walk: walkApply
+2021-08-06T15:51:59.521+0700 [DEBUG] created provider logger: level=debug
+2021-08-06T15:51:59.521+0700 [INFO]  provider: configuring client automatic mTLS
+2021-08-06T15:51:59.615+0700 [DEBUG] provider: starting plugin: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud args=[.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud]
+2021-08-06T15:51:59.615+0700 [DEBUG] provider: plugin started: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=137331
+2021-08-06T15:51:59.615+0700 [DEBUG] provider: waiting for RPC address: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud
+2021-08-06T15:51:59.638+0700 [INFO]  provider.terraform-provider-vngcloud: configuring server automatic mTLS: timestamp=2021-08-06T15:51:59.637+0700
+2021-08-06T15:51:59.748+0700 [DEBUG] provider.terraform-provider-vngcloud: plugin address: address=/tmp/plugin744788507 network=unix timestamp=2021-08-06T15:51:59.748+0700
+2021-08-06T15:51:59.748+0700 [DEBUG] provider: using plugin: version=5
+2021-08-06T15:51:59.898+0700 [WARN]  ValidateProviderConfig from "provider[\"vngcloud.vn/terraform/vngcloud\"]" changed the config value, but that value is unused
+2021-08-06T15:52:00.077+0700 [INFO]  Starting apply for vngcloud_vdb_backup_storage.backup_storage_2
+2021-08-06T15:52:00.078+0700 [DEBUG] vngcloud_vdb_backup_storage.backup_storage_2: applying the planned Create change
+2021-08-06T15:52:00.079+0700 [INFO]  provider.terraform-provider-vngcloud: resource_backup_storage.go:92: [DEBUG] Backup storage create: timestamp=2021-08-06T15:52:00.079+0700
+2021-08-06T15:52:00.079+0700 [INFO]  provider.terraform-provider-vngcloud: resource_backup_storage.go:98: [DEBUG] Request body {"backupPackageId":"1","backupPackageName":"db.backup.quota.1","endDate":"2021-08-06T15:52:00.079270369+07:00","engineGroup":2,"extra":{},"name":"memory_store_backup_storage","projectId":"pro-5c16c28a-07fa-4836-bc83-daba5a907d86","quota":10,"startDate":"2021-08-06T15:52:00.079270225+07:00"}: timestamp=2021-08-06T15:52:00.079+0700
+2021-08-06T15:52:02.024+0700 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = transport is closing"
+2021-08-06T15:52:02.026+0700 [DEBUG] provider: plugin process exited: path=.terraform/providers/vngcloud.vn/terraform/vngcloud/0.2.0/linux_amd64/terraform-provider-vngcloud pid=137331
+2021-08-06T15:52:02.027+0700 [DEBUG] provider: plugin exited

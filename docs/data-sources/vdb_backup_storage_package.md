@@ -23,8 +23,8 @@ data "vngcloud_vdb_backup_storage_package" "backup_storage_package"{
 
 ### Required
 
-- **engine_group** (Number)
-- **name** (String)
+- **engine_group** (Number): The engine group of package
+- **name** (String): The name of package
 
 ### Optional
 
@@ -32,9 +32,9 @@ data "vngcloud_vdb_backup_storage_package" "backup_storage_package"{
 
 ### Read-Only
 
-- **config** (String)
-- **description** (String)
-- **quota** (Number)
+- **config** (String): The additional configuration of package
+- **description** (String): The package description
+- **quota** (Number): The quota information of package
 
 
 
