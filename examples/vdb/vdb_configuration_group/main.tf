@@ -1,24 +1,27 @@
 terraform {
   required_providers {
-    vdb = {
-      version = "~> 0.2"
-      source = "vngcloud.vn/terraform/vdb"
+    vngcloud = {
+      version = "~> 0.0.2"
+      source = "vngcloud/vngcloud"
     }
   }
 }
 
-provider "vdb" {
-  user_id = "11343"
-  project_id = "pro-4f394dc3-d426-40e7-870f-395a0172f450"
-  base_url = "http://localhost:8101"
+provider "vngcloud" {
+  user_id = "11342"
+  project_id = "pro-86a17fba-2530-43f1-890e-d3aaca497c14"
+  vdb_base_url = "https://vcmc-internal.vngcloud.tech/vdb-gateway"
+  token_url = "https://vcmc.vngcloud.tech/user-api/v1/user/oauth2/token"
+  client_id = "5V23JsOSOwM7puYnMPqxc6ibBqOlpbPI"
+  client_secret = "Q4DRR473i2weaE2xmWHR5mR9fBwp8X9K"
 }
 
-resource "vdb_configuration_group" "test_config" {
+resource "vngcloud_vdb_configuration_group" "test_config" {
   datastore_type = "MySQL"
   datastore_version = "5.7"
   name = "test configuration group"
 }
 
 output "config" {
-  value = vdb_configuration_group.test_config
+  value = vngcloud_vdb_configuration_group.test_config
 }
