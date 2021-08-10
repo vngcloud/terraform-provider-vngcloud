@@ -36,21 +36,21 @@ func ResourceBackupStorage() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"period": {
+			/*"period": {
 				Type:     schema.TypeInt,
 				Optional: true,
-			},
+			},*/
 			"engine_group": {
 				Type:     schema.TypeInt,
 				Required: true,
 			},
-			"monthly_cost": {
+			/*"monthly_cost": {
 				Type:     schema.TypeFloat,
-				Required: true,
-			},
+				Optional: true,
+			},*/
 			"name": {
 				Type:     schema.TypeString,
-				Required: true,
+				Computed: true,
 			},
 			"quota": {
 				Type:     schema.TypeInt,
@@ -81,7 +81,7 @@ func resourceBackupStorageRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("backup_storage_package_name", backupStorageInfo.BackupPackageName)
 	d.Set("name", backupStorageInfo.Name)
 	d.Set("quota", backupStorageInfo.Quota)
-	d.Set("period", backupStorageInfo.Period)
+	/*d.Set("period", backupStorageInfo.Period)*/
 	d.Set("engine_group", backupStorageInfo.EngineGroup)
 	d.Set("usage", backupStorageInfo.Usage)
 
@@ -110,16 +110,23 @@ func resourceBackupStorageCreate(d *schema.ResourceData, m interface{}) error {
 }
 
 func generateCreateBackupStorageRequest(projectId string, d *schema.ResourceData) vdb.CreateBackupStorageRequest {
+	engineGr := int32(d.Get("engine_group").(int))
+	var backupStorageName = ""
+	if engineGr == 1 {
+		backupStorageName = "relational_backup_storage"
+	} else if engineGr == 2 {
+		backupStorageName = "memory_store_backup_storage"
+	}
 	createRequest := vdb.CreateBackupStorageRequest{
 		BackupPackageId:   d.Get("backup_storage_package_id").(string),
 		BackupPackageName: d.Get("backup_storage_package_name").(string),
 		StartDate:         time.Now(),
 		EndDate:           time.Now(),
-		Period:            int32(d.Get("period").(int)),
-		EngineGroup:       int32(d.Get("engine_group").(int)),
+		Period:            0,
+		EngineGroup:       engineGr,
 		Extra:             map[string]string{},
-		MonthlyCost:       d.Get("monthly_cost").(float64),
-		Name:              d.Get("name").(string),
+		MonthlyCost:       0,
+		Name:              backupStorageName,
 		Quota:             int32(d.Get("quota").(int)),
 		ProjectId:         projectId,
 	}
@@ -127,14 +134,6 @@ func generateCreateBackupStorageRequest(projectId string, d *schema.ResourceData
 }
 
 func resourceBackupStorageUpdate(d *schema.ResourceData, m interface{}) error {
-	/*if d.HasChange("action") {
-		switch d.Get("action").(string) {
-		case "resize":
-			return resourceBackupStorageResizeQuota(d, m)
-			break
-		}
-	}
-	return nil*/
 	return resourceBackupStorageResizeQuota(d, m)
 }
 
