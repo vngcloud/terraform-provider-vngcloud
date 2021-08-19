@@ -26,4 +26,4 @@ https://registry.terraform.io/providers/vngcloud/vngcloud/latest/docs
 If you have any question or insue please contact us at [support@vngcloud.vn](mailto:support@vngcloud.vn) or create new issue.
 
 ## License
-[Mozilla Public License v2.0](https://github.com/vngcloud/terraform/blob/main/LICENSE)
+[Mozilla Public License v2.0](https://github.com/vngcloud/terraform-provider-vngcloud/blob/main/LICENSE)

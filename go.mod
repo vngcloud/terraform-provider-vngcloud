@@ -1,4 +1,4 @@
-module github.com/vngcloud/terraform
+module github.com/vngcloud/terraform-provider-vngcloud
 
 go 1.16
 
