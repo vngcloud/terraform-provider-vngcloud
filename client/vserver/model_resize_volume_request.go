@@ -11,12 +11,12 @@ package vserver
 
 // Resize Volume Request
 type ResizeVolumeRequest struct {
-	// POC wallet
-	IsPoc bool `json:"isPoc,omitempty"`
 	// New size of volume
 	NewSize int32 `json:"newSize"`
 	// Id of new volume type
 	NewVolumeTypeId string `json:"newVolumeTypeId"`
+	// Id of project
+	ProjectId string `json:"projectId,omitempty"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`
 	// Id of volume

@@ -14,7 +14,7 @@ func DataSourceProject() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceProjectRead,
 		Schema: map[string]*schema.Schema{
-			"name": {
+			"project_id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -22,9 +22,9 @@ func DataSourceProject() *schema.Resource {
 	}
 }
 func dataSourceProjectRead(d *schema.ResourceData, m interface{}) error {
-	name := d.Get("name").(string)
+	id := d.Get("project_id").(string)
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ProjectRestControllerApi.ListProjectUsingGET(context.TODO())
+	resp, _, err := cli.VserverClient.ProjectRestControllerApi.GetProjectUsingGET(context.TODO(), id)
 	if err != nil {
 		return err
 	}
@@ -36,11 +36,6 @@ func dataSourceProjectRead(d *schema.ResourceData, m interface{}) error {
 		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
-	for _, project := range resp.Projects {
-		if project.Name == name {
-			d.SetId(project.Id)
-			return nil
-		}
-	}
-	return fmt.Errorf("not found resource with name %s ", name)
+	d.SetId(id)
+	return nil
 }

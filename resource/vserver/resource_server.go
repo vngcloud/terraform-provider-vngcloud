@@ -42,22 +42,6 @@ func ResourceServer() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
-			"data_disk_encryption_type": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"data_disk_size": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"data_disk_type_id": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"data_volume_name": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"encryption_volume": {
 				Type:     schema.TypeBool,
 				Required: true,
@@ -73,10 +57,6 @@ func ResourceServer() *schema.Resource {
 			"image_id": {
 				Type:     schema.TypeString,
 				Required: true,
-			},
-			"is_poc": {
-				Type:     schema.TypeBool,
-				Optional: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
@@ -149,14 +129,6 @@ func ResourceServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"owner_email": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"share": {
-				Type:     schema.TypeBool,
-				Computed: true,
-			},
 			"ssh_key_name": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -196,15 +168,10 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	server := vserver.CreateServerRequest{
 		AttachFloating:         d.Get("attach_floating").(bool),
-		DataDiskEncryptionType: d.Get("data_disk_encryption_type").(string),
-		DataDiskSize:           int32(d.Get("data_disk_size").(int)),
-		DataDiskTypeId:         d.Get("data_disk_type_id").(string),
-		DataVolumeName:         d.Get("data_volume_name").(string),
 		EncryptionVolume:       d.Get("encryption_volume").(bool),
 		ExpirePassword:         d.Get("expire_password").(bool),
 		FlavorId:               d.Get("flavor_id").(string),
 		ImageId:                d.Get("image_id").(string),
-		IsPoc:                  d.Get("is_poc").(bool),
 		Name:                   d.Get("name").(string),
 		NetworkId:              d.Get("network_id").(string),
 		OsLicence:              d.Get("os_licence").(bool),
@@ -273,8 +240,6 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("flavor_id", server.FlavorId)
 	d.Set("image_id", server.ImageId)
 	d.Set("os_info", server.OsInfo)
-	d.Set("owner_email", server.OwnerEmail)
-	d.Set("share", server.Share)
 	d.Set("ssh_key_name", server.SshKeyName)
 	var internalInterfaces []map[string]string
 	for _, internalInterface := range server.InternalInterfaces {
@@ -285,9 +250,12 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 		internalInterfaceMap["mac"] = internalInterface.Mac
 		internalInterfaceMap["network_uuid"] = internalInterface.NetworkUuid
 		internalInterfaceMap["port_uuid"] = internalInterface.PortUuid
+		internalInterfaceMap["product"] = internalInterface.Product
+		internalInterfaceMap["server_uuid"] = internalInterface.ServerUuid
 		internalInterfaceMap["status"] = internalInterface.Status
 		internalInterfaceMap["subnet_uuid"] = internalInterface.SubnetUuid
 		internalInterfaceMap["type"] = internalInterface.Status
+		internalInterfaceMap["uuid"] = internalInterface.Uuid
 		internalInterfaces = append(internalInterfaces, internalInterfaceMap)
 	}
 	d.Set("internal_interfaces", internalInterfaces)
@@ -300,9 +268,12 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 		externalInterfaceMap["mac"] = externalInterface.Mac
 		externalInterfaceMap["network_uuid"] = externalInterface.NetworkUuid
 		externalInterfaceMap["port_uuid"] = externalInterface.PortUuid
+		externalInterfaceMap["product"] = externalInterface.Product
+		externalInterfaceMap["server_uuid"] = externalInterface.ServerUuid
 		externalInterfaceMap["status"] = externalInterface.Status
 		externalInterfaceMap["subnet_uuid"] = externalInterface.SubnetUuid
 		externalInterfaceMap["type"] = externalInterface.Status
+		externalInterfaceMap["uuid"] = externalInterface.Uuid
 		externalInterfaces = append(externalInterfaces, externalInterfaceMap)
 	}
 	d.Set("external_interfaces", externalInterfaces)
@@ -337,7 +308,7 @@ func resourceServerDelete(d *schema.ResourceData, m interface{}) error {
 		ForceDelete: true,
 	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ServerRestControllerApi.DeleteServerInTrashUsingDELETE(context.TODO(), deleteServer, projectID)
+	resp, _, err := cli.VserverClient.ServerRestControllerApi.DeleteServerUsingDELETE(context.TODO(), deleteServer, projectID)
 	if err != nil {
 		return err
 	}
@@ -369,7 +340,6 @@ func resourceServerResize(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 
 	serverResize := vserver.ResizeServerRequest{
-		Poc:      d.Get("is_poc").(bool),
 		ServerId: d.Id(),
 		FlavorId: d.Get("flavor_id").(string),
 	}

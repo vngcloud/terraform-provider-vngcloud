@@ -3,7 +3,6 @@
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Action** | **[]string** |  | [optional] [default to null]
 **CreatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
 **EncryptionVolume** | **bool** |  | [optional] [default to null]
 **ExternalInterfaces** | [**[]InterfaceNetworkInterface**](InterfaceNetworkInterface.md) |  | [optional] [default to null]
@@ -13,8 +12,7 @@ Name | Type | Description | Notes
 **Licence** | **bool** |  | [optional] [default to null]
 **Name** | **string** |  | [optional] [default to null]
 **OsInfo** | **string** |  | [optional] [default to null]
-**OwnerEmail** | **string** |  | [optional] [default to null]
-**Share** | **bool** |  | [optional] [default to null]
+**ServerGroupId** | **string** |  | [optional] [default to null]
 **SshKeyName** | **string** |  | [optional] [default to null]
 **Status** | **string** |  | [optional] [default to null]
 **Uuid** | **string** |  | [optional] [default to null]

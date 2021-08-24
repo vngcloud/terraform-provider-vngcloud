@@ -13,14 +13,6 @@ package vserver
 type CreateServerRequest struct {
 	// Attach floating IP
 	AttachFloating bool `json:"attachFloating,omitempty"`
-	// Type encryption of data volume
-	DataDiskEncryptionType string `json:"dataDiskEncryptionType,omitempty"`
-	// Size of data volume
-	DataDiskSize int32 `json:"dataDiskSize,omitempty"`
-	// Id of data volume type
-	DataDiskTypeId string `json:"dataDiskTypeId,omitempty"`
-	// Name of data volume
-	DataVolumeName string `json:"dataVolumeName,omitempty"`
 	// Encryption volume
 	EncryptionVolume bool `json:"encryptionVolume"`
 	// Skip change password: false, else: true
@@ -29,14 +21,14 @@ type CreateServerRequest struct {
 	FlavorId string `json:"flavorId"`
 	// Id of the image
 	ImageId string `json:"imageId"`
-	// POC wallet
-	IsPoc bool `json:"isPoc,omitempty"`
 	// Name of the server
 	Name string `json:"name"`
 	// Id of the network
 	NetworkId string `json:"networkId"`
 	// Licence of OS
 	OsLicence bool `json:"osLicence,omitempty"`
+	// Id of project
+	ProjectId string `json:"projectId,omitempty"`
 	// Type encryption of boot volume
 	RootDiskEncryptionType string `json:"rootDiskEncryptionType,omitempty"`
 	// Size of boot volume
@@ -45,11 +37,17 @@ type CreateServerRequest struct {
 	RootDiskTypeId string `json:"rootDiskTypeId"`
 	// Id of the SecGroups
 	SecurityGroup []string `json:"securityGroup,omitempty"`
-	SourceType    string   `json:"sourceType,omitempty"`
+	// Server group id
+	ServerGroupId string `json:"serverGroupId,omitempty"`
+	SourceType string `json:"sourceType,omitempty"`
 	// Id of SSH key
 	SshKeyId string `json:"sshKeyId,omitempty"`
 	// Id of the subnet
 	SubnetId string `json:"subnetId"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`
+	// name of user
+	UserName string `json:"userName,omitempty"`
+	// password of user
+	UserPassword string `json:"userPassword,omitempty"`
 }

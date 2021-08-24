@@ -5,7 +5,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **ErrorCode** | **int32** |  | [optional] [default to null]
 **ErrorMsg** | **string** |  | [optional] [default to null]
-**Extra** | [***interface{}**](interface{}.md) |  | [optional] [default to null]
+**Extra** | **interface{}** |  | [optional] [default to null]
 **ServerGroups** | [**[]ServerGroup**](ServerGroup.md) |  | [optional] [default to null]
 **Success** | **bool** |  | [optional] [default to null]
 

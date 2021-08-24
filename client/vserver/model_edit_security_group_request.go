@@ -10,9 +10,9 @@
 package vserver
 
 type EditSecurityGroupRequest struct {
-	Description string       `json:"description,omitempty"`
-	Extra       *interface{} `json:"extra,omitempty"`
-	Name        string       `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
+	Extra interface{} `json:"extra,omitempty"`
+	Name string `json:"name,omitempty"`
 	// Id of Secgroup to be deleted.
 	SecgroupId string `json:"secgroupId"`
 }

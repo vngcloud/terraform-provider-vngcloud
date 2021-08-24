@@ -10,6 +10,6 @@
 package vserver
 
 type VolumeTypeZone struct {
-	Id   string `json:"id,omitempty"`
+	Id string `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`
 }

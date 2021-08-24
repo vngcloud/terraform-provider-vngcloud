@@ -10,7 +10,7 @@
 package vserver
 
 type DeleteSubnetRequest struct {
-	Extra *interface{} `json:"extra,omitempty"`
+	Extra interface{} `json:"extra,omitempty"`
 	// Id of Network to be deleted.
 	NetworkId string `json:"networkId"`
 	// Id of Subnet to be deleted.

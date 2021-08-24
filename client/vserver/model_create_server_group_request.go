@@ -15,8 +15,10 @@ type CreateServerGroupRequest struct {
 	Description string `json:"description,omitempty"`
 	// Name of the server group
 	Name string `json:"name"`
-	// Policy of server group
-	Policy string `json:"policy"`
+	// Policy id of server group
+	PolicyId string `json:"policyId"`
+	// Id of project
+	ProjectId string `json:"projectId,omitempty"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`
 }

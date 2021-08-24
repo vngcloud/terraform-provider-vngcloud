@@ -10,7 +10,7 @@
 package vserver
 
 type SdnSshKeyDeleteRequest struct {
-	Id     string `json:"id,omitempty"`
-	Name   string `json:"name,omitempty"`
-	UserId int32  `json:"userId,omitempty"`
+	Id string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+	UserId int32 `json:"userId,omitempty"`
 }

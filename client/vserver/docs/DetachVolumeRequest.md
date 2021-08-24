@@ -3,7 +3,8 @@
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**InstanceId** | **string** | Id of server | [default to null]
+**ProjectId** | **string** | Id of project | [optional] [default to null]
+**ServerId** | **string** | Id of server | [default to null]
 **UserId** | **int32** | Id of user | [optional] [default to null]
 **VolumeId** | **string** | Id of volume | [default to null]
 

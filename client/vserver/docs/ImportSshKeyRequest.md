@@ -4,6 +4,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Name** | **string** |  | [optional] [default to null]
+**ProjectId** | **string** | Id of project | [optional] [default to null]
 **PubKey** | **string** |  | [optional] [default to null]
 **UserId** | **int32** | Id of user | [optional] [default to null]
 

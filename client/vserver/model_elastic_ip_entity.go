@@ -14,23 +14,23 @@ import (
 )
 
 type ElasticIpEntity struct {
-	AllocationType            string                     `json:"allocationType,omitempty"`
-	CreatedAt                 time.Time                  `json:"createdAt,omitempty"`
-	DeletedAt                 time.Time                  `json:"deletedAt,omitempty"`
-	DisplayCreatedAt          string                     `json:"displayCreatedAt,omitempty"`
-	ElasticIpPackage          int32                      `json:"elasticIpPackage,omitempty"`
-	Id                        int32                      `json:"id,omitempty"`
+	AllocationType string `json:"allocationType,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
+	DeletedAt time.Time `json:"deletedAt,omitempty"`
+	DisplayCreatedAt string `json:"displayCreatedAt,omitempty"`
+	ElasticIpPackage int32 `json:"elasticIpPackage,omitempty"`
+	Id int32 `json:"id,omitempty"`
 	InterfaceNetworkInterface *InterfaceNetworkInterface `json:"interfaceNetworkInterface,omitempty"`
-	InterfacePublicIp         *InterfacePublicIp         `json:"interfacePublicIp,omitempty"`
-	InterfacePublicSubnet     *InterfacePublicSubnet     `json:"interfacePublicSubnet,omitempty"`
-	Name                      string                     `json:"name,omitempty"`
-	ProjectId                 string                     `json:"projectId,omitempty"`
-	Status                    string                     `json:"status,omitempty"`
-	TargetId                  string                     `json:"targetId,omitempty"`
-	UpdatedAt                 time.Time                  `json:"updatedAt,omitempty"`
-	UsageType                 string                     `json:"usageType,omitempty"`
-	UserService               *UserService               `json:"userService,omitempty"`
-	Uuid                      string                     `json:"uuid,omitempty"`
-	VpcId                     string                     `json:"vpcId,omitempty"`
-	VpcName                   string                     `json:"vpcName,omitempty"`
+	InterfacePublicIp *InterfacePublicIp `json:"interfacePublicIp,omitempty"`
+	InterfacePublicSubnet *InterfacePublicSubnet `json:"interfacePublicSubnet,omitempty"`
+	Name string `json:"name,omitempty"`
+	ProjectId string `json:"projectId,omitempty"`
+	Status string `json:"status,omitempty"`
+	TargetId string `json:"targetId,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
+	UsageType string `json:"usageType,omitempty"`
+	UserService *UserService `json:"userService,omitempty"`
+	Uuid string `json:"uuid,omitempty"`
+	VpcId string `json:"vpcId,omitempty"`
+	VpcName string `json:"vpcName,omitempty"`
 }

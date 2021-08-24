@@ -51,9 +51,15 @@ type APIClient struct {
 
 	ImageRestControllerApi *ImageRestControllerApiService
 
+	NetworkAclRestControllerApi *NetworkAclRestControllerApiService
+
 	NetworkRestControllerApi *NetworkRestControllerApiService
 
 	ProjectRestControllerApi *ProjectRestControllerApiService
+
+	QuotaRestControllerApi *QuotaRestControllerApiService
+
+	RouteTableControllerApi *RouteTableControllerApiService
 
 	SecgroupRestControllerApi *SecgroupRestControllerApiService
 
@@ -93,8 +99,11 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.FlavorRestControllerApi = (*FlavorRestControllerApiService)(&c.common)
 	c.FlavorZoneRestControllerApi = (*FlavorZoneRestControllerApiService)(&c.common)
 	c.ImageRestControllerApi = (*ImageRestControllerApiService)(&c.common)
+	c.NetworkAclRestControllerApi = (*NetworkAclRestControllerApiService)(&c.common)
 	c.NetworkRestControllerApi = (*NetworkRestControllerApiService)(&c.common)
 	c.ProjectRestControllerApi = (*ProjectRestControllerApiService)(&c.common)
+	c.QuotaRestControllerApi = (*QuotaRestControllerApiService)(&c.common)
+	c.RouteTableControllerApi = (*RouteTableControllerApiService)(&c.common)
 	c.SecgroupRestControllerApi = (*SecgroupRestControllerApiService)(&c.common)
 	c.SecgroupRuleRestControllerApi = (*SecgroupRuleRestControllerApiService)(&c.common)
 	c.ServerGroupRestControllerApi = (*ServerGroupRestControllerApiService)(&c.common)
@@ -349,17 +358,17 @@ func (c *APIClient) prepareRequest(
 }
 
 func (c *APIClient) decode(v interface{}, b []byte, contentType string) (err error) {
-	if strings.Contains(contentType, "application/xml") {
-		if err = xml.Unmarshal(b, v); err != nil {
-			return err
+		if strings.Contains(contentType, "application/xml") {
+			if err = xml.Unmarshal(b, v); err != nil {
+				return err
+			}
+			return nil
+		} else if strings.Contains(contentType, "application/json") {
+			if err = json.Unmarshal(b, v); err != nil {
+				return err
+			}
+			return nil
 		}
-		return nil
-	} else if strings.Contains(contentType, "application/json") {
-		if err = json.Unmarshal(b, v); err != nil {
-			return err
-		}
-		return nil
-	}
 	return errors.New("undefined response type")
 }
 

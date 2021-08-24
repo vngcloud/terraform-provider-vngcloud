@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 **CreatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
 **Description** | **string** |  | [optional] [default to null]
 **Name** | **string** |  | [optional] [default to null]
-**Policy** | **string** |  | [optional] [default to null]
+**PolicyId** | **string** |  | [optional] [default to null]
 **ProjectId** | **string** |  | [optional] [default to null]
 **UpdatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
 **Uuid** | **string** |  | [optional] [default to null]

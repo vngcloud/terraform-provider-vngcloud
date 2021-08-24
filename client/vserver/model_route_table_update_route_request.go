@@ -9,12 +9,11 @@
 
 package vserver
 
-// Recover Volume Request
-type RecoverVolumeRequest struct {
-	// Id of volume
-	DataDiskId string `json:"dataDiskId"`
-	// POC wallet
-	IsPoc bool `json:"isPoc,omitempty"`
+type RouteTableUpdateRouteRequest struct {
+	// Id of project
+	ProjectId string `json:"projectId,omitempty"`
+	// The updated routes list of route-table
+	Routes []UpdatedRoute `json:"routes,omitempty"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`
 }

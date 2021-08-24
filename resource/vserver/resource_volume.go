@@ -42,10 +42,6 @@ func ResourceVolume() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"is_poc": {
-				Type:     schema.TypeBool,
-				Optional: true,
-			},
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -60,14 +56,6 @@ func ResourceVolume() *schema.Resource {
 			},
 			"bootable": {
 				Type:     schema.TypeBool,
-				Computed: true,
-			},
-			"share": {
-				Type:     schema.TypeBool,
-				Computed: true,
-			},
-			"owner_email": {
-				Type:     schema.TypeString,
 				Computed: true,
 			},
 		},
@@ -94,7 +82,6 @@ func resourceVolumeCreate(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	a := vserver.CreateVolumeRequest{
 		EncryptionType: d.Get("encryption_type").(string),
-		IsPoc:          d.Get("is_poc").(bool),
 		Name:           d.Get("name").(string),
 		Size:           int32(d.Get("size").(int)),
 		VolumeTypeId:   d.Get("volume_type_id").(string),
@@ -115,16 +102,16 @@ func resourceVolumeCreate(d *schema.ResourceData, m interface{}) error {
 	stateConf := &resource.StateChangeConf{
 		Pending:    volumeCreating,
 		Target:     volumeCreated,
-		Refresh:    resourceVolumeStateRefreshFunc(cli, resp.Volumes[0].Id, projectID),
+		Refresh:    resourceVolumeStateRefreshFunc(cli, resp.Volumes[0].Uuid, projectID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
 	_, err = stateConf.WaitForState()
 	if err != nil {
-		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", resp.Volumes[0].Id, err)
+		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", resp.Volumes[0].Uuid, err)
 	}
-	d.SetId(resp.Volumes[0].Id)
+	d.SetId(resp.Volumes[0].Uuid)
 	return resourceVolumeRead(d, m)
 }
 
@@ -154,8 +141,6 @@ func resourceVolumeRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("size", int(volume.Size))
 	d.Set("volume_type_id", volume.VolumeTypeId)
 	d.Set("bootable", volume.Bootable)
-	d.Set("share", volume.Share)
-	d.Set("owner_email", volume.OwnerEmail)
 	return nil
 }
 
@@ -189,11 +174,10 @@ func resourceVolumeUpdate(d *schema.ResourceData, m interface{}) error {
 func resourceVolumeDelete(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	deleteVolume := vserver.DeleteVolumeRequest{
-		VolumeId:    d.Id(),
-		ForceDelete: true,
+		VolumeId: d.Id(),
 	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.VolumeRestControllerApi.DeleteVolumeInTrashUsingDELETE(context.TODO(), deleteVolume, projectID)
+	resp, _, err := cli.VserverClient.VolumeRestControllerApi.DeleteVolumeUsingDELETE(context.TODO(), deleteVolume, projectID)
 	if err != nil {
 		return err
 	}

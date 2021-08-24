@@ -13,10 +13,12 @@ package vserver
 type CreateVolumeRequest struct {
 	// Type encryption of volume
 	EncryptionType string `json:"encryptionType,omitempty"`
-	// POC wallet
-	IsPoc bool `json:"isPoc,omitempty"`
+	// Id of image
+	ImageId string `json:"imageId,omitempty"`
 	// Name of the server
 	Name string `json:"name"`
+	// Id of project
+	ProjectId string `json:"projectId,omitempty"`
 	// Size of volume
 	Size int32 `json:"size"`
 	// Id of user

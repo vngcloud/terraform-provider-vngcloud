@@ -4,11 +4,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **CreatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
-**DeletedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
 **FixedIp** | **string** |  | [optional] [default to null]
 **FloatingIp** | **string** |  | [optional] [default to null]
-**Id** | **int32** |  | [optional] [default to null]
-**InterfaceId** | **int32** |  | [optional] [default to null]
 **InterfaceType** | **string** |  | [optional] [default to null]
 **Mac** | **string** |  | [optional] [default to null]
 **NetworkUuid** | **string** |  | [optional] [default to null]

@@ -11,6 +11,8 @@ package vserver
 
 // Update Server Request
 type ChangeSecGroupRequest struct {
+	// Id of project
+	ProjectId string `json:"projectId,omitempty"`
 	// Id of the SecGroups
 	SecurityGroup []string `json:"securityGroup,omitempty"`
 	// Id of server
