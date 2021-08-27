@@ -105,6 +105,10 @@ func ResourceServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"server_group_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"external_interfaces": {
 				Computed: true,
 				Type:     schema.TypeList,
@@ -182,6 +186,7 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		SourceType:             d.Get("source_type").(string),
 		SshKeyId:               d.Get("ssh_key").(string),
 		SubnetId:               d.Get("subnet_id").(string),
+		ServerGroupId:          d.Get("server_group_id").(string),
 	}
 	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.ServerRestControllerApi.CreateServerUsingPOST(context.TODO(), server, projectID)
@@ -241,6 +246,7 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("image_id", server.ImageId)
 	d.Set("os_info", server.OsInfo)
 	d.Set("ssh_key_name", server.SshKeyName)
+	d.Set("server_group_id", server.ServerGroupId)
 	var internalInterfaces []map[string]string
 	for _, internalInterface := range server.InternalInterfaces {
 		internalInterfaceMap := make(map[string]string)
@@ -493,5 +499,17 @@ func resourceServerUpdateSecgroup(d *schema.ResourceData, m interface{}) error {
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
+	stateConf := &resource.StateChangeConf{
+		Pending:    serverChangingSecGroup,
+		Target:     serverChangedSecGroup,
+		Refresh:    resourceServerStateRefreshFunc(cli, resp.Servers[0].Uuid, projectID),
+		Timeout:    d.Timeout(schema.TimeoutCreate),
+		Delay:      10 * time.Second,
+		MinTimeout: 1 * time.Second,
+	}
+	_, err = stateConf.WaitForState()
+	if err != nil {
+		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", d.Id(), err)
+	}
 	return resourceServerRead(d, m)
 }

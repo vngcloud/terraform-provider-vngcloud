@@ -66,6 +66,7 @@ Class | Method | HTTP request | Description
 *ServerGroupRestControllerApi* | [**GetServerGroupUsingGET**](docs/ServerGroupRestControllerApi.md#getservergroupusingget) | **Get** /v1/{project_id}/server-groups/{server_group_id} | Get server group
 *ServerGroupRestControllerApi* | [**ListServerGroupPolicyUsingGET**](docs/ServerGroupRestControllerApi.md#listservergrouppolicyusingget) | **Get** /v1/{project_id}/server-groups/policies | List server group policy
 *ServerGroupRestControllerApi* | [**ListServerGroupUsingGET**](docs/ServerGroupRestControllerApi.md#listservergroupusingget) | **Get** /v1/{project_id}/server-groups | List server group
+*ServerGroupRestControllerApi* | [**UpdateServerGroupUsingPUT**](docs/ServerGroupRestControllerApi.md#updateservergroupusingput) | **Put** /v1/{project_id}/server-groups | Update server group
 *ServerRestControllerApi* | [**CreateServerUsingPOST**](docs/ServerRestControllerApi.md#createserverusingpost) | **Post** /v1/{project_id}/servers | Create server
 *ServerRestControllerApi* | [**DeleteServerUsingDELETE**](docs/ServerRestControllerApi.md#deleteserverusingdelete) | **Delete** /v1/{project_id}/servers | Delete Server
 *ServerRestControllerApi* | [**GetServerUsingGET**](docs/ServerRestControllerApi.md#getserverusingget) | **Get** /v1/{project_id}/servers/{server_id} | Get server by id
@@ -174,6 +175,7 @@ Class | Method | HTTP request | Description
  - [UpdateNetworkRequest](docs/UpdateNetworkRequest.md)
  - [UpdateQuota](docs/UpdateQuota.md)
  - [UpdateQuotaVsgRequest](docs/UpdateQuotaVsgRequest.md)
+ - [UpdateServerGroupRequest](docs/UpdateServerGroupRequest.md)
  - [UpdateServerRequest](docs/UpdateServerRequest.md)
  - [UpdatedAclPolicyRule](docs/UpdatedAclPolicyRule.md)
  - [UpdatedRoute](docs/UpdatedRoute.md)

@@ -338,6 +338,8 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/BaseResponse"
+        "204":
+          description: "No Content"
         "401":
           description: "Unauthorized"
         "403":
@@ -496,6 +498,8 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/BaseResponse"
+        "204":
+          description: "No Content"
         "401":
           description: "Unauthorized"
         "403":
@@ -818,6 +822,8 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/BaseResponse"
+        "204":
+          description: "No Content"
         "401":
           description: "Unauthorized"
         "403":
@@ -881,6 +887,8 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/BaseResponse"
+        "204":
+          description: "No Content"
         "401":
           description: "Unauthorized"
         "403":
@@ -1032,6 +1040,8 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/BaseResponse"
+        "204":
+          description: "No Content"
         "401":
           description: "Unauthorized"
         "403":
@@ -1226,6 +1236,8 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/BaseResponse"
+        "204":
+          description: "No Content"
         "401":
           description: "Unauthorized"
         "403":
@@ -1359,6 +1371,41 @@ paths:
         "404":
           description: "Not Found"
       deprecated: false
+    put:
+      tags:
+      - "server-group-rest-controller"
+      summary: "Update server group"
+      operationId: "updateServerGroupUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "updateServerGroupRequest"
+        description: "updateServerGroupRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/UpdateServerGroupRequest"
+        x-exportParamName: "UpdateServerGroupRequest"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ServerGroupResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
     delete:
       tags:
       - "server-group-rest-controller"
@@ -1385,6 +1432,8 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/ServerGroupResponse"
+        "204":
+          description: "No Content"
         "401":
           description: "Unauthorized"
         "403":
@@ -1538,6 +1587,8 @@ paths:
           description: "Accepted"
           schema:
             $ref: "#/definitions/ServerResponse"
+        "204":
+          description: "No Content"
         "401":
           description: "Unauthorized"
         "403":
@@ -1712,8 +1763,8 @@ paths:
         type: "string"
         x-exportParamName: "ProjectId"
       responses:
-        "200":
-          description: "OK"
+        "202":
+          description: "Accepted"
           schema:
             $ref: "#/definitions/ServerResponse"
         "401":
@@ -1844,6 +1895,8 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/SSHKeyResponse"
+        "204":
+          description: "No Content"
         "401":
           description: "Unauthorized"
         "403":
@@ -1980,6 +2033,8 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/BaseResponse"
+        "204":
+          description: "No Content"
         "401":
           description: "Unauthorized"
         "403":
@@ -2259,6 +2314,8 @@ paths:
           description: "Accepted"
           schema:
             $ref: "#/definitions/VolumeResponse"
+        "204":
+          description: "No Content"
         "401":
           description: "Unauthorized"
         "403":
@@ -3016,6 +3073,8 @@ definitions:
     title: "DeleteSecurityGroupRuleRequest"
   DeleteServerGroupRequest:
     type: "object"
+    required:
+    - "serverGroupId"
     properties:
       projectId:
         type: "string"
@@ -3023,12 +3082,15 @@ definitions:
         description: "Id of project"
       serverGroupId:
         type: "string"
+        example: "server-group-e22afbe6-9a1e-4849-ad49-c00a9627b1ee"
+        description: "Id of the server group"
       userId:
         type: "integer"
         format: "int32"
         example: 11212
         description: "Id of user"
     title: "DeleteServerGroupRequest"
+    description: "Delete Server Group Request"
   DeleteServerRequest:
     type: "object"
     required:
@@ -4271,6 +4333,34 @@ definitions:
         quota:
           key: "{}"
         projectId: 0
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+      userId: 11212
+  UpdateServerGroupRequest:
+    type: "object"
+    required:
+    - "serverGroupId"
+    properties:
+      description:
+        type: "string"
+        example: "This is my server group"
+        description: "Description of server group"
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
+      serverGroupId:
+        type: "string"
+        example: "Group-01"
+        description: "Id of the server group"
+      userId:
+        type: "integer"
+        format: "int32"
+        example: 11212
+        description: "Id of user"
+    title: "UpdateServerGroupRequest"
+    example:
+      serverGroupId: "Group-01"
+      description: "This is my server group"
       projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
       userId: 11212
   UpdateServerRequest:

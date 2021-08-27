@@ -55,6 +55,16 @@ variable "security_group_id_list" {
   default = ["secg-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"]
 }
 
+variable "server_group_policy_name" {
+  type    = string
+  default = "AFFINITY"
+}
+
+variable "server_group_description" {
+  type    = string
+  default = "test terraform"
+}
+
 variable "server_count" {
   type    = number
   default = 0

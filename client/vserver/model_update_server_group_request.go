@@ -9,8 +9,9 @@
 
 package vserver
 
-// Delete Server Group Request
-type DeleteServerGroupRequest struct {
+type UpdateServerGroupRequest struct {
+	// Description of server group
+	Description string `json:"description,omitempty"`
 	// Id of project
 	ProjectId string `json:"projectId,omitempty"`
 	// Id of the server group
