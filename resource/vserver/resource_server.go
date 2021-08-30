@@ -101,6 +101,14 @@ func ResourceServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"user_name": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"user_password": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"action": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -187,6 +195,8 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		SshKeyId:               d.Get("ssh_key").(string),
 		SubnetId:               d.Get("subnet_id").(string),
 		ServerGroupId:          d.Get("server_group_id").(string),
+		UserName:               d.Get("user_name").(string),
+		UserPassword:           d.Get("user_password").(string),
 	}
 	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.ServerRestControllerApi.CreateServerUsingPOST(context.TODO(), server, projectID)
@@ -260,7 +270,7 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 		internalInterfaceMap["server_uuid"] = internalInterface.ServerUuid
 		internalInterfaceMap["status"] = internalInterface.Status
 		internalInterfaceMap["subnet_uuid"] = internalInterface.SubnetUuid
-		internalInterfaceMap["type"] = internalInterface.Status
+		internalInterfaceMap["type"] = internalInterface.Type_
 		internalInterfaceMap["uuid"] = internalInterface.Uuid
 		internalInterfaces = append(internalInterfaces, internalInterfaceMap)
 	}
