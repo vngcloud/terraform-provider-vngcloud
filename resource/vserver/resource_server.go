@@ -37,6 +37,7 @@ func ResourceServer() *schema.Resource {
 			"project_id": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"attach_floating": {
 				Type:     schema.TypeBool,
@@ -45,10 +46,12 @@ func ResourceServer() *schema.Resource {
 			"encryption_volume": {
 				Type:     schema.TypeBool,
 				Required: true,
+				ForceNew: true,
 			},
 			"expire_password": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				ForceNew: true,
 			},
 			"flavor_id": {
 				Type:     schema.TypeString,
@@ -57,6 +60,7 @@ func ResourceServer() *schema.Resource {
 			"image_id": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
@@ -69,10 +73,12 @@ func ResourceServer() *schema.Resource {
 			"os_licence": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				ForceNew: true,
 			},
 			"root_disk_encryption_type": {
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 			"root_disk_size": {
 				Type:     schema.TypeInt,
@@ -96,6 +102,7 @@ func ResourceServer() *schema.Resource {
 			"ssh_key": {
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 			"subnet_id": {
 				Type:     schema.TypeString,
@@ -104,10 +111,12 @@ func ResourceServer() *schema.Resource {
 			"user_name": {
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 			"user_password": {
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 			"action": {
 				Type:     schema.TypeString,
@@ -116,6 +125,7 @@ func ResourceServer() *schema.Resource {
 			"server_group_id": {
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 			"external_interfaces": {
 				Computed: true,
