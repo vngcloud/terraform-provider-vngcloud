@@ -7,4 +7,3 @@ NEW FEATURES: ServerGroup
 ENHANCEMENTS: Log Transaction
 
 BUG FIXES:
-## 0.0.7 (Unreleased)
