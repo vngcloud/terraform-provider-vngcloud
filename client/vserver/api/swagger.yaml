@@ -18,10 +18,16 @@ tags:
   description: "Flavor Zone Rest Controller"
 - name: "image-rest-controller"
   description: "Image Rest Controller"
+- name: "network-acl-rest-controller"
+  description: "Network Acl Rest Controller"
 - name: "network-rest-controller"
   description: "Network Rest Controller"
 - name: "project-rest-controller"
   description: "Project Rest Controller"
+- name: "quota-rest-controller"
+  description: "Quota Rest Controller"
+- name: "route-table-controller"
+  description: "Route Table Controller"
 - name: "secgroup-rest-controller"
   description: "Secgroup Rest Controller"
 - name: "secgroup-rule-rest-controller"
@@ -50,6 +56,33 @@ paths:
       produces:
       - "*/*"
       parameters: []
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ProjectResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/projects/{project_id}:
+    get:
+      tags:
+      - "project-rest-controller"
+      summary: "getProject"
+      operationId: "getProjectUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
       responses:
         "200":
           description: "OK"
@@ -237,8 +270,6 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/NetworkResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -274,8 +305,6 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/NetworkResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -349,6 +378,606 @@ paths:
         "404":
           description: "Not Found"
       deprecated: false
+  /v1/{project_id}/policies:
+    get:
+      tags:
+      - "network-acl-rest-controller"
+      summary: "List network-acl"
+      operationId: "listNetworkAclUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/NetworkAclListResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    post:
+      tags:
+      - "network-acl-rest-controller"
+      summary: "Create network-acl"
+      operationId: "createNetworkAclUsingPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - in: "body"
+        name: "createNetworkAclRequest"
+        description: "createNetworkAclRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateNetworkAclRequest"
+        x-exportParamName: "CreateNetworkAclRequest"
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/NetworkAclResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/{project_id}/policies/{uuid}:
+    get:
+      tags:
+      - "network-acl-rest-controller"
+      summary: "Get network-acl by uuid"
+      operationId: "getNetworkAclUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - name: "uuid"
+        in: "path"
+        description: "The network-acl uuid"
+        required: true
+        type: "string"
+        x-exportParamName: "Uuid"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/NetworkAclResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    delete:
+      tags:
+      - "network-acl-rest-controller"
+      summary: "Delete Network-acl"
+      operationId: "deleteNetworkAclUsingDELETE"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - name: "uuid"
+        in: "path"
+        description: "The network-acl uuid"
+        required: true
+        type: "string"
+        x-exportParamName: "Uuid"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+      deprecated: false
+  /v1/{project_id}/policies/{uuid}/rules:
+    put:
+      tags:
+      - "network-acl-rest-controller"
+      summary: "Update Inbound/Outbound Rules of Network-acl"
+      operationId: "updateRulesUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "updateAclRulesRequest"
+        description: "updateAclRulesRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/UpdateNetworkAclRulesRequest"
+        x-exportParamName: "UpdateAclRulesRequest"
+      - name: "uuid"
+        in: "path"
+        description: "The network-acl uuid"
+        required: true
+        type: "string"
+        x-exportParamName: "Uuid"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/NetworkAclResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/{project_id}/policies/{uuid}/subnets:
+    put:
+      tags:
+      - "network-acl-rest-controller"
+      summary: "Update ACL Rule of Network-acl"
+      operationId: "updateAssociatedSubnetsUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "updateSubnetsRequest"
+        description: "updateSubnetsRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/UpdateNetworkAclSubnetsRequest"
+        x-exportParamName: "UpdateSubnetsRequest"
+      - name: "uuid"
+        in: "path"
+        description: "The network-acl uuid"
+        required: true
+        type: "string"
+        x-exportParamName: "Uuid"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/NetworkAclResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/{project_id}/quota:
+    get:
+      tags:
+      - "quota-rest-controller"
+      summary: "list"
+      operationId: "listUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "project_id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/InterfaceProjectQuotaResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    put:
+      tags:
+      - "quota-rest-controller"
+      summary: "update"
+      operationId: "updateUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "project_id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "updateQuotaVsgRequest"
+        description: "updateQuotaVsgRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/UpdateQuotaVsgRequest"
+        x-exportParamName: "UpdateQuotaVsgRequest"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/InterfaceProjectQuotaResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/{project_id}/quota/init-used:
+    put:
+      tags:
+      - "quota-rest-controller"
+      summary: "initUsed"
+      operationId: "initUsedUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "project_id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/InterfaceProjectQuotaResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/{project_id}/quota/user/{user_id}:
+    get:
+      tags:
+      - "quota-rest-controller"
+      summary: "listByUser"
+      operationId: "listByUserUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "project_id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - name: "user_id"
+        in: "path"
+        description: "user_id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "UserId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/InterfaceProjectQuotaResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/{project_id}/quote-used:
+    get:
+      tags:
+      - "quota-rest-controller"
+      summary: "listQuotaUsed"
+      operationId: "listQuotaUsedUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "project_id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/QuotaResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/{project_id}/route-table:
+    get:
+      tags:
+      - "route-table-controller"
+      summary: "List route-tables"
+      operationId: "listRouteTablesUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ListRouteTablesResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    post:
+      tags:
+      - "route-table-controller"
+      summary: "Create route-table"
+      operationId: "createRouteTableUsingPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - in: "body"
+        name: "createRouteTableRequest"
+        description: "createRouteTableRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateRouteTableRequest"
+        x-exportParamName: "CreateRouteTableRequest"
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "202":
+          description: "Accepted"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    delete:
+      tags:
+      - "route-table-controller"
+      summary: "Delete all route-tables"
+      operationId: "deleteRouteTablesUsingDELETE"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+      deprecated: false
+  /v1/{project_id}/route-table/{uuid}:
+    get:
+      tags:
+      - "route-table-controller"
+      summary: "Get route-table by uuid"
+      operationId: "getRouteTableUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - name: "uuid"
+        in: "path"
+        description: "The route-table uuid"
+        required: true
+        type: "string"
+        x-exportParamName: "Uuid"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/RouteTableResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    delete:
+      tags:
+      - "route-table-controller"
+      summary: "Delete Route Table"
+      operationId: "deleteRouteTableUsingDELETE"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - name: "uuid"
+        in: "path"
+        description: "The route-table uuid"
+        required: true
+        type: "string"
+        x-exportParamName: "Uuid"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/BaseResponse"
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+      deprecated: false
+  /v1/{project_id}/route-table/{uuid}/routes:
+    put:
+      tags:
+      - "route-table-controller"
+      summary: "Add/remove routes of route-table"
+      operationId: "updateRouteTableRoutesUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "updateRouteRequest"
+        description: "updateRouteRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/RouteTableUpdateRouteRequest"
+        x-exportParamName: "UpdateRouteRequest"
+      - name: "uuid"
+        in: "path"
+        description: "The route-table uuid"
+        required: true
+        type: "string"
+        x-exportParamName: "Uuid"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/RouteTableResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/{project_id}/route-table/{uuid}/subnets:
+    put:
+      tags:
+      - "route-table-controller"
+      summary: "Add/remove subnets of route-table"
+      operationId: "updateRouteTableSubnetsUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "updateSubnetRequest"
+        description: "updateSubnetRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/RouteTableUpdateSubnetRequest"
+        x-exportParamName: "UpdateSubnetRequest"
+      - name: "uuid"
+        in: "path"
+        description: "The route-table uuid"
+        required: true
+        type: "string"
+        x-exportParamName: "Uuid"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/RouteTableResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
   /v1/{project_id}/secgroup-rules:
     post:
       tags:
@@ -378,8 +1007,6 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/SecgroupRuleResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -541,8 +1168,6 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/SecgroupResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -578,8 +1203,6 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/SecgroupResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -737,8 +1360,6 @@ paths:
         type: "string"
         x-exportParamName: "ProjectId"
       responses:
-        "201":
-          description: "Created"
         "202":
           description: "Accepted"
           schema:
@@ -750,12 +1371,13 @@ paths:
         "404":
           description: "Not Found"
       deprecated: false
-  /v1/{project_id}/server-groups/{server-group-id}:
-    delete:
+    put:
       tags:
       - "server-group-rest-controller"
-      summary: "Delete server group"
-      operationId: "deleteServerGroupUsingDELETE"
+      summary: "Update server group"
+      operationId: "updateServerGroupUsingPUT"
+      consumes:
+      - "application/json"
       produces:
       - "*/*"
       parameters:
@@ -765,12 +1387,46 @@ paths:
         required: true
         type: "string"
         x-exportParamName: "ProjectId"
-      - name: "server-group-id"
+      - in: "body"
+        name: "updateServerGroupRequest"
+        description: "updateServerGroupRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/UpdateServerGroupRequest"
+        x-exportParamName: "UpdateServerGroupRequest"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ServerGroupResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+    delete:
+      tags:
+      - "server-group-rest-controller"
+      summary: "Delete server group"
+      operationId: "deleteServerGroupUsingDELETE"
+      produces:
+      - "*/*"
+      parameters:
+      - in: "body"
+        name: "deleteServerRequest"
+        description: "deleteServerRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/DeleteServerGroupRequest"
+        x-exportParamName: "DeleteServerRequest"
+      - name: "project_id"
         in: "path"
-        description: "server-group-id"
+        description: "The project id"
         required: true
         type: "string"
-        x-exportParamName: "ServerGroupId"
+        x-exportParamName: "ProjectId"
       responses:
         "200":
           description: "OK"
@@ -782,6 +1438,66 @@ paths:
           description: "Unauthorized"
         "403":
           description: "Forbidden"
+      deprecated: false
+  /v1/{project_id}/server-groups/policies:
+    get:
+      tags:
+      - "server-group-rest-controller"
+      summary: "List server group policy"
+      operationId: "listServerGroupPolicyUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ServerGroupPolicyResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
+      deprecated: false
+  /v1/{project_id}/server-groups/{server_group_id}:
+    get:
+      tags:
+      - "server-group-rest-controller"
+      summary: "Get server group"
+      operationId: "getServerGroupUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "project_id"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - name: "server_group_id"
+        in: "path"
+        description: "The server group id"
+        required: true
+        type: "string"
+        x-exportParamName: "ServerGroupId"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ServerGroupResponse"
+        "401":
+          description: "Unauthorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Not Found"
       deprecated: false
   /v1/{project_id}/servers:
     get:
@@ -834,12 +1550,10 @@ paths:
         type: "string"
         x-exportParamName: "ProjectId"
       responses:
-        "200":
-          description: "OK"
+        "202":
+          description: "Accepted"
           schema:
             $ref: "#/definitions/ServerResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -850,7 +1564,7 @@ paths:
     delete:
       tags:
       - "server-rest-controller"
-      summary: "Move server into the trash"
+      summary: "Delete Server"
       operationId: "deleteServerUsingDELETE"
       produces:
       - "*/*"
@@ -869,8 +1583,8 @@ paths:
         type: "string"
         x-exportParamName: "ProjectId"
       responses:
-        "200":
-          description: "OK"
+        "202":
+          description: "Accepted"
           schema:
             $ref: "#/definitions/ServerResponse"
         "204":
@@ -879,33 +1593,6 @@ paths:
           description: "Unauthorized"
         "403":
           description: "Forbidden"
-      deprecated: false
-  /v1/{project_id}/servers/list_in_trash:
-    get:
-      tags:
-      - "server-rest-controller"
-      summary: "List server in trash"
-      operationId: "listServerInTrashUsingGET"
-      produces:
-      - "*/*"
-      parameters:
-      - name: "project_id"
-        in: "path"
-        description: "The project id"
-        required: true
-        type: "string"
-        x-exportParamName: "ProjectId"
-      responses:
-        "200":
-          description: "OK"
-          schema:
-            $ref: "#/definitions/ServerResponse"
-        "401":
-          description: "Unauthorized"
-        "403":
-          description: "Forbidden"
-        "404":
-          description: "Not Found"
       deprecated: false
   /v1/{project_id}/servers/reboot:
     put:
@@ -932,50 +1619,10 @@ paths:
           $ref: "#/definitions/UpdateServerRequest"
         x-exportParamName: "UpdateServerRequest"
       responses:
-        "200":
-          description: "OK"
+        "202":
+          description: "Accepted"
           schema:
             $ref: "#/definitions/ServerResponse"
-        "201":
-          description: "Created"
-        "401":
-          description: "Unauthorized"
-        "403":
-          description: "Forbidden"
-        "404":
-          description: "Not Found"
-      deprecated: false
-  /v1/{project_id}/servers/recover:
-    put:
-      tags:
-      - "server-rest-controller"
-      summary: "Recover server"
-      operationId: "recoverServerUsingPUT"
-      consumes:
-      - "application/json"
-      produces:
-      - "*/*"
-      parameters:
-      - name: "project_id"
-        in: "path"
-        description: "The project id"
-        required: true
-        type: "string"
-        x-exportParamName: "ProjectId"
-      - in: "body"
-        name: "recoverServerRequest"
-        description: "recoverServerRequest"
-        required: true
-        schema:
-          $ref: "#/definitions/RecoverServerRequest"
-        x-exportParamName: "RecoverServerRequest"
-      responses:
-        "200":
-          description: "OK"
-          schema:
-            $ref: "#/definitions/ServerResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -1008,12 +1655,10 @@ paths:
           $ref: "#/definitions/ResizeServerRequest"
         x-exportParamName: "ResizeServerRequest"
       responses:
-        "200":
-          description: "OK"
+        "202":
+          description: "Accepted"
           schema:
             $ref: "#/definitions/ServerResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -1046,12 +1691,10 @@ paths:
           $ref: "#/definitions/UpdateServerRequest"
         x-exportParamName: "UpdateServerRequest"
       responses:
-        "200":
-          description: "OK"
+        "202":
+          description: "Accepted"
           schema:
             $ref: "#/definitions/ServerResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -1084,52 +1727,16 @@ paths:
           $ref: "#/definitions/UpdateServerRequest"
         x-exportParamName: "UpdateServerRequest"
       responses:
-        "200":
-          description: "OK"
+        "202":
+          description: "Accepted"
           schema:
             $ref: "#/definitions/ServerResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
           description: "Forbidden"
         "404":
           description: "Not Found"
-      deprecated: false
-  /v1/{project_id}/servers/trash:
-    delete:
-      tags:
-      - "server-rest-controller"
-      summary: "Delete server in trash"
-      operationId: "deleteServerInTrashUsingDELETE"
-      produces:
-      - "*/*"
-      parameters:
-      - in: "body"
-        name: "deleteServerRequest"
-        description: "deleteServerRequest"
-        required: true
-        schema:
-          $ref: "#/definitions/DeleteServerRequest"
-        x-exportParamName: "DeleteServerRequest"
-      - name: "project_id"
-        in: "path"
-        description: "The project id"
-        required: true
-        type: "string"
-        x-exportParamName: "ProjectId"
-      responses:
-        "200":
-          description: "OK"
-          schema:
-            $ref: "#/definitions/ServerResponse"
-        "204":
-          description: "No Content"
-        "401":
-          description: "Unauthorized"
-        "403":
-          description: "Forbidden"
       deprecated: false
   /v1/{project_id}/servers/update_sec_group:
     put:
@@ -1156,12 +1763,10 @@ paths:
         type: "string"
         x-exportParamName: "ProjectId"
       responses:
-        "200":
-          description: "OK"
+        "202":
+          description: "Accepted"
           schema:
             $ref: "#/definitions/ServerResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -1257,8 +1862,6 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/SSHKeyResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -1328,8 +1931,6 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/SSHKeyResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -1399,8 +2000,6 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/SubnetResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -1678,12 +2277,10 @@ paths:
         type: "string"
         x-exportParamName: "ProjectId"
       responses:
-        "200":
-          description: "OK"
+        "202":
+          description: "Accepted"
           schema:
             $ref: "#/definitions/VolumeResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -1694,7 +2291,7 @@ paths:
     delete:
       tags:
       - "volume-rest-controller"
-      summary: "Move volume into the trash"
+      summary: "Delete volume"
       operationId: "deleteVolumeUsingDELETE"
       produces:
       - "*/*"
@@ -1713,8 +2310,8 @@ paths:
         type: "string"
         x-exportParamName: "ProjectId"
       responses:
-        "200":
-          description: "OK"
+        "202":
+          description: "Accepted"
           schema:
             $ref: "#/definitions/VolumeResponse"
         "204":
@@ -1749,12 +2346,10 @@ paths:
         type: "string"
         x-exportParamName: "ProjectId"
       responses:
-        "200":
-          description: "OK"
+        "202":
+          description: "Accepted"
           schema:
             $ref: "#/definitions/VolumeResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -1787,77 +2382,10 @@ paths:
         type: "string"
         x-exportParamName: "ProjectId"
       responses:
-        "200":
-          description: "OK"
+        "202":
+          description: "Accepted"
           schema:
             $ref: "#/definitions/VolumeResponse"
-        "201":
-          description: "Created"
-        "401":
-          description: "Unauthorized"
-        "403":
-          description: "Forbidden"
-        "404":
-          description: "Not Found"
-      deprecated: false
-  /v1/{project_id}/volumes/list_in_trash:
-    get:
-      tags:
-      - "volume-rest-controller"
-      summary: "List volume in trash"
-      operationId: "listVolumeInTrashUsingGET"
-      produces:
-      - "*/*"
-      parameters:
-      - name: "project_id"
-        in: "path"
-        description: "project_id"
-        required: true
-        type: "string"
-        x-exportParamName: "ProjectId"
-      responses:
-        "200":
-          description: "OK"
-          schema:
-            $ref: "#/definitions/VolumeResponse"
-        "401":
-          description: "Unauthorized"
-        "403":
-          description: "Forbidden"
-        "404":
-          description: "Not Found"
-      deprecated: false
-  /v1/{project_id}/volumes/recover:
-    put:
-      tags:
-      - "volume-rest-controller"
-      summary: "Recover volume"
-      operationId: "recoverVolumeUsingPUT"
-      consumes:
-      - "application/json"
-      produces:
-      - "*/*"
-      parameters:
-      - name: "project_id"
-        in: "path"
-        description: "The project id"
-        required: true
-        type: "string"
-        x-exportParamName: "ProjectId"
-      - in: "body"
-        name: "recoverVolumeRequest"
-        description: "recoverVolumeRequest"
-        required: true
-        schema:
-          $ref: "#/definitions/RecoverVolumeRequest"
-        x-exportParamName: "RecoverVolumeRequest"
-      responses:
-        "200":
-          description: "OK"
-          schema:
-            $ref: "#/definitions/VolumeResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
@@ -1890,52 +2418,16 @@ paths:
           $ref: "#/definitions/ResizeVolumeRequest"
         x-exportParamName: "ResizeVolumeRequest"
       responses:
-        "200":
-          description: "OK"
+        "202":
+          description: "Accepted"
           schema:
             $ref: "#/definitions/VolumeResponse"
-        "201":
-          description: "Created"
         "401":
           description: "Unauthorized"
         "403":
           description: "Forbidden"
         "404":
           description: "Not Found"
-      deprecated: false
-  /v1/{project_id}/volumes/trash:
-    delete:
-      tags:
-      - "volume-rest-controller"
-      summary: "Delete volume in trash"
-      operationId: "deleteVolumeInTrashUsingDELETE"
-      produces:
-      - "*/*"
-      parameters:
-      - in: "body"
-        name: "deleteVolumeRequest"
-        description: "deleteVolumeRequest"
-        required: true
-        schema:
-          $ref: "#/definitions/DeleteVolumeRequest"
-        x-exportParamName: "DeleteVolumeRequest"
-      - name: "project_id"
-        in: "path"
-        description: "The project id"
-        required: true
-        type: "string"
-        x-exportParamName: "ProjectId"
-      responses:
-        "200":
-          description: "OK"
-          schema:
-            $ref: "#/definitions/VolumeResponse"
-        "204":
-          description: "No Content"
-        "401":
-          description: "Unauthorized"
-        "403":
-          description: "Forbidden"
       deprecated: false
   /v1/{project_id}/volumes/{volume_id}:
     get:
@@ -2037,13 +2529,40 @@ paths:
           description: "Not Found"
       deprecated: false
 definitions:
+  AclPolicyRule:
+    type: "object"
+    properties:
+      action:
+        type: "string"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      interfaceAclPolicyUuid:
+        type: "string"
+      port:
+        type: "string"
+      protocol:
+        type: "string"
+      seqNumber:
+        type: "string"
+      source:
+        type: "string"
+      type:
+        type: "string"
+      uuid:
+        type: "string"
+    title: "AclPolicyRule"
   AttachVolumeRequest:
     type: "object"
     required:
-    - "instanceId"
+    - "serverId"
     - "volumeId"
     properties:
-      instanceId:
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
+      serverId:
         type: "string"
         example: "ins-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
         description: "Id of server"
@@ -2059,8 +2578,9 @@ definitions:
     title: "AttachVolumeRequest"
     description: "Attach Volume Request"
     example:
-      instanceId: "ins-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
       volumeId: "vol-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+      serverId: "ins-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
       userId: 11212
   BaseResponse:
     type: "object"
@@ -2081,6 +2601,10 @@ definitions:
     required:
     - "serverId"
     properties:
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
       securityGroup:
         type: "array"
         example:
@@ -2102,7 +2626,37 @@ definitions:
     example:
       securityGroup:
       - "secg-5c1e8e96-d106-4a91-8047-a76d1ae5ba9b"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
       serverId: "ins-a332cc50-8e24-4a45-ad9f-4136c7358503"
+      userId: 11212
+  CreateNetworkAclRequest:
+    type: "object"
+    required:
+    - "name"
+    - "vpc"
+    properties:
+      name:
+        type: "string"
+        example: "Default"
+        description: "Name of The Network Acl table"
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
+      userId:
+        type: "integer"
+        format: "int32"
+        example: 11212
+        description: "Id of user"
+      vpc:
+        type: "string"
+        example: "net-7e9d494c-7127-48c8-8cd9-a954d37dfd65"
+        description: "Uuid of The VPC"
+    title: "CreateNetworkAclRequest"
+    example:
+      name: "Default"
+      vpc: "net-7e9d494c-7127-48c8-8cd9-a954d37dfd65"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
       userId: 11212
   CreateNetworkRequest:
     type: "object"
@@ -2131,11 +2685,44 @@ definitions:
       extra: "{}"
       name: "Network_01"
       cidr: "10.2.0.0/16"
+  CreateRouteTableRequest:
+    type: "object"
+    required:
+    - "name"
+    - "vpcUuid"
+    properties:
+      name:
+        type: "string"
+        example: "Default"
+        description: "Name of The route table"
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
+      userId:
+        type: "integer"
+        format: "int32"
+        example: 11212
+        description: "Id of user"
+      vpcUuid:
+        type: "string"
+        example: "net-7e9d494c-7127-48c8-8cd9-a954d37dfd65"
+        description: "Uuid of The VPC"
+    title: "CreateRouteTableRequest"
+    example:
+      name: "Default"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+      userId: 11212
+      vpcUuid: "net-7e9d494c-7127-48c8-8cd9-a954d37dfd65"
   CreateSSHKeyRequest:
     type: "object"
     properties:
       name:
         type: "string"
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
       userId:
         type: "integer"
         format: "int32"
@@ -2220,7 +2807,7 @@ definitions:
     type: "object"
     required:
     - "name"
-    - "policy"
+    - "policyId"
     properties:
       description:
         type: "string"
@@ -2228,12 +2815,16 @@ definitions:
         description: "Description of server group"
       name:
         type: "string"
-        example: "Group_01"
+        example: "Group-01"
         description: "Name of the server group"
-      policy:
+      policyId:
         type: "string"
-        example: "soft-affinity"
-        description: "Policy of server group"
+        example: "7916f5ac-cff2-11eb-b8bc-0242ac130003"
+        description: "Policy id of server group"
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
       userId:
         type: "integer"
         format: "int32"
@@ -2242,10 +2833,11 @@ definitions:
     title: "CreateServerGroupRequest"
     description: "Create Server Group Request"
     example:
-      name: "Group_01"
+      policyId: "7916f5ac-cff2-11eb-b8bc-0242ac130003"
+      name: "Group-01"
       description: "This is my server group"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
       userId: 11212
-      policy: "soft-affinity"
   CreateServerRequest:
     type: "object"
     required:
@@ -2262,23 +2854,6 @@ definitions:
         type: "boolean"
         example: false
         description: "Attach floating IP"
-      dataDiskEncryptionType:
-        type: "string"
-        example: "aes-xts-plain64_256"
-        description: "Type encryption of data volume"
-      dataDiskSize:
-        type: "integer"
-        format: "int32"
-        example: 20
-        description: "Size of data volume"
-      dataDiskTypeId:
-        type: "string"
-        example: "vtype-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
-        description: "Id of data volume type"
-      dataVolumeName:
-        type: "string"
-        example: "Data_volume"
-        description: "Name of data volume"
       encryptionVolume:
         type: "boolean"
         example: false
@@ -2295,10 +2870,6 @@ definitions:
         type: "string"
         example: "img-5c6639ad-8b02-4402-8be4-5bc0c6a57d32"
         description: "Id of the image"
-      isPoc:
-        type: "boolean"
-        example: false
-        description: "POC wallet"
       name:
         type: "string"
         example: "Server_01"
@@ -2311,6 +2882,10 @@ definitions:
         type: "boolean"
         example: false
         description: "Licence of OS"
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
       rootDiskEncryptionType:
         type: "string"
         example: "aes-xts-plain64_256"
@@ -2331,6 +2906,10 @@ definitions:
         description: "Id of the SecGroups"
         items:
           type: "string"
+      serverGroupId:
+        type: "string"
+        example: "server-group-d4d6a036-1955-4c5f-a40d-e789d26cf49d"
+        description: "Server group id"
       sourceType:
         type: "string"
       sshKeyId:
@@ -2346,19 +2925,27 @@ definitions:
         format: "int32"
         example: 11212
         description: "Id of user"
+      userName:
+        type: "string"
+        example: "stackops"
+        description: "name of user"
+      userPassword:
+        type: "string"
+        example: "password"
+        description: "password of user"
     title: "CreateServerRequest"
     description: "Create Server Request"
     example:
-      dataDiskSize: 20
       subnetId: "sub-b7716e75-10fa-4d18-9987-d68273f49386"
+      userPassword: "password"
       imageId: "img-5c6639ad-8b02-4402-8be4-5bc0c6a57d32"
-      dataDiskTypeId: "vtype-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
       attachFloating: false
       rootDiskSize: 20
-      isPoc: false
       flavorId: "flav-c41b827e-730a-475f-b181-c0d1c7acc6d4"
+      serverGroupId: "server-group-d4d6a036-1955-4c5f-a40d-e789d26cf49d"
       securityGroup:
       - "secg-5c1e8e96-d106-4a91-8047-a76d1ae5ba9b"
+      userName: "stackops"
       userId: 11212
       sshKeyId: "SSH_Key"
       osLicence: false
@@ -2369,8 +2956,7 @@ definitions:
       name: "Server_01"
       rootDiskEncryptionType: "aes-xts-plain64_256"
       networkId: "net-d1314dfd-31ac-4b5f-ad9a-a5a489ecfa5d"
-      dataVolumeName: "Data_volume"
-      dataDiskEncryptionType: "aes-xts-plain64_256"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
   CreateSubnetRequest:
     type: "object"
     required:
@@ -2410,14 +2996,18 @@ definitions:
         type: "string"
         example: "aes-xts-plain64_256"
         description: "Type encryption of volume"
-      isPoc:
-        type: "boolean"
-        example: false
-        description: "POC wallet"
+      imageId:
+        type: "string"
+        example: "img-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
+        description: "Id of image"
       name:
         type: "string"
         example: "Server_01"
         description: "Name of the server"
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
       size:
         type: "integer"
         format: "int32"
@@ -2435,11 +3025,12 @@ definitions:
     title: "CreateVolumeRequest"
     description: "Create Volume Request"
     example:
+      imageId: "img-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
       size: 20
-      isPoc: false
       volumeTypeId: "vtype-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
       encryptionType: "aes-xts-plain64_256"
       name: "Server_01"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
       userId: 11212
   DeleteNetworkRequest:
     type: "object"
@@ -2480,6 +3071,26 @@ definitions:
         example: "secr-e454fde0-de12-4f70-a5e6-2d904b850fa3"
         description: "Id of Secgroup rule to be deleted."
     title: "DeleteSecurityGroupRuleRequest"
+  DeleteServerGroupRequest:
+    type: "object"
+    required:
+    - "serverGroupId"
+    properties:
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
+      serverGroupId:
+        type: "string"
+        example: "server-group-e22afbe6-9a1e-4849-ad49-c00a9627b1ee"
+        description: "Id of the server group"
+      userId:
+        type: "integer"
+        format: "int32"
+        example: 11212
+        description: "Id of user"
+    title: "DeleteServerGroupRequest"
+    description: "Delete Server Group Request"
   DeleteServerRequest:
     type: "object"
     required:
@@ -2489,6 +3100,10 @@ definitions:
         type: "boolean"
         example: false
         description: "Skip step move into the trash"
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
       serverId:
         type: "string"
         example: "ins-a332cc50-8e24-4a45-ad9f-4136c7358503"
@@ -2523,10 +3138,10 @@ definitions:
     required:
     - "volumeId"
     properties:
-      forceDelete:
-        type: "boolean"
-        example: false
-        description: "Skip step move into the trash"
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
       userId:
         type: "integer"
         format: "int32"
@@ -2541,10 +3156,14 @@ definitions:
   DetachVolumeRequest:
     type: "object"
     required:
-    - "instanceId"
+    - "serverId"
     - "volumeId"
     properties:
-      instanceId:
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
+      serverId:
         type: "string"
         example: "ins-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
         description: "Id of server"
@@ -2560,8 +3179,9 @@ definitions:
     title: "DetachVolumeRequest"
     description: "Detach Volume Request"
     example:
-      instanceId: "ins-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
       volumeId: "vol-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+      serverId: "ins-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
       userId: 11212
   EditSecurityGroupRequest:
     type: "object"
@@ -2705,6 +3325,10 @@ definitions:
     properties:
       name:
         type: "string"
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
       pubKey:
         type: "string"
       userId:
@@ -2719,19 +3343,10 @@ definitions:
       createdAt:
         type: "string"
         format: "date-time"
-      deletedAt:
-        type: "string"
-        format: "date-time"
       fixedIp:
         type: "string"
       floatingIp:
         type: "string"
-      id:
-        type: "integer"
-        format: "int32"
-      interfaceId:
-        type: "integer"
-        format: "int32"
       interfaceType:
         type: "string"
       mac:
@@ -2756,6 +3371,50 @@ definitions:
       uuid:
         type: "string"
     title: "InterfaceNetworkInterface"
+  InterfaceProjectQuota:
+    type: "object"
+    properties:
+      createdAt:
+        type: "string"
+        format: "date-time"
+      deletedAt:
+        type: "string"
+        format: "date-time"
+      description:
+        type: "string"
+      id:
+        type: "integer"
+        format: "int32"
+      projectId:
+        type: "string"
+      quota:
+        type: "string"
+      type:
+        type: "string"
+      updatedAt:
+        type: "string"
+        format: "date-time"
+      used:
+        type: "string"
+      uuid:
+        type: "string"
+    title: "InterfaceProjectQuota"
+  InterfaceProjectQuotaResponse:
+    type: "object"
+    properties:
+      errorCode:
+        type: "integer"
+        format: "int32"
+      errorMsg:
+        type: "string"
+      extra:
+        type: "object"
+        properties: {}
+      interfaceProjectQuota:
+        $ref: "#/definitions/InterfaceProjectQuota"
+      success:
+        type: "boolean"
+    title: "InterfaceProjectQuotaResponse"
   InterfacePublicIp:
     type: "object"
     properties:
@@ -2821,6 +3480,24 @@ definitions:
         type: "integer"
         format: "int32"
     title: "InterfacePublicSubnet"
+  ListRouteTablesResponse:
+    type: "object"
+    properties:
+      errorCode:
+        type: "integer"
+        format: "int32"
+      errorMsg:
+        type: "string"
+      extra:
+        type: "object"
+        properties: {}
+      routeTables:
+        type: "array"
+        items:
+          $ref: "#/definitions/RouteTableModel"
+      success:
+        type: "boolean"
+    title: "ListRouteTablesResponse"
   Network:
     type: "object"
     properties:
@@ -2846,6 +3523,68 @@ definitions:
         items:
           $ref: "#/definitions/Subnet"
     title: "Network"
+  NetworkAclListResponse:
+    type: "object"
+    properties:
+      errorCode:
+        type: "integer"
+        format: "int32"
+      errorMsg:
+        type: "string"
+      extra:
+        type: "object"
+        properties: {}
+      networkAcls:
+        type: "array"
+        items:
+          $ref: "#/definitions/NetworkAclModel"
+      success:
+        type: "boolean"
+    title: "NetworkAclListResponse"
+  NetworkAclModel:
+    type: "object"
+    properties:
+      aclPolicyId:
+        type: "string"
+      aclPolicyRules:
+        type: "array"
+        items:
+          $ref: "#/definitions/AclPolicyRule"
+      createdAt:
+        $ref: "#/definitions/Timestamp"
+      defaultAcl:
+        type: "boolean"
+      interfaceNetworkUuid:
+        type: "string"
+      name:
+        type: "string"
+      projectUuid:
+        type: "string"
+      status:
+        type: "string"
+      subnetAssociationList:
+        type: "array"
+        items:
+          type: "string"
+      uuid:
+        type: "string"
+    title: "NetworkAclModel"
+  NetworkAclResponse:
+    type: "object"
+    properties:
+      errorCode:
+        type: "integer"
+        format: "int32"
+      errorMsg:
+        type: "string"
+      extra:
+        type: "object"
+        properties: {}
+      networkAcl:
+        $ref: "#/definitions/NetworkAclModel"
+      success:
+        type: "boolean"
+    title: "NetworkAclResponse"
   NetworkResponse:
     type: "object"
     properties:
@@ -2898,14 +3637,15 @@ definitions:
       success:
         type: "boolean"
     title: "OSImageBaseResponse"
-  Project:
+  ProjectInfo:
     type: "object"
     properties:
-      id:
+      projectId:
         type: "string"
-      name:
-        type: "string"
-    title: "Project"
+      userId:
+        type: "integer"
+        format: "int32"
+    title: "ProjectInfo"
   ProjectResponse:
     type: "object"
     properties:
@@ -2920,53 +3660,45 @@ definitions:
       projects:
         type: "array"
         items:
-          $ref: "#/definitions/Project"
+          $ref: "#/definitions/ProjectInfo"
       success:
         type: "boolean"
     title: "ProjectResponse"
-  RecoverServerRequest:
+  Quota:
     type: "object"
-    required:
-    - "serverId"
     properties:
-      serverId:
+      description:
         type: "string"
-        example: "ins-a332cc50-8e24-4a45-ad9f-4136c7358503"
-        description: "Id of server"
-      userId:
+      limit:
+        type: "integer"
+        format: "int64"
+      projectUuid:
+        type: "string"
+      quotaName:
+        type: "string"
+      type:
+        type: "string"
+      used:
+        type: "string"
+    title: "Quota"
+  QuotaResponse:
+    type: "object"
+    properties:
+      errorCode:
         type: "integer"
         format: "int32"
-        example: 11212
-        description: "Id of user"
-    title: "RecoverServerRequest"
-    description: "Recover Server Request"
-    example:
-      serverId: "ins-a332cc50-8e24-4a45-ad9f-4136c7358503"
-      userId: 11212
-  RecoverVolumeRequest:
-    type: "object"
-    required:
-    - "dataDiskId"
-    properties:
-      dataDiskId:
+      errorMsg:
         type: "string"
-        example: "vol-a332cc50-8e24-4a45-ad9f-4136c7358503"
-        description: "Id of volume"
-      isPoc:
+      extra:
+        type: "object"
+        properties: {}
+      quotas:
+        type: "array"
+        items:
+          $ref: "#/definitions/Quota"
+      success:
         type: "boolean"
-        example: false
-        description: "POC wallet"
-      userId:
-        type: "integer"
-        format: "int32"
-        example: 11212
-        description: "Id of user"
-    title: "RecoverVolumeRequest"
-    description: "Recover Volume Request"
-    example:
-      isPoc: false
-      dataDiskId: "vol-a332cc50-8e24-4a45-ad9f-4136c7358503"
-      userId: 11212
+    title: "QuotaResponse"
   ResizeServerRequest:
     type: "object"
     required:
@@ -2977,8 +3709,10 @@ definitions:
         type: "string"
         example: "flav-c41b827e-730a-475f-b181-c0d1c7acc6d4"
         description: "Id of flavor"
-      poc:
-        type: "boolean"
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
       serverId:
         type: "string"
         example: "ins-a332cc50-8e24-4a45-ad9f-4136c7358503"
@@ -2991,8 +3725,8 @@ definitions:
     title: "ResizeServerRequest"
     description: "Resize Server Request"
     example:
-      poc: true
       flavorId: "flav-c41b827e-730a-475f-b181-c0d1c7acc6d4"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
       serverId: "ins-a332cc50-8e24-4a45-ad9f-4136c7358503"
       userId: 11212
   ResizeVolumeRequest:
@@ -3002,10 +3736,6 @@ definitions:
     - "newVolumeTypeId"
     - "volumeId"
     properties:
-      isPoc:
-        type: "boolean"
-        example: false
-        description: "POC wallet"
       newSize:
         type: "integer"
         format: "int32"
@@ -3015,6 +3745,10 @@ definitions:
         type: "string"
         example: "vtype-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
         description: "Id of new volume type"
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
       userId:
         type: "integer"
         format: "int32"
@@ -3027,10 +3761,125 @@ definitions:
     title: "ResizeVolumeRequest"
     description: "Resize Volume Request"
     example:
-      isPoc: false
       volumeId: "vol-a332cc50-8e24-4a45-ad9f-4136c7358503"
       newSize: 20
       newVolumeTypeId: "vtype-6d30737c-08aa-41f8-8bb1-d486c94ccf69"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+      userId: 11212
+  RouteModel:
+    type: "object"
+    properties:
+      createdAt:
+        type: "string"
+        format: "date-time"
+      destination:
+        type: "string"
+      routeTableUuid:
+        type: "string"
+      routingType:
+        type: "string"
+      status:
+        type: "string"
+      targetUuid:
+        type: "string"
+      updatedAt:
+        type: "string"
+        format: "date-time"
+      uuid:
+        type: "string"
+    title: "RouteModel"
+  RouteTableModel:
+    type: "object"
+    properties:
+      createdAt:
+        type: "string"
+        format: "date-time"
+      name:
+        type: "string"
+      routes:
+        type: "array"
+        items:
+          $ref: "#/definitions/RouteModel"
+      status:
+        type: "string"
+      subnets:
+        type: "array"
+        items:
+          $ref: "#/definitions/Subnet"
+      system:
+        type: "boolean"
+      uuid:
+        type: "string"
+      vpcUuid:
+        type: "string"
+    title: "RouteTableModel"
+  RouteTableResponse:
+    type: "object"
+    properties:
+      errorCode:
+        type: "integer"
+        format: "int32"
+      errorMsg:
+        type: "string"
+      extra:
+        type: "object"
+        properties: {}
+      routeTable:
+        $ref: "#/definitions/RouteTableModel"
+      success:
+        type: "boolean"
+    title: "RouteTableResponse"
+  RouteTableUpdateRouteRequest:
+    type: "object"
+    properties:
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
+      routes:
+        type: "array"
+        description: "The updated routes list of route-table"
+        items:
+          $ref: "#/definitions/UpdatedRoute"
+      userId:
+        type: "integer"
+        format: "int32"
+        example: 11212
+        description: "Id of user"
+    title: "RouteTableUpdateRouteRequest"
+    example:
+      routes:
+      - destination: "destination"
+        type: "type"
+        targetUuid: "targetUuid"
+      - destination: "destination"
+        type: "type"
+        targetUuid: "targetUuid"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+      userId: 11212
+  RouteTableUpdateSubnetRequest:
+    type: "object"
+    properties:
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
+      subnets:
+        type: "array"
+        description: "The updated subnet uuid list of route-table"
+        items:
+          type: "string"
+      userId:
+        type: "integer"
+        format: "int32"
+        example: 11212
+        description: "Id of user"
+    title: "RouteTableUpdateSubnetRequest"
+    example:
+      subnets:
+      - "subnets"
+      - "subnets"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
       userId: 11212
   SDNSshKeyDeleteRequest:
     type: "object"
@@ -3054,6 +3903,8 @@ definitions:
       name:
         type: "string"
       pubKey:
+        type: "string"
+      status:
         type: "string"
     title: "SSHKey"
   SSHKeyResponse:
@@ -3165,10 +4016,6 @@ definitions:
   Server:
     type: "object"
     properties:
-      action:
-        type: "array"
-        items:
-          type: "string"
       createdAt:
         type: "string"
         format: "date-time"
@@ -3192,10 +4039,8 @@ definitions:
         type: "string"
       osInfo:
         type: "string"
-      ownerEmail:
+      serverGroupId:
         type: "string"
-      share:
-        type: "boolean"
       sshKeyName:
         type: "string"
       status:
@@ -3213,7 +4058,7 @@ definitions:
         type: "string"
       name:
         type: "string"
-      policy:
+      policyId:
         type: "string"
       projectId:
         type: "string"
@@ -3223,6 +4068,36 @@ definitions:
       uuid:
         type: "string"
     title: "ServerGroup"
+  ServerGroupPolicy:
+    type: "object"
+    properties:
+      description:
+        type: "string"
+      name:
+        type: "string"
+      status:
+        type: "string"
+      uuid:
+        type: "string"
+    title: "ServerGroupPolicy"
+  ServerGroupPolicyResponse:
+    type: "object"
+    properties:
+      errorCode:
+        type: "integer"
+        format: "int32"
+      errorMsg:
+        type: "string"
+      extra:
+        type: "object"
+        properties: {}
+      serverGroupPolicies:
+        type: "array"
+        items:
+          $ref: "#/definitions/ServerGroupPolicy"
+      success:
+        type: "boolean"
+    title: "ServerGroupPolicyResponse"
   ServerGroupResponse:
     type: "object"
     properties:
@@ -3267,12 +4142,7 @@ definitions:
       createdAt:
         type: "string"
         format: "date-time"
-      deletedAt:
-        type: "string"
-        format: "date-time"
       displayCreatedAt:
-        type: "string"
-      id:
         type: "string"
       interfaceAclPolicyId:
         type: "string"
@@ -3284,9 +4154,14 @@ definitions:
         type: "string"
       status:
         type: "string"
+      subnetId:
+        type: "integer"
+        format: "int32"
       updatedAt:
         type: "string"
         format: "date-time"
+      uuid:
+        type: "string"
     title: "Subnet"
   SubnetResponse:
     type: "object"
@@ -3306,6 +4181,101 @@ definitions:
       success:
         type: "boolean"
     title: "SubnetResponse"
+  Timestamp:
+    type: "object"
+    properties:
+      date:
+        type: "integer"
+        format: "int32"
+      day:
+        type: "integer"
+        format: "int32"
+      hours:
+        type: "integer"
+        format: "int32"
+      minutes:
+        type: "integer"
+        format: "int32"
+      month:
+        type: "integer"
+        format: "int32"
+      nanos:
+        type: "integer"
+        format: "int32"
+      seconds:
+        type: "integer"
+        format: "int32"
+      time:
+        type: "integer"
+        format: "int64"
+      timezoneOffset:
+        type: "integer"
+        format: "int32"
+      year:
+        type: "integer"
+        format: "int32"
+    title: "Timestamp"
+  UpdateNetworkAclRulesRequest:
+    type: "object"
+    properties:
+      detailAclRuleList:
+        type: "array"
+        items:
+          $ref: "#/definitions/UpdatedAclPolicyRule"
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
+      userId:
+        type: "integer"
+        format: "int32"
+        example: 11212
+        description: "Id of user"
+    title: "UpdateNetworkAclRulesRequest"
+    example:
+      detailAclRuleList:
+      - protocol: "protocol"
+        system: true
+        port: "port"
+        interfaceAclPolicyUuid: "interfaceAclPolicyUuid"
+        action: "action"
+        seqNumber: 0
+        source: "source"
+        type: "type"
+      - protocol: "protocol"
+        system: true
+        port: "port"
+        interfaceAclPolicyUuid: "interfaceAclPolicyUuid"
+        action: "action"
+        seqNumber: 0
+        source: "source"
+        type: "type"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+      userId: 11212
+  UpdateNetworkAclSubnetsRequest:
+    type: "object"
+    properties:
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
+      subnetUuids:
+        type: "array"
+        description: "The updated subnets uuid list of network-acl"
+        items:
+          type: "string"
+      userId:
+        type: "integer"
+        format: "int32"
+        example: 11212
+        description: "Id of user"
+    title: "UpdateNetworkAclSubnetsRequest"
+    example:
+      subnetUuids:
+      - "subnetUuids"
+      - "subnetUuids"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+      userId: 11212
   UpdateNetworkRequest:
     type: "object"
     properties:
@@ -3321,11 +4291,87 @@ definitions:
       extra: "{}"
       name: "name"
       networkId: "networkId"
+  UpdateQuota:
+    type: "object"
+    properties:
+      projectId:
+        type: "integer"
+        format: "int64"
+      quota:
+        type: "object"
+        additionalProperties:
+          type: "object"
+          properties: {}
+    title: "UpdateQuota"
+    example:
+      quota:
+        key: "{}"
+      projectId: 0
+  UpdateQuotaVsgRequest:
+    type: "object"
+    properties:
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
+      updateQuota:
+        $ref: "#/definitions/UpdateQuota"
+      updateQuotaRequest:
+        $ref: "#/definitions/UpdateQuota"
+      userId:
+        type: "integer"
+        format: "int32"
+        example: 11212
+        description: "Id of user"
+    title: "UpdateQuotaVsgRequest"
+    example:
+      updateQuota:
+        quota:
+          key: "{}"
+        projectId: 0
+      updateQuotaRequest:
+        quota:
+          key: "{}"
+        projectId: 0
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+      userId: 11212
+  UpdateServerGroupRequest:
+    type: "object"
+    required:
+    - "serverGroupId"
+    properties:
+      description:
+        type: "string"
+        example: "This is my server group"
+        description: "Description of server group"
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
+      serverGroupId:
+        type: "string"
+        example: "Group-01"
+        description: "Id of the server group"
+      userId:
+        type: "integer"
+        format: "int32"
+        example: 11212
+        description: "Id of user"
+    title: "UpdateServerGroupRequest"
+    example:
+      serverGroupId: "Group-01"
+      description: "This is my server group"
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+      userId: 11212
   UpdateServerRequest:
     type: "object"
     required:
     - "serverId"
     properties:
+      projectId:
+        type: "string"
+        example: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
+        description: "Id of project"
       serverId:
         type: "string"
         example: "ins-a332cc50-8e24-4a45-ad9f-4136c7358503"
@@ -3338,8 +4384,53 @@ definitions:
     title: "UpdateServerRequest"
     description: "Update Server Request"
     example:
+      projectId: "pro-4f8bd2b0-a4e7-4fc9-b798-7053e965ba08"
       serverId: "ins-a332cc50-8e24-4a45-ad9f-4136c7358503"
       userId: 11212
+  UpdatedAclPolicyRule:
+    type: "object"
+    properties:
+      action:
+        type: "string"
+      interfaceAclPolicyUuid:
+        type: "string"
+      port:
+        type: "string"
+      protocol:
+        type: "string"
+      seqNumber:
+        type: "integer"
+        format: "int32"
+      source:
+        type: "string"
+      system:
+        type: "boolean"
+      type:
+        type: "string"
+    title: "UpdatedAclPolicyRule"
+    example:
+      protocol: "protocol"
+      system: true
+      port: "port"
+      interfaceAclPolicyUuid: "interfaceAclPolicyUuid"
+      action: "action"
+      seqNumber: 0
+      source: "source"
+      type: "type"
+  UpdatedRoute:
+    type: "object"
+    properties:
+      destination:
+        type: "string"
+      targetUuid:
+        type: "string"
+      type:
+        type: "string"
+    title: "UpdatedRoute"
+    example:
+      destination: "destination"
+      type: "type"
+      targetUuid: "targetUuid"
   UserService:
     type: "object"
     properties:
@@ -3378,10 +4469,6 @@ definitions:
   Volume:
     type: "object"
     properties:
-      action:
-        type: "array"
-        items:
-          type: "string"
       bootable:
         type: "boolean"
       createdAt:
@@ -3389,20 +4476,21 @@ definitions:
         format: "date-time"
       encryptionType:
         type: "string"
-      id:
-        type: "string"
-      instanceUuid:
-        type: "string"
       name:
         type: "string"
-      ownerEmail:
+      projectId:
         type: "string"
-      share:
-        type: "boolean"
+      serverId:
+        type: "string"
       size:
         type: "integer"
         format: "int32"
       status:
+        type: "string"
+      updatedAt:
+        type: "string"
+        format: "date-time"
+      uuid:
         type: "string"
       volumeTypeId:
         type: "string"

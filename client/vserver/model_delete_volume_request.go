@@ -11,8 +11,8 @@ package vserver
 
 // Delete Volume Request
 type DeleteVolumeRequest struct {
-	// Skip step move into the trash
-	ForceDelete bool `json:"forceDelete,omitempty"`
+	// Id of project
+	ProjectId string `json:"projectId,omitempty"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`
 	// Id of volume

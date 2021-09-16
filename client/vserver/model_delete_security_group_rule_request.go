@@ -10,7 +10,7 @@
 package vserver
 
 type DeleteSecurityGroupRuleRequest struct {
-	Extra *interface{} `json:"extra,omitempty"`
+	Extra interface{} `json:"extra,omitempty"`
 	// Id of Secgroup rule to be deleted.
 	SecgroupRuleId string `json:"secgroupRuleId"`
 }

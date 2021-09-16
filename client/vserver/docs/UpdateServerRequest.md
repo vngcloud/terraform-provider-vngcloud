@@ -3,6 +3,7 @@
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**ProjectId** | **string** | Id of project | [optional] [default to null]
 **ServerId** | **string** | Id of server | [default to null]
 **UserId** | **int32** | Id of user | [optional] [default to null]
 

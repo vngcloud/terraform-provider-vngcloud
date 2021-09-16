@@ -37,34 +37,21 @@ func ResourceServer() *schema.Resource {
 			"project_id": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"attach_floating": {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
-			"data_disk_encryption_type": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"data_disk_size": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"data_disk_type_id": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"data_volume_name": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"encryption_volume": {
 				Type:     schema.TypeBool,
 				Required: true,
+				ForceNew: true,
 			},
 			"expire_password": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				ForceNew: true,
 			},
 			"flavor_id": {
 				Type:     schema.TypeString,
@@ -73,10 +60,7 @@ func ResourceServer() *schema.Resource {
 			"image_id": {
 				Type:     schema.TypeString,
 				Required: true,
-			},
-			"is_poc": {
-				Type:     schema.TypeBool,
-				Optional: true,
+				ForceNew: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
@@ -89,10 +73,12 @@ func ResourceServer() *schema.Resource {
 			"os_licence": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				ForceNew: true,
 			},
 			"root_disk_encryption_type": {
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 			"root_disk_size": {
 				Type:     schema.TypeInt,
@@ -116,14 +102,30 @@ func ResourceServer() *schema.Resource {
 			"ssh_key": {
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 			"subnet_id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"user_name": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"user_password": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"action": {
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"server_group_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
 			},
 			"external_interfaces": {
 				Computed: true,
@@ -147,14 +149,6 @@ func ResourceServer() *schema.Resource {
 			},
 			"os_info": {
 				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"owner_email": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"share": {
-				Type:     schema.TypeBool,
 				Computed: true,
 			},
 			"ssh_key_name": {
@@ -196,15 +190,10 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	server := vserver.CreateServerRequest{
 		AttachFloating:         d.Get("attach_floating").(bool),
-		DataDiskEncryptionType: d.Get("data_disk_encryption_type").(string),
-		DataDiskSize:           int32(d.Get("data_disk_size").(int)),
-		DataDiskTypeId:         d.Get("data_disk_type_id").(string),
-		DataVolumeName:         d.Get("data_volume_name").(string),
 		EncryptionVolume:       d.Get("encryption_volume").(bool),
 		ExpirePassword:         d.Get("expire_password").(bool),
 		FlavorId:               d.Get("flavor_id").(string),
 		ImageId:                d.Get("image_id").(string),
-		IsPoc:                  d.Get("is_poc").(bool),
 		Name:                   d.Get("name").(string),
 		NetworkId:              d.Get("network_id").(string),
 		OsLicence:              d.Get("os_licence").(bool),
@@ -215,6 +204,9 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		SourceType:             d.Get("source_type").(string),
 		SshKeyId:               d.Get("ssh_key").(string),
 		SubnetId:               d.Get("subnet_id").(string),
+		ServerGroupId:          d.Get("server_group_id").(string),
+		UserName:               d.Get("user_name").(string),
+		UserPassword:           d.Get("user_password").(string),
 	}
 	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.ServerRestControllerApi.CreateServerUsingPOST(context.TODO(), server, projectID)
@@ -273,9 +265,8 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("flavor_id", server.FlavorId)
 	d.Set("image_id", server.ImageId)
 	d.Set("os_info", server.OsInfo)
-	d.Set("owner_email", server.OwnerEmail)
-	d.Set("share", server.Share)
 	d.Set("ssh_key_name", server.SshKeyName)
+	d.Set("server_group_id", server.ServerGroupId)
 	var internalInterfaces []map[string]string
 	for _, internalInterface := range server.InternalInterfaces {
 		internalInterfaceMap := make(map[string]string)
@@ -285,9 +276,12 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 		internalInterfaceMap["mac"] = internalInterface.Mac
 		internalInterfaceMap["network_uuid"] = internalInterface.NetworkUuid
 		internalInterfaceMap["port_uuid"] = internalInterface.PortUuid
+		internalInterfaceMap["product"] = internalInterface.Product
+		internalInterfaceMap["server_uuid"] = internalInterface.ServerUuid
 		internalInterfaceMap["status"] = internalInterface.Status
 		internalInterfaceMap["subnet_uuid"] = internalInterface.SubnetUuid
-		internalInterfaceMap["type"] = internalInterface.Status
+		internalInterfaceMap["type"] = internalInterface.Type_
+		internalInterfaceMap["uuid"] = internalInterface.Uuid
 		internalInterfaces = append(internalInterfaces, internalInterfaceMap)
 	}
 	d.Set("internal_interfaces", internalInterfaces)
@@ -300,9 +294,12 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 		externalInterfaceMap["mac"] = externalInterface.Mac
 		externalInterfaceMap["network_uuid"] = externalInterface.NetworkUuid
 		externalInterfaceMap["port_uuid"] = externalInterface.PortUuid
+		externalInterfaceMap["product"] = externalInterface.Product
+		externalInterfaceMap["server_uuid"] = externalInterface.ServerUuid
 		externalInterfaceMap["status"] = externalInterface.Status
 		externalInterfaceMap["subnet_uuid"] = externalInterface.SubnetUuid
 		externalInterfaceMap["type"] = externalInterface.Status
+		externalInterfaceMap["uuid"] = externalInterface.Uuid
 		externalInterfaces = append(externalInterfaces, externalInterfaceMap)
 	}
 	d.Set("external_interfaces", externalInterfaces)
@@ -337,7 +334,7 @@ func resourceServerDelete(d *schema.ResourceData, m interface{}) error {
 		ForceDelete: true,
 	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ServerRestControllerApi.DeleteServerInTrashUsingDELETE(context.TODO(), deleteServer, projectID)
+	resp, _, err := cli.VserverClient.ServerRestControllerApi.DeleteServerUsingDELETE(context.TODO(), deleteServer, projectID)
 	if err != nil {
 		return err
 	}
@@ -369,7 +366,6 @@ func resourceServerResize(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 
 	serverResize := vserver.ResizeServerRequest{
-		Poc:      d.Get("is_poc").(bool),
 		ServerId: d.Id(),
 		FlavorId: d.Get("flavor_id").(string),
 	}
@@ -523,5 +519,17 @@ func resourceServerUpdateSecgroup(d *schema.ResourceData, m interface{}) error {
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
+	stateConf := &resource.StateChangeConf{
+		Pending:    serverChangingSecGroup,
+		Target:     serverChangedSecGroup,
+		Refresh:    resourceServerStateRefreshFunc(cli, resp.Servers[0].Uuid, projectID),
+		Timeout:    d.Timeout(schema.TimeoutCreate),
+		Delay:      10 * time.Second,
+		MinTimeout: 1 * time.Second,
+	}
+	_, err = stateConf.WaitForState()
+	if err != nil {
+		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", d.Id(), err)
+	}
 	return resourceServerRead(d, m)
 }

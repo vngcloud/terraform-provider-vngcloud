@@ -10,9 +10,9 @@
 package vserver
 
 type SecgroupRuleResponse struct {
-	ErrorCode     int32          `json:"errorCode,omitempty"`
-	ErrorMsg      string         `json:"errorMsg,omitempty"`
-	Extra         *interface{}   `json:"extra,omitempty"`
+	ErrorCode int32 `json:"errorCode,omitempty"`
+	ErrorMsg string `json:"errorMsg,omitempty"`
+	Extra interface{} `json:"extra,omitempty"`
 	SecgroupRules []SecgroupRule `json:"secgroupRules,omitempty"`
-	Success       bool           `json:"success,omitempty"`
+	Success bool `json:"success,omitempty"`
 }

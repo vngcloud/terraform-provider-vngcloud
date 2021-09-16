@@ -9,10 +9,11 @@
 
 package vserver
 
-// Recover Server Request
-type RecoverServerRequest struct {
-	// Id of server
-	ServerId string `json:"serverId"`
+type UpdateNetworkAclSubnetsRequest struct {
+	// Id of project
+	ProjectId string `json:"projectId,omitempty"`
+	// The updated subnets uuid list of network-acl
+	SubnetUuids []string `json:"subnetUuids,omitempty"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`
 }

@@ -106,16 +106,16 @@ func resourceSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	stateConf := &resource.StateChangeConf{
 		Pending:    subnetCreating,
 		Target:     subnetCreated,
-		Refresh:    resourceSubnetStateRefreshFunc(cli, resp.Subnets[0].Id, projectID),
+		Refresh:    resourceSubnetStateRefreshFunc(cli, resp.Subnets[0].Uuid, projectID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
 	_, err = stateConf.WaitForState()
 	if err != nil {
-		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", resp.Subnets[0].Id, err)
+		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", resp.Subnets[0].Uuid, err)
 	}
-	d.SetId(resp.Subnets[0].Id)
+	d.SetId(resp.Subnets[0].Uuid)
 	return resourceSubnetRead(d, m)
 }
 

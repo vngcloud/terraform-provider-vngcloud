@@ -62,5 +62,5 @@ func dataSourceImageRead(d *schema.ResourceData, m interface{}) error {
 
 		}
 	}
-	return fmt.Errorf("not found image with confifg %s ", name)
+	return fmt.Errorf("not found image with config %s ", name)
 }

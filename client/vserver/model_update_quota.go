@@ -9,7 +9,7 @@
 
 package vserver
 
-type Project struct {
-	Id   string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
+type UpdateQuota struct {
+	ProjectId int64 `json:"projectId,omitempty"`
+	Quota map[string]interface{} `json:"quota,omitempty"`
 }

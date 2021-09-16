@@ -13,6 +13,8 @@ package vserver
 type DeleteServerRequest struct {
 	// Skip step move into the trash
 	ForceDelete bool `json:"forceDelete,omitempty"`
+	// Id of project
+	ProjectId string `json:"projectId,omitempty"`
 	// Id of server
 	ServerId string `json:"serverId"`
 	// Id of user

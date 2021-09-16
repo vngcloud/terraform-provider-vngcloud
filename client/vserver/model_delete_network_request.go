@@ -10,7 +10,7 @@
 package vserver
 
 type DeleteNetworkRequest struct {
-	Extra *interface{} `json:"extra,omitempty"`
+	Extra interface{} `json:"extra,omitempty"`
 	// Id of Network to be deleted.
 	NetworkId string `json:"networkId"`
 }

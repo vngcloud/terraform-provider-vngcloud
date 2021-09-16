@@ -11,8 +11,8 @@ package vserver
 
 type CreateSubnetRequest struct {
 	// CIDR of Subnet, must be contained in its network.
-	Cidr  string       `json:"cidr"`
-	Extra *interface{} `json:"extra,omitempty"`
+	Cidr string `json:"cidr"`
+	Extra interface{} `json:"extra,omitempty"`
 	// Name of the Subnet
 	Name string `json:"name"`
 	// Id of Network.

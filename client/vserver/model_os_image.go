@@ -11,8 +11,8 @@ package vserver
 
 type OsImage struct {
 	FlavorZoneIds []string `json:"flavorZoneIds,omitempty"`
-	Id            string   `json:"id,omitempty"`
-	ImageType     string   `json:"imageType,omitempty"`
-	ImageVersion  string   `json:"imageVersion,omitempty"`
-	Licence       bool     `json:"licence,omitempty"`
+	Id string `json:"id,omitempty"`
+	ImageType string `json:"imageType,omitempty"`
+	ImageVersion string `json:"imageVersion,omitempty"`
+	Licence bool `json:"licence,omitempty"`
 }

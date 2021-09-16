@@ -11,6 +11,8 @@ package vserver
 
 // Update Server Request
 type UpdateServerRequest struct {
+	// Id of project
+	ProjectId string `json:"projectId,omitempty"`
 	// Id of server
 	ServerId string `json:"serverId"`
 	// Id of user

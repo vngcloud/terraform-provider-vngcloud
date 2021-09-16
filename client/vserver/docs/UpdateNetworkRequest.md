@@ -3,7 +3,7 @@
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Extra** | [***interface{}**](interface{}.md) |  | [optional] [default to null]
+**Extra** | **interface{}** |  | [optional] [default to null]
 **Name** | **string** |  | [optional] [default to null]
 **NetworkId** | **string** |  | [optional] [default to null]
 

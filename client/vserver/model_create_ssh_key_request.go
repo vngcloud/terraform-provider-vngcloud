@@ -11,6 +11,8 @@ package vserver
 
 type CreateSshKeyRequest struct {
 	Name string `json:"name,omitempty"`
+	// Id of project
+	ProjectId string `json:"projectId,omitempty"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`
 }

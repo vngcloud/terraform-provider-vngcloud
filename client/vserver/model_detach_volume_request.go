@@ -11,8 +11,10 @@ package vserver
 
 // Detach Volume Request
 type DetachVolumeRequest struct {
+	// Id of project
+	ProjectId string `json:"projectId,omitempty"`
 	// Id of server
-	InstanceId string `json:"instanceId"`
+	ServerId string `json:"serverId"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`
 	// Id of volume

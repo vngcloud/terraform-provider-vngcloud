@@ -30,7 +30,7 @@ func ResourceAttachVolume() *schema.Resource {
 				ForceNew:    true,
 				Description: "id of volume acttach",
 			},
-			"instance_id": {
+			"server_id": {
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
@@ -42,8 +42,8 @@ func ResourceAttachVolume() *schema.Resource {
 func resourceVolumeAttach(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	attachVolume := vserver.AttachVolumeRequest{
-		VolumeId:   d.Get("volume_id").(string),
-		InstanceId: d.Get("instance_id").(string),
+		VolumeId: d.Get("volume_id").(string),
+		ServerId: d.Get("server_id").(string),
 	}
 	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.VolumeRestControllerApi.AttachVolumeUsingPUT(context.TODO(), attachVolume, projectID)
@@ -77,8 +77,8 @@ func resourceVolumeAttach(d *schema.ResourceData, m interface{}) error {
 func resourceVolumeDetach(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	detachVolume := vserver.DetachVolumeRequest{
-		VolumeId:   d.Get("volume_id").(string),
-		InstanceId: d.Get("instance_id").(string),
+		VolumeId: d.Get("volume_id").(string),
+		ServerId: d.Get("server_id").(string),
 	}
 	cli := m.(*client.Client)
 	resp, _, err := cli.VserverClient.VolumeRestControllerApi.DetachVolumeUsingPUT(context.TODO(), detachVolume, projectID)
@@ -103,7 +103,7 @@ func resourceVolumeDetach(d *schema.ResourceData, m interface{}) error {
 	}
 	_, err = stateConf.WaitForState()
 	if err != nil {
-		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", detachVolume.InstanceId, err)
+		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", detachVolume.ServerId, err)
 	}
 	d.SetId("")
 	return nil
