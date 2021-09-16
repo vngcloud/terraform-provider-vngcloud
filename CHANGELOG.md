@@ -1,4 +1,4 @@
-## 0.0.9 (Unreleased)
+## v0.0.9 (Released)
 
 UPGRADE NOTES: Change billing flow, improve stable, bug fixed
 
