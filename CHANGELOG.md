@@ -1,4 +1,4 @@
-## 0.0.9-beta (Unreleased)
+## 0.0.9 (Unreleased)
 
 UPGRADE NOTES: Change billing flow, improve stable, bug fixed
 
