@@ -7,3 +7,9 @@ NEW FEATURES: ServerGroup
 ENHANCEMENTS: Log Transaction
 
 BUG FIXES:
+
+## v0.0.10 (Released)
+
+UPGRADE NOTES: bug fixed
+
+BUG FIXES: error 404 when get flavor zone
