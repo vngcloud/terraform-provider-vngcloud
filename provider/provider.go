@@ -43,14 +43,14 @@ func Provider() *schema.Provider {
 			"vngcloud_vdb_backup_storage":      vdb.ResourceBackupStorage(),
 		},
 		Schema: map[string]*schema.Schema{
-			"user_id": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"project_id": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
+			//"user_id": {
+			//	Type:     schema.TypeString,
+			//	Required: true,
+			//},
+			//"project_id": {
+			//	Type:     schema.TypeString,
+			//	Required: true,
+			//},
 			"token_url": {
 				Type:        schema.TypeString,
 				Required:    true,
@@ -69,11 +69,11 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("CLIENT_ID", ""),
 				Description: "client id for auth get access token",
 			},
-			"vdb_base_url": {
-				Type:        schema.TypeString,
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("CLIENT_ID", ""),
-			},
+			//"vdb_base_url": {
+			//	Type:        schema.TypeString,
+			//	Required:    true,
+			//	DefaultFunc: schema.EnvDefaultFunc("CLIENT_ID", ""),
+			//},
 			"vserver_base_url": {
 				Type:        schema.TypeString,
 				Required:    true,
@@ -93,10 +93,13 @@ func Provider() *schema.Provider {
 //}
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-	vdbBaseURL := d.Get("vdb_base_url").(string)
+	//vdbBaseURL := d.Get("vdb_base_url").(string)
+	vdbBaseURL := ""
 	vserverBaseURL := d.Get("vserver_base_url").(string)
-	projectId := d.Get("project_id").(string)
-	userId := d.Get("user_id").(string)
+	//projectId := d.Get("project_id").(string)
+	//userId := d.Get("user_id").(string)
+	projectId := ""
+	userId := "0"
 	tokenURL := d.Get("token_url").(string)
 	clientID := d.Get("client_id").(string)
 	clientSecret := d.Get("client_secret").(string)
