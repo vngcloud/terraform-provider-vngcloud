@@ -34,22 +34,24 @@ The following arguments are supported:
 
 - **encryption_volume** (Boolean, Required) Is Server use Encryption volume.
 - **flavor_id** (String, Required) ID of the flavor.
-- **image_id** (String, Required) Id of the Image.
+- **image_id** (String, Required) ID of the Image.
 - **name** (String, Required) Name of Server.
-- **network_id** (String, Required) Id of the network.
-- **project_id** (String, Required) Id of the Project.
+- **network_id** (String, Required) ID of the network.
+- **project_id** (String, Required) ID of the Project.
 - **root_disk_size** (Number, Required) Size of boot volume.
-- **root_disk_type_id** (String, Required) Id of boot volume type.
-- **subnet_id** (String, Required) Id of the subnet.
+- **root_disk_type_id** (String, Required) ID of boot volume type.
+- **subnet_id** (String, Required) ID of the subnet.
 - **action** (String, Optional) Action with server. It can be `stop`, `start` and `reboot`.
 - **attach_floating** (Boolean, Optional) Is Server attach a floating IP.
 - **expire_password** (Boolean, Optional) Skip change password: false, else: true
 - **is_poc** (Boolean, Optional) POC wallet.
 - **os_licence** (Boolean, Optional) Licence of OS.
 - **root_disk_encryption_type** (String, Optional) Type encryption of boot volume.
-- **security_group** (List of String, Optional) Id of the SecGroups.
+- **security_group** (List of String, Optional) ID of the SecGroups.
 - **source_type** (String, Optional)
-- **ssh_key** (String, Optional) Id of SSH key
+- **ssh_key** (String, Optional) ID of SSH key
+- **user_name** (String, Optional) Name of user
+- **user_password** (String, Optional) Password of user
   
 ## Attributes Reference
 
