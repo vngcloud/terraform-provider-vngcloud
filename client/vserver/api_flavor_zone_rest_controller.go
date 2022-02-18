@@ -13,7 +13,6 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -131,9 +130,8 @@ func (a *FlavorZoneRestControllerApiService) ListFlavorZoneUsingGET(ctx context.
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/{project_id}/flavor_zones/product/"
+	localVarPath := a.client.cfg.BasePath + "/v1/{project_id}/flavor_zones/product"
 	localVarPath = strings.Replace(localVarPath, "{"+"project_id"+"}", fmt.Sprintf("%v", projectId), -1)
-	log.Println(localVarPath)
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
