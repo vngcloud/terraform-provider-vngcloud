@@ -77,7 +77,7 @@ func Provider() *schema.Provider {
 			"vserver_base_url": {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("BASE_URL", ""),
+				DefaultFunc: schema.EnvDefaultFunc("VSERVER_BASE_URL", ""),
 				Description: "endpoint to connection with provider resource",
 			},
 		},

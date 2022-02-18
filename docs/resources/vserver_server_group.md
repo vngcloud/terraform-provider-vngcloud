@@ -15,9 +15,9 @@ Provides a VNG Cloud VServer Server Group resource. This can be used to import c
 ```terraform
 resource "vngcloud_vserver_server_group" "server_group_import" {
   description = "description"
-  name        = "name-server-group"
-  policy_id   = "aaa7d316-cff2-11eb-b8bc-0242ac130003"
-  project_id = "pro-462803f3-6858-466f-bf05-df2b33faa360"
+  name        = "example-server-group"
+  policy_id   = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  project_id = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   lifecycle {
     create_before_destroy = false
   }

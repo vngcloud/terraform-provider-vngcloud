@@ -15,14 +15,14 @@ terraform {
   required_providers {
     vngcloud = {
       source = "vngcloud/vngcloud"
-      version = "0.0.4"
+      version =">= 0.0.11"
     }
   }
 }
 provider "vngcloud" {
     token_url = "https://monitoring-agent.vngcloud.vn/v1/intake/oauth2/token"
-    client_id = "client_id"
-    client_secret = "client_secret"
+    client_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    client_secret = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     vserver_base_url = "https://vserverapi.vngcloud.vn/vserver-gateway"
 }
 ```
@@ -36,4 +36,4 @@ The following arguments are supported:
 
 * `token_url` - (Required) This is endpoint to authencation with VNG Cloud. Alternatively, this can also be specified using environment variables ordered by precedence: `TOKEN_ADDRESS`. Suggested value is [https://monitoring-agent.vngcloud.vn/v1/intake/oauth2/token](https://monitoring-agent.vngcloud.vn/v1/intake/oauth2/token)
   
-* `api_endpoint` - (Required) This is endpoint to interactive with VNG Cloud's resource. Alternatively, this can also be specified using environment variables ordered by precedence: `VSERVER_BASE_URL`. Suggested value is [https://vserverapi.vngcloud.vn/vserver-gateway](https://vserverapi.vngcloud.vn/vserver-gateway)
+* `vserver_base_url` - (Required) This is endpoint to interactive with VNG Cloud's resource. Alternatively, this can also be specified using environment variables ordered by precedence: `VSERVER_BASE_URL`. Suggested value is [https://vserverapi.vngcloud.vn/vserver-gateway](https://vserverapi.vngcloud.vn/vserver-gateway)

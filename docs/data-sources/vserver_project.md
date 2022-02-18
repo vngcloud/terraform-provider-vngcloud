@@ -13,7 +13,7 @@ description: |-
 
 ```terraform
 data "vngcloud_vserver_project" "project" {
-    name = "project_name"
+    project_id = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 }
 ```
 
@@ -21,7 +21,7 @@ data "vngcloud_vserver_project" "project" {
 
 The following arguments are supported:
 
-- **name** (String, Required) Name of project.
+- **project_id** (String, Required) Name of project.
 
 ## Attributes Reference
 
