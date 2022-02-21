@@ -55,3 +55,8 @@ variable "server_count" {
   type    = number
   default = 0
 }
+
+variable "server_group_policy_name" {
+  type    = string
+  default = "SOFT AFFINITY"
+}

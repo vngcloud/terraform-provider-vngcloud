@@ -2,7 +2,7 @@ terraform {
   required_providers {
     vngcloud = {
       source  = "vngcloud/vngcloud"
-      version = "0.0.8"
+      version = "0.0.12"
     }
   }
 }
@@ -11,7 +11,7 @@ provider "vngcloud" {
   token_url     = "https://monitoring-agent.vngcloud.vn/v1/intake/oauth2/token"
   client_id     = var.client_id
   client_secret = var.client_secret
-  base_url      = "https://vserverapi.vngcloud.vn/vserver-gateway"
+  vserver_base_url      = "https://vserverapi.vngcloud.vn/vserver-gateway"
 }
 
 data "vngcloud_vserver_flavor_zone" "flavor_zone" {
@@ -53,6 +53,8 @@ resource "vngcloud_vserver_server" "server" {
   security_group    = var.security_group_id_list
   subnet_id         = var.subnet_id
   action            = "start"
+  user_name         = "stackops"
+  user_password     = "Vng@Cloud3030"
   lifecycle {
     create_before_destroy = true
   }
@@ -74,4 +76,16 @@ resource "vngcloud_vserver_volume_attach" "attach_volume" {
   project_id  = var.project_id
   volume_id   = vngcloud_vserver_volume.volume[count.index].id
   instance_id = vngcloud_vserver_server.server[count.index].id
+}
+
+data "vngcloud_vserver_server_group_policy" "policy" {
+  name = var.server_group_policy_name
+  project_id = var.project_id
+}
+
+resource "vngcloud_vserver_server_group" "server_group" {
+  description = "description of server group"
+  name        = "example-server-group"
+  policy_id   = data.vngcloud_vserver_server_group_policy.policy.id
+  project_id = var.project_id
 }
