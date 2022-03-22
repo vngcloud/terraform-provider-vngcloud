@@ -1,6 +1,10 @@
 package vserver
 
 var (
+	loadBalancerCreating   = []string{"CREATING"}
+	loadBalancerCreated    = []string{"CREATED"}
+	listenerCreating       = []string{"CREATING"}
+	listenerCreated        = []string{"CREATED"}
 	networkCreating        = []string{"CREATING"}
 	networkCreated         = []string{"ACTIVE"}
 	secgroupRuleCreating   = []string{"CREATING"}

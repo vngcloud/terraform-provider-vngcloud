@@ -51,6 +51,8 @@ type APIClient struct {
 
 	ImageRestControllerApi *ImageRestControllerApiService
 
+	LoadBalancerRestControllerApi *LoadBalancerRestControllerApiService
+
 	NetworkAclRestControllerApi *NetworkAclRestControllerApiService
 
 	NetworkRestControllerApi *NetworkRestControllerApiService
@@ -99,6 +101,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.FlavorRestControllerApi = (*FlavorRestControllerApiService)(&c.common)
 	c.FlavorZoneRestControllerApi = (*FlavorZoneRestControllerApiService)(&c.common)
 	c.ImageRestControllerApi = (*ImageRestControllerApiService)(&c.common)
+	c.LoadBalancerRestControllerApi = (*LoadBalancerRestControllerApiService)(&c.common)
 	c.NetworkAclRestControllerApi = (*NetworkAclRestControllerApiService)(&c.common)
 	c.NetworkRestControllerApi = (*NetworkRestControllerApiService)(&c.common)
 	c.ProjectRestControllerApi = (*ProjectRestControllerApiService)(&c.common)
@@ -358,17 +361,17 @@ func (c *APIClient) prepareRequest(
 }
 
 func (c *APIClient) decode(v interface{}, b []byte, contentType string) (err error) {
-		if strings.Contains(contentType, "application/xml") {
-			if err = xml.Unmarshal(b, v); err != nil {
-				return err
-			}
-			return nil
-		} else if strings.Contains(contentType, "application/json") {
-			if err = json.Unmarshal(b, v); err != nil {
-				return err
-			}
-			return nil
+	if strings.Contains(contentType, "application/xml") {
+		if err = xml.Unmarshal(b, v); err != nil {
+			return err
 		}
+		return nil
+	} else if strings.Contains(contentType, "application/json") {
+		if err = json.Unmarshal(b, v); err != nil {
+			return err
+		}
+		return nil
+	}
 	return errors.New("undefined response type")
 }
 
