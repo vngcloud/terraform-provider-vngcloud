@@ -38,6 +38,7 @@ func Provider() *schema.Provider {
 			"vngcloud_vserver_volume_attach":   vserver.ResourceAttachVolume(),
 			"vngcloud_vserver_server_group":    vserver.ResourceServerGroup(),
 			"vngcloud_vserver_load_balancer":   vserver.ResourceLoadBalancer(),
+			"vngcloud_vserver_listener":        vserver.ResourceListener(),
 			"vngcloud_vdb_database":            vdb.ResourceDatabase(),
 			"vngcloud_vdb_backup":              vdb.ResourceBackup(),
 			"vngcloud_vdb_configuration_group": vdb.ResourceConfigurationGroup(),

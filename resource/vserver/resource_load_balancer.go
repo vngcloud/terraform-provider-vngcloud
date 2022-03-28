@@ -25,7 +25,7 @@ func ResourceLoadBalancer() *schema.Resource {
 			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 				idParts := strings.Split(d.Id(), ":")
 				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
-					return nil, fmt.Errorf("Unexpected format of ID (%q), expected ProjectID:ServerID", d.Id())
+					return nil, fmt.Errorf("Unexpected format of ID (%q), expected ProjectID:LoadBalancerID", d.Id())
 				}
 				d.Set("project_id", idParts[0])
 				d.SetId(idParts[1])
@@ -99,6 +99,7 @@ func ResourceLoadBalancer() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 				Default:  "Internet",
+				// ExactlyOneOf: []string{"Internet", "Internal"},
 			},
 			// "stickiness": {
 			// 	Type:     schema.TypeBool,
@@ -118,6 +119,7 @@ func ResourceLoadBalancer() *schema.Resource {
 				Type:     schema.TypeString,
 				ForceNew: true,
 				Required: true,
+				// ExactlyOneOf: []string{"Layer 4", "Layer 7"},
 			},
 			// "unhealthy_threshold": {
 			// 	Type:     schema.TypeInt,

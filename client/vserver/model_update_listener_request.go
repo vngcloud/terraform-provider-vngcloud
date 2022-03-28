@@ -13,7 +13,7 @@ type UpdateListenerRequest struct {
 	// Allowed cidr.
 	AllowedCidrs string `json:"allowedCidrs"`
 	// Id of the pool that this listener will forward to.
-	DefaultPoolId string `json:"defaultPoolId"`
+	DefaultPoolId string `json:"defaultPoolId,omitempty"`
 	// Id of the listener to update
 	ListenerId string `json:"listenerId"`
 	// Id of project
@@ -24,6 +24,8 @@ type UpdateListenerRequest struct {
 	TimeoutConnection int32 `json:"timeoutConnection"`
 	// Idle timeout of member. The value can be in range from 1 to 3600 seconds
 	TimeoutMember int32 `json:"timeoutMember"`
+	// Default certificate authority.
+	DefaultCertificateAuthority string `json:"defaultCertificateAuthority,omitempty"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`
 }

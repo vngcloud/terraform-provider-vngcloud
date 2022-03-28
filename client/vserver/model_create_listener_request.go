@@ -14,8 +14,10 @@ type CreateListenerRequest struct {
 	AllowedCidrs string `json:"allowedCidrs"`
 	// List of certificate authority
 	CertificateAuthorities []string `json:"certificateAuthorities,omitempty"`
+	// Default certificate authority that the listener will use
+	DefaultCertificateAuthority string `json:"defaultCertificateAuthority,omitempty"`
 	// Id of the pool that this listener will forward to.
-	DefaultPoolId string `json:"defaultPoolId"`
+	DefaultPoolId string `json:"defaultPoolId,omitempty"`
 	// Name of the listener. Only letters (a-z, A-Z, 0-9, '_', '.') are allowed and your input data must be between 6 and 20 characters.
 	ListenerName string `json:"listenerName"`
 	// Protocol of the listener.
