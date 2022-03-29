@@ -14,12 +14,12 @@ import (
 )
 
 type RouteTableModel struct {
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	Name string `json:"name,omitempty"`
-	Routes []RouteModel `json:"routes,omitempty"`
-	Status string `json:"status,omitempty"`
-	Subnets []Subnet `json:"subnets,omitempty"`
-	System bool `json:"system,omitempty"`
-	Uuid string `json:"uuid,omitempty"`
-	VpcUuid string `json:"vpcUuid,omitempty"`
+	CreatedAt time.Time    `json:"createdAt,omitempty"`
+	Name      string       `json:"name,omitempty"`
+	Routes    []RouteModel `json:"routes,omitempty"`
+	Status    string       `json:"status,omitempty"`
+	Subnets   []Subnet     `json:"subnets,omitempty"`
+	System    bool         `json:"system,omitempty"`
+	Uuid      string       `json:"uuid,omitempty"`
+	VpcUuid   string       `json:"vpcUuid,omitempty"`
 }

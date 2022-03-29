@@ -14,21 +14,21 @@ import (
 )
 
 type Member struct {
-	Address string `json:"address,omitempty"`
-	AdminStateUp bool `json:"adminStateUp,omitempty"`
-	Backup int32 `json:"backup,omitempty"`
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	MonitorPort int32 `json:"monitorPort,omitempty"`
-	Name string `json:"name,omitempty"`
-	OperatingStatus string `json:"operatingStatus,omitempty"`
-	PoolId string `json:"poolId,omitempty"`
-	ProjectId string `json:"projectId,omitempty"`
-	ProtocolPort int32 `json:"protocolPort,omitempty"`
-	ProvisioningStatus string `json:"provisioningStatus,omitempty"`
-	Status string `json:"status,omitempty"`
-	SubnetId string `json:"subnetId,omitempty"`
-	TypeCreate string `json:"typeCreate,omitempty"`
-	UpdatedAt time.Time `json:"updatedAt,omitempty"`
-	Uuid string `json:"uuid,omitempty"`
-	Weight int32 `json:"weight,omitempty"`
+	Address            string    `json:"address,omitempty"`
+	AdminStateUp       bool      `json:"adminStateUp,omitempty"`
+	Backup             int32     `json:"backup,omitempty"`
+	CreatedAt          time.Time `json:"createdAt,omitempty"`
+	MonitorPort        int32     `json:"monitorPort,omitempty"`
+	Name               string    `json:"name,omitempty"`
+	OperatingStatus    string    `json:"operatingStatus,omitempty"`
+	PoolId             string    `json:"poolId,omitempty"`
+	ProjectId          string    `json:"projectId,omitempty"`
+	ProtocolPort       int32     `json:"protocolPort,omitempty"`
+	ProvisioningStatus string    `json:"provisioningStatus,omitempty"`
+	Status             string    `json:"status,omitempty"`
+	SubnetId           string    `json:"subnetId,omitempty"`
+	TypeCreate         string    `json:"typeCreate,omitempty"`
+	UpdatedAt          time.Time `json:"updatedAt,omitempty"`
+	Uuid               string    `json:"uuid,omitempty"`
+	Weight             int32     `json:"weight,omitempty"`
 }

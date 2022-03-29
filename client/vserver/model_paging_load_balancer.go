@@ -10,9 +10,9 @@
 package vserver
 
 type PagingLoadBalancer struct {
-	ListData []LoadBalancer `json:"listData,omitempty"`
-	Page int32 `json:"page,omitempty"`
-	PageSize int32 `json:"pageSize,omitempty"`
-	TotalItem int64 `json:"totalItem,omitempty"`
-	TotalPage int32 `json:"totalPage,omitempty"`
+	ListData  []LoadBalancer `json:"listData,omitempty"`
+	Page      int32          `json:"page,omitempty"`
+	PageSize  int32          `json:"pageSize,omitempty"`
+	TotalItem int64          `json:"totalItem,omitempty"`
+	TotalPage int32          `json:"totalPage,omitempty"`
 }

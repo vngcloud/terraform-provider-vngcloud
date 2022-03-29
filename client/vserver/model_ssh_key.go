@@ -15,8 +15,8 @@ import (
 
 type SshKey struct {
 	CreatedAt time.Time `json:"createdAt,omitempty"`
-	Id string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	PubKey string `json:"pubKey,omitempty"`
-	Status string `json:"status,omitempty"`
+	Id        string    `json:"id,omitempty"`
+	Name      string    `json:"name,omitempty"`
+	PubKey    string    `json:"pubKey,omitempty"`
+	Status    string    `json:"status,omitempty"`
 }

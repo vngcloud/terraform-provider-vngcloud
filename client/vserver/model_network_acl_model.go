@@ -10,14 +10,14 @@
 package vserver
 
 type NetworkAclModel struct {
-	AclPolicyId string `json:"aclPolicyId,omitempty"`
-	AclPolicyRules []AclPolicyRule `json:"aclPolicyRules,omitempty"`
-	CreatedAt *Timestamp `json:"createdAt,omitempty"`
-	DefaultAcl bool `json:"defaultAcl,omitempty"`
-	InterfaceNetworkUuid string `json:"interfaceNetworkUuid,omitempty"`
-	Name string `json:"name,omitempty"`
-	ProjectUuid string `json:"projectUuid,omitempty"`
-	Status string `json:"status,omitempty"`
-	SubnetAssociationList []string `json:"subnetAssociationList,omitempty"`
-	Uuid string `json:"uuid,omitempty"`
+	AclPolicyId           string          `json:"aclPolicyId,omitempty"`
+	AclPolicyRules        []AclPolicyRule `json:"aclPolicyRules,omitempty"`
+	CreatedAt             *Timestamp      `json:"createdAt,omitempty"`
+	DefaultAcl            bool            `json:"defaultAcl,omitempty"`
+	InterfaceNetworkUuid  string          `json:"interfaceNetworkUuid,omitempty"`
+	Name                  string          `json:"name,omitempty"`
+	ProjectUuid           string          `json:"projectUuid,omitempty"`
+	Status                string          `json:"status,omitempty"`
+	SubnetAssociationList []string        `json:"subnetAssociationList,omitempty"`
+	Uuid                  string          `json:"uuid,omitempty"`
 }

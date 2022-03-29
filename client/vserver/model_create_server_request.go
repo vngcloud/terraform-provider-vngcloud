@@ -39,7 +39,7 @@ type CreateServerRequest struct {
 	SecurityGroup []string `json:"securityGroup,omitempty"`
 	// Server group id
 	ServerGroupId string `json:"serverGroupId,omitempty"`
-	SourceType string `json:"sourceType,omitempty"`
+	SourceType    string `json:"sourceType,omitempty"`
 	// Id of SSH key
 	SshKeyId string `json:"sshKeyId,omitempty"`
 	// Id of the subnet

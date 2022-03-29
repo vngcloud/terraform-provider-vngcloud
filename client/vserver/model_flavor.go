@@ -10,12 +10,12 @@
 package vserver
 
 type Flavor struct {
-	Bandwidth int32 `json:"bandwidth,omitempty"`
+	Bandwidth     int32  `json:"bandwidth,omitempty"`
 	BandwidthUnit string `json:"bandwidthUnit,omitempty"`
-	Cpu int32 `json:"cpu,omitempty"`
-	FlavorId string `json:"flavorId,omitempty"`
-	Gpu int32 `json:"gpu,omitempty"`
-	Memory int32 `json:"memory,omitempty"`
-	Name string `json:"name,omitempty"`
-	ZoneId string `json:"zoneId,omitempty"`
+	Cpu           int32  `json:"cpu,omitempty"`
+	FlavorId      string `json:"flavorId,omitempty"`
+	Gpu           int32  `json:"gpu,omitempty"`
+	Memory        int32  `json:"memory,omitempty"`
+	Name          string `json:"name,omitempty"`
+	ZoneId        string `json:"zoneId,omitempty"`
 }

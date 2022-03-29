@@ -13,7 +13,7 @@ type ImportSshKeyRequest struct {
 	Name string `json:"name,omitempty"`
 	// Id of project
 	ProjectId string `json:"projectId,omitempty"`
-	PubKey string `json:"pubKey,omitempty"`
+	PubKey    string `json:"pubKey,omitempty"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`
 }

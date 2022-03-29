@@ -14,12 +14,12 @@ import (
 )
 
 type RouteModel struct {
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	Destination string `json:"destination,omitempty"`
-	RouteTableUuid string `json:"routeTableUuid,omitempty"`
-	RoutingType string `json:"routingType,omitempty"`
-	Status string `json:"status,omitempty"`
-	TargetUuid string `json:"targetUuid,omitempty"`
-	UpdatedAt time.Time `json:"updatedAt,omitempty"`
-	Uuid string `json:"uuid,omitempty"`
+	CreatedAt      time.Time `json:"createdAt,omitempty"`
+	Destination    string    `json:"destination,omitempty"`
+	RouteTableUuid string    `json:"routeTableUuid,omitempty"`
+	RoutingType    string    `json:"routingType,omitempty"`
+	Status         string    `json:"status,omitempty"`
+	TargetUuid     string    `json:"targetUuid,omitempty"`
+	UpdatedAt      time.Time `json:"updatedAt,omitempty"`
+	Uuid           string    `json:"uuid,omitempty"`
 }

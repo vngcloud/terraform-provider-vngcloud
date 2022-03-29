@@ -14,14 +14,14 @@ import (
 )
 
 type InterfaceProjectQuota struct {
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	DeletedAt time.Time `json:"deletedAt,omitempty"`
-	Description string `json:"description,omitempty"`
-	Id int32 `json:"id,omitempty"`
-	ProjectId string `json:"projectId,omitempty"`
-	Quota string `json:"quota,omitempty"`
-	Type_ string `json:"type,omitempty"`
-	UpdatedAt time.Time `json:"updatedAt,omitempty"`
-	Used string `json:"used,omitempty"`
-	Uuid string `json:"uuid,omitempty"`
+	CreatedAt   time.Time `json:"createdAt,omitempty"`
+	DeletedAt   time.Time `json:"deletedAt,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Id          int32     `json:"id,omitempty"`
+	ProjectId   string    `json:"projectId,omitempty"`
+	Quota       string    `json:"quota,omitempty"`
+	Type_       string    `json:"type,omitempty"`
+	UpdatedAt   time.Time `json:"updatedAt,omitempty"`
+	Used        string    `json:"used,omitempty"`
+	Uuid        string    `json:"uuid,omitempty"`
 }

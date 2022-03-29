@@ -10,14 +10,14 @@
 package vserver
 
 type LoadBalancerPackage struct {
-	ConnectionNumber int32 `json:"connectionNumber,omitempty"`
-	DataTransfer int32 `json:"dataTransfer,omitempty"`
-	Mode string `json:"mode,omitempty"`
-	Name string `json:"name,omitempty"`
-	PriceKey string `json:"priceKey,omitempty"`
-	Status string `json:"status,omitempty"`
-	Type_ string `json:"type,omitempty"`
-	Uuid string `json:"uuid,omitempty"`
-	Weight int32 `json:"weight,omitempty"`
-	ZoneId string `json:"zoneId,omitempty"`
+	ConnectionNumber int32  `json:"connectionNumber,omitempty"`
+	DataTransfer     int32  `json:"dataTransfer,omitempty"`
+	Mode             string `json:"mode,omitempty"`
+	Name             string `json:"name,omitempty"`
+	PriceKey         string `json:"priceKey,omitempty"`
+	Status           string `json:"status,omitempty"`
+	Type_            string `json:"type,omitempty"`
+	Uuid             string `json:"uuid,omitempty"`
+	Weight           int32  `json:"weight,omitempty"`
+	ZoneId           string `json:"zoneId,omitempty"`
 }

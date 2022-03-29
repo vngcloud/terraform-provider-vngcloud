@@ -14,15 +14,15 @@ import (
 )
 
 type SimpleServer struct {
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	FlavorId string `json:"flavorId,omitempty"`
-	ImageId string `json:"imageId,omitempty"`
+	CreatedAt          time.Time                   `json:"createdAt,omitempty"`
+	FlavorId           string                      `json:"flavorId,omitempty"`
+	ImageId            string                      `json:"imageId,omitempty"`
 	InternalInterfaces []InterfaceNetworkInterface `json:"internalInterfaces,omitempty"`
-	Licence bool `json:"licence,omitempty"`
-	Name string `json:"name,omitempty"`
-	NetworkId string `json:"networkId,omitempty"`
-	ProjectId string `json:"projectId,omitempty"`
-	Status string `json:"status,omitempty"`
-	UpdatedAt time.Time `json:"updatedAt,omitempty"`
-	Uuid string `json:"uuid,omitempty"`
+	Licence            bool                        `json:"licence,omitempty"`
+	Name               string                      `json:"name,omitempty"`
+	NetworkId          string                      `json:"networkId,omitempty"`
+	ProjectId          string                      `json:"projectId,omitempty"`
+	Status             string                      `json:"status,omitempty"`
+	UpdatedAt          time.Time                   `json:"updatedAt,omitempty"`
+	Uuid               string                      `json:"uuid,omitempty"`
 }

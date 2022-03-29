@@ -11,7 +11,7 @@ package vserver
 
 type ServerGroupPolicy struct {
 	Description string `json:"description,omitempty"`
-	Name string `json:"name,omitempty"`
-	Status string `json:"status,omitempty"`
-	Uuid string `json:"uuid,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Status      string `json:"status,omitempty"`
+	Uuid        string `json:"uuid,omitempty"`
 }

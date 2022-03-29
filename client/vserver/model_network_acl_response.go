@@ -10,9 +10,9 @@
 package vserver
 
 type NetworkAclResponse struct {
-	ErrorCode int32 `json:"errorCode,omitempty"`
-	ErrorMsg string `json:"errorMsg,omitempty"`
-	Extra interface{} `json:"extra,omitempty"`
+	ErrorCode  int32            `json:"errorCode,omitempty"`
+	ErrorMsg   string           `json:"errorMsg,omitempty"`
+	Extra      interface{}      `json:"extra,omitempty"`
 	NetworkAcl *NetworkAclModel `json:"networkAcl,omitempty"`
-	Success bool `json:"success,omitempty"`
+	Success    bool             `json:"success,omitempty"`
 }

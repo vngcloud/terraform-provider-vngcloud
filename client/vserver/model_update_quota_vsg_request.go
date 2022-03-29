@@ -11,8 +11,8 @@ package vserver
 
 type UpdateQuotaVsgRequest struct {
 	// Id of project
-	ProjectId string `json:"projectId,omitempty"`
-	UpdateQuota *UpdateQuota `json:"updateQuota,omitempty"`
+	ProjectId          string       `json:"projectId,omitempty"`
+	UpdateQuota        *UpdateQuota `json:"updateQuota,omitempty"`
 	UpdateQuotaRequest *UpdateQuota `json:"updateQuotaRequest,omitempty"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`

@@ -11,5 +11,5 @@ package vserver
 
 type ProjectInfo struct {
 	ProjectId string `json:"projectId,omitempty"`
-	UserId int32 `json:"userId,omitempty"`
+	UserId    int32  `json:"userId,omitempty"`
 }

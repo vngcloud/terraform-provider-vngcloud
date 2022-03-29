@@ -10,11 +10,11 @@
 package vserver
 
 type VolumeType struct {
-	Id string `json:"id,omitempty"`
-	Iops int32 `json:"iops,omitempty"`
-	MaxSize int32 `json:"maxSize,omitempty"`
-	MinSize int32 `json:"minSize,omitempty"`
-	Name string `json:"name,omitempty"`
-	ThroughPut int32 `json:"throughPut,omitempty"`
-	ZoneId string `json:"zoneId,omitempty"`
+	Id         string `json:"id,omitempty"`
+	Iops       int32  `json:"iops,omitempty"`
+	MaxSize    int32  `json:"maxSize,omitempty"`
+	MinSize    int32  `json:"minSize,omitempty"`
+	Name       string `json:"name,omitempty"`
+	ThroughPut int32  `json:"throughPut,omitempty"`
+	ZoneId     string `json:"zoneId,omitempty"`
 }

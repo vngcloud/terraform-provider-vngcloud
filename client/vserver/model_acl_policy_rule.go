@@ -14,13 +14,13 @@ import (
 )
 
 type AclPolicyRule struct {
-	Action string `json:"action,omitempty"`
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	InterfaceAclPolicyUuid string `json:"interfaceAclPolicyUuid,omitempty"`
-	Port string `json:"port,omitempty"`
-	Protocol string `json:"protocol,omitempty"`
-	SeqNumber string `json:"seqNumber,omitempty"`
-	Source string `json:"source,omitempty"`
-	Type_ string `json:"type,omitempty"`
-	Uuid string `json:"uuid,omitempty"`
+	Action                 string    `json:"action,omitempty"`
+	CreatedAt              time.Time `json:"createdAt,omitempty"`
+	InterfaceAclPolicyUuid string    `json:"interfaceAclPolicyUuid,omitempty"`
+	Port                   string    `json:"port,omitempty"`
+	Protocol               string    `json:"protocol,omitempty"`
+	SeqNumber              string    `json:"seqNumber,omitempty"`
+	Source                 string    `json:"source,omitempty"`
+	Type_                  string    `json:"type,omitempty"`
+	Uuid                   string    `json:"uuid,omitempty"`
 }

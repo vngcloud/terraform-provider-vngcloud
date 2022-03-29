@@ -2,9 +2,9 @@ package vserver
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 	"time"
 
@@ -107,6 +107,7 @@ func ResourceListener() *schema.Resource {
 }
 
 func resourceListenerCreate(d *schema.ResourceData, m interface{}) error {
+	log.Printf("Create listener")
 	projectId := d.Get("project_id").(string)
 	cli := m.(*client.Client)
 	req := vserver.CreateListenerRequest{
@@ -123,10 +124,12 @@ func resourceListenerCreate(d *schema.ResourceData, m interface{}) error {
 		CertificateAuthorities:      d.Get("certificate_authorities").([]string),
 		DefaultCertificateAuthority: d.Get("default_certificate_authority").(string),
 	}
-	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	log.SetOutput(file)
-	log.Printf("Create request: %v", req)
 	listener, _, err := cli.VserverClient.LoadBalancerRestControllerApi.CreateListenerUsingPOST(context.TODO(), req, projectId)
+
+	respJSON, _ := json.Marshal(listener)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
 	if err != nil {
 		return utils.GetErrorMessage(err)
 	}
@@ -135,6 +138,10 @@ func resourceListenerCreate(d *schema.ResourceData, m interface{}) error {
 		Target:  listenerCreated,
 		Refresh: func() (interface{}, string, error) {
 			resp, _, err := cli.VserverClient.LoadBalancerRestControllerApi.GetListenerUsingGET(context.TODO(), listener.Data.Uuid, projectId)
+			respJSON, _ := json.Marshal(resp)
+			log.Printf("-------------------------------------\n")
+			log.Printf("%s\n", string(respJSON))
+			log.Printf("-------------------------------------\n")
 			if err != nil {
 				return nil, "", fmt.Errorf("Error on network State Refresh: %s", err)
 			}
@@ -151,10 +158,14 @@ func resourceListenerCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(listener.Data.Uuid)
+
+	log.Printf("Create listener successfully")
+
 	return nil
 }
 
 func resourceListenerRead(d *schema.ResourceData, m interface{}) error {
+	log.Printf("Read listener")
 	cli := m.(*client.Client)
 	projectId := d.Get("project_id").(string)
 
@@ -162,6 +173,11 @@ func resourceListenerRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return utils.GetErrorMessage(err)
 	}
+
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
 
 	d.Set("allowed_cidrs", resp.Data.AllowedCidrs)
 	d.Set("project_id", resp.Data.ProjectId)
@@ -176,10 +192,13 @@ func resourceListenerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("default_pool_id", resp.Data.DefaultPoolId)
 	// d.Set("certificate_authorities", resp.)
 
+	log.Printf("Read listener successfully")
+
 	return nil
 }
 
 func resourceListenerUpdate(d *schema.ResourceData, m interface{}) error {
+	log.Printf("Update listener")
 	cli := m.(*client.Client)
 	projectId := d.Get("project_id").(string)
 	req := vserver.UpdateListenerRequest{
@@ -191,7 +210,12 @@ func resourceListenerUpdate(d *schema.ResourceData, m interface{}) error {
 		TimeoutMember:               int32(d.Get("timeout_member").(int)),
 		DefaultCertificateAuthority: d.Get("default_certificate_authority").(string),
 	}
-	_, _, err := cli.VserverClient.LoadBalancerRestControllerApi.UpdateListenerUsingPUT(context.TODO(), projectId, req)
+	resp, _, err := cli.VserverClient.LoadBalancerRestControllerApi.UpdateListenerUsingPUT(context.TODO(), projectId, req)
+
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
 	if err != nil {
 		return utils.GetErrorMessage(err)
 	}
@@ -200,6 +224,11 @@ func resourceListenerUpdate(d *schema.ResourceData, m interface{}) error {
 		Target:  listenerCreated,
 		Refresh: func() (interface{}, string, error) {
 			resp, _, err := cli.VserverClient.LoadBalancerRestControllerApi.GetListenerUsingGET(context.TODO(), d.Id(), projectId)
+
+			respJSON, _ := json.Marshal(resp)
+			log.Printf("-------------------------------------\n")
+			log.Printf("%s\n", string(respJSON))
+			log.Printf("-------------------------------------\n")
 			if err != nil {
 				return nil, "", fmt.Errorf("Error on network State Refresh: %s", err)
 			}
@@ -215,19 +244,30 @@ func resourceListenerUpdate(d *schema.ResourceData, m interface{}) error {
 		return utils.GetErrorMessage(err)
 	}
 
+	log.Printf("Update listener successfully")
+
 	return resourceListenerRead(d, m)
 }
 
 func resourceListenerDelete(d *schema.ResourceData, m interface{}) error {
+	log.Printf("Delete listener")
 	cli := m.(*client.Client)
 	projectId := d.Get("project_id").(string)
 
 	req := vserver.DeleteListenerRequest{
 		ListenerId: d.Id(),
 	}
-	_, _, err := cli.VserverClient.LoadBalancerRestControllerApi.DeleteListenerUsingDELETE(context.TODO(), req, projectId)
+	resp, _, err := cli.VserverClient.LoadBalancerRestControllerApi.DeleteListenerUsingDELETE(context.TODO(), req, projectId)
+
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
 	if err != nil {
 		return utils.GetErrorMessage(err)
 	}
+
+	log.Printf("Delete listener successfully")
+
 	return nil
 }

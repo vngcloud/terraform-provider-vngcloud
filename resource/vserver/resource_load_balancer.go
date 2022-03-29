@@ -2,9 +2,9 @@ package vserver
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 	"time"
 
@@ -38,126 +38,53 @@ func ResourceLoadBalancer() *schema.Resource {
 				ForceNew: true,
 				Required: true,
 			},
-			// "algorithm": {
-			// 	Type:     schema.TypeString,
-			// 	Optional: true,
-			// 	Default:  "ROUND_ROBIN",
-			// },
-			// "health_check_method": {
-			// 	Type:     schema.TypeString,
-			// 	Required: true,
-			// },
-			// "health_check_path": {
-			// 	Type:     schema.TypeString,
-			// 	Optional: true,
-			// },
-			// "health_check_protocol": {
-			// 	Type:     schema.TypeString,
-			// 	Required: true,
-			// },
-			// "healthy_threshold": {
-			// 	Type:     schema.TypeInt,
-			// 	Optional: true,
-			// 	Default:  3,
-			// },
-			// "interval": {
-			// 	Type:     schema.TypeInt,
-			// 	Optional: true,
-			// 	Default:  30,
-			// },
 			"name": {
 				Type:     schema.TypeString,
 				ForceNew: true,
 				Required: true,
 			},
-			// "members": {
-			// 	Type: schema.TypeList,
-			// 	Elem: &schema.Schema{
-			// 		Type: vserver.CreateMemberRequest,
-			// 	},
-			// },
 			"package_id": {
 				Type:     schema.TypeString,
 				ForceNew: true,
 				Required: true,
 			},
-			// "pool_name": {
-			// 	Type:     schema.TypeString,
-			// 	Required: true,
-			// },
-			// "pool_protocol": {
-			// 	Type:     schema.TypeString,
-			// 	Required: true,
-			// },
-			// "timeout": {
-			// 	Type:     schema.TypeInt,
-			// 	Optional: true,
-			// 	Default:  5,
-			// },
 			"scheme": {
 				Type:     schema.TypeString,
 				ForceNew: true,
 				Optional: true,
 				Default:  "Internet",
-				// ExactlyOneOf: []string{"Internet", "Internal"},
 			},
-			// "stickiness": {
-			// 	Type:     schema.TypeBool,
-			// 	Optional: true,
-			// 	Default:  false,
-			// },
 			"subnet_id": {
 				Type:     schema.TypeString,
 				ForceNew: true,
 				Required: true,
 			},
-			// "success_code": {
-			// 	Type:     schema.TypeString,
-			// 	Optional: true,
-			// },
 			"type": {
 				Type:     schema.TypeString,
 				ForceNew: true,
 				Required: true,
-				// ExactlyOneOf: []string{"Layer 4", "Layer 7"},
 			},
-			// "unhealthy_threshold": {
-			// 	Type:     schema.TypeInt,
-			// 	Optional: true,
-			// 	Default:  3,
-			// },
 		},
 	}
 }
 
 func resourceLoadBalancerCreate(d *schema.ResourceData, m interface{}) error {
+	log.Printf("Create load balancer")
 	projectId := d.Get("project_id").(string)
 	cli := m.(*client.Client)
 	req := vserver.CreateLoadBalancerRequest{
-		// Algorithm:              d.Get("algorithm").(string),
-		// CertificateAuthorities: d.Get("certificate_authorities").([]string),
-		// HealthCheckMethod:      d.Get("health_check_method").(string),
-		// HealthCheckPath:        d.Get("health_check_path").(string),
-		// HealthCheckProtocol:    d.Get("health_check_protocol").(string),
-		// HealthyThreshold:       d.Get("healthy_threshold").(int64),
-		// Interval:               d.Get("interval").(int64),
-		// Members: ,
 		Name:      d.Get("name").(string),
 		PackageId: d.Get("package_id").(string),
-		// PoolName:           d.Get("pool_name").(string),
-		// PoolProtocol:       d.Get("pool_protocol").(string),
-		Scheme: d.Get("scheme").(string),
-		// Stickiness:         d.Get("stickiness").(bool),
-		SubnetId: d.Get("subnet_id").(string),
-		// SuccessCode:        d.Get("success_code").(string),
-		// Timeout:            d.Get("timeout").(int64),
-		Type_: d.Get("type").(string),
-		// UnhealthyThreshold: d.Get("unhealthy_threshold").(int64),
+		Scheme:    d.Get("scheme").(string),
+		SubnetId:  d.Get("subnet_id").(string),
+		Type_:     d.Get("type").(string),
 	}
-	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	log.SetOutput(file)
-	log.Printf("Create request: %v", req)
+	// log.Printf("Create request: %v", req)
 	resp, _, err := cli.VserverClient.LoadBalancerRestControllerApi.CreateLoadBalancerUsingPOST(context.TODO(), req, projectId)
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
 	if err != nil {
 		return utils.GetErrorMessage(err)
 	}
@@ -167,6 +94,10 @@ func resourceLoadBalancerCreate(d *schema.ResourceData, m interface{}) error {
 		Target:  loadBalancerCreated,
 		Refresh: func() (interface{}, string, error) {
 			lb, _, err := cli.VserverClient.LoadBalancerRestControllerApi.GetLoadBalancerUsingGET(context.TODO(), resp.Data.Uuid, projectId)
+			respJSON, _ := json.Marshal(lb)
+			log.Printf("-------------------------------------\n")
+			log.Printf("%s\n", string(respJSON))
+			log.Printf("-------------------------------------\n")
 			if err != nil {
 				return nil, "", fmt.Errorf("Error on network State Refresh: %s", err)
 			}
@@ -187,10 +118,15 @@ func resourceLoadBalancerCreate(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceLoadBalancerRead(d *schema.ResourceData, m interface{}) error {
+	log.Printf("Read load balancer")
 	projectId := d.Get("project_id").(string)
 	cli := m.(*client.Client)
 	lb, _, err := cli.VserverClient.LoadBalancerRestControllerApi.GetLoadBalancerUsingGET(context.TODO(), d.Id(), projectId)
 
+	respJSON, _ := json.Marshal(lb)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
 	if err != nil {
 		return utils.GetErrorMessage(err)
 	}
@@ -202,6 +138,8 @@ func resourceLoadBalancerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("type", lb.Data.Type_)
 	d.Set("scheme", lb.Data.LoadBalancerSchema)
 
+	log.Printf("Read load balancer successfully")
+
 	return nil
 }
 
@@ -210,15 +148,21 @@ func resourceLoadBalancerRead(d *schema.ResourceData, m interface{}) error {
 // }
 
 func resourceLoadBalancerDelete(d *schema.ResourceData, m interface{}) error {
+	log.Printf("Delete load balancer")
 	projectId := d.Get("project_id").(string)
 	cli := m.(*client.Client)
 
 	req := vserver.DeleteLoadBalancerRequest{
 		LoadBalancerId: d.Id(),
 	}
-	_, _, err := cli.VserverClient.LoadBalancerRestControllerApi.DeleteLoadBalancerUsingDELETE(context.TODO(), req, projectId)
+	resp, _, err := cli.VserverClient.LoadBalancerRestControllerApi.DeleteLoadBalancerUsingDELETE(context.TODO(), req, projectId)
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
 	if err != nil {
 		return utils.GetErrorMessage(err)
 	}
+	log.Printf("Delete load balancer successfully")
 	return nil
 }

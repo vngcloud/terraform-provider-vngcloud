@@ -9,24 +9,20 @@
 
 package vserver
 
-import (
-	"time"
-)
-
 type HealthMonitor struct {
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	HealthCheckMethod string `json:"healthCheckMethod,omitempty"`
-	HealthCheckPath string `json:"healthCheckPath,omitempty"`
+	// CreatedAt           time.Time `json:"createdAt,omitempty"`
+	HealthCheckMethod   string `json:"healthCheckMethod,omitempty"`
+	HealthCheckPath     string `json:"healthCheckPath,omitempty"`
 	HealthCheckProtocol string `json:"healthCheckProtocol,omitempty"`
-	HealthyThreshold int64 `json:"healthyThreshold,omitempty"`
-	Interval int64 `json:"interval,omitempty"`
-	PoolId string `json:"poolId,omitempty"`
-	ProjectId string `json:"projectId,omitempty"`
-	ProvisioningStatus string `json:"provisioningStatus,omitempty"`
-	Status string `json:"status,omitempty"`
-	SuccessCode string `json:"successCode,omitempty"`
-	Timeout int64 `json:"timeout,omitempty"`
-	UnhealthyThreshold int64 `json:"unhealthyThreshold,omitempty"`
-	UpdatedAt time.Time `json:"updatedAt,omitempty"`
+	HealthyThreshold    int64  `json:"healthyThreshold,omitempty"`
+	Interval            int64  `json:"interval,omitempty"`
+	PoolId              string `json:"poolId,omitempty"`
+	ProjectId           string `json:"projectId,omitempty"`
+	ProvisioningStatus  string `json:"provisioningStatus,omitempty"`
+	Status              string `json:"status,omitempty"`
+	SuccessCode         string `json:"successCode,omitempty"`
+	Timeout             int64  `json:"timeout,omitempty"`
+	UnhealthyThreshold  int64  `json:"unhealthyThreshold,omitempty"`
+	// UpdatedAt           time.Time `json:"updatedAt,omitempty"`
 	Uuid string `json:"uuid,omitempty"`
 }

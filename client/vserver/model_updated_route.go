@@ -11,6 +11,6 @@ package vserver
 
 type UpdatedRoute struct {
 	Destination string `json:"destination,omitempty"`
-	TargetUuid string `json:"targetUuid,omitempty"`
-	Type_ string `json:"type,omitempty"`
+	TargetUuid  string `json:"targetUuid,omitempty"`
+	Type_       string `json:"type,omitempty"`
 }

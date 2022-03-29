@@ -12,7 +12,7 @@ package vserver
 // Create Network Request
 type CreateNetworkRequest struct {
 	// Subnet of Network (/16).
-	Cidr string `json:"cidr"`
+	Cidr  string      `json:"cidr"`
 	Extra interface{} `json:"extra,omitempty"`
 	// Name of the Network
 	Name string `json:"name"`

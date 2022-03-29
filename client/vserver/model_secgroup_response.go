@@ -10,9 +10,9 @@
 package vserver
 
 type SecgroupResponse struct {
-	ErrorCode int32 `json:"errorCode,omitempty"`
-	ErrorMsg string `json:"errorMsg,omitempty"`
-	Extra interface{} `json:"extra,omitempty"`
-	Secgroups []Secgroup `json:"secgroups,omitempty"`
-	Success bool `json:"success,omitempty"`
+	ErrorCode int32       `json:"errorCode,omitempty"`
+	ErrorMsg  string      `json:"errorMsg,omitempty"`
+	Extra     interface{} `json:"extra,omitempty"`
+	Secgroups []Secgroup  `json:"secgroups,omitempty"`
+	Success   bool        `json:"success,omitempty"`
 }

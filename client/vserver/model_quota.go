@@ -11,9 +11,9 @@ package vserver
 
 type Quota struct {
 	Description string `json:"description,omitempty"`
-	Limit int64 `json:"limit,omitempty"`
+	Limit       int64  `json:"limit,omitempty"`
 	ProjectUuid string `json:"projectUuid,omitempty"`
-	QuotaName string `json:"quotaName,omitempty"`
-	Type_ string `json:"type,omitempty"`
-	Used string `json:"used,omitempty"`
+	QuotaName   string `json:"quotaName,omitempty"`
+	Type_       string `json:"type,omitempty"`
+	Used        string `json:"used,omitempty"`
 }

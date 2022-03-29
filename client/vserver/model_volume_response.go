@@ -10,9 +10,9 @@
 package vserver
 
 type VolumeResponse struct {
-	ErrorCode int32 `json:"errorCode,omitempty"`
-	ErrorMsg string `json:"errorMsg,omitempty"`
-	Extra interface{} `json:"extra,omitempty"`
-	Success bool `json:"success,omitempty"`
-	Volumes []Volume `json:"volumes,omitempty"`
+	ErrorCode int32       `json:"errorCode,omitempty"`
+	ErrorMsg  string      `json:"errorMsg,omitempty"`
+	Extra     interface{} `json:"extra,omitempty"`
+	Success   bool        `json:"success,omitempty"`
+	Volumes   []Volume    `json:"volumes,omitempty"`
 }

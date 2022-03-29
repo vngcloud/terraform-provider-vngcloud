@@ -10,14 +10,14 @@
 package vserver
 
 type Timestamp struct {
-	Date int32 `json:"date,omitempty"`
-	Day int32 `json:"day,omitempty"`
-	Hours int32 `json:"hours,omitempty"`
-	Minutes int32 `json:"minutes,omitempty"`
-	Month int32 `json:"month,omitempty"`
-	Nanos int32 `json:"nanos,omitempty"`
-	Seconds int32 `json:"seconds,omitempty"`
-	Time int64 `json:"time,omitempty"`
+	Date           int32 `json:"date,omitempty"`
+	Day            int32 `json:"day,omitempty"`
+	Hours          int32 `json:"hours,omitempty"`
+	Minutes        int32 `json:"minutes,omitempty"`
+	Month          int32 `json:"month,omitempty"`
+	Nanos          int32 `json:"nanos,omitempty"`
+	Seconds        int32 `json:"seconds,omitempty"`
+	Time           int64 `json:"time,omitempty"`
 	TimezoneOffset int32 `json:"timezoneOffset,omitempty"`
-	Year int32 `json:"year,omitempty"`
+	Year           int32 `json:"year,omitempty"`
 }

@@ -19,7 +19,7 @@ type UpdatePoolRequest struct {
 	// Id of project
 	ProjectId string `json:"projectId,omitempty"`
 	// Enable sticky sessions.
-	Stickiness bool `json:"stickiness,omitempty"`
+	Stickiness bool `json:"stickiness"`
 	// Id of user
 	UserId int32 `json:"userId,omitempty"`
 }

@@ -14,17 +14,17 @@ import (
 )
 
 type Server struct {
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	EncryptionVolume bool `json:"encryptionVolume,omitempty"`
+	CreatedAt          time.Time                   `json:"createdAt,omitempty"`
+	EncryptionVolume   bool                        `json:"encryptionVolume,omitempty"`
 	ExternalInterfaces []InterfaceNetworkInterface `json:"externalInterfaces,omitempty"`
-	FlavorId string `json:"flavorId,omitempty"`
-	ImageId string `json:"imageId,omitempty"`
+	FlavorId           string                      `json:"flavorId,omitempty"`
+	ImageId            string                      `json:"imageId,omitempty"`
 	InternalInterfaces []InterfaceNetworkInterface `json:"internalInterfaces,omitempty"`
-	Licence bool `json:"licence,omitempty"`
-	Name string `json:"name,omitempty"`
-	OsInfo string `json:"osInfo,omitempty"`
-	ServerGroupId string `json:"serverGroupId,omitempty"`
-	SshKeyName string `json:"sshKeyName,omitempty"`
-	Status string `json:"status,omitempty"`
-	Uuid string `json:"uuid,omitempty"`
+	Licence            bool                        `json:"licence,omitempty"`
+	Name               string                      `json:"name,omitempty"`
+	OsInfo             string                      `json:"osInfo,omitempty"`
+	ServerGroupId      string                      `json:"serverGroupId,omitempty"`
+	SshKeyName         string                      `json:"sshKeyName,omitempty"`
+	Status             string                      `json:"status,omitempty"`
+	Uuid               string                      `json:"uuid,omitempty"`
 }

@@ -10,7 +10,7 @@
 package vserver
 
 type PackageLimit struct {
-	Cpu int32 `json:"cpu,omitempty"`
+	Cpu      int32 `json:"cpu,omitempty"`
 	DiskSize int32 `json:"diskSize,omitempty"`
-	Memory int32 `json:"memory,omitempty"`
+	Memory   int32 `json:"memory,omitempty"`
 }

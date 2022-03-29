@@ -6,6 +6,9 @@ var (
 	listenerCreating       = []string{"CREATING"}
 	listenerUpdating       = []string{"UPDATING"}
 	listenerCreated        = []string{"CREATED"}
+	poolCreating           = []string{"CREATING"}
+	poolUpdating           = []string{"UPDATING"}
+	poolCreated            = []string{"CREATED"}
 	networkCreating        = []string{"CREATING"}
 	networkCreated         = []string{"ACTIVE"}
 	secgroupRuleCreating   = []string{"CREATING"}
