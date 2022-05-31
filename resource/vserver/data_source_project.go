@@ -13,18 +13,18 @@ import (
 func DataSourceProject() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceProjectRead,
-		Schema: map[string]*schema.Schema{
-			"project_id": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-		},
+		// Schema: map[string]*schema.Schema{
+		// 	"project_id": {
+		// 		Type:     schema.TypeString,
+		// 		Required: true,
+		// 	},
+		// },
 	}
 }
 func dataSourceProjectRead(d *schema.ResourceData, m interface{}) error {
-	id := d.Get("project_id").(string)
+	// id := d.Get("project_id").(string)
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ProjectRestControllerApi.GetProjectUsingGET(context.TODO(), id)
+	resp, _, err := cli.VserverClient.ProjectRestControllerApi.ListProjectUsingGET(context.TODO())
 	if err != nil {
 		return err
 	}
@@ -36,6 +36,6 @@ func dataSourceProjectRead(d *schema.ResourceData, m interface{}) error {
 		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
 		return err
 	}
-	d.SetId(id)
+	d.SetId(resp.Projects[0].ProjectId)
 	return nil
 }
