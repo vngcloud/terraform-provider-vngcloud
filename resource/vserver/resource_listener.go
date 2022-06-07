@@ -110,6 +110,11 @@ func resourceListenerCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("Create listener")
 	projectId := d.Get("project_id").(string)
 	cli := m.(*client.Client)
+	certificateAuthoritiesInterface := d.Get("certificate_authorities").([]interface{})
+	certificateAuthorities := make([]string, 0)
+	for _, cert := range certificateAuthoritiesInterface {
+		certificateAuthorities = append(certificateAuthorities, cert.(string))
+	}
 	req := vserver.CreateListenerRequest{
 		AllowedCidrs:                d.Get("allowed_cidrs").(string),
 		ListenerName:                d.Get("name").(string),
@@ -121,7 +126,7 @@ func resourceListenerCreate(d *schema.ResourceData, m interface{}) error {
 		TimeoutConnection:           int32(d.Get("timeout_connection").(int)),
 		TimeoutMember:               int32(d.Get("timeout_member").(int)),
 		DefaultPoolId:               d.Get("default_pool_id").(string),
-		CertificateAuthorities:      d.Get("certificate_authorities").([]string),
+		CertificateAuthorities:      certificateAuthorities,
 		DefaultCertificateAuthority: d.Get("default_certificate_authority").(string),
 	}
 	listener, _, err := cli.VserverClient.LoadBalancerRestControllerApi.CreateListenerUsingPOST(context.TODO(), req, projectId)

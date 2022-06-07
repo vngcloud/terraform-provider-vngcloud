@@ -3,7 +3,9 @@ package vserver
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -19,9 +21,17 @@ func ResourcePool() *schema.Resource {
 		Read:   resourcePoolRead,
 		Update: resourcePoolUpdate,
 		Delete: resourcePoolDelete,
-		// Importer: &schema.ResourceImporter{
-		// 	State: ,
-		// },
+		Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+				idParts := strings.Split(d.Id(), ":")
+				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
+					return nil, fmt.Errorf("Unexpected format of ID (%q), expected ProjectID:PoolID", d.Id())
+				}
+				d.Set("project_id", idParts[0])
+				d.SetId(idParts[1])
+				return []*schema.ResourceData{d}, nil
+			},
+		},
 		Schema: map[string]*schema.Schema{
 			"project_id": {
 				Type:     schema.TypeString,
