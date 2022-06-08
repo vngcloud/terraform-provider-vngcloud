@@ -155,13 +155,15 @@ func resourceLoadBalancerDelete(d *schema.ResourceData, m interface{}) error {
 	req := vserver.DeleteLoadBalancerRequest{
 		LoadBalancerId: d.Id(),
 	}
-	resp, _, err := cli.VserverClient.LoadBalancerRestControllerApi.DeleteLoadBalancerUsingDELETE(context.TODO(), req, projectId)
+	resp, httpResp, err := cli.VserverClient.LoadBalancerRestControllerApi.DeleteLoadBalancerUsingDELETE(context.TODO(), req, projectId)
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if err != nil {
-		return utils.GetErrorMessage(err)
+	if httpResp.StatusCode != 200 {
+		if err != nil {
+			return utils.GetErrorMessage(err)
+		}
 	}
 	log.Printf("Delete load balancer successfully")
 	return nil

@@ -262,14 +262,17 @@ func resourceListenerDelete(d *schema.ResourceData, m interface{}) error {
 	req := vserver.DeleteListenerRequest{
 		ListenerId: d.Id(),
 	}
-	resp, _, err := cli.VserverClient.LoadBalancerRestControllerApi.DeleteListenerUsingDELETE(context.TODO(), req, projectId)
+	resp, httpResp, err := cli.VserverClient.LoadBalancerRestControllerApi.DeleteListenerUsingDELETE(context.TODO(), req, projectId)
 
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if err != nil {
-		return utils.GetErrorMessage(err)
+	if httpResp.StatusCode != 200 {
+		log.Printf("status code %v\n", httpResp.Status)
+		if err != nil {
+			return utils.GetErrorMessage(err)
+		}
 	}
 
 	log.Printf("Delete listener successfully")
