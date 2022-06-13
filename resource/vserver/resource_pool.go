@@ -77,12 +77,42 @@ func ResourcePool() *schema.Resource {
 				Optional: true,
 				Default:  30,
 			},
-			// "members": {
-			// 	Type: schema.TypeList,
-			// 	Elem: &schema.Schema{
-			// 		Type: vserver.CreateMemberRequest,
-			// 	},
-			// },
+			"members": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"backup": {
+							Type:     schema.TypeBool,
+							Required: true,
+						},
+						"ip_address": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"monitor_port": {
+							Type:     schema.TypeInt,
+							Required: true,
+						},
+						"port": {
+							Type:     schema.TypeInt,
+							Required: true,
+						},
+						"subnet_id": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"weight": {
+							Type:     schema.TypeInt,
+							Required: true,
+						},
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -209,7 +239,54 @@ func resourcePoolRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("timeout", pool.Data.HealthMonitor.Timeout)
 	d.Set("success_code", pool.Data.HealthMonitor.SuccessCode)
 
+	err = memberRead(d, m)
+	if err != nil {
+		return utils.GetErrorMessage(err)
+	}
+
 	log.Printf("Read pool successfully")
+	return nil
+}
+
+func memberRead(d *schema.ResourceData, m interface{}) error {
+	log.Printf("Read member")
+
+	projectId := d.Get("project_id").(string)
+	cli := m.(*client.Client)
+
+	pagingMember, _, err := cli.VserverClient.LoadBalancerRestControllerApi.GetMemberFromPoolUsingGET(context.TODO(), d.Id(), projectId, nil)
+	respJSON, _ := json.Marshal(pagingMember)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
+
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Parse member")
+	if pagingMember.ListData != nil {
+		memberList := make([]interface{}, len(pagingMember.ListData))
+		for i, member := range pagingMember.ListData {
+			memberTemp := make(map[string]interface{})
+			if member.Backup == 0 {
+				memberTemp["backup"] = false
+			} else {
+				memberTemp["backup"] = true
+			}
+			memberTemp["ip_address"] = member.Address
+			memberTemp["monitor_port"] = member.MonitorPort
+			memberTemp["port"] = member.ProtocolPort
+			memberTemp["subnet_id"] = member.SubnetId
+			memberTemp["weight"] = member.Weight
+			memberTemp["name"] = member.Name
+
+			memberList[i] = memberTemp
+		}
+		d.Set("members", memberList)
+	}
+
+	log.Printf("Read member successfully")
 	return nil
 }
 
