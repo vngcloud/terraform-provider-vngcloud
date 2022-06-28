@@ -64,6 +64,18 @@ func ResourceLoadBalancer() *schema.Resource {
 				ForceNew: true,
 				Required: true,
 			},
+			"status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"provisioning_status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"operating_status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -137,6 +149,9 @@ func resourceLoadBalancerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("subnet_id", lb.Data.SubnetId)
 	d.Set("type", lb.Data.Type_)
 	d.Set("scheme", lb.Data.LoadBalancerSchema)
+	d.Set("status", lb.Data.Status)
+	d.Set("provisioning_status", lb.Data.ProvisioningStatus)
+	d.Set("operating_status", lb.Data.OperatingStatus)
 
 	log.Printf("Read load balancer successfully")
 

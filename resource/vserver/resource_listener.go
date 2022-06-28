@@ -102,6 +102,18 @@ func ResourceListener() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"provisioning_status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"operating_status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -195,6 +207,9 @@ func resourceListenerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("timeout_member", resp.Data.TimeoutMember)
 	d.Set("headers", resp.Data.Headers)
 	d.Set("default_pool_id", resp.Data.DefaultPoolId)
+	d.Set("status", resp.Data.Status)
+	d.Set("provisioning_status", resp.Data.ProvisioningStatus)
+	d.Set("operating_status", resp.Data.OperatingStatus)
 	// d.Set("certificate_authorities", resp.)
 
 	log.Printf("Read listener successfully")

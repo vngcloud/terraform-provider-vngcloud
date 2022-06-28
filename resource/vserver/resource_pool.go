@@ -136,14 +136,47 @@ func ResourcePool() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"provisioning_status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"operating_status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
+}
+
+func buildCreateMemberRequests(d *schema.ResourceData) []vserver.CreateMemberRequest {
+	members := d.Get("members").([]interface{})
+	createMemberRequest := make([]vserver.CreateMemberRequest, len(members))
+
+	for i, m := range members {
+		member := m.(map[string]interface{})
+		var request vserver.CreateMemberRequest
+		request.Backup = member["backup"].(bool)
+		request.IpAddress = member["ip_address"].(string)
+		request.MonitorPort = int32(member["monitor_port"].(int))
+		request.Name = member["name"].(string)
+		request.Port = int32(member["port"].(int))
+		request.SubnetId = member["subnet_id"].(string)
+		request.Weight = int32(member["weight"].(int))
+
+		createMemberRequest[i] = request
+	}
+	return createMemberRequest
 }
 
 func resourcePoolCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("Create pool")
 	projectId := d.Get("project_id").(string)
 	cli := m.(*client.Client)
+
 	req := vserver.CreatePoolRequest{
 		LoadBalancerId: d.Get("load_balancer_id").(string),
 		Algorithm:      d.Get("algorithm").(string),
@@ -160,7 +193,7 @@ func resourcePoolCreate(d *schema.ResourceData, m interface{}) error {
 			SuccessCode:         d.Get("success_code").(string),
 			Timeout:             int64(d.Get("timeout").(int)),
 		},
-		// Members: ,
+		Members: buildCreateMemberRequests(d),
 	}
 	pool, _, err := cli.VserverClient.LoadBalancerRestControllerApi.CreatePoolUsingPOST(context.TODO(), req, projectId)
 
@@ -224,9 +257,9 @@ func resourcePoolRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("protocol", pool.Data.Protocol)
 	var stickiness bool
 	if pool.Data.SessionPersistence != 1 {
-		stickiness = true
-	} else {
 		stickiness = false
+	} else {
+		stickiness = true
 	}
 	d.Set("stickiness", stickiness)
 
@@ -238,6 +271,9 @@ func resourcePoolRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("interval", pool.Data.HealthMonitor.Interval)
 	d.Set("timeout", pool.Data.HealthMonitor.Timeout)
 	d.Set("success_code", pool.Data.HealthMonitor.SuccessCode)
+	d.Set("status", pool.Data.Status)
+	d.Set("provisioning_status", pool.Data.ProvisioningStatus)
+	d.Set("operating_status", pool.Data.OperatingStatus)
 
 	err = memberRead(d, m)
 	if err != nil {
@@ -295,28 +331,81 @@ func resourcePoolUpdate(d *schema.ResourceData, m interface{}) error {
 	projectId := d.Get("project_id").(string)
 	cli := m.(*client.Client)
 
-	req := vserver.UpdatePoolRequest{
-		PoolId:     d.Id(),
-		Algorithm:  d.Get("algorithm").(string),
-		Stickiness: d.Get("stickiness").(bool),
-		HealthMonitor: &vserver.UpdateHealthMonitorRequest{
-			HealthCheckMethod:  d.Get("health_check_method").(string),
-			HealthCheckPath:    d.Get("health_check_path").(string),
-			HealthyThreshold:   int64(d.Get("healthy_threshold").(int)),
-			UnhealthyThreshold: int64(d.Get("unhealthy_threshold").(int)),
-			Interval:           int64(d.Get("interval").(int)),
-			Timeout:            int64(d.Get("timeout").(int)),
-			SuccessCode:        d.Get("success_code").(string),
-		},
+	if d.HasChangeExcept("members") {
+		req := vserver.UpdatePoolRequest{
+			PoolId:     d.Id(),
+			Algorithm:  d.Get("algorithm").(string),
+			Stickiness: d.Get("stickiness").(bool),
+			HealthMonitor: &vserver.UpdateHealthMonitorRequest{
+				HealthCheckMethod:  d.Get("health_check_method").(string),
+				HealthCheckPath:    d.Get("health_check_path").(string),
+				HealthyThreshold:   int64(d.Get("healthy_threshold").(int)),
+				UnhealthyThreshold: int64(d.Get("unhealthy_threshold").(int)),
+				Interval:           int64(d.Get("interval").(int)),
+				Timeout:            int64(d.Get("timeout").(int)),
+				SuccessCode:        d.Get("success_code").(string),
+			},
+		}
+		resp, _, err := cli.VserverClient.LoadBalancerRestControllerApi.UpdatePoolUsingPUT(context.TODO(), projectId, req)
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+
+		if err != nil {
+			return utils.GetErrorMessage(err)
+		}
+
+		stateConf := &resource.StateChangeConf{
+			Pending: poolUpdating,
+			Target:  poolCreated,
+			Refresh: func() (interface{}, string, error) {
+				resp, _, err := cli.VserverClient.LoadBalancerRestControllerApi.GetPoolUsingGET(context.TODO(), d.Id(), projectId)
+				respJSON, _ := json.Marshal(resp)
+				log.Printf("-------------------------------------\n")
+				log.Printf("%s\n", string(respJSON))
+				log.Printf("-------------------------------------\n")
+
+				if err != nil {
+					return nil, "", utils.GetErrorMessage(err)
+				}
+
+				return resp, resp.Data.Status, err
+			},
+			Timeout:    d.Timeout(schema.TimeoutUpdate),
+			Delay:      10 * time.Second,
+			MinTimeout: 10 * time.Second,
+		}
+
+		_, err = stateConf.WaitForState()
+		if err != nil {
+			return utils.GetErrorMessage(err)
+		}
 	}
-	resp, _, err := cli.VserverClient.LoadBalancerRestControllerApi.UpdatePoolUsingPUT(context.TODO(), projectId, req)
-	respJSON, _ := json.Marshal(resp)
-	log.Printf("-------------------------------------\n")
-	log.Printf("%s\n", string(respJSON))
-	log.Printf("-------------------------------------\n")
+	if d.HasChange("members") {
+		memberUpdate(d, m)
+	}
+
+	log.Printf("Update pool successfully")
+	return resourcePoolRead(d, m)
+}
+
+func memberUpdate(d *schema.ResourceData, m interface{}) error {
+	log.Printf("Update member")
+
+	projectId := d.Get("project_id").(string)
+	cli := m.(*client.Client)
+
+	createMemberRequest := buildCreateMemberRequests(d)
+	updateMembersRequest := vserver.UpdateMembersRequest{
+		Members: createMemberRequest,
+	}
+
+	_, err := cli.VserverClient.LoadBalancerRestControllerApi.UpdateMembersUsingPUT(context.TODO(), d.Id(), projectId, updateMembersRequest)
 
 	if err != nil {
-		return utils.GetErrorMessage(err)
+		log.Printf("%v\n", err)
+		return err
 	}
 
 	stateConf := &resource.StateChangeConf{
@@ -345,7 +434,7 @@ func resourcePoolUpdate(d *schema.ResourceData, m interface{}) error {
 		return utils.GetErrorMessage(err)
 	}
 
-	log.Printf("Update pool successfully")
+	log.Printf("Update member successfully")
 	return nil
 }
 

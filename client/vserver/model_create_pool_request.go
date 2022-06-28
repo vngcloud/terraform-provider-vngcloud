@@ -19,7 +19,7 @@ type CreatePoolRequest struct {
 	// Id of the load balancer.
 	LoadBalancerId string `json:"loadBalancerId,omitempty"`
 	// List of members of the pool.
-	Members []CreateMemberRequest `json:"members,omitempty"`
+	Members []CreateMemberRequest `json:"members"`
 	// Name of the pool. Only letters (a-z, A-Z, 0-9, '_', '.') are allowed and your input data must be between 6 and 20 characters.
 	PoolName string `json:"poolName"`
 	// Protocol of the pool.

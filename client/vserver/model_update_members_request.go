@@ -11,7 +11,7 @@ package vserver
 
 type UpdateMembersRequest struct {
 	// List of members of the pool.
-	Members []CreateMemberRequest `json:"members,omitempty"`
+	Members []CreateMemberRequest `json:"members"`
 	// Id of project
 	ProjectId string `json:"projectId,omitempty"`
 	// Id of user
