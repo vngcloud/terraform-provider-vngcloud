@@ -14,20 +14,6 @@ provider "vngcloud" {
   vserver_base_url      = "https://vserverapi.vngcloud.vn/vserver-gateway"
 }
 
-data "vngcloud_vserver_flavor_zone" "flavor_zone" {
-  name       = var.flavor_zone_name
-  project_id = var.project_id
-}
-data "vngcloud_vserver_flavor" "flavor" {
-  name           = var.flavor_name
-  project_id     = var.project_id
-  flavor_zone_id = data.vngcloud_vserver_flavor_zone.flavor_zone.id
-}
-data "vngcloud_vserver_image" "image" {
-  name           = var.image_name
-  project_id     = var.project_id
-  flavor_zone_id = data.vngcloud_vserver_flavor_zone.flavor_zone.id
-}
 data "vngcloud_vserver_volume_type_zone" "volume_type_zone" {
   name       = "SSD"
   project_id = var.project_id
@@ -44,8 +30,8 @@ resource "vngcloud_vserver_server" "server" {
   name              = "vngcloud-server-${count.index}"
   encryption_volume = false
   attach_floating   = true
-  flavor_id         = data.vngcloud_vserver_flavor.flavor.id
-  image_id          = data.vngcloud_vserver_image.image.id
+  flavor_id         = var.flavor_id
+  image_id          = var.image_id
   network_id        = var.network_id
   root_disk_size    = var.root_disk_size
   root_disk_type_id = data.vngcloud_vserver_volume_type.volume_type.id
