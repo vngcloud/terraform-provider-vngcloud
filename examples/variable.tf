@@ -10,17 +10,13 @@ variable "project_id" {
   type    = string
   default = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 }
-variable "image_name" {
+variable "flavor_id" {
   type    = string
-  default = "1-Ubuntu-18.04x64"
+  default = "flav-eb756bc4-b820-49d7-97bf-cfc8335ad518"
 }
-variable "flavor_zone_name" {
+variable "image_id" {
   type    = string
-  default = "General v1 Instances"
-}
-variable "flavor_name" {
-  type    = string
-  default = "v1.small1x1.b100"
+  default = "img-a34d639b-e070-46ff-8b91-addf4fac45b4"
 }
 variable "volume_type_name" {
   type    = string
