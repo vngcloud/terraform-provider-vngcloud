@@ -2,7 +2,7 @@ terraform {
   required_providers {
     vngcloud = {
       source  = "vngcloud/vngcloud"
-      version = "0.0.12"
+      version = "0.0.13"
     }
   }
 }
@@ -61,7 +61,7 @@ resource "vngcloud_vserver_volume_attach" "attach_volume" {
   count       = var.server_count
   project_id  = var.project_id
   volume_id   = vngcloud_vserver_volume.volume[count.index].id
-  instance_id = vngcloud_vserver_server.server[count.index].id
+  server_id = vngcloud_vserver_server.server[count.index].id
 }
 
 data "vngcloud_vserver_server_group_policy" "policy" {
