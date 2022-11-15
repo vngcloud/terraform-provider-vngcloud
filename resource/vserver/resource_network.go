@@ -177,7 +177,11 @@ func resourceNetworkDeleteStateRefreshFunc(cli *client.Client, networkID string,
 	return func() (interface{}, string, error) {
 		resp, httpResponse, _ := cli.VserverClient.NetworkRestControllerApi.GetNetworkUsingGET1(context.TODO(), networkID, projectID)
 		if httpResponse.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf("Error describing instance: %s", GetResponseBody(httpResponse))
+			if httpResponse.StatusCode == http.StatusNotFound {
+				return vserver.Server{Status: "DELETED"}, "DELETED", nil
+			} else {
+				return nil, "", fmt.Errorf("Error describing instance: %s", GetResponseBody(httpResponse))
+			}
 		}
 		respJSON, _ := json.Marshal(resp)
 		log.Printf("-------------------------------------\n")
