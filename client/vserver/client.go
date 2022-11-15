@@ -67,7 +67,7 @@ type APIClient struct {
 
 	SecgroupRuleRestControllerApi *SecgroupRuleRestControllerV2ApiService
 
-	ServerGroupRestControllerApi *ServerGroupRestControllerApiService
+	ServerGroupRestControllerApi *ServerGroupRestControllerV2ApiService
 
 	ServerRestControllerApi *ServerRestControllerV2ApiService
 
@@ -109,7 +109,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.RouteTableControllerApi = (*RouteTableControllerApiService)(&c.common)
 	c.SecgroupRestControllerApi = (*SecgroupRestControllerV2ApiService)(&c.common)
 	c.SecgroupRuleRestControllerApi = (*SecgroupRuleRestControllerV2ApiService)(&c.common)
-	c.ServerGroupRestControllerApi = (*ServerGroupRestControllerApiService)(&c.common)
+	c.ServerGroupRestControllerApi = (*ServerGroupRestControllerV2ApiService)(&c.common)
 	c.ServerRestControllerApi = (*ServerRestControllerV2ApiService)(&c.common)
 	c.SshKeyRestControllerApi = (*SshKeyRestControllerV2ApiService)(&c.common)
 	c.SubnetRestControllerApi = (*SubnetRestControllerV2ApiService)(&c.common)

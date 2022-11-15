@@ -209,7 +209,7 @@ func resourceVolumeDeleteStateRefreshFunc(cli *client.Client, volumeId string, p
 			if httpResponse.StatusCode == http.StatusNotFound {
 				return vserver.Volume{Status: "DELETED"}, "DELETED", nil
 			} else {
-				return nil, "", fmt.Errorf("Error describing instance: %s", httpResponse.Body)
+				return nil, "", fmt.Errorf("Error describing instance: %s", GetResponseBody(httpResponse))
 			}
 		}
 		respJSON, _ := json.Marshal(resp)

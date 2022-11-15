@@ -16,7 +16,7 @@ variable "image_id" {
 }
 variable "flavor_id" {
   type = string
-  default = "flav-15dba7ef-500a-4d6c-89f9-bc951dead4bd"
+  default = "flav-0bd3d055-7d41-4999-8582-382d370bcf57"
 }
 
 variable "volume_type_name" {
