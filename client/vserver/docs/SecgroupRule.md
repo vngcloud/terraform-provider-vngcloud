@@ -13,7 +13,6 @@ Name | Type | Description | Notes
 **PortRangeMin** | **int32** |  | [optional] [default to null]
 **Protocol** | **string** |  | [optional] [default to null]
 **RemoteGroupId** | **string** |  | [optional] [default to null]
-**RemoteGroupName** | **string** |  | [optional] [default to null]
 **RemoteIpPrefix** | **string** |  | [optional] [default to null]
 **Status** | **string** |  | [optional] [default to null]
 

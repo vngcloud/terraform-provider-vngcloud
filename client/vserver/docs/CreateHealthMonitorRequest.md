@@ -8,11 +8,9 @@ Name | Type | Description | Notes
 **HealthCheckProtocol** | **string** | Protocol for performing health check. The protocol can be TCP or HTTP. | [default to null]
 **HealthyThreshold** | **int64** | Healthy threshold. The value must be in range from 2 to 10. | [default to null]
 **Interval** | **int64** | Health check interval. The value must be from 5 to 3600 seconds. | [default to null]
-**ProjectId** | **string** | Id of project | [optional] [default to null]
 **SuccessCode** | **string** | Health check success code for HTTP health check protocol. | [optional] [default to null]
 **Timeout** | **int64** | Timeout of health check. The value must be from 2 to 120 seconds | [default to null]
 **UnhealthyThreshold** | **int64** | Unhealthy threshold. The value must be in range from 2 to 10. | [default to null]
-**UserId** | **int32** | Id of user | [optional] [default to null]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

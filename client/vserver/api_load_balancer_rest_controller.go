@@ -10,6 +10,7 @@
 package vserver
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -81,8 +82,8 @@ func (a *LoadBalancerRestControllerApiService) CreateListenerUsingPOST(ctx conte
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -169,8 +170,8 @@ func (a *LoadBalancerRestControllerApiService) CreateLoadBalancerUsingPOST(ctx c
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -258,8 +259,8 @@ func (a *LoadBalancerRestControllerApiService) CreatePolicyUsingPOST(ctx context
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -347,8 +348,8 @@ func (a *LoadBalancerRestControllerApiService) CreatePoolUsingPOST(ctx context.C
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -436,8 +437,8 @@ func (a *LoadBalancerRestControllerApiService) DeleteListenerUsingDELETE(ctx con
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -525,8 +526,8 @@ func (a *LoadBalancerRestControllerApiService) DeleteLoadBalancerUsingDELETE(ctx
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -614,8 +615,8 @@ func (a *LoadBalancerRestControllerApiService) DeletePolicyUsingDELETE(ctx conte
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -703,8 +704,8 @@ func (a *LoadBalancerRestControllerApiService) DeletePoolUsingDELETE(ctx context
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -791,8 +792,8 @@ func (a *LoadBalancerRestControllerApiService) GetHealthMonitorFromPoolUsingGET(
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -879,8 +880,8 @@ func (a *LoadBalancerRestControllerApiService) GetHealthMonitorUsingGET(ctx cont
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -982,8 +983,8 @@ func (a *LoadBalancerRestControllerApiService) GetL7PoliciesUsingGET(ctx context
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -1085,8 +1086,8 @@ func (a *LoadBalancerRestControllerApiService) GetListListenersUsingGET(ctx cont
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -1186,8 +1187,8 @@ func (a *LoadBalancerRestControllerApiService) GetListLoadBalancersUsingGET(ctx 
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -1289,8 +1290,8 @@ func (a *LoadBalancerRestControllerApiService) GetListPoolsUsingGET(ctx context.
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -1377,8 +1378,8 @@ func (a *LoadBalancerRestControllerApiService) GetListenerUsingGET(ctx context.C
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -1465,8 +1466,8 @@ func (a *LoadBalancerRestControllerApiService) GetLoadBalancerUsingGET(ctx conte
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -1568,8 +1569,8 @@ func (a *LoadBalancerRestControllerApiService) GetMemberFromPoolUsingGET(ctx con
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -1654,8 +1655,8 @@ func (a *LoadBalancerRestControllerApiService) GetPackagesUsingGET(ctx context.C
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -1742,8 +1743,8 @@ func (a *LoadBalancerRestControllerApiService) GetPoolUsingGET(ctx context.Conte
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -1831,8 +1832,8 @@ func (a *LoadBalancerRestControllerApiService) ReorderPoliciesUsingPUT(ctx conte
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -1920,8 +1921,8 @@ func (a *LoadBalancerRestControllerApiService) UpdateAPolicyUsingPUT(ctx context
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -2009,8 +2010,8 @@ func (a *LoadBalancerRestControllerApiService) UpdateListenerUsingPUT(ctx contex
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -2099,8 +2100,8 @@ func (a *LoadBalancerRestControllerApiService) UpdateMembersUsingPUT(ctx context
 		return localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarHttpResponse, err
 	}
@@ -2171,8 +2172,8 @@ func (a *LoadBalancerRestControllerApiService) UpdatePoolUsingPUT(ctx context.Co
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}

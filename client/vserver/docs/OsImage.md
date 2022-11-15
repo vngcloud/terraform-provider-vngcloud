@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **ImageType** | **string** |  | [optional] [default to null]
 **ImageVersion** | **string** |  | [optional] [default to null]
 **Licence** | **bool** |  | [optional] [default to null]
+**PackageLimit** | [***PackageLimit**](PackageLimit.md) |  | [optional] [default to null]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

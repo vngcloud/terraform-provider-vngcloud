@@ -12,7 +12,6 @@ Name | Type | Description | Notes
 **PoolId** | **string** |  | [optional] [default to null]
 **ProjectId** | **string** |  | [optional] [default to null]
 **ProvisioningStatus** | **string** |  | [optional] [default to null]
-**Status** | **string** |  | [optional] [default to null]
 **SuccessCode** | **string** |  | [optional] [default to null]
 **Timeout** | **int64** |  | [optional] [default to null]
 **UnhealthyThreshold** | **int64** |  | [optional] [default to null]

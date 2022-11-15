@@ -28,82 +28,76 @@ func ResourceAttachVolume() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
-				Description: "id of volume acttach",
+				Description: "id of volume",
 			},
 			"server_id": {
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
-				Description: "id of server acttach",
+				Description: "id of server",
 			},
 		},
 	}
 }
 func resourceVolumeAttach(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
-	attachVolume := vserver.AttachVolumeRequest{
-		VolumeId: d.Get("volume_id").(string),
-		ServerId: d.Get("server_id").(string),
-	}
+	volumeID := d.Get("volume_id").(string)
+	serverID := d.Get("server_id").(string)
+	attachVolume := vserver.AttachVolumeRequest{}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.VolumeRestControllerApi.AttachVolumeUsingPUT(context.TODO(), attachVolume, projectID)
-	if err != nil {
-		return err
+	resp, httpResponse, err := cli.VserverClient.VolumeRestControllerApi.AttachVolumeUsingPUT1(context.TODO(), attachVolume, projectID, serverID, volumeID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
 	stateConf := &resource.StateChangeConf{
 		Pending:    volumeAttaching,
 		Target:     volumeAttached,
-		Refresh:    resourceVolumeStateRefreshFunc(cli, attachVolume.VolumeId, projectID),
+		Refresh:    resourceVolumeStateRefreshFunc(cli, volumeID, projectID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
 	_, err = stateConf.WaitForState()
 	if err != nil {
-		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", attachVolume.VolumeId, err)
+		return fmt.Errorf("Error waiting for attach volume (%s) %s", volumeID, err)
 	}
-	d.SetId(attachVolume.VolumeId)
+	d.SetId(volumeID)
 	return nil
 }
 
 func resourceVolumeDetach(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
-	detachVolume := vserver.DetachVolumeRequest{
-		VolumeId: d.Get("volume_id").(string),
-		ServerId: d.Get("server_id").(string),
-	}
+	volumeID := d.Get("volume_id").(string)
+	serverID := d.Get("server_id").(string)
+	detachVolume := vserver.DetachVolumeRequest{}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.VolumeRestControllerApi.DetachVolumeUsingPUT(context.TODO(), detachVolume, projectID)
-	if err != nil {
-		return err
+	resp, httpResponse, err := cli.VserverClient.VolumeRestControllerApi.DetachVolumeUsingPUT1(context.TODO(), detachVolume, projectID, serverID, volumeID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
 	stateConf := &resource.StateChangeConf{
 		Pending:    volumeDetaching,
 		Target:     volumeDetached,
-		Refresh:    resourceVolumeStateRefreshFunc(cli, detachVolume.VolumeId, projectID),
+		Refresh:    resourceVolumeStateRefreshFunc(cli, volumeID, projectID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
 	_, err = stateConf.WaitForState()
 	if err != nil {
-		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", detachVolume.ServerId, err)
+		return fmt.Errorf("Error waiting for detach volume (%s) %s", volumeID, err)
 	}
 	d.SetId("")
 	return nil

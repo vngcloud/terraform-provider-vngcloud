@@ -1,20 +1,20 @@
 # \SimpleServerRestControllerApi
 
-All URIs are relative to *https://api.vngcloud.tech*
+All URIs are relative to *https://virtserver.swaggerhub.com/manhtu1997/vserver/1.0.2*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**DeleteServerUsingDELETE1**](SimpleServerRestControllerApi.md#DeleteServerUsingDELETE1) | **Delete** /v1/{project_id}/simple-servers | Delete simple server
+[**DeleteServerUsingDELETE2**](SimpleServerRestControllerApi.md#DeleteServerUsingDELETE2) | **Delete** /v1/{project_id}/simple-servers | Delete simple server
 [**GetConsoleServerUsingGET**](SimpleServerRestControllerApi.md#GetConsoleServerUsingGET) | **Get** /v1/{project_id}/simple-servers/{server_id}/console | Get console simple server
-[**GetServerUsingGET1**](SimpleServerRestControllerApi.md#GetServerUsingGET1) | **Get** /v1/{project_id}/simple-servers/{server_id} | Get simple server
-[**ListServerUsingGET1**](SimpleServerRestControllerApi.md#ListServerUsingGET1) | **Get** /v1/{project_id}/simple-servers | List simple server
-[**RebootServerUsingPUT1**](SimpleServerRestControllerApi.md#RebootServerUsingPUT1) | **Put** /v1/{project_id}/simple-servers/reboot | Reboot simple server
-[**StartServerUsingPUT1**](SimpleServerRestControllerApi.md#StartServerUsingPUT1) | **Put** /v1/{project_id}/simple-servers/start | Start simple server
-[**StopServerUsingPUT1**](SimpleServerRestControllerApi.md#StopServerUsingPUT1) | **Put** /v1/{project_id}/simple-servers/stop | Stop simple server
+[**GetServerUsingGET2**](SimpleServerRestControllerApi.md#GetServerUsingGET2) | **Get** /v1/{project_id}/simple-servers/{server_id} | Get simple server
+[**ListServerUsingGET2**](SimpleServerRestControllerApi.md#ListServerUsingGET2) | **Get** /v1/{project_id}/simple-servers | List simple server
+[**RebootServerUsingPUT2**](SimpleServerRestControllerApi.md#RebootServerUsingPUT2) | **Put** /v1/{project_id}/simple-servers/reboot | Reboot simple server
+[**StartServerUsingPUT2**](SimpleServerRestControllerApi.md#StartServerUsingPUT2) | **Put** /v1/{project_id}/simple-servers/start | Start simple server
+[**StopServerUsingPUT2**](SimpleServerRestControllerApi.md#StopServerUsingPUT2) | **Put** /v1/{project_id}/simple-servers/stop | Stop simple server
 
 
-# **DeleteServerUsingDELETE1**
-> DataResponseSimpleServer DeleteServerUsingDELETE1(ctx, deleteServerRequest, projectId)
+# **DeleteServerUsingDELETE2**
+> DataResponseSimpleServer DeleteServerUsingDELETE2(ctx, deleteServerRequest, projectId)
 Delete simple server
 
 ### Required Parameters
@@ -27,7 +27,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseSimpleServer**](DataResponseSimpleServer.md)
+[**DataResponseSimpleServer**](DataResponse«SimpleServer».md)
 
 ### Authorization
 
@@ -54,7 +54,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponsestring**](DataResponsestring.md)
+[**DataResponsestring**](DataResponse«string».md)
 
 ### Authorization
 
@@ -67,8 +67,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetServerUsingGET1**
-> DataResponseSimpleServer GetServerUsingGET1(ctx, projectId, serverId)
+# **GetServerUsingGET2**
+> DataResponseSimpleServer GetServerUsingGET2(ctx, projectId, serverId)
 Get simple server
 
 ### Required Parameters
@@ -81,7 +81,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseSimpleServer**](DataResponseSimpleServer.md)
+[**DataResponseSimpleServer**](DataResponse«SimpleServer».md)
 
 ### Authorization
 
@@ -94,8 +94,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **ListServerUsingGET1**
-> PagingSimpleServer ListServerUsingGET1(ctx, projectId, optional)
+# **ListServerUsingGET2**
+> PagingSimpleServer ListServerUsingGET2(ctx, projectId, optional)
 List simple server
 
 ### Required Parameters
@@ -104,10 +104,10 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **projectId** | **string**| project id | 
- **optional** | ***SimpleServerRestControllerApiListServerUsingGET1Opts** | optional parameters | nil if no parameters
+ **optional** | ***SimpleServerRestControllerApiListServerUsingGET2Opts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
-Optional parameters are passed through a pointer to a SimpleServerRestControllerApiListServerUsingGET1Opts struct
+Optional parameters are passed through a pointer to a SimpleServerRestControllerApiListServerUsingGET2Opts struct
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
@@ -118,7 +118,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**PagingSimpleServer**](PagingSimpleServer.md)
+[**PagingSimpleServer**](Paging«SimpleServer».md)
 
 ### Authorization
 
@@ -131,8 +131,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **RebootServerUsingPUT1**
-> RebootServerUsingPUT1(ctx, projectId, updateServerRequest)
+# **RebootServerUsingPUT2**
+> DataResponseSimpleServer RebootServerUsingPUT2(ctx, projectId, updateServerRequest)
 Reboot simple server
 
 ### Required Parameters
@@ -145,7 +145,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
- (empty response body)
+[**DataResponseSimpleServer**](DataResponse«SimpleServer».md)
 
 ### Authorization
 
@@ -158,8 +158,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **StartServerUsingPUT1**
-> StartServerUsingPUT1(ctx, projectId, updateServerRequest)
+# **StartServerUsingPUT2**
+> DataResponseSimpleServer StartServerUsingPUT2(ctx, projectId, updateServerRequest)
 Start simple server
 
 ### Required Parameters
@@ -172,7 +172,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
- (empty response body)
+[**DataResponseSimpleServer**](DataResponse«SimpleServer».md)
 
 ### Authorization
 
@@ -185,8 +185,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **StopServerUsingPUT1**
-> StopServerUsingPUT1(ctx, projectId, updateServerRequest)
+# **StopServerUsingPUT2**
+> DataResponseSimpleServer StopServerUsingPUT2(ctx, projectId, updateServerRequest)
 Stop simple server
 
 ### Required Parameters
@@ -199,7 +199,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
- (empty response body)
+[**DataResponseSimpleServer**](DataResponse«SimpleServer».md)
 
 ### Authorization
 

@@ -1,6 +1,6 @@
 # \ServerGroupRestControllerApi
 
-All URIs are relative to *https://api.vngcloud.tech*
+All URIs are relative to *https://virtserver.swaggerhub.com/manhtu1997/vserver/1.0.2*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------

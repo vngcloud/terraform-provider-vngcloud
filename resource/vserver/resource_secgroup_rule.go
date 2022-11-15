@@ -4,14 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
-	"strings"
-	"time"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vserver"
+	"log"
+	"net/http"
+	"strings"
 )
 
 func ResourceSecgroupRule() *schema.Resource {
@@ -82,20 +81,17 @@ func ResourceSecgroupRule() *schema.Resource {
 	}
 }
 
-func resourceSecgroupRuleStateRefreshFunc(cli *client.Client, secgroupRuleID string, projectID string) resource.StateRefreshFunc {
+func resourceSecgroupRuleStateRefreshFunc(cli *client.Client, secgroupID string, secgroupRuleID string, projectID string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		resp, _, err := cli.VserverClient.SecgroupRuleRestControllerApi.GetSecgroupRuleUsingGET(context.TODO(), projectID, secgroupRuleID)
-		if err != nil {
-			return nil, "", fmt.Errorf("Error on network State Refresh: %s", err)
+		resp, httpResponse, _ := cli.VserverClient.SecgroupRuleRestControllerApi.GetSecgroupRuleUsingGET1(context.TODO(), projectID, secgroupRuleID, secgroupID)
+		if httpResponse.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf("Error describing instance: %s", GetResponseBody(httpResponse))
 		}
 		respJSON, _ := json.Marshal(resp)
 		log.Printf("-------------------------------------\n")
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
-		if !resp.Success {
-			return nil, "", fmt.Errorf("Error describing instance: %s", resp.ErrorMsg)
-		}
-		secGroupRule := resp.SecgroupRules[0]
+		secGroupRule := resp.Data[0]
 		return secGroupRule, secGroupRule.Status, nil
 	}
 }
@@ -103,7 +99,7 @@ func resourceSecgroupRuleCreate(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	secGroupRule := vserver.CreateSecurityGroupRuleRequest{
 		Direction:       d.Get("direction").(string),
-		Ethertype:       d.Get("ethertype").(string),
+		EtherType:       d.Get("ethertype").(string),
 		PortRangeMax:    int32(d.Get("port_range_max").(int)),
 		PortRangeMin:    int32(d.Get("port_range_min").(int)),
 		Protocol:        d.Get("protocol").(string),
@@ -112,55 +108,38 @@ func resourceSecgroupRuleCreate(d *schema.ResourceData, m interface{}) error {
 		Description:     d.Get("description").(string),
 	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.SecgroupRuleRestControllerApi.CreateSecgroupRuleUsingPOST(context.TODO(), secGroupRule, projectID)
-	if err != nil {
-		return err
+	resp, httpResponse, _ := cli.VserverClient.SecgroupRuleRestControllerApi.CreateSecgroupRuleUsingPOST1(context.TODO(), secGroupRule, secGroupRule.SecurityGroupId, projectID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	stateConf := &resource.StateChangeConf{
-		Pending:    secgroupRuleCreating,
-		Target:     secgroupRuleCreated,
-		Refresh:    resourceSecgroupRuleStateRefreshFunc(cli, resp.SecgroupRules[0].Id, projectID),
-		Timeout:    d.Timeout(schema.TimeoutCreate),
-		Delay:      10 * time.Second,
-		MinTimeout: 1 * time.Second,
-	}
-	_, err = stateConf.WaitForState()
-	if err != nil {
-		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", resp.SecgroupRules[0].Id, err)
-	}
-	d.SetId(resp.SecgroupRules[0].Id)
+	d.SetId(resp.Data.Uuid)
 	return resourceSecgroupRuleRead(d, m)
 }
 
 func resourceSecgroupRuleRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	SecgroupRuleID := d.Id()
+	SecurityGroupId := d.Get("security_group_id").(string)
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.SecgroupRuleRestControllerApi.GetSecgroupRuleUsingGET(context.TODO(), projectID, SecgroupRuleID)
-	if err != nil {
-		return err
+	resp, httpResponse, _ := cli.VserverClient.SecgroupRuleRestControllerApi.GetSecgroupRuleUsingGET1(context.TODO(), projectID, SecgroupRuleID, SecurityGroupId)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		//api get sec group rule 403
+		log.Printf("tunm4new", responseBody, httpResponse.StatusCode)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	if len(resp.SecgroupRules) == 0 {
-		d.SetId("")
-		return nil
-	}
-	secGroupRule := resp.SecgroupRules[0]
+	secGroupRule := resp.Data[0]
 	d.Set("direction", secGroupRule.Direction)
 	d.Set("ethertype", secGroupRule.EtherType)
 	d.Set("port_range_max", int(secGroupRule.PortRangeMax))
@@ -173,34 +152,15 @@ func resourceSecgroupRuleRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceSecgroupRuleDelete(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
-	deleteSecgroupRule := vserver.DeleteSecurityGroupRuleRequest{
-		SecgroupRuleId: d.Id(),
-	}
+	SecgroupRuleId := d.Id()
+	SecurityGroupId := d.Get("security_group_id").(string)
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.SecgroupRuleRestControllerApi.DeleteSecgroupRuleUsingDELETE(context.TODO(), deleteSecgroupRule, projectID)
-	if err != nil {
-		return err
+	httpResponse, _ := cli.VserverClient.SecgroupRuleRestControllerApi.DeleteSecgroupRuleUsingDELETE1(context.TODO(), projectID, SecgroupRuleId, SecurityGroupId)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
-	respJSON, _ := json.Marshal(resp)
-	log.Printf("-------------------------------------\n")
-	log.Printf("%s\n", string(respJSON))
-	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	return resource.Retry(d.Timeout(schema.TimeoutDelete), func() *resource.RetryError {
-		resp, _, err := cli.VserverClient.SecgroupRuleRestControllerApi.GetSecgroupRuleUsingGET(context.TODO(), projectID, d.Id())
-		if err != nil {
-			return resource.NonRetryableError(fmt.Errorf("Error describing instance: %s", err))
-		}
-		if !resp.Success {
-			return resource.NonRetryableError(fmt.Errorf("Error describing instance: %s", resp.ErrorMsg))
-		}
-		if len(resp.SecgroupRules) == 0 {
-			d.SetId("")
-			return nil
-		}
-		return resource.RetryableError(fmt.Errorf("Expected instance to be created but was in state %s", resp.SecgroupRules[0].Status))
-	})
+	d.SetId("")
+	return nil
 }

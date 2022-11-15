@@ -15,7 +15,6 @@ Name | Type | Description | Notes
 **PrivateSubnetId** | **string** |  | [optional] [default to null]
 **ProjectId** | **string** |  | [optional] [default to null]
 **ProvisioningStatus** | **string** |  | [optional] [default to null]
-**Status** | **string** |  | [optional] [default to null]
 **SubnetId** | **string** |  | [optional] [default to null]
 **Type_** | **string** |  | [optional] [default to null]
 **UpdatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]

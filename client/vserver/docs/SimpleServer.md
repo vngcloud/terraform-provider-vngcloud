@@ -4,6 +4,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **CreatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
+**Email** | **string** |  | [optional] [default to null]
 **FlavorId** | **string** |  | [optional] [default to null]
 **ImageId** | **string** |  | [optional] [default to null]
 **InternalInterfaces** | [**[]InterfaceNetworkInterface**](InterfaceNetworkInterface.md) |  | [optional] [default to null]

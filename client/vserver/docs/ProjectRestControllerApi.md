@@ -1,12 +1,35 @@
 # \ProjectRestControllerApi
 
-All URIs are relative to *https://api.vngcloud.tech*
+All URIs are relative to *https://virtserver.swaggerhub.com/manhtu1997/vserver/1.0.2*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**CreateProjectUsingPOST**](ProjectRestControllerApi.md#CreateProjectUsingPOST) | **Post** /v1/projects | createProject
 [**GetProjectUsingGET**](ProjectRestControllerApi.md#GetProjectUsingGET) | **Get** /v1/projects/{project_id} | getProject
 [**ListProjectUsingGET**](ProjectRestControllerApi.md#ListProjectUsingGET) | **Get** /v1/projects | listProject
 
+
+# **CreateProjectUsingPOST**
+> ProjectResponse CreateProjectUsingPOST(ctx, )
+createProject
+
+### Required Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**ProjectResponse**](ProjectResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **GetProjectUsingGET**
 > ProjectResponse GetProjectUsingGET(ctx, projectId)

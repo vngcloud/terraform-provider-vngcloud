@@ -1,6 +1,6 @@
 # \SimpleVolumeRestControllerApi
 
-All URIs are relative to *https://api.vngcloud.tech*
+All URIs are relative to *https://virtserver.swaggerhub.com/manhtu1997/vserver/1.0.2*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -22,7 +22,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseSimpleServer**](DataResponseSimpleServer.md)
+[**DataResponseSimpleServer**](DataResponse«SimpleServer».md)
 
 ### Authorization
 
@@ -59,7 +59,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**PagingSimpleVolume**](PagingSimpleVolume.md)
+[**PagingSimpleVolume**](Paging«SimpleVolume».md)
 
 ### Authorization
 

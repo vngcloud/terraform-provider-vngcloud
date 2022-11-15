@@ -58,19 +58,17 @@ func resourceSSHKeyCreate(d *schema.ResourceData, m interface{}) error {
 		PubKey: d.Get("public_key").(string),
 	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.SshKeyRestControllerApi.ImportSSHKeyUsingPOST(context.TODO(), sshKey, projectID)
-	if err != nil {
-		return err
+	resp, httpResponse, _ := cli.VserverClient.SshKeyRestControllerApi.ImportSSHKeyUsingPOST1(context.TODO(), sshKey, projectID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	d.SetId(resp.SshKeys[0].Id)
+	d.SetId(resp.Data.Id)
 	return resourceSSHKeyRead(d, m)
 }
 
@@ -78,23 +76,17 @@ func resourceSSHKeyRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	sshKeyID := d.Id()
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.SshKeyRestControllerApi.GetSSHKeyUsingGET(context.TODO(), projectID, sshKeyID)
-	if err != nil {
-		return err
+	resp, httpResponse, _ := cli.VserverClient.SshKeyRestControllerApi.GetSSHKeyUsingGET1(context.TODO(), projectID, sshKeyID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	if len(resp.SshKeys) == 0 {
-		d.SetId("")
-		return nil
-	}
-	sshKey := resp.SshKeys[0]
+	sshKey := resp.Data
 	d.Set("name", sshKey.Name)
 	d.Set("public_key", sshKey.PubKey)
 	return nil
@@ -102,22 +94,13 @@ func resourceSSHKeyRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceSSHKeyDelete(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
-	deleteSSHKey := vserver.SdnSshKeyDeleteRequest{
-		Id:   d.Id(),
-		Name: d.Get("name").(string),
-	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.SshKeyRestControllerApi.DeleteSSHKeyUsingDELETE(context.TODO(), deleteSSHKey, projectID)
-	if err != nil {
-		return err
+	httpResponse, _ := cli.VserverClient.SshKeyRestControllerApi.DeleteSSHKeyUsingDELETE1(context.TODO(), projectID, d.Id())
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
-	respJSON, _ := json.Marshal(resp)
-	log.Printf("-------------------------------------\n")
-	log.Printf("%s\n", string(respJSON))
-	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	return resourceSSHKeyRead(d, m)
+	d.SetId("")
+	return nil
 }

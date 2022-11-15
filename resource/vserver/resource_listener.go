@@ -133,7 +133,6 @@ func resourceListenerCreate(d *schema.ResourceData, m interface{}) error {
 		ListenerProtocol:            d.Get("protocol").(string),
 		ListenerProtocolPort:        int32(d.Get("protocol_port").(int)),
 		LoadBalancerId:              d.Get("load_balancer_id").(string),
-		ProjectId:                   d.Get("project_id").(string),
 		TimeoutClient:               int32(d.Get("timeout_client").(int)),
 		TimeoutConnection:           int32(d.Get("timeout_connection").(int)),
 		TimeoutMember:               int32(d.Get("timeout_member").(int)),

@@ -55,7 +55,7 @@ type APIClient struct {
 
 	NetworkAclRestControllerApi *NetworkAclRestControllerApiService
 
-	NetworkRestControllerApi *NetworkRestControllerApiService
+	NetworkRestControllerApi *NetworkRestControllerV2ApiService
 
 	ProjectRestControllerApi *ProjectRestControllerApiService
 
@@ -63,19 +63,19 @@ type APIClient struct {
 
 	RouteTableControllerApi *RouteTableControllerApiService
 
-	SecgroupRestControllerApi *SecgroupRestControllerApiService
+	SecgroupRestControllerApi *SecgroupRestControllerV2ApiService
 
-	SecgroupRuleRestControllerApi *SecgroupRuleRestControllerApiService
+	SecgroupRuleRestControllerApi *SecgroupRuleRestControllerV2ApiService
 
 	ServerGroupRestControllerApi *ServerGroupRestControllerApiService
 
-	ServerRestControllerApi *ServerRestControllerApiService
+	ServerRestControllerApi *ServerRestControllerV2ApiService
 
-	SshKeyRestControllerApi *SshKeyRestControllerApiService
+	SshKeyRestControllerApi *SshKeyRestControllerV2ApiService
 
-	SubnetRestControllerApi *SubnetRestControllerApiService
+	SubnetRestControllerApi *SubnetRestControllerV2ApiService
 
-	VolumeRestControllerApi *VolumeRestControllerApiService
+	VolumeRestControllerApi *VolumeRestControllerV2ApiService
 
 	VolumeTypeRestControllerApi *VolumeTypeRestControllerApiService
 
@@ -103,17 +103,17 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.ImageRestControllerApi = (*ImageRestControllerApiService)(&c.common)
 	c.LoadBalancerRestControllerApi = (*LoadBalancerRestControllerApiService)(&c.common)
 	c.NetworkAclRestControllerApi = (*NetworkAclRestControllerApiService)(&c.common)
-	c.NetworkRestControllerApi = (*NetworkRestControllerApiService)(&c.common)
+	c.NetworkRestControllerApi = (*NetworkRestControllerV2ApiService)(&c.common)
 	c.ProjectRestControllerApi = (*ProjectRestControllerApiService)(&c.common)
 	c.QuotaRestControllerApi = (*QuotaRestControllerApiService)(&c.common)
 	c.RouteTableControllerApi = (*RouteTableControllerApiService)(&c.common)
-	c.SecgroupRestControllerApi = (*SecgroupRestControllerApiService)(&c.common)
-	c.SecgroupRuleRestControllerApi = (*SecgroupRuleRestControllerApiService)(&c.common)
+	c.SecgroupRestControllerApi = (*SecgroupRestControllerV2ApiService)(&c.common)
+	c.SecgroupRuleRestControllerApi = (*SecgroupRuleRestControllerV2ApiService)(&c.common)
 	c.ServerGroupRestControllerApi = (*ServerGroupRestControllerApiService)(&c.common)
-	c.ServerRestControllerApi = (*ServerRestControllerApiService)(&c.common)
-	c.SshKeyRestControllerApi = (*SshKeyRestControllerApiService)(&c.common)
-	c.SubnetRestControllerApi = (*SubnetRestControllerApiService)(&c.common)
-	c.VolumeRestControllerApi = (*VolumeRestControllerApiService)(&c.common)
+	c.ServerRestControllerApi = (*ServerRestControllerV2ApiService)(&c.common)
+	c.SshKeyRestControllerApi = (*SshKeyRestControllerV2ApiService)(&c.common)
+	c.SubnetRestControllerApi = (*SubnetRestControllerV2ApiService)(&c.common)
+	c.VolumeRestControllerApi = (*VolumeRestControllerV2ApiService)(&c.common)
 	c.VolumeTypeRestControllerApi = (*VolumeTypeRestControllerApiService)(&c.common)
 	c.VolumeTypeZoneRestControllerApi = (*VolumeTypeZoneRestControllerApiService)(&c.common)
 

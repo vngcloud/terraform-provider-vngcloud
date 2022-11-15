@@ -8,12 +8,10 @@ Name | Type | Description | Notes
 **KeepQueryString** | **bool** | Keep the query string or not. | [optional] [default to null]
 **ListenerId** | **string** | Listener&#39;s ID. | [optional] [default to null]
 **Name** | **string** | Policy name. Only letters (a-z, A-Z, 0-9, &#39;_&#39;, &#39;.&#39;) are allowed and your input data must be between 6 and 20 characters. | [default to null]
-**ProjectId** | **string** | Id of project | [optional] [default to null]
 **RedirectHttpCode** | **int32** | Redirect HTTP code for redirecting to other URL. | [optional] [default to null]
 **RedirectPoolId** | **string** | Pool for forwarding. | [optional] [default to null]
 **RedirectUrl** | **string** | URL for forwarding. | [optional] [default to null]
 **Type_** | **string** | Which attribute to compare. The value can be PATH or HOST_NAME | [default to null]
-**UserId** | **int32** | Id of user | [optional] [default to null]
 **Value** | **string** | The value to compare with attribute. | [optional] [default to null]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

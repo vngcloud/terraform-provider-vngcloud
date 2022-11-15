@@ -14,7 +14,6 @@ Name | Type | Description | Notes
 **ProjectId** | **string** |  | [optional] [default to null]
 **ProtocolPort** | **int32** |  | [optional] [default to null]
 **ProvisioningStatus** | **string** |  | [optional] [default to null]
-**Status** | **string** |  | [optional] [default to null]
 **SubnetId** | **string** |  | [optional] [default to null]
 **TypeCreate** | **string** |  | [optional] [default to null]
 **UpdatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]

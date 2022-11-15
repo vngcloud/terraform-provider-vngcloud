@@ -1,6 +1,6 @@
 # \ServerRestControllerApi
 
-All URIs are relative to *https://api.vngcloud.tech*
+All URIs are relative to *https://virtserver.swaggerhub.com/manhtu1997/vserver/1.0.2*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -10,6 +10,7 @@ Method | HTTP request | Description
 [**ListServerUsingGET**](ServerRestControllerApi.md#ListServerUsingGET) | **Get** /v1/{project_id}/servers | List server
 [**RebootServerUsingPUT**](ServerRestControllerApi.md#RebootServerUsingPUT) | **Put** /v1/{project_id}/servers/reboot | Reboot server
 [**ResizeServerUsingPUT**](ServerRestControllerApi.md#ResizeServerUsingPUT) | **Put** /v1/{project_id}/servers/resize | Change flavor of server
+[**ServerLimitUsingGET**](ServerRestControllerApi.md#ServerLimitUsingGET) | **Get** /v1/{project_id}/servers/limit | Server limit
 [**StartServerUsingPUT**](ServerRestControllerApi.md#StartServerUsingPUT) | **Put** /v1/{project_id}/servers/start | Start server
 [**StopServerUsingPUT**](ServerRestControllerApi.md#StopServerUsingPUT) | **Put** /v1/{project_id}/servers/stop | Stop server
 [**UpdateSecGroupServerUsingPUT**](ServerRestControllerApi.md#UpdateSecGroupServerUsingPUT) | **Put** /v1/{project_id}/servers/update_sec_group | Update SecGroups of server
@@ -172,6 +173,32 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: application/json
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **ServerLimitUsingGET**
+> ServerLimit ServerLimitUsingGET(ctx, projectId)
+Server limit
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **projectId** | **string**| The project id | 
+
+### Return type
+
+[**ServerLimit**](ServerLimit.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
  - **Accept**: */*
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

@@ -1,38 +1,39 @@
 # \LoadBalancerRestControllerApi
 
-All URIs are relative to *https://api.vngcloud.tech*
+All URIs are relative to *https://virtserver.swaggerhub.com/manhtu1997/vserver/1.0.2*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CreateListenerUsingPOST**](LoadBalancerRestControllerApi.md#CreateListenerUsingPOST) | **Post** /v1/{project_id}/listeners | createListener
+[**CreateListenerUsingPOST**](LoadBalancerRestControllerApi.md#CreateListenerUsingPOST) | **Post** /v1/{project_id}/listeners | Create a listener
 [**CreateLoadBalancerUsingPOST**](LoadBalancerRestControllerApi.md#CreateLoadBalancerUsingPOST) | **Post** /v1/{project_id}/load-balancers | Create a new load balancer
-[**CreatePolicyUsingPOST**](LoadBalancerRestControllerApi.md#CreatePolicyUsingPOST) | **Post** /v1/{project_id}/l7-policies | createPolicy
-[**CreatePoolUsingPOST**](LoadBalancerRestControllerApi.md#CreatePoolUsingPOST) | **Post** /v1/{project_id}/pools | createPool
-[**DeleteListenerUsingDELETE**](LoadBalancerRestControllerApi.md#DeleteListenerUsingDELETE) | **Delete** /v1/{project_id}/listeners | deleteListener
-[**DeleteLoadBalancerUsingDELETE**](LoadBalancerRestControllerApi.md#DeleteLoadBalancerUsingDELETE) | **Delete** /v1/{project_id}/load-balancers | deleteLoadBalancer
-[**DeletePolicyUsingDELETE**](LoadBalancerRestControllerApi.md#DeletePolicyUsingDELETE) | **Delete** /v1/{project_id}/l7-policies | deletePolicy
-[**DeletePoolUsingDELETE**](LoadBalancerRestControllerApi.md#DeletePoolUsingDELETE) | **Delete** /v1/{project_id}/pools | deletePool
-[**GetHealthMonitorFromPoolUsingGET**](LoadBalancerRestControllerApi.md#GetHealthMonitorFromPoolUsingGET) | **Get** /v1/{project_id}/pools/{pool_id}/health-monitors | getHealthMonitorFromPool
+[**CreatePolicyUsingPOST**](LoadBalancerRestControllerApi.md#CreatePolicyUsingPOST) | **Post** /v1/{project_id}/l7-policies | Create a l7 policy
+[**CreatePoolUsingPOST**](LoadBalancerRestControllerApi.md#CreatePoolUsingPOST) | **Post** /v1/{project_id}/pools | Create a new pool
+[**DeleteListenerUsingDELETE**](LoadBalancerRestControllerApi.md#DeleteListenerUsingDELETE) | **Delete** /v1/{project_id}/listeners | Delete a listener
+[**DeleteLoadBalancerUsingDELETE**](LoadBalancerRestControllerApi.md#DeleteLoadBalancerUsingDELETE) | **Delete** /v1/{project_id}/load-balancers | Delete a load balancer
+[**DeletePolicyUsingDELETE**](LoadBalancerRestControllerApi.md#DeletePolicyUsingDELETE) | **Delete** /v1/{project_id}/l7-policies | Delete a policy
+[**DeletePoolUsingDELETE**](LoadBalancerRestControllerApi.md#DeletePoolUsingDELETE) | **Delete** /v1/{project_id}/pools | Delete a pool
+[**GetHeadersUsingGET**](LoadBalancerRestControllerApi.md#GetHeadersUsingGET) | **Get** /v1/{project_id}/load-balancers/headers | Get list headers
+[**GetHealthMonitorFromPoolUsingGET**](LoadBalancerRestControllerApi.md#GetHealthMonitorFromPoolUsingGET) | **Get** /v1/{project_id}/pools/{pool_id}/health-monitors | Get the health monitor associated with a specific pool
 [**GetHealthMonitorUsingGET**](LoadBalancerRestControllerApi.md#GetHealthMonitorUsingGET) | **Get** /v1/{project_id}/health-monitors/{health_monitor_id} | getHealthMonitor
-[**GetL7PoliciesUsingGET**](LoadBalancerRestControllerApi.md#GetL7PoliciesUsingGET) | **Get** /v1/{project_id}/listeners/{listener_id}/l7policies | getL7Policies
+[**GetL7PoliciesUsingGET**](LoadBalancerRestControllerApi.md#GetL7PoliciesUsingGET) | **Get** /v1/{project_id}/listeners/{listener_id}/l7policies | Get list policies of a listener
 [**GetListListenersUsingGET**](LoadBalancerRestControllerApi.md#GetListListenersUsingGET) | **Get** /v1/{project_id}/load-balancers/{load_balancer_id}/listeners | Get list of listeners of a load balancer
 [**GetListLoadBalancersUsingGET**](LoadBalancerRestControllerApi.md#GetListLoadBalancersUsingGET) | **Get** /v1/{project_id}/load-balancers | Get list of load balancers
 [**GetListPoolsUsingGET**](LoadBalancerRestControllerApi.md#GetListPoolsUsingGET) | **Get** /v1/{project_id}/load-balancers/{load_balancer_id}/pools | Get list of pools of a load balancer
 [**GetListenerUsingGET**](LoadBalancerRestControllerApi.md#GetListenerUsingGET) | **Get** /v1/{project_id}/listeners/{listener_id} | Get a specific listener
 [**GetLoadBalancerUsingGET**](LoadBalancerRestControllerApi.md#GetLoadBalancerUsingGET) | **Get** /v1/{project_id}/load-balancers/{load_balancer_id} | Get a specific load balancer
-[**GetMemberFromPoolUsingGET**](LoadBalancerRestControllerApi.md#GetMemberFromPoolUsingGET) | **Get** /v1/{project_id}/pools/{pool_id}/members | getMemberFromPool
-[**GetPackagesUsingGET**](LoadBalancerRestControllerApi.md#GetPackagesUsingGET) | **Get** /v1/{project_id}/load-balancers/packages | getPackages
+[**GetMemberFromPoolUsingGET**](LoadBalancerRestControllerApi.md#GetMemberFromPoolUsingGET) | **Get** /v1/{project_id}/pools/{pool_id}/members | Get members from a pool
+[**GetPackagesUsingGET**](LoadBalancerRestControllerApi.md#GetPackagesUsingGET) | **Get** /v1/{project_id}/load-balancers/packages | Get list packages
 [**GetPoolUsingGET**](LoadBalancerRestControllerApi.md#GetPoolUsingGET) | **Get** /v1/{project_id}/pools/{pool_id} | Get a specific pool
-[**ReorderPoliciesUsingPUT**](LoadBalancerRestControllerApi.md#ReorderPoliciesUsingPUT) | **Put** /v1/{project_id}/reorder-l7-policies | reorderPolicies
-[**UpdateAPolicyUsingPUT**](LoadBalancerRestControllerApi.md#UpdateAPolicyUsingPUT) | **Put** /v1/{project_id}/l7-policies | updateAPolicy
-[**UpdateListenerUsingPUT**](LoadBalancerRestControllerApi.md#UpdateListenerUsingPUT) | **Put** /v1/{project_id}/listeners | updateListener
-[**UpdateMembersUsingPUT**](LoadBalancerRestControllerApi.md#UpdateMembersUsingPUT) | **Put** /v1/{project_id}/pools/{pool_id}/members | updateMembers
-[**UpdatePoolUsingPUT**](LoadBalancerRestControllerApi.md#UpdatePoolUsingPUT) | **Put** /v1/{project_id}/pools | updatePool
+[**ReorderPoliciesUsingPUT**](LoadBalancerRestControllerApi.md#ReorderPoliciesUsingPUT) | **Put** /v1/{project_id}/reorder-l7-policies | Reorder the L7 policies
+[**UpdateAPolicyUsingPUT**](LoadBalancerRestControllerApi.md#UpdateAPolicyUsingPUT) | **Put** /v1/{project_id}/l7-policies | Update a policy
+[**UpdateListenerUsingPUT**](LoadBalancerRestControllerApi.md#UpdateListenerUsingPUT) | **Put** /v1/{project_id}/listeners | Update a listener
+[**UpdateMembersUsingPUT**](LoadBalancerRestControllerApi.md#UpdateMembersUsingPUT) | **Put** /v1/{project_id}/pools/{pool_id}/members | Update members
+[**UpdatePoolUsingPUT**](LoadBalancerRestControllerApi.md#UpdatePoolUsingPUT) | **Put** /v1/{project_id}/pools | Update a pool
 
 
 # **CreateListenerUsingPOST**
 > DataResponseListener CreateListenerUsingPOST(ctx, createListenerRequest, projectId)
-createListener
+Create a listener
 
 ### Required Parameters
 
@@ -44,7 +45,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseListener**](DataResponseListener.md)
+[**DataResponseListener**](DataResponse«Listener».md)
 
 ### Authorization
 
@@ -71,7 +72,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseLoadBalancer**](DataResponseLoadBalancer.md)
+[**DataResponseLoadBalancer**](DataResponse«LoadBalancer».md)
 
 ### Authorization
 
@@ -86,7 +87,7 @@ No authorization required
 
 # **CreatePolicyUsingPOST**
 > DataResponseL7Policy CreatePolicyUsingPOST(ctx, createL7PolicyRequest, projectId)
-createPolicy
+Create a l7 policy
 
 ### Required Parameters
 
@@ -98,7 +99,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseL7Policy**](DataResponseL7Policy.md)
+[**DataResponseL7Policy**](DataResponse«L7Policy».md)
 
 ### Authorization
 
@@ -113,7 +114,7 @@ No authorization required
 
 # **CreatePoolUsingPOST**
 > DataResponsePool CreatePoolUsingPOST(ctx, createPoolRequest, projectId)
-createPool
+Create a new pool
 
 ### Required Parameters
 
@@ -125,7 +126,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponsePool**](DataResponsePool.md)
+[**DataResponsePool**](DataResponse«Pool».md)
 
 ### Authorization
 
@@ -139,8 +140,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteListenerUsingDELETE**
-> DataResponseListener DeleteListenerUsingDELETE(ctx, deleteListenerRequest, projectId)
-deleteListener
+> DeleteListenerUsingDELETE(ctx, deleteListenerRequest, projectId)
+Delete a listener
 
 ### Required Parameters
 
@@ -152,7 +153,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseListener**](DataResponseListener.md)
+ (empty response body)
 
 ### Authorization
 
@@ -166,8 +167,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteLoadBalancerUsingDELETE**
-> DataResponseLoadBalancer DeleteLoadBalancerUsingDELETE(ctx, deleteLoadBalancerRequest, projectId)
-deleteLoadBalancer
+> DeleteLoadBalancerUsingDELETE(ctx, deleteLoadBalancerRequest, projectId)
+Delete a load balancer
 
 ### Required Parameters
 
@@ -179,7 +180,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseLoadBalancer**](DataResponseLoadBalancer.md)
+ (empty response body)
 
 ### Authorization
 
@@ -193,8 +194,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeletePolicyUsingDELETE**
-> DataResponseL7Policy DeletePolicyUsingDELETE(ctx, deleteL7PolicyRequest, projectId)
-deletePolicy
+> DeletePolicyUsingDELETE(ctx, deleteL7PolicyRequest, projectId)
+Delete a policy
 
 ### Required Parameters
 
@@ -206,7 +207,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseL7Policy**](DataResponseL7Policy.md)
+ (empty response body)
 
 ### Authorization
 
@@ -220,8 +221,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeletePoolUsingDELETE**
-> DataResponsePool DeletePoolUsingDELETE(ctx, deletePoolRequest, projectId)
-deletePool
+> DeletePoolUsingDELETE(ctx, deletePoolRequest, projectId)
+Delete a pool
 
 ### Required Parameters
 
@@ -233,7 +234,33 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponsePool**](DataResponsePool.md)
+ (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **GetHeadersUsingGET**
+> DataResponseListstring GetHeadersUsingGET(ctx, projectId)
+Get list headers
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **projectId** | **string**| project id | 
+
+### Return type
+
+[**DataResponseListstring**](DataResponse«List«string»».md)
 
 ### Authorization
 
@@ -248,7 +275,7 @@ No authorization required
 
 # **GetHealthMonitorFromPoolUsingGET**
 > DataResponseHealthMonitor GetHealthMonitorFromPoolUsingGET(ctx, poolId, projectId)
-getHealthMonitorFromPool
+Get the health monitor associated with a specific pool
 
 ### Required Parameters
 
@@ -260,7 +287,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseHealthMonitor**](DataResponseHealthMonitor.md)
+[**DataResponseHealthMonitor**](DataResponse«HealthMonitor».md)
 
 ### Authorization
 
@@ -287,7 +314,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseHealthMonitor**](DataResponseHealthMonitor.md)
+[**DataResponseHealthMonitor**](DataResponse«HealthMonitor».md)
 
 ### Authorization
 
@@ -302,7 +329,7 @@ No authorization required
 
 # **GetL7PoliciesUsingGET**
 > PagingL7Policy GetL7PoliciesUsingGET(ctx, listenerId, projectId, optional)
-getL7Policies
+Get list policies of a listener
 
 ### Required Parameters
 
@@ -325,7 +352,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**PagingL7Policy**](PagingL7Policy.md)
+[**PagingL7Policy**](Paging«L7Policy».md)
 
 ### Authorization
 
@@ -363,7 +390,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**PagingListener**](PagingListener.md)
+[**PagingListener**](Paging«Listener».md)
 
 ### Authorization
 
@@ -399,7 +426,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**PagingLoadBalancer**](PagingLoadBalancer.md)
+[**PagingLoadBalancer**](Paging«LoadBalancer».md)
 
 ### Authorization
 
@@ -437,7 +464,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**PagingPool**](PagingPool.md)
+[**PagingPool**](Paging«Pool».md)
 
 ### Authorization
 
@@ -464,7 +491,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseListener**](DataResponseListener.md)
+[**DataResponseListener**](DataResponse«Listener».md)
 
 ### Authorization
 
@@ -491,7 +518,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseLoadBalancer**](DataResponseLoadBalancer.md)
+[**DataResponseLoadBalancer**](DataResponse«LoadBalancer».md)
 
 ### Authorization
 
@@ -506,7 +533,7 @@ No authorization required
 
 # **GetMemberFromPoolUsingGET**
 > PagingMember GetMemberFromPoolUsingGET(ctx, poolId, projectId, optional)
-getMemberFromPool
+Get members from a pool
 
 ### Required Parameters
 
@@ -529,7 +556,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**PagingMember**](PagingMember.md)
+[**PagingMember**](Paging«Member».md)
 
 ### Authorization
 
@@ -544,7 +571,7 @@ No authorization required
 
 # **GetPackagesUsingGET**
 > PagingLoadBalancerPackage GetPackagesUsingGET(ctx, projectId)
-getPackages
+Get list packages
 
 ### Required Parameters
 
@@ -555,7 +582,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**PagingLoadBalancerPackage**](PagingLoadBalancerPackage.md)
+[**PagingLoadBalancerPackage**](Paging«LoadBalancerPackage».md)
 
 ### Authorization
 
@@ -582,7 +609,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponsePool**](DataResponsePool.md)
+[**DataResponsePool**](DataResponse«Pool».md)
 
 ### Authorization
 
@@ -596,8 +623,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **ReorderPoliciesUsingPUT**
-> DataResponseL7Policy ReorderPoliciesUsingPUT(ctx, projectId, reorderPoliciesRequest)
-reorderPolicies
+> ReorderPoliciesUsingPUT(ctx, projectId, reorderPoliciesRequest)
+Reorder the L7 policies
 
 ### Required Parameters
 
@@ -609,7 +636,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseL7Policy**](DataResponseL7Policy.md)
+ (empty response body)
 
 ### Authorization
 
@@ -623,8 +650,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UpdateAPolicyUsingPUT**
-> DataResponseL7Policy UpdateAPolicyUsingPUT(ctx, projectId, updateL7PolicyRequest)
-updateAPolicy
+> UpdateAPolicyUsingPUT(ctx, projectId, updateL7PolicyRequest)
+Update a policy
 
 ### Required Parameters
 
@@ -636,7 +663,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseL7Policy**](DataResponseL7Policy.md)
+ (empty response body)
 
 ### Authorization
 
@@ -650,8 +677,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UpdateListenerUsingPUT**
-> DataResponseListener UpdateListenerUsingPUT(ctx, projectId, updateListenerRequest)
-updateListener
+> UpdateListenerUsingPUT(ctx, projectId, updateListenerRequest)
+Update a listener
 
 ### Required Parameters
 
@@ -663,7 +690,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseListener**](DataResponseListener.md)
+ (empty response body)
 
 ### Authorization
 
@@ -678,7 +705,7 @@ No authorization required
 
 # **UpdateMembersUsingPUT**
 > UpdateMembersUsingPUT(ctx, poolId, projectId, updateMembersRequest)
-updateMembers
+Update members
 
 ### Required Parameters
 
@@ -705,8 +732,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UpdatePoolUsingPUT**
-> DataResponsePool UpdatePoolUsingPUT(ctx, projectId, updatePoolRequest)
-updatePool
+> UpdatePoolUsingPUT(ctx, projectId, updatePoolRequest)
+Update a pool
 
 ### Required Parameters
 
@@ -718,7 +745,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponsePool**](DataResponsePool.md)
+ (empty response body)
 
 ### Authorization
 

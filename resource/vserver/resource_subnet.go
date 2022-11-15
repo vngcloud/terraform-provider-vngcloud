@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 
@@ -66,119 +67,117 @@ func ResourceSubnet() *schema.Resource {
 		},
 	}
 }
-func resourceSubnetStateRefreshFunc(cli *client.Client, subnetID string, projectID string) resource.StateRefreshFunc {
+func resourceSubnetStateRefreshFunc(cli *client.Client, networkID string, subnetID string, projectID string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		resp, _, err := cli.VserverClient.SubnetRestControllerApi.GetSubnetUsingGET(context.TODO(), projectID, subnetID)
-		if err != nil {
-			return nil, "", fmt.Errorf("Error on network State Refresh: %s", err)
+		resp, httpResponse, _ := cli.VserverClient.SubnetRestControllerApi.GetSubnetByIdUsingGET(context.TODO(), networkID, projectID, subnetID)
+		if httpResponse.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf("Error describing instance: %s", GetResponseBody(httpResponse))
 		}
 		respJSON, _ := json.Marshal(resp)
 		log.Printf("-------------------------------------\n")
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
-		if !resp.Success {
-			return nil, "", fmt.Errorf("Error describing instance: %s", resp.ErrorMsg)
-		}
-		subnet := resp.Subnets[0]
+		subnet := resp
 		return subnet, subnet.Status, nil
 	}
 }
 func resourceSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
+	networkID := d.Get("network_id").(string)
 	subnet := vserver.CreateSubnetRequest{
-		Name:      d.Get("name").(string),
-		Cidr:      d.Get("cidr").(string),
-		NetworkId: d.Get("network_id").(string),
+		Name: d.Get("name").(string),
+		Cidr: d.Get("cidr").(string),
 	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.SubnetRestControllerApi.CreateSubnetUsingPOST(context.TODO(), subnet, projectID)
-	if err != nil {
-		return err
+	resp, httpResponse, err := cli.VserverClient.SubnetRestControllerApi.CreateSubnetUsingPOST1(context.TODO(), subnet, networkID, projectID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
 	stateConf := &resource.StateChangeConf{
 		Pending:    subnetCreating,
 		Target:     subnetCreated,
-		Refresh:    resourceSubnetStateRefreshFunc(cli, resp.Subnets[0].Uuid, projectID),
+		Refresh:    resourceSubnetStateRefreshFunc(cli, networkID, resp.Data.Uuid, projectID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
 	_, err = stateConf.WaitForState()
 	if err != nil {
-		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", resp.Subnets[0].Uuid, err)
+		return fmt.Errorf("Error waiting for create subnet (%s) %s", resp.Data.Uuid, err)
 	}
-	d.SetId(resp.Subnets[0].Uuid)
+	d.SetId(resp.Data.Uuid)
 	return resourceSubnetRead(d, m)
 }
 
 func resourceSubnetRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	subnetID := d.Id()
+	networkID := d.Get("network_id").(string)
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.SubnetRestControllerApi.GetSubnetUsingGET(context.TODO(), projectID, subnetID)
-	if err != nil {
-		return err
+	resp, httpResponse, _ := cli.VserverClient.SubnetRestControllerApi.GetSubnetByIdUsingGET(context.TODO(), networkID, projectID, subnetID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	if len(resp.Subnets) == 0 {
-		d.SetId("")
-		return nil
-	}
-	subnet := resp.Subnets[0]
+	subnet := resp
 	d.Set("name", subnet.Name)
 	d.Set("cidr", subnet.Cidr)
-	d.Set("network_id", subnet.NetworkId)
-	d.Set("route_table_uuid", subnet.RouteTableId)
-	d.Set("interface_acl_policy_uuid", subnet.InterfaceAclPolicyId)
 	return nil
 }
 
 func resourceSubnetDelete(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
-	deleteSubnet := vserver.DeleteSubnetRequest{
-		SubnetId:  d.Id(),
-		NetworkId: d.Get("network_id").(string),
-	}
+	SubnetId := d.Id()
+	NetworkId := d.Get("network_id").(string)
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.SubnetRestControllerApi.DeleteSubnetUsingDELETE(context.TODO(), deleteSubnet, projectID)
+	httpResponse, _ := cli.VserverClient.SubnetRestControllerApi.DeleteNetworkUsingDELETE2(context.TODO(), projectID, SubnetId, NetworkId)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
+	}
+	stateConf := &resource.StateChangeConf{
+		Pending:    subnetDeleting,
+		Target:     subnetDeleted,
+		Refresh:    resourceSubnetDeleteStateRefreshFunc(cli, NetworkId, SubnetId, projectID),
+		Timeout:    d.Timeout(schema.TimeoutCreate),
+		Delay:      10 * time.Second,
+		MinTimeout: 1 * time.Second,
+	}
+	_, err := stateConf.WaitForState()
 	if err != nil {
-		return err
+		return fmt.Errorf("Error waiting for delete subnet (%s) %s", SubnetId, err)
 	}
-	respJSON, _ := json.Marshal(resp)
-	log.Printf("-------------------------------------\n")
-	log.Printf("%s\n", string(respJSON))
-	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
+	d.SetId("")
+	return nil
+}
+
+func resourceSubnetDeleteStateRefreshFunc(cli *client.Client, networkID string, subnetID string, projectID string) resource.StateRefreshFunc {
+	return func() (interface{}, string, error) {
+		resp, httpResponse, _ := cli.VserverClient.SubnetRestControllerApi.GetSubnetByIdUsingGET(context.TODO(), networkID, projectID, subnetID)
+		if httpResponse.StatusCode != http.StatusOK {
+			if httpResponse.StatusCode == http.StatusNotFound {
+				return vserver.SubnetDto{Status: "DELETED"}, "DELETED", nil
+			} else {
+				return nil, "", fmt.Errorf("Error describing instance: %s", GetResponseBody(httpResponse))
+			}
+		}
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+		subnet := resp
+		return subnet, subnet.Status, nil
 	}
-	return resource.Retry(d.Timeout(schema.TimeoutDelete), func() *resource.RetryError {
-		resp, _, err := cli.VserverClient.SubnetRestControllerApi.GetSubnetUsingGET(context.TODO(), projectID, d.Id())
-		if err != nil {
-			return resource.NonRetryableError(fmt.Errorf("Error describing instance: %s", err))
-		}
-		if !resp.Success {
-			return resource.NonRetryableError(fmt.Errorf("Error describing instance: %s", resp.ErrorMsg))
-		}
-		if len(resp.Subnets) == 0 {
-			d.SetId("")
-			return nil
-		}
-		return resource.RetryableError(fmt.Errorf("Expected instance to be created but was in state %s", resp.Subnets[0].Status))
-	})
 }

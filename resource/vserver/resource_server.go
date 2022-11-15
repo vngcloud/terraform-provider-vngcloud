@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 
@@ -82,11 +83,11 @@ func ResourceServer() *schema.Resource {
 			},
 			"root_disk_size": {
 				Type:     schema.TypeInt,
-				Optional: true,
+				Required: true,
 			},
 			"root_disk_type_id": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Required: true,
 			},
 			"security_group": {
 				Type: schema.TypeList,
@@ -155,23 +156,26 @@ func ResourceServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"root_disk_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
 func resourceServerStateRefreshFunc(cli *client.Client, serverID string, projectID string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		resp, _, err := cli.VserverClient.ServerRestControllerApi.GetServerUsingGET(context.TODO(), projectID, serverID)
-		if err != nil {
-			return nil, "", fmt.Errorf("Error on network State Refresh: %s", err)
+		resp, httpResponse, _ := cli.VserverClient.ServerRestControllerApi.GetServerUsingGET1(context.TODO(), projectID, serverID)
+
+		if httpResponse.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf("Error describing : %s", GetResponseBody(httpResponse))
 		}
+
 		respJSON, _ := json.Marshal(resp)
 		log.Printf("-------------------------------------\n")
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
-		if !resp.Success {
-			return nil, "", fmt.Errorf("Error describing instance: %s", resp.ErrorMsg)
-		}
-		server := resp.Servers[0]
+		server := resp.Data
 		return server, server.Status, nil
 	}
 }
@@ -201,7 +205,6 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		RootDiskSize:           int32(d.Get("root_disk_size").(int)),
 		RootDiskTypeId:         d.Get("root_disk_type_id").(string),
 		SecurityGroup:          securityGroup,
-		SourceType:             d.Get("source_type").(string),
 		SshKeyId:               d.Get("ssh_key").(string),
 		SubnetId:               d.Get("subnet_id").(string),
 		ServerGroupId:          d.Get("server_group_id").(string),
@@ -209,13 +212,12 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		UserPassword:           d.Get("user_password").(string),
 	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ServerRestControllerApi.CreateServerUsingPOST(context.TODO(), server, projectID)
-	if err != nil {
-		return err
-	}
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
+	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.CreateServerUsingPOST1(context.TODO(), server, projectID)
+
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
@@ -224,16 +226,25 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 	stateConf := &resource.StateChangeConf{
 		Pending:    serverCreating,
 		Target:     serverCreated,
-		Refresh:    resourceServerStateRefreshFunc(cli, resp.Servers[0].Uuid, projectID),
+		Refresh:    resourceServerStateRefreshFunc(cli, resp.Data.Uuid, projectID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
 	_, err = stateConf.WaitForState()
 	if err != nil {
-		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", resp.Servers[0].Uuid, err)
+		return fmt.Errorf("Error waiting for create server (%s) %s", resp.Data.Uuid, err)
 	}
-	d.SetId(resp.Servers[0].Uuid)
+	d.SetId(resp.Data.Uuid)
+	respVolume, httpResponseVolume, errVolume := cli.VserverClient.VolumeRestControllerApi.GetBootVolumeByInstanceIdUsingGET1(context.TODO(), projectID, resp.Data.Uuid)
+	if errVolume != nil {
+		return err
+	}
+	if httpResponseVolume.StatusCode < 200 || httpResponseVolume.StatusCode > 299 {
+		err := fmt.Errorf("request fail with errMsg : %s", GetResponseBody(httpResponse))
+		return err
+	}
+	d.Set("root_disk_id", respVolume.Volumes[0].Uuid)
 	return resourceServerRead(d, m)
 }
 
@@ -241,30 +252,24 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	serverID := d.Id()
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ServerRestControllerApi.GetServerUsingGET(context.TODO(), projectID, serverID)
-	if err != nil {
+	resp, httpResponse, _ := cli.VserverClient.ServerRestControllerApi.GetServerUsingGET1(context.TODO(), projectID, serverID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		err := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		return err
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	if len(resp.Servers) == 0 {
-		d.SetId("")
-		return nil
-	}
-	server := resp.Servers[0]
+	server := resp.Data
 	d.Set("name", server.Name)
 	d.Set("network_id", server.InternalInterfaces[0].NetworkUuid)
 	d.Set("subnet_id", server.InternalInterfaces[0].SubnetUuid)
 	d.Set("encryption_volume", server.EncryptionVolume)
-	d.Set("flavor_id", server.FlavorId)
-	d.Set("image_id", server.ImageId)
-	d.Set("os_info", server.OsInfo)
+	d.Set("flavor_id", server.Flavor.FlavorId)
+	d.Set("image_id", server.Image.Id)
+	d.Set("os_info", server.Image.ImageVersion)
 	d.Set("ssh_key_name", server.SshKeyName)
 	d.Set("server_group_id", server.ServerGroupId)
 	var internalInterfaces []map[string]string
@@ -323,6 +328,9 @@ func resourceServerUpdate(d *schema.ResourceData, m interface{}) error {
 	if d.HasChange("security_group") {
 		return resourceServerUpdateSecgroup(d, m)
 	}
+	if d.HasChange("root_disk_size") || d.HasChange("root_disk_type_id") {
+		return resourceResizeBootVolume(d, m)
+	}
 	return resourceServerRead(d, m)
 
 }
@@ -330,86 +338,75 @@ func resourceServerUpdate(d *schema.ResourceData, m interface{}) error {
 func resourceServerDelete(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	deleteServer := vserver.DeleteServerRequest{
-		ServerId:    d.Id(),
-		ForceDelete: true,
+		DeleteAllVolume: false,
 	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ServerRestControllerApi.DeleteServerUsingDELETE(context.TODO(), deleteServer, projectID)
-	if err != nil {
-		return err
+	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.DeleteServerUsingDELETE1(context.TODO(), deleteServer, projectID, d.Id())
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
+	stateConf := &resource.StateChangeConf{
+		Pending:    serverDeleting,
+		Target:     serverDeleted,
+		Refresh:    resourceServerDeleteStateRefreshFunc(cli, d.Id(), projectID),
+		Timeout:    d.Timeout(schema.TimeoutCreate),
+		Delay:      10 * time.Second,
+		MinTimeout: 1 * time.Second,
 	}
-
-	return resource.Retry(d.Timeout(schema.TimeoutDelete), func() *resource.RetryError {
-		resp, _, err := cli.VserverClient.ServerRestControllerApi.GetServerUsingGET(context.TODO(), projectID, d.Id())
-		if err != nil {
-			return resource.NonRetryableError(fmt.Errorf("Error describing instance: %s", err))
-		}
-		if !resp.Success {
-			return resource.NonRetryableError(fmt.Errorf("Error describing instance: %s", resp.ErrorMsg))
-		}
-		if len(resp.Servers) == 0 {
-			d.SetId("")
-			return nil
-		}
-		return resource.RetryableError(fmt.Errorf("Expected instance to be created but was in state %s", resp.Servers[0].Status))
-	})
+	_, err = stateConf.WaitForState()
+	if err != nil {
+		return fmt.Errorf("Error waiting for delete server (%s) : %s", d.Id(), err)
+	}
+	d.SetId("")
+	return nil
 }
 func resourceServerResize(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 
-	serverResize := vserver.ResizeServerRequest{
+	serverResizeRequest := vserver.ResizeServerRequest{
 		ServerId: d.Id(),
 		FlavorId: d.Get("flavor_id").(string),
 	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ServerRestControllerApi.ResizeServerUsingPUT(context.TODO(), projectID, serverResize)
-	if err != nil {
-		return err
-	}
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
+	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.ResizeServerUsingPUT1(context.TODO(), projectID, serverResizeRequest, d.Id())
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	return resource.Retry(d.Timeout(schema.TimeoutDelete), func() *resource.RetryError {
-		resp, _, err := cli.VserverClient.ServerRestControllerApi.GetServerUsingGET(context.TODO(), projectID, d.Id())
-		if err != nil {
-			return resource.NonRetryableError(fmt.Errorf("Error describing instance: %s", err))
-		}
-		if !resp.Success {
-			return resource.NonRetryableError(fmt.Errorf("Error describing instance: %s", resp.ErrorMsg))
-		}
-		if resp.Servers[0].FlavorId == d.Get("flavor_id").(string) {
-			return nil
-		}
-		return resource.RetryableError(fmt.Errorf("Expected instance FlavorId to be %s but was in state %s", d.Get("flavor_id").(string), resp.Servers[0].FlavorId))
-	})
+	stateConf := &resource.StateChangeConf{
+		Pending:    serverResizing,
+		Target:     serverResize,
+		Refresh:    resourceServerStateRefreshFunc(cli, d.Id(), projectID),
+		Timeout:    d.Timeout(schema.TimeoutCreate),
+		Delay:      10 * time.Second,
+		MinTimeout: 1 * time.Second,
+	}
+	_, err = stateConf.WaitForState()
+	if err != nil {
+		return fmt.Errorf("Error waiting for resize server (%s) : %s", d.Id(), err)
+	}
+	return resourceServerRead(d, m)
 }
 func resourceServerReboot(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 
-	serverReboot := vserver.UpdateServerRequest{
-		ServerId: d.Id(),
-	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ServerRestControllerApi.RebootServerUsingPUT(context.TODO(), projectID, serverReboot)
-	if err != nil {
-		return err
-	}
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
+	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.RebootServerUsingPUT1(context.TODO(), projectID, d.Id())
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
@@ -432,17 +429,12 @@ func resourceServerReboot(d *schema.ResourceData, m interface{}) error {
 func resourceServerStop(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 
-	serverStop := vserver.UpdateServerRequest{
-		ServerId: d.Id(),
-	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ServerRestControllerApi.StopServerUsingPUT(context.TODO(), projectID, serverStop)
-	if err != nil {
-		return err
-	}
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
+	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.StopServerUsingPUT1(context.TODO(), projectID, d.Id())
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
@@ -465,17 +457,12 @@ func resourceServerStop(d *schema.ResourceData, m interface{}) error {
 func resourceServerStart(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 
-	serverStart := vserver.UpdateServerRequest{
-		ServerId: d.Id(),
-	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ServerRestControllerApi.StartServerUsingPUT(context.TODO(), projectID, serverStart)
-	if err != nil {
-		return err
-	}
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
+	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.StartServerUsingPUT1(context.TODO(), projectID, d.Id())
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
@@ -507,13 +494,11 @@ func resourceServerUpdateSecgroup(d *schema.ResourceData, m interface{}) error {
 		SecurityGroup: securityGroup,
 	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ServerRestControllerApi.UpdateSecGroupServerUsingPUT(context.TODO(), serverChangeSecGroup, projectID)
-	if err != nil {
-		return err
-	}
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
+	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.UpdateSecGroupServerUsingPUT1(context.TODO(), serverChangeSecGroup, projectID, d.Id())
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
@@ -522,7 +507,7 @@ func resourceServerUpdateSecgroup(d *schema.ResourceData, m interface{}) error {
 	stateConf := &resource.StateChangeConf{
 		Pending:    serverChangingSecGroup,
 		Target:     serverChangedSecGroup,
-		Refresh:    resourceServerStateRefreshFunc(cli, resp.Servers[0].Uuid, projectID),
+		Refresh:    resourceServerStateRefreshFunc(cli, d.Id(), projectID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
@@ -532,4 +517,57 @@ func resourceServerUpdateSecgroup(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", d.Id(), err)
 	}
 	return resourceServerRead(d, m)
+}
+
+func resourceResizeBootVolume(d *schema.ResourceData, m interface{}) error {
+	projectID := d.Get("project_id").(string)
+	resizeVolume := vserver.ResizeVolumeRequest{
+		NewSize:         int32(d.Get("root_disk_size").(int)),
+		NewVolumeTypeId: d.Get("root_disk_type_id").(string),
+	}
+	cli := m.(*client.Client)
+	resp, httpResponse, err := cli.VserverClient.VolumeRestControllerApi.ResizeVolumeUsingPUT1(context.TODO(), projectID, resizeVolume, d.Get("root_disk_id").(string))
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
+	}
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
+	stateConf := &resource.StateChangeConf{
+		Pending:    volumeResizing,
+		Target:     volumeAttached,
+		Refresh:    resourceVolumeStateRefreshFunc(cli, d.Get("root_disk_id").(string), projectID),
+		Timeout:    d.Timeout(schema.TimeoutCreate),
+		Delay:      10 * time.Second,
+		MinTimeout: 1 * time.Second,
+	}
+	_, err = stateConf.WaitForState()
+	if err != nil {
+		return fmt.Errorf("Error waiting for volume to be resized: %s", err)
+	}
+	d.Set("root_disk_size", resizeVolume.NewSize)
+	d.Set("root_disk_type_id", resizeVolume.NewVolumeTypeId)
+	return nil
+}
+
+func resourceServerDeleteStateRefreshFunc(cli *client.Client, serverID string, projectID string) resource.StateRefreshFunc {
+	return func() (interface{}, string, error) {
+		resp, httpResponse, _ := cli.VserverClient.ServerRestControllerApi.GetServerUsingGET1(context.TODO(), projectID, serverID)
+		if httpResponse.StatusCode != http.StatusOK {
+			if httpResponse.StatusCode == http.StatusNotFound {
+				return vserver.Server{Status: "DELETED"}, "DELETED", nil
+			} else {
+				return nil, "", fmt.Errorf("Error describing instance: %s", GetResponseBody(httpResponse))
+			}
+		}
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+		server := resp.Data
+		return server, server.Status, nil
+	}
 }

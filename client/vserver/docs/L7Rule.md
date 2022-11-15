@@ -4,7 +4,6 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **AdminStateUp** | **bool** |  | [optional] [default to null]
-**BackendStatus** | **string** |  | [optional] [default to null]
 **CompareType** | **string** |  | [optional] [default to null]
 **CreatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
 **Invert** | **bool** |  | [optional] [default to null]
@@ -15,7 +14,6 @@ Name | Type | Description | Notes
 **RuleKey** | **string** |  | [optional] [default to null]
 **RuleType** | **string** |  | [optional] [default to null]
 **RuleValue** | **string** |  | [optional] [default to null]
-**Status** | **string** |  | [optional] [default to null]
 **UpdatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
 **Uuid** | **string** |  | [optional] [default to null]
 

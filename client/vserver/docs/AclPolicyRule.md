@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **InterfaceAclPolicyUuid** | **string** |  | [optional] [default to null]
 **Port** | **string** |  | [optional] [default to null]
 **Protocol** | **string** |  | [optional] [default to null]
-**SeqNumber** | **string** |  | [optional] [default to null]
+**SeqNumber** | **int32** |  | [optional] [default to null]
 **Source** | **string** |  | [optional] [default to null]
 **Type_** | **string** |  | [optional] [default to null]
 **Uuid** | **string** |  | [optional] [default to null]

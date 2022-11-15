@@ -11,6 +11,8 @@ var (
 	poolCreated            = []string{"CREATED"}
 	networkCreating        = []string{"CREATING"}
 	networkCreated         = []string{"ACTIVE"}
+	networkDeleting        = []string{"DELETING"}
+	networkDeleted         = []string{"DELETED"}
 	secgroupRuleCreating   = []string{"CREATING"}
 	secgroupRuleCreated    = []string{"ACTIVE"}
 	secgroupCreating       = []string{"CREATING"}
@@ -23,14 +25,24 @@ var (
 	serverStopped          = []string{"STOPPED"}
 	serverStarting         = []string{"STARTING"}
 	serverStarted          = []string{"ACTIVE"}
+	serverResizing         = []string{"CHANGING-FLAVOR", "VERIFYING-FLAVOR"}
+	serverResize           = []string{"ACTIVE", "STOPPED"}
+	serverDeleting         = []string{"DELETING"}
+	serverDeleted          = []string{"DELETED"}
 	subnetCreating         = []string{"CREATING"}
 	subnetCreated          = []string{"ACTIVE"}
+	subnetDeleting         = []string{"DELETING"}
+	subnetDeleted          = []string{"DELETED"}
 	volumeCreating         = []string{"CREATING", "CREATING-BILLING"}
 	volumeCreated          = []string{"AVAILABLE"}
 	volumeAttaching        = []string{"AVAILABLE", "ATTACHING"}
 	volumeAttached         = []string{"IN-USE"}
 	volumeDetaching        = []string{"IN-USE", "DETACHING"}
+	volumeResizing         = []string{"RESIZING", "CHANGING-IOPS"}
+	volumeResized          = []string{"IN-USE", "AVAILABLE"}
 	volumeDetached         = []string{"AVAILABLE"}
+	volumeDeleting         = []string{"DELETING"}
+	volumeDeleted          = []string{"DELETED"}
 	serverChangingSecGroup = []string{"CHANGING-SECURITY-GROUP"}
 	serverChangedSecGroup  = []string{"ACTIVE", "STOPPED"}
 )

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 
@@ -66,18 +67,15 @@ func ResourceVolume() *schema.Resource {
 }
 func resourceVolumeStateRefreshFunc(cli *client.Client, volumeID string, projectID string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		resp, _, err := cli.VserverClient.VolumeRestControllerApi.GetVolumeUsingGET(context.TODO(), projectID, volumeID)
-		if err != nil {
-			return nil, "", fmt.Errorf("Error on network State Refresh: %s", err)
+		resp, httpResponse, _ := cli.VserverClient.VolumeRestControllerApi.GetVolumeUsingGET2(context.TODO(), projectID, volumeID)
+		if httpResponse.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf("Error describing instance: %s", GetResponseBody(httpResponse))
 		}
 		respJSON, _ := json.Marshal(resp)
 		log.Printf("-------------------------------------\n")
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
-		if !resp.Success {
-			return nil, "", fmt.Errorf("Error describing instance: %s", resp.ErrorMsg)
-		}
-		volume := resp.Volumes[0]
+		volume := resp.Data
 		return volume, volume.Status, nil
 	}
 }
@@ -90,31 +88,29 @@ func resourceVolumeCreate(d *schema.ResourceData, m interface{}) error {
 		VolumeTypeId:   d.Get("volume_type_id").(string),
 	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.VolumeRestControllerApi.CreateVolumeUsingPOST(context.TODO(), a, projectID)
-	if err != nil {
-		return err
+	resp, httpResponse, err := cli.VserverClient.VolumeRestControllerApi.CreateVolumeUsingPOST1(context.TODO(), a, projectID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
 	stateConf := &resource.StateChangeConf{
 		Pending:    volumeCreating,
 		Target:     volumeCreated,
-		Refresh:    resourceVolumeStateRefreshFunc(cli, resp.Volumes[0].Uuid, projectID),
+		Refresh:    resourceVolumeStateRefreshFunc(cli, resp.Data.Uuid, projectID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
 	_, err = stateConf.WaitForState()
 	if err != nil {
-		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", resp.Volumes[0].Uuid, err)
+		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", resp.Data.Uuid, err)
 	}
-	d.SetId(resp.Volumes[0].Uuid)
+	d.SetId(resp.Data.Uuid)
 	return resourceVolumeRead(d, m)
 }
 
@@ -122,23 +118,17 @@ func resourceVolumeRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	volumeID := d.Id()
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.VolumeRestControllerApi.GetVolumeUsingGET(context.TODO(), projectID, volumeID)
-	if err != nil {
-		return err
+	resp, httpResponse, _ := cli.VserverClient.VolumeRestControllerApi.GetVolumeUsingGET2(context.TODO(), projectID, volumeID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if len(resp.Volumes) == 0 {
-		d.SetId("")
-		return nil
-	}
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	volume := resp.Volumes[0]
+	volume := resp.Data
 	d.Set("encryption_type", volume.EncryptionType)
 	d.Set("name", volume.Name)
 	d.Set("size", int(volume.Size))
@@ -152,21 +142,30 @@ func resourceVolumeUpdate(d *schema.ResourceData, m interface{}) error {
 		projectID := d.Get("project_id").(string)
 		resizeVolume := vserver.ResizeVolumeRequest{
 			NewSize:         int32(d.Get("size").(int)),
-			VolumeId:        d.Id(),
 			NewVolumeTypeId: d.Get("volume_type_id").(string),
 		}
 		cli := m.(*client.Client)
-		resp, _, err := cli.VserverClient.VolumeRestControllerApi.ResizeVolumeUsingPUT(context.TODO(), projectID, resizeVolume)
-		if err != nil {
-			return err
+		resp, httpResponse, err := cli.VserverClient.VolumeRestControllerApi.ResizeVolumeUsingPUT1(context.TODO(), projectID, resizeVolume, d.Id())
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+			return errorResponse
 		}
 		respJSON, _ := json.Marshal(resp)
 		log.Printf("-------------------------------------\n")
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
-		if !resp.Success {
-			err := fmt.Errorf(resp.ErrorMsg)
-			return err
+		stateConf := &resource.StateChangeConf{
+			Pending:    volumeResizing,
+			Target:     volumeResized,
+			Refresh:    resourceVolumeStateRefreshFunc(cli, resp.Data.Uuid, projectID),
+			Timeout:    d.Timeout(schema.TimeoutCreate),
+			Delay:      10 * time.Second,
+			MinTimeout: 1 * time.Second,
+		}
+		_, err = stateConf.WaitForState()
+		if err != nil {
+			return fmt.Errorf("Error waiting for instance (%s) to be created: %s", resp.Data.Uuid, err)
 		}
 		return nil
 	}
@@ -176,34 +175,48 @@ func resourceVolumeUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceVolumeDelete(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
-	deleteVolume := vserver.DeleteVolumeRequest{
-		VolumeId: d.Id(),
-	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.VolumeRestControllerApi.DeleteVolumeUsingDELETE(context.TODO(), deleteVolume, projectID)
-	if err != nil {
-		return err
+	resp, httpResponse, err := cli.VserverClient.VolumeRestControllerApi.DeleteVolumeUsingDELETE1(context.TODO(), projectID, d.Id())
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
+	stateConf := &resource.StateChangeConf{
+		Pending:    volumeDeleting,
+		Target:     volumeDeleted,
+		Refresh:    resourceVolumeDeleteStateRefreshFunc(cli, d.Id(), projectID),
+		Timeout:    d.Timeout(schema.TimeoutCreate),
+		Delay:      10 * time.Second,
+		MinTimeout: 1 * time.Second,
 	}
-	return resource.Retry(d.Timeout(schema.TimeoutDelete), func() *resource.RetryError {
-		resp, _, err := cli.VserverClient.VolumeRestControllerApi.GetVolumeUsingGET(context.TODO(), projectID, d.Id())
-		if err != nil {
-			return resource.NonRetryableError(fmt.Errorf("Error describing instance: %s", err))
+	_, err = stateConf.WaitForState()
+	if err != nil {
+		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", d.Id(), err)
+	}
+	d.SetId("")
+	return nil
+}
+
+func resourceVolumeDeleteStateRefreshFunc(cli *client.Client, volumeId string, projectID string) resource.StateRefreshFunc {
+	return func() (interface{}, string, error) {
+		resp, httpResponse, _ := cli.VserverClient.VolumeRestControllerApi.GetVolumeUsingGET2(context.TODO(), projectID, volumeId)
+		if httpResponse.StatusCode != http.StatusOK {
+			if httpResponse.StatusCode == http.StatusNotFound {
+				return vserver.Volume{Status: "DELETED"}, "DELETED", nil
+			} else {
+				return nil, "", fmt.Errorf("Error describing instance: %s", httpResponse.Body)
+			}
 		}
-		if !resp.Success {
-			return resource.NonRetryableError(fmt.Errorf("Error describing instance: %s", resp.ErrorMsg))
-		}
-		if len(resp.Volumes) == 0 {
-			d.SetId("")
-			return nil
-		}
-		return resource.RetryableError(fmt.Errorf("Expected instance to be created but was in state %s", resp.Volumes[0].Status))
-	})
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+		volume := resp.Data
+		return volume, volume.Status, nil
+	}
 }
