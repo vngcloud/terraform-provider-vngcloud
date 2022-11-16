@@ -149,6 +149,10 @@ func resourceVolumeUpdate(d *schema.ResourceData, m interface{}) error {
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
 			errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+			oldSize, _ := d.GetChange("size")
+			oldType, _ := d.GetChange("volume_type_id")
+			d.Set("size", oldSize)
+			d.Set("volume_type_id", oldType)
 			return errorResponse
 		}
 		respJSON, _ := json.Marshal(resp)

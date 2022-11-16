@@ -378,6 +378,8 @@ func resourceServerResize(d *schema.ResourceData, m interface{}) error {
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		oldFlavor, _ := d.GetChange("flavor_id")
+		d.Set("flavor_id", oldFlavor)
 		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
@@ -406,6 +408,8 @@ func resourceServerReboot(d *schema.ResourceData, m interface{}) error {
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		oldAction, _ := d.GetChange("action")
+		d.Set("action", oldAction)
 		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
@@ -434,6 +438,7 @@ func resourceServerStop(d *schema.ResourceData, m interface{}) error {
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		d.Set("action", "start")
 		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
@@ -462,6 +467,7 @@ func resourceServerStart(d *schema.ResourceData, m interface{}) error {
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		d.Set("action", "stop")
 		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
@@ -498,6 +504,8 @@ func resourceServerUpdateSecgroup(d *schema.ResourceData, m interface{}) error {
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		oldSecGroups, _ := d.GetChange("security_group")
+		d.Set("security_group", oldSecGroups)
 		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
@@ -530,6 +538,10 @@ func resourceResizeBootVolume(d *schema.ResourceData, m interface{}) error {
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		oldSize, _ := d.GetChange("root_disk_size")
+		oldType, _ := d.GetChange("root_disk_type_id")
+		d.Set("root_disk_size", oldSize)
+		d.Set("root_disk_type_id", oldType)
 		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
