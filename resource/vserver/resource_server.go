@@ -160,6 +160,10 @@ func ResourceServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"user_data": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -210,6 +214,8 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		ServerGroupId:          d.Get("server_group_id").(string),
 		UserName:               d.Get("user_name").(string),
 		UserPassword:           d.Get("user_password").(string),
+		UserData:               d.Get("user_data").(string),
+		UserDataBase64Encoded:  true,
 	}
 	cli := m.(*client.Client)
 	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.CreateServerUsingPOST1(context.TODO(), server, projectID)
