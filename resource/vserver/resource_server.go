@@ -163,6 +163,13 @@ func ResourceServer() *schema.Resource {
 			"user_data": {
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
+			},
+			"base64_encode": {
+				Default:  false,
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
 			},
 		},
 	}
@@ -215,7 +222,7 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		UserName:               d.Get("user_name").(string),
 		UserPassword:           d.Get("user_password").(string),
 		UserData:               d.Get("user_data").(string),
-		UserDataBase64Encoded:  true,
+		UserDataBase64Encoded:  d.Get("base64_encode").(bool),
 	}
 	cli := m.(*client.Client)
 	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.CreateServerUsingPOST1(context.TODO(), server, projectID)
@@ -242,15 +249,6 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("Error waiting for create server (%s) %s", resp.Data.Uuid, err)
 	}
 	d.SetId(resp.Data.Uuid)
-	respVolume, httpResponseVolume, errVolume := cli.VserverClient.VolumeRestControllerApi.GetBootVolumeByInstanceIdUsingGET1(context.TODO(), projectID, resp.Data.Uuid)
-	if errVolume != nil {
-		return err
-	}
-	if httpResponseVolume.StatusCode < 200 || httpResponseVolume.StatusCode > 299 {
-		err := fmt.Errorf("request fail with errMsg : %s", GetResponseBody(httpResponse))
-		return err
-	}
-	d.Set("root_disk_id", respVolume.Volumes[0].Uuid)
 	return resourceServerRead(d, m)
 }
 
@@ -278,6 +276,15 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("os_info", server.Image.ImageVersion)
 	d.Set("ssh_key_name", server.SshKeyName)
 	d.Set("server_group_id", server.ServerGroupId)
+	rootDiskId := d.Get("root_disk_id").(string)
+	if rootDiskId == "" {
+		respVolume, httpResponseVolume, _ := cli.VserverClient.VolumeRestControllerApi.GetBootVolumeByInstanceIdUsingGET1(context.TODO(), projectID, resp.Data.Uuid)
+		if CheckErrorResponse(httpResponseVolume) {
+			err := fmt.Errorf("request fail with errMsg : %s", GetResponseBody(httpResponse))
+			return err
+		}
+		d.Set("root_disk_id", respVolume.Volumes[0].Uuid)
+	}
 	var internalInterfaces []map[string]string
 	for _, internalInterface := range server.InternalInterfaces {
 		internalInterfaceMap := make(map[string]string)
