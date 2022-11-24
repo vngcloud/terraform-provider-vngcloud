@@ -14,6 +14,7 @@ import (
 )
 
 type Server struct {
+	BootVolumeId       string                      `json:"bootVolumeId,omitempty"`
 	CreatedAt          time.Time                   `json:"createdAt,omitempty"`
 	EncryptionVolume   bool                        `json:"encryptionVolume,omitempty"`
 	ExternalInterfaces []InterfaceNetworkInterface `json:"externalInterfaces,omitempty"`

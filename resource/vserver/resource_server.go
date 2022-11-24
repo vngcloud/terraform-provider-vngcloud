@@ -276,15 +276,7 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("os_info", server.Image.ImageVersion)
 	d.Set("ssh_key_name", server.SshKeyName)
 	d.Set("server_group_id", server.ServerGroupId)
-	rootDiskId := d.Get("root_disk_id").(string)
-	if rootDiskId == "" {
-		respVolume, httpResponseVolume, _ := cli.VserverClient.VolumeRestControllerApi.GetBootVolumeByInstanceIdUsingGET1(context.TODO(), projectID, resp.Data.Uuid)
-		if CheckErrorResponse(httpResponseVolume) {
-			err := fmt.Errorf("request fail with errMsg : %s", GetResponseBody(httpResponse))
-			return err
-		}
-		d.Set("root_disk_id", respVolume.Volumes[0].Uuid)
-	}
+	d.Set("root_disk_id", server.BootVolumeId)
 	var internalInterfaces []map[string]string
 	for _, internalInterface := range server.InternalInterfaces {
 		internalInterfaceMap := make(map[string]string)
