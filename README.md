@@ -8,7 +8,7 @@
 - Tutorials: [learn.hashicorp.com](https://learn.hashicorp.com/terraform?track=getting-started#getting-started)
 - Mailing: [support@vngcloud.vn](mailto:support@vngcloud.vn)
 
-The Terraform VNG Cloud provider is a plugin for Terraform that allows for the full lifecycle management of VNG Cloud resources.
+The Terraform VNG Cloud provider is a plugin for Terraform that allows for the full lifecycle management of VNG Cloud resources
 
 ## Quick Starts
 

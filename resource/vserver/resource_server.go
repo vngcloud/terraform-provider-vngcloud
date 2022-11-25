@@ -272,7 +272,6 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("subnet_id", server.InternalInterfaces[0].SubnetUuid)
 	d.Set("encryption_volume", server.EncryptionVolume)
 	d.Set("flavor_id", server.Flavor.FlavorId)
-	d.Set("image_id", server.Image.Id)
 	d.Set("os_info", server.Image.ImageVersion)
 	d.Set("ssh_key_name", server.SshKeyName)
 	d.Set("server_group_id", server.ServerGroupId)

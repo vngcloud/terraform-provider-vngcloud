@@ -15,7 +15,7 @@ description: |-
 resource "vngcloud_vserver_volume_attach" "attach_volume" {
     project_id = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     volume_id = "vol-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-    instance_id = "ins-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    server_id = "ins-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 }
 ```
 
@@ -23,7 +23,7 @@ resource "vngcloud_vserver_volume_attach" "attach_volume" {
 
 The following arguments are supported:
 
-- **instance_id** (String) ID of server acttach.
+- **server_id** (String) ID of server acttach.
 - **project_id** (String) ID of Project.
 - **volume_id** (String) ID of volume acttach.
 
