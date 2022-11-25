@@ -166,7 +166,6 @@ func ResourceServer() *schema.Resource {
 				ForceNew: true,
 			},
 			"base64_encode": {
-				Default:  false,
 				Type:     schema.TypeBool,
 				Optional: true,
 				ForceNew: true,
@@ -202,6 +201,11 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if _, ok := d.GetOk("root_disk_type_id"); !ok {
 		return fmt.Errorf(`The argument "root_disk_type_id" is required, but no definition was found.`)
+	}
+	if _, ok := d.GetOk("user_data"); ok {
+		if _, ok := d.GetOk("base64_encode"); !ok {
+			return fmt.Errorf(`The argument "user data" is set, the argument "base64 encode" is required, but no definition was found.`)
+		}
 	}
 	server := vserver.CreateServerRequest{
 		AttachFloating:         d.Get("attach_floating").(bool),
