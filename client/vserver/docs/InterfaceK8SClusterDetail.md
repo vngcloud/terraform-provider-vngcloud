@@ -1,0 +1,52 @@
+# InterfaceK8SClusterDetail
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**AclId** | **string** |  | [optional] [default to null]
+**AutoHealingEnabled** | **bool** |  | [optional] [default to null]
+**AutoMonitoringEnabled** | **bool** |  | [optional] [default to null]
+**AutoScalingEnabled** | **bool** |  | [optional] [default to null]
+**BackendStatus** | **string** |  | [optional] [default to null]
+**BootVolumeSize** | **int32** |  | [optional] [default to null]
+**BootVolumeTypeId** | **string** |  | [optional] [default to null]
+**CalicoCidr** | **string** |  | [optional] [default to null]
+**ClusterId** | **int32** |  | [optional] [default to null]
+**CreatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
+**DeletedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
+**Description** | **string** |  | [optional] [default to null]
+**DockerVolumeSize** | **int32** |  | [optional] [default to null]
+**DockerVolumeTypeId** | **string** |  | [optional] [default to null]
+**EnabledLb** | **bool** |  | [optional] [default to null]
+**Endpoint** | **string** |  | [optional] [default to null]
+**EtcdVolumeSize** | **int32** |  | [optional] [default to null]
+**EtcdVolumeTypeId** | **string** |  | [optional] [default to null]
+**Id** | **int32** |  | [optional] [default to null]
+**IngressControllerEnabled** | **bool** |  | [optional] [default to null]
+**K8sNetworkType** | **string** |  | [optional] [default to null]
+**K8sNetworkTypeId** | **string** |  | [optional] [default to null]
+**K8sVersion** | **string** |  | [optional] [default to null]
+**K8sVersionId** | **string** |  | [optional] [default to null]
+**MasterCount** | **int32** |  | [optional] [default to null]
+**MasterFlavorId** | **string** |  | [optional] [default to null]
+**MasterFlavorName** | **string** |  | [optional] [default to null]
+**MasterInstanceTypeId** | **string** |  | [optional] [default to null]
+**MaxNodeCount** | **int32** |  | [optional] [default to null]
+**MinNodeCount** | **int32** |  | [optional] [default to null]
+**Name** | **string** |  | [optional] [default to null]
+**NetworkId** | **string** |  | [optional] [default to null]
+**NodeCount** | **int32** |  | [optional] [default to null]
+**NodeFlavorId** | **string** |  | [optional] [default to null]
+**NodeFlavorName** | **string** |  | [optional] [default to null]
+**NodeInstanceTypeId** | **string** |  | [optional] [default to null]
+**ProjectId** | **string** |  | [optional] [default to null]
+**SshKeyId** | **string** |  | [optional] [default to null]
+**SshKeyName** | **string** |  | [optional] [default to null]
+**Status** | **string** |  | [optional] [default to null]
+**SubnetId** | **string** |  | [optional] [default to null]
+**UpdatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
+**Uuid** | **string** |  | [optional] [default to null]
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

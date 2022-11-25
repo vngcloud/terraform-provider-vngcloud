@@ -38,19 +38,17 @@ func dataSourceServerGroupPolicyRead(d *schema.ResourceData, m interface{}) erro
 	name := d.Get("name").(string)
 
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ServerGroupRestControllerApi.ListServerGroupPolicyUsingGET(context.TODO(), id)
-	if err != nil {
-		return err
+	resp, httpResponse, _ := cli.VserverClient.ServerGroupRestControllerApi.ListServerGroupPolicyUsingGET1(context.TODO(), id)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	for _, policy := range resp.ServerGroupPolicies {
+	for _, policy := range resp.Data {
 		if policy.Name == name {
 			d.SetId(policy.Uuid)
 			d.Set("status", policy.Status)

@@ -52,6 +52,7 @@ The following arguments are supported:
 - **ssh_key** (String, Optional) ID of SSH key
 - **user_name** (String, Optional) Name of user
 - **user_password** (String, Optional) Password of user
+- **server_group** (String, Optional) ID of Server Group.
   
 ## Attributes Reference
 

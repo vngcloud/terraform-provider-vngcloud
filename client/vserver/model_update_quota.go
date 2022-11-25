@@ -10,6 +10,6 @@
 package vserver
 
 type UpdateQuota struct {
-	ProjectId int64 `json:"projectId,omitempty"`
-	Quota map[string]interface{} `json:"quota,omitempty"`
+	ProjectId int64                  `json:"projectId,omitempty"`
+	Quota     map[string]interface{} `json:"quota,omitempty"`
 }

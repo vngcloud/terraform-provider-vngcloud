@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 
@@ -59,54 +60,48 @@ func ResourceNetwork() *schema.Resource {
 }
 func resourceNetworkStateRefreshFunc(cli *client.Client, networkID string, projectID string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		resp, _, err := cli.VserverClient.NetworkRestControllerApi.GetNetworkUsingGET(context.TODO(), networkID, projectID)
-		if err != nil {
-			return nil, "", fmt.Errorf("Error on network State Refresh: %s", err)
+		resp, httpResponse, _ := cli.VserverClient.NetworkRestControllerApi.GetNetworkUsingGET1(context.TODO(), networkID, projectID)
+		if httpResponse.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf("Error describing instance: %s", GetResponseBody(httpResponse))
 		}
 		respJSON, _ := json.Marshal(resp)
 		log.Printf("-------------------------------------\n")
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
-		if !resp.Success {
-			return nil, "", fmt.Errorf("Error describing instance: %s", resp.ErrorMsg)
-		}
-		network := resp.Networks[0]
+		network := resp
 		return network, network.Status, nil
 	}
 }
 func resourceNetworkCreate(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	network := vserver.CreateNetworkRequest{
-		Name:                d.Get("name").(string),
-		Cidr:                d.Get("cidr").(string),
-		RouteTableDefaultId: d.Get("route_table_default_id").(string),
+		Name: d.Get("name").(string),
+		Cidr: d.Get("cidr").(string),
 	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.NetworkRestControllerApi.CreateNetworkUsingPOST(context.TODO(), network, projectID)
-	if err != nil {
-		return err
+	resp, httpResponse, err := cli.VserverClient.NetworkRestControllerApi.CreateNetworkUsingPOST1(context.TODO(), network, projectID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
 	stateConf := &resource.StateChangeConf{
 		Pending:    networkCreating,
 		Target:     networkCreated,
-		Refresh:    resourceNetworkStateRefreshFunc(cli, resp.Networks[0].Id, projectID),
+		Refresh:    resourceNetworkStateRefreshFunc(cli, resp.Data.Id, projectID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
 	_, err = stateConf.WaitForState()
 	if err != nil {
-		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", resp.Networks[0].Id, err)
+		return fmt.Errorf("Error waiting for create network (%s) : %s", resp.Data.Id, err)
 	}
-	d.SetId(resp.Networks[0].Id)
+	d.SetId(resp.Data.Id)
 	return resourceNetworkRead(d, m)
 }
 
@@ -114,24 +109,18 @@ func resourceNetworkRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	networkID := d.Id()
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.NetworkRestControllerApi.GetNetworkUsingGET(context.TODO(), networkID, projectID)
-	if err != nil {
-		return err
+	resp, httpResponse, _ := cli.VserverClient.NetworkRestControllerApi.GetNetworkUsingGET1(context.TODO(), networkID, projectID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	if len(resp.Networks) == 0 {
-		d.SetId("")
-		return nil
-	}
-	network := resp.Networks[0]
-	d.Set("name", network.Name)
+	network := resp
+	d.Set("name", network.DisplayName)
 	d.Set("cidr", network.Cidr)
 	return nil
 }
@@ -142,21 +131,18 @@ func resourceNetworkUpdate(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
 	if d.HasChange("name") {
 		networkUpdate := vserver.UpdateNetworkRequest{
-			Name:      d.Get("name").(string),
-			NetworkId: networkID,
+			Name: d.Get("name").(string),
 		}
-		resp, _, err := cli.VserverClient.NetworkRestControllerApi.EditNetworkUsingPUT(context.TODO(), projectID, networkUpdate)
-		if err != nil {
-			return err
+		resp, httpResponse, _ := cli.VserverClient.NetworkRestControllerApi.EditNetworkUsingPATCH(context.TODO(), networkID, projectID, networkUpdate)
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+			return errorResponse
 		}
 		respJSON, _ := json.Marshal(resp)
 		log.Printf("-------------------------------------\n")
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
-		if !resp.Success {
-			err := fmt.Errorf(resp.ErrorMsg)
-			return err
-		}
 		return resourceNetworkRead(d, m)
 	}
 	return nil
@@ -164,35 +150,44 @@ func resourceNetworkUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceNetworkDelete(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
-	deleteNetwork := vserver.DeleteNetworkRequest{
-		NetworkId: d.Id(),
-	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.NetworkRestControllerApi.DeleteNetworkUsingDELETE(context.TODO(), deleteNetwork, projectID)
+	httpResponse, _ := cli.VserverClient.NetworkRestControllerApi.DeleteNetworkUsingDELETE1(context.TODO(), d.Id(), projectID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
+	}
+	stateConf := &resource.StateChangeConf{
+		Pending:    networkDeleting,
+		Target:     networkDeleted,
+		Refresh:    resourceNetworkDeleteStateRefreshFunc(cli, d.Id(), projectID),
+		Timeout:    d.Timeout(schema.TimeoutCreate),
+		Delay:      10 * time.Second,
+		MinTimeout: 1 * time.Second,
+	}
+	_, err := stateConf.WaitForState()
 	if err != nil {
-		return err
+		return fmt.Errorf("Error waiting for delete network (%s) : %s", d.Id(), err)
 	}
-	respJSON, _ := json.Marshal(resp)
-	log.Printf("-------------------------------------\n")
-	log.Printf("%s\n", string(respJSON))
-	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	return resource.Retry(d.Timeout(schema.TimeoutDelete), func() *resource.RetryError {
-		resp, _, err := cli.VserverClient.NetworkRestControllerApi.GetNetworkUsingGET(context.TODO(), d.Id(), projectID)
+	d.SetId("")
+	return nil
+}
 
-		if err != nil {
-			return resource.NonRetryableError(fmt.Errorf("Error describing instance: %s", err))
+func resourceNetworkDeleteStateRefreshFunc(cli *client.Client, networkID string, projectID string) resource.StateRefreshFunc {
+	return func() (interface{}, string, error) {
+		resp, httpResponse, _ := cli.VserverClient.NetworkRestControllerApi.GetNetworkUsingGET1(context.TODO(), networkID, projectID)
+		if httpResponse.StatusCode != http.StatusOK {
+			if httpResponse.StatusCode == http.StatusNotFound {
+				return vserver.Server{Status: "DELETED"}, "DELETED", nil
+			} else {
+				return nil, "", fmt.Errorf("Error describing instance: %s", GetResponseBody(httpResponse))
+			}
 		}
-		if !resp.Success {
-			return resource.NonRetryableError(fmt.Errorf("Error describing instance: %s", resp.ErrorMsg))
-		}
-		if len(resp.Networks) == 0 {
-			d.SetId("")
-			return nil
-		}
-		return resource.RetryableError(fmt.Errorf("Expected instance to be created but was in state %s", resp.Networks[0].Status))
-	})
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+		network := resp
+		return network, network.Status, nil
+	}
 }

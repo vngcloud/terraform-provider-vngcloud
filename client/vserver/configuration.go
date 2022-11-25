@@ -63,7 +63,7 @@ func NewConfiguration(BasePath string, HTTPClient *http.Client) *Configuration {
 		BasePath:      BasePath,
 		DefaultHeader: make(map[string]string),
 		HTTPClient:    HTTPClient,
-		UserAgent:     "Swagger-Codegen/1.0.0/go",
+		UserAgent:     "terraform-v0.0.15",
 	}
 	return cfg
 }

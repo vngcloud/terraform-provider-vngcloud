@@ -63,43 +63,38 @@ func resourceServerGroupCreate(d *schema.ResourceData, m interface{}) error {
 		PolicyId:    d.Get("policy_id").(string),
 	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ServerGroupRestControllerApi.CreateServerGroupUsingPOST(context.TODO(), createServerGroupRequest, projectID)
-	if err != nil {
-		return err
+	resp, httpResponse, _ := cli.VserverClient.ServerGroupRestControllerApi.CreateServerGroupUsingPOST1(context.TODO(), createServerGroupRequest, projectID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	d.SetId(resp.ServerGroups[0].Uuid)
+	d.SetId(resp.Data.Uuid)
 	return resourceServerGroupRead(d, m)
 }
 
 func resourceServerGroupUpdate(d *schema.ResourceData, m interface{}) error {
 	if d.HasChange("description") {
 		projectID := d.Get("project_id").(string)
-		updateServerGroupRequest := vserver.UpdateServerGroupRequest{
-			Description:   d.Get("description").(string),
-			ServerGroupId: d.Id(),
+		updateServerGroupRequest := vserver.UpdateServerGroupRequestV2{
+			Description: d.Get("description").(string),
 		}
 		cli := m.(*client.Client)
-		resp, _, err := cli.VserverClient.ServerGroupRestControllerApi.UpdateServerGroupUsingPUT(context.TODO(), projectID, updateServerGroupRequest)
-		if err != nil {
-			return err
+		resp, httpResponse, _ := cli.VserverClient.ServerGroupRestControllerApi.UpdateServerGroupUsingPUT1(context.TODO(), projectID, d.Id(), updateServerGroupRequest)
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+			return errorResponse
 		}
 		respJSON, _ := json.Marshal(resp)
 		log.Printf("-------------------------------------\n")
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
-		if !resp.Success {
-			err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-			return err
-		}
-		d.SetId(resp.ServerGroups[0].Uuid)
+		d.SetId(resp.Data.Uuid)
 	}
 	return resourceServerGroupRead(d, m)
 }
@@ -108,23 +103,17 @@ func resourceServerGroupRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	serverGroupId := d.Id()
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ServerGroupRestControllerApi.GetServerGroupUsingGET(context.TODO(), projectID, serverGroupId)
-	if err != nil {
-		return err
+	resp, httpResponse, _ := cli.VserverClient.ServerGroupRestControllerApi.GetServerGroupUsingGET1(context.TODO(), projectID, serverGroupId)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	if len(resp.ServerGroups) == 0 {
-		d.SetId("")
-		return nil
-	}
-	serverGroup := resp.ServerGroups[0]
+	serverGroup := resp.Data
 	d.Set("name", serverGroup.Name)
 	d.Set("description", serverGroup.Description)
 	d.Set("policy_id", serverGroup.PolicyId)
@@ -133,21 +122,13 @@ func resourceServerGroupRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceServerGroupDelete(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
-	deleteServerGroup := vserver.DeleteServerGroupRequest{
-		ServerGroupId: d.Id(),
-	}
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ServerGroupRestControllerApi.DeleteServerGroupUsingDELETE(context.TODO(), deleteServerGroup, projectID)
-	if err != nil {
-		return err
+	httpResponse, _ := cli.VserverClient.ServerGroupRestControllerApi.DeleteServerGroupUsingDELETE1(context.TODO(), projectID, d.Id())
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
-	respJSON, _ := json.Marshal(resp)
-	log.Printf("-------------------------------------\n")
-	log.Printf("%s\n", string(respJSON))
-	log.Printf("-------------------------------------\n")
-	if !resp.Success {
-		err := fmt.Errorf("request fail with errMsg=%s", resp.ErrorMsg)
-		return err
-	}
-	return resourceServerGroupRead(d, m)
+	d.SetId("")
+	return nil
 }

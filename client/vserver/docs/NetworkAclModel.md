@@ -5,7 +5,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **AclPolicyId** | **string** |  | [optional] [default to null]
 **AclPolicyRules** | [**[]AclPolicyRule**](AclPolicyRule.md) |  | [optional] [default to null]
-**CreatedAt** | [***Timestamp**](Timestamp.md) |  | [optional] [default to null]
+**CreatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
 **DefaultAcl** | **bool** |  | [optional] [default to null]
 **InterfaceNetworkUuid** | **string** |  | [optional] [default to null]
 **Name** | **string** |  | [optional] [default to null]

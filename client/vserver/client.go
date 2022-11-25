@@ -51,9 +51,11 @@ type APIClient struct {
 
 	ImageRestControllerApi *ImageRestControllerApiService
 
+	LoadBalancerRestControllerApi *LoadBalancerRestControllerApiService
+
 	NetworkAclRestControllerApi *NetworkAclRestControllerApiService
 
-	NetworkRestControllerApi *NetworkRestControllerApiService
+	NetworkRestControllerApi *NetworkRestControllerV2ApiService
 
 	ProjectRestControllerApi *ProjectRestControllerApiService
 
@@ -61,19 +63,19 @@ type APIClient struct {
 
 	RouteTableControllerApi *RouteTableControllerApiService
 
-	SecgroupRestControllerApi *SecgroupRestControllerApiService
+	SecgroupRestControllerApi *SecgroupRestControllerV2ApiService
 
-	SecgroupRuleRestControllerApi *SecgroupRuleRestControllerApiService
+	SecgroupRuleRestControllerApi *SecgroupRuleRestControllerV2ApiService
 
-	ServerGroupRestControllerApi *ServerGroupRestControllerApiService
+	ServerGroupRestControllerApi *ServerGroupRestControllerV2ApiService
 
-	ServerRestControllerApi *ServerRestControllerApiService
+	ServerRestControllerApi *ServerRestControllerV2ApiService
 
-	SshKeyRestControllerApi *SshKeyRestControllerApiService
+	SshKeyRestControllerApi *SshKeyRestControllerV2ApiService
 
-	SubnetRestControllerApi *SubnetRestControllerApiService
+	SubnetRestControllerApi *SubnetRestControllerV2ApiService
 
-	VolumeRestControllerApi *VolumeRestControllerApiService
+	VolumeRestControllerApi *VolumeRestControllerV2ApiService
 
 	VolumeTypeRestControllerApi *VolumeTypeRestControllerApiService
 
@@ -99,18 +101,19 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.FlavorRestControllerApi = (*FlavorRestControllerApiService)(&c.common)
 	c.FlavorZoneRestControllerApi = (*FlavorZoneRestControllerApiService)(&c.common)
 	c.ImageRestControllerApi = (*ImageRestControllerApiService)(&c.common)
+	c.LoadBalancerRestControllerApi = (*LoadBalancerRestControllerApiService)(&c.common)
 	c.NetworkAclRestControllerApi = (*NetworkAclRestControllerApiService)(&c.common)
-	c.NetworkRestControllerApi = (*NetworkRestControllerApiService)(&c.common)
+	c.NetworkRestControllerApi = (*NetworkRestControllerV2ApiService)(&c.common)
 	c.ProjectRestControllerApi = (*ProjectRestControllerApiService)(&c.common)
 	c.QuotaRestControllerApi = (*QuotaRestControllerApiService)(&c.common)
 	c.RouteTableControllerApi = (*RouteTableControllerApiService)(&c.common)
-	c.SecgroupRestControllerApi = (*SecgroupRestControllerApiService)(&c.common)
-	c.SecgroupRuleRestControllerApi = (*SecgroupRuleRestControllerApiService)(&c.common)
-	c.ServerGroupRestControllerApi = (*ServerGroupRestControllerApiService)(&c.common)
-	c.ServerRestControllerApi = (*ServerRestControllerApiService)(&c.common)
-	c.SshKeyRestControllerApi = (*SshKeyRestControllerApiService)(&c.common)
-	c.SubnetRestControllerApi = (*SubnetRestControllerApiService)(&c.common)
-	c.VolumeRestControllerApi = (*VolumeRestControllerApiService)(&c.common)
+	c.SecgroupRestControllerApi = (*SecgroupRestControllerV2ApiService)(&c.common)
+	c.SecgroupRuleRestControllerApi = (*SecgroupRuleRestControllerV2ApiService)(&c.common)
+	c.ServerGroupRestControllerApi = (*ServerGroupRestControllerV2ApiService)(&c.common)
+	c.ServerRestControllerApi = (*ServerRestControllerV2ApiService)(&c.common)
+	c.SshKeyRestControllerApi = (*SshKeyRestControllerV2ApiService)(&c.common)
+	c.SubnetRestControllerApi = (*SubnetRestControllerV2ApiService)(&c.common)
+	c.VolumeRestControllerApi = (*VolumeRestControllerV2ApiService)(&c.common)
 	c.VolumeTypeRestControllerApi = (*VolumeTypeRestControllerApiService)(&c.common)
 	c.VolumeTypeZoneRestControllerApi = (*VolumeTypeZoneRestControllerApiService)(&c.common)
 
@@ -358,17 +361,17 @@ func (c *APIClient) prepareRequest(
 }
 
 func (c *APIClient) decode(v interface{}, b []byte, contentType string) (err error) {
-		if strings.Contains(contentType, "application/xml") {
-			if err = xml.Unmarshal(b, v); err != nil {
-				return err
-			}
-			return nil
-		} else if strings.Contains(contentType, "application/json") {
-			if err = json.Unmarshal(b, v); err != nil {
-				return err
-			}
-			return nil
+	if strings.Contains(contentType, "application/xml") {
+		if err = xml.Unmarshal(b, v); err != nil {
+			return err
 		}
+		return nil
+	} else if strings.Contains(contentType, "application/json") {
+		if err = json.Unmarshal(b, v); err != nil {
+			return err
+		}
+		return nil
+	}
 	return errors.New("undefined response type")
 }
 

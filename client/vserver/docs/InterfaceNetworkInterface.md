@@ -6,6 +6,7 @@ Name | Type | Description | Notes
 **CreatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
 **FixedIp** | **string** |  | [optional] [default to null]
 **FloatingIp** | **string** |  | [optional] [default to null]
+**FloatingIpId** | **string** |  | [optional] [default to null]
 **InterfaceType** | **string** |  | [optional] [default to null]
 **Mac** | **string** |  | [optional] [default to null]
 **NetworkUuid** | **string** |  | [optional] [default to null]
