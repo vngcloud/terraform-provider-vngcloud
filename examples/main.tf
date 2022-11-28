@@ -2,16 +2,16 @@ terraform {
   required_providers {
     vngcloud = {
       source  = "vngcloud/vngcloud"
-      version = "0.0.14"
+      version = "0.0.17"
     }
   }
 }
 
 provider "vngcloud" {
-  token_url     = "https://monitoring-agent.vngcloud.vn/v1/intake/oauth2/token"
+  token_url = "https://iamapis.vngcloud.vn/accounts-api/v2/auth/token"
   client_id     = var.client_id
   client_secret = var.client_secret
-  vserver_base_url      = "https://vserverapi.vngcloud.vn/vserver-gateway"
+  vserver_base_url = "https://hcm-3.api.vngcloud.vn/vserver-gateway"
 }
 
 data "vngcloud_vserver_volume_type_zone" "volume_type_zone" {
