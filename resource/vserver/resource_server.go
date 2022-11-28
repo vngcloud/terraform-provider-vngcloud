@@ -165,7 +165,7 @@ func ResourceServer() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
-			"base64_encode": {
+			"user_data_base64_encode": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				ForceNew: true,
@@ -203,8 +203,9 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf(`The argument "root_disk_type_id" is required, but no definition was found.`)
 	}
 	if _, ok := d.GetOk("user_data"); ok {
-		if _, ok := d.GetOk("base64_encode"); !ok {
-			return fmt.Errorf(`The argument "user data" is set, the argument "base64 encode" is required, but no definition was found.`)
+		_, okEncode := d.GetOkExists("user_data_base64_encode")
+		if !okEncode {
+			return fmt.Errorf(`The argument "user data" is set, the argument "user data base64 encode" is required, but no definition was found.`)
 		}
 	}
 	server := vserver.CreateServerRequest{
@@ -226,7 +227,7 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		UserName:               d.Get("user_name").(string),
 		UserPassword:           d.Get("user_password").(string),
 		UserData:               d.Get("user_data").(string),
-		UserDataBase64Encoded:  d.Get("base64_encode").(bool),
+		UserDataBase64Encoded:  d.Get("user_data_base64_encode").(bool),
 	}
 	cli := m.(*client.Client)
 	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.CreateServerUsingPOST1(context.TODO(), server, projectID)
