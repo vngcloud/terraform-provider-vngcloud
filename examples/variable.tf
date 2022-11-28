@@ -20,7 +20,7 @@ variable "image_id" {
 }
 variable "volume_type_name" {
   type    = string
-  default = "SSD-IOPS3000"
+  default = "3000"
 }
 variable "root_disk_size" {
   type    = number
