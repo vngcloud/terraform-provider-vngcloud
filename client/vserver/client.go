@@ -45,21 +45,33 @@ type APIClient struct {
 
 	// API Services
 
+	AttachmentControllerApi *AttachmentControllerApiService
+
+	BandwidthControllerApi *BandwidthControllerApiService
+
+	ElasticIpRestControllerV2Api *ElasticIpRestControllerV2ApiService
+
 	FlavorRestControllerApi *FlavorRestControllerApiService
 
 	FlavorZoneRestControllerApi *FlavorZoneRestControllerApiService
 
 	ImageRestControllerApi *ImageRestControllerApiService
 
+	K8SClusterRestControllerApi *K8SClusterRestControllerV2ApiService
+
 	LoadBalancerRestControllerApi *LoadBalancerRestControllerApiService
 
 	NetworkAclRestControllerApi *NetworkAclRestControllerApiService
+
+	NetworkInterfaceElasticRestControllerApi *NetworkInterfaceElasticRestControllerV2ApiService
 
 	NetworkRestControllerApi *NetworkRestControllerV2ApiService
 
 	ProjectRestControllerApi *ProjectRestControllerApiService
 
-	QuotaRestControllerApi *QuotaRestControllerApiService
+	ProtocolRestControllerApi *ProtocolRestControllerV2ApiService
+
+	QuotaRestControllerApi *QuotaRestControllerV2ApiService
 
 	RouteTableControllerApi *RouteTableControllerApiService
 
@@ -75,11 +87,19 @@ type APIClient struct {
 
 	SubnetRestControllerApi *SubnetRestControllerV2ApiService
 
+	UserImageRestControllerV2Api *UserImageRestControllerV2ApiService
+
+	VirtualIpAddressRestControllerV2Api *VirtualIpAddressRestControllerV2ApiService
+
 	VolumeRestControllerApi *VolumeRestControllerV2ApiService
 
 	VolumeTypeRestControllerApi *VolumeTypeRestControllerApiService
 
 	VolumeTypeZoneRestControllerApi *VolumeTypeZoneRestControllerApiService
+
+	VpcExternalCallbackControllerApi *VpcExternalCallbackControllerApiService
+
+	WanIpRestControllerApi *WanIpRestControllerV2ApiService
 }
 
 type service struct {
@@ -98,14 +118,20 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.common.client = c
 
 	// API Services
+	c.AttachmentControllerApi = (*AttachmentControllerApiService)(&c.common)
+	c.BandwidthControllerApi = (*BandwidthControllerApiService)(&c.common)
+	c.ElasticIpRestControllerV2Api = (*ElasticIpRestControllerV2ApiService)(&c.common)
 	c.FlavorRestControllerApi = (*FlavorRestControllerApiService)(&c.common)
 	c.FlavorZoneRestControllerApi = (*FlavorZoneRestControllerApiService)(&c.common)
 	c.ImageRestControllerApi = (*ImageRestControllerApiService)(&c.common)
+	c.K8SClusterRestControllerApi = (*K8SClusterRestControllerV2ApiService)(&c.common)
 	c.LoadBalancerRestControllerApi = (*LoadBalancerRestControllerApiService)(&c.common)
 	c.NetworkAclRestControllerApi = (*NetworkAclRestControllerApiService)(&c.common)
+	c.NetworkInterfaceElasticRestControllerApi = (*NetworkInterfaceElasticRestControllerV2ApiService)(&c.common)
 	c.NetworkRestControllerApi = (*NetworkRestControllerV2ApiService)(&c.common)
 	c.ProjectRestControllerApi = (*ProjectRestControllerApiService)(&c.common)
-	c.QuotaRestControllerApi = (*QuotaRestControllerApiService)(&c.common)
+	c.ProtocolRestControllerApi = (*ProtocolRestControllerV2ApiService)(&c.common)
+	c.QuotaRestControllerApi = (*QuotaRestControllerV2ApiService)(&c.common)
 	c.RouteTableControllerApi = (*RouteTableControllerApiService)(&c.common)
 	c.SecgroupRestControllerApi = (*SecgroupRestControllerV2ApiService)(&c.common)
 	c.SecgroupRuleRestControllerApi = (*SecgroupRuleRestControllerV2ApiService)(&c.common)
@@ -116,6 +142,8 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.VolumeRestControllerApi = (*VolumeRestControllerV2ApiService)(&c.common)
 	c.VolumeTypeRestControllerApi = (*VolumeTypeRestControllerApiService)(&c.common)
 	c.VolumeTypeZoneRestControllerApi = (*VolumeTypeZoneRestControllerApiService)(&c.common)
+	c.VpcExternalCallbackControllerApi = (*VpcExternalCallbackControllerApiService)(&c.common)
+	c.WanIpRestControllerApi = (*WanIpRestControllerV2ApiService)(&c.common)
 
 	return c
 }

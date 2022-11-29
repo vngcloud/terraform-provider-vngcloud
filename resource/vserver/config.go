@@ -45,4 +45,8 @@ var (
 	volumeDeleted          = []string{"DELETED"}
 	serverChangingSecGroup = []string{"CHANGING-SECURITY-GROUP"}
 	serverChangedSecGroup  = []string{"ACTIVE", "STOPPED"}
+	k8sClusterCreating     = []string{"CREATING", "CREATING-BILLING"}
+	k8sClusterCreated      = []string{"ACTIVE"}
+	k8sClusterDeleting     = []string{"DELETING"}
+	k8sClusterDeleted      = []string{"DELETED"}
 )
