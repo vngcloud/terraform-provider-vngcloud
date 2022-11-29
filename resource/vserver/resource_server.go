@@ -165,8 +165,7 @@ func ResourceServer() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
-			"base64_encode": {
-				Default:  false,
+			"user_data_base64_encode": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				ForceNew: true,
@@ -203,6 +202,12 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 	if _, ok := d.GetOk("root_disk_type_id"); !ok {
 		return fmt.Errorf(`The argument "root_disk_type_id" is required, but no definition was found.`)
 	}
+	if _, ok := d.GetOk("user_data"); ok {
+		_, okEncode := d.GetOkExists("user_data_base64_encode")
+		if !okEncode {
+			return fmt.Errorf(`The argument "user data" is set, the argument "user data base64 encode" is required, but no definition was found.`)
+		}
+	}
 	server := vserver.CreateServerRequest{
 		AttachFloating:         d.Get("attach_floating").(bool),
 		EncryptionVolume:       d.Get("encryption_volume").(bool),
@@ -222,7 +227,7 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		UserName:               d.Get("user_name").(string),
 		UserPassword:           d.Get("user_password").(string),
 		UserData:               d.Get("user_data").(string),
-		UserDataBase64Encoded:  d.Get("base64_encode").(bool),
+		UserDataBase64Encoded:  d.Get("user_data_base64_encode").(bool),
 	}
 	cli := m.(*client.Client)
 	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.CreateServerUsingPOST1(context.TODO(), server, projectID)
@@ -276,15 +281,7 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("os_info", server.Image.ImageVersion)
 	d.Set("ssh_key_name", server.SshKeyName)
 	d.Set("server_group_id", server.ServerGroupId)
-	rootDiskId := d.Get("root_disk_id").(string)
-	if rootDiskId == "" {
-		respVolume, httpResponseVolume, _ := cli.VserverClient.VolumeRestControllerApi.GetBootVolumeByInstanceIdUsingGET1(context.TODO(), projectID, resp.Data.Uuid)
-		if CheckErrorResponse(httpResponseVolume) {
-			err := fmt.Errorf("request fail with errMsg : %s", GetResponseBody(httpResponse))
-			return err
-		}
-		d.Set("root_disk_id", respVolume.Volumes[0].Uuid)
-	}
+	d.Set("root_disk_id", server.BootVolumeId)
 	var internalInterfaces []map[string]string
 	for _, internalInterface := range server.InternalInterfaces {
 		internalInterfaceMap := make(map[string]string)
