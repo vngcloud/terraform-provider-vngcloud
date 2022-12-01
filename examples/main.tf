@@ -65,7 +65,6 @@ data "template_cloudinit_config" "user_data" {
     content_type = "text/x-shellscript"
     content      = "${file("init/install-apache.sh")}"
   }
-
 }
 
 resource "vngcloud_vserver_server" "server" {
