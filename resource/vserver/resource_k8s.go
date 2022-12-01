@@ -226,41 +226,20 @@ func ResourceK8s() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//"master_secgroup_default": {
-			//	Computed: true,
-			//	Type:     schema.TypeMap,
-			//	Elem: map[string]*schema.Schema{
-			//		"name": {
-			//			Type: schema.TypeString,
-			//		},
-			//		"rules": {
-			//			Type: schema.TypeList,
-			//			Elem: map[string]*schema.Schema{
-			//				"direction": {
-			//					Type: schema.TypeString,
-			//				},
-			//				"protocol": {
-			//					Type: schema.TypeString,
-			//				},
-			//				"ethertype": {
-			//					Type: schema.TypeString,
-			//				},
-			//				"port_range_max": {
-			//					Type: schema.TypeInt,
-			//				},
-			//				"port_range_min": {
-			//					Type: schema.TypeInt,
-			//				},
-			//				"remote_ip_prefix": {
-			//					Type: schema.TypeString,
-			//				},
-			//				"remote_group_name": {
-			//					Type: schema.TypeString,
-			//				},
-			//			},
-			//		},
-			//	},
-			//},
+			"master_secgroup_id_list": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"minion_secgroup_id_list": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -285,10 +264,6 @@ func resourceK8sCreate(d *schema.ResourceData, m interface{}) error {
 	projectId := d.Get("project_id").(string)
 	cli := m.(*client.Client)
 	var secGroupIdList []string
-	//for _, s := range d.Get("security_group").([]string) {
-	//	secGroupIdList = append(secGroupIdList, s)
-	//}
-	//nodeGroupRequestModel := make([]vserver.NodeGroupRequestModel)
 
 	cluster := vserver.CreateClusterRequest{
 		AutoHealingEnabled:       d.Get("auto_healing").(bool),
@@ -352,6 +327,7 @@ func resourceK8sCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(resp.Data.Uuid)
+
 	return resourceK8sRead(d, m)
 }
 
@@ -386,65 +362,17 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("auto_monitoring", cluster.AutoMonitoringEnabled)
 	d.Set("auto_scaling", cluster.AutoScalingEnabled)
 	d.Set("end_point", cluster.Endpoint)
-	d.set("")
+	d.Set("node_group_default_id", cluster.NodegroupDefaultId)
+	d.Set("master_secgroup_id_list", cluster.MasterClusterSecGroupIdList)
+	d.Set("minion_secgroup_id_list", cluster.MinionClusterSecGroupIdList)
 	return nil
 }
 
 func resourceK8sUpdate(d *schema.ResourceData, m interface{}) error {
 	if d.HasChange("node_count") {
-		var clusterNodeGroupDefaultUUID string
-		projectID := d.Get("project_id").(string)
-		cli := m.(*client.Client)
-		resp, httpResponse, _ := cli.VserverClient.K8SClusterRestControllerApi.ListClusterNodeGroupUsingGET(context.TODO(), d.Id(), projectID)
-		if CheckErrorResponse(httpResponse) {
-			responseBody := GetResponseBody(httpResponse)
-			errorResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
-			return errorResponse
-		}
-
-		respJSON, _ := json.Marshal(resp)
-		log.Printf("-------------------------------------\n")
-		log.Printf("%s\n", string(respJSON))
-		log.Printf("-------------------------------------\n")
-
-		clusterNodeGroupList := resp
-
-		for _, n := range clusterNodeGroupList {
-			if n.NodeGroupDefault {
-				clusterNodeGroupDefaultUUID = n.Uuid
-			}
-		}
-
-		o, n := d.GetChange("node_count")
-		scaleMinionRequest := vserver.ScaleMinionBackendRequest{
-			ClusterId:   d.Id(),
-			NodeCount:   n.(int32),
-			NodeGroupId: clusterNodeGroupDefaultUUID,
-		}
-
-		scaleMinionResp, scaleMinionHttpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.ScaleMinionUsingPOST(context.TODO(), d.Id(), projectID, scaleMinionRequest)
-		if CheckErrorResponse(scaleMinionHttpResponse) {
-			responseBody := GetResponseBody(scaleMinionHttpResponse)
-			errorResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
-			d.Set("node_count", o.(int))
-			return errorResponse
-		}
-		scaleMinionRespJSON, _ := json.Marshal(scaleMinionResp)
-		log.Printf("-------------------------------------\n")
-		log.Printf("%s\n", string(scaleMinionRespJSON))
-		log.Printf("-------------------------------------\n")
-		stateConf := &resource.StateChangeConf{
-			Pending:    clusterNodeGroupScaling,
-			Target:     clusterNodeGroupScaled,
-			Timeout:    d.Timeout(schema.TimeoutCreate),
-			Delay:      10 * time.Second,
-			MinTimeout: 1 * time.Second,
-		}
-		_, err = stateConf.WaitForState()
-		if err != nil {
-			return fmt.Errorf("error waiting for instance %s to be resizing: %s", clusterNodeGroupDefaultUUID, err)
-		}
-		return resourceK8sCreate(d, m)
+		nodeGroupDefaultId := d.Get("node_group_default_id").(string)
+		clusterId := d.Id()
+		return ResourceK8sScalingNodeGroup(d, m, nodeGroupDefaultId, clusterId)
 	}
 
 	return resourceK8sRead(d, m)
@@ -504,7 +432,7 @@ func resourceK8sDeleteStateRefreshFunc(cli *client.Client, clusterId string, pro
 			if httpResponse.StatusCode == http.StatusNotFound {
 				return vserver.ClusterDto{Status: "DELETED"}, "DELETED", nil
 			} else {
-				return nil, "", fmt.Errorf("error describing instanceL: %s", GetResponseBody(httpResponse))
+				return nil, "", fmt.Errorf("error describing instance: %s", GetResponseBody(httpResponse))
 			}
 		}
 		respJSON, _ := json.Marshal(resp)

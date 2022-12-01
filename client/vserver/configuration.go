@@ -61,7 +61,7 @@ type Configuration struct {
 func NewConfiguration(BasePath string, HTTPClient *http.Client) *Configuration {
 	cfg := &Configuration{
 		BasePath:      BasePath,
-		DefaultHeader: make(map[string]string),
+		DefaultHeader: map[string]string{"portal-user-id": "11212"},
 		HTTPClient:    HTTPClient,
 		UserAgent:     "terraform-v0.0.15",
 	}
