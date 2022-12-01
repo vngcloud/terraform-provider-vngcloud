@@ -10,15 +10,15 @@ variable "project_id" {
   type    = string
   default = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 }
-variable "flavor_id" {
+variable "s_general_4x8" {
   type    = string
-  default = "flav-eb756bc4-b820-49d7-97bf-cfc8335ad518"
+  default = "flav-05f97524-0410-46a4-87a8-af92aa759231"
 }
-variable "image_id" {
+variable "ubuntu_20_04" {
   type    = string
   default = "img-a34d639b-e070-46ff-8b91-addf4fac45b4"
 }
-variable "volume_type_name" {
+variable "ssd_3000" {
   type    = string
   default = "3000"
 }
@@ -52,7 +52,17 @@ variable "server_count" {
   default = 0
 }
 
-variable "server_group_policy_name" {
+variable "soft_affinity" {
   type    = string
   default = "SOFT AFFINITY"
+}
+
+variable "soft_anti_affinity" {
+  type    = string
+  default = "SOFT ANTI AFFINITY"
+}
+
+variable "user_data_base64_encode" {
+  type    = bool
+  default = false
 }
