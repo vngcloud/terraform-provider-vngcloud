@@ -40,6 +40,7 @@ func Provider() *schema.Provider {
 			"vngcloud_vserver_load_balancer":   vserver.ResourceLoadBalancer(),
 			"vngcloud_vserver_listener":        vserver.ResourceListener(),
 			"vngcloud_vserver_pool":            vserver.ResourcePool(),
+			"vngcloud_vserver_k8s":             vserver.ResourceK8s(),
 			"vngcloud_vdb_database":            vdb.ResourceDatabase(),
 			"vngcloud_vdb_backup":              vdb.ResourceBackup(),
 			"vngcloud_vdb_configuration_group": vdb.ResourceConfigurationGroup(),

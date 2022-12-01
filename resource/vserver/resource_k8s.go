@@ -64,14 +64,14 @@ func ResourceK8s() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			//Update node group default
 			"node_count": {
 				Type:     schema.TypeInt,
 				Required: true,
-				ForceNew: true,
 			},
 			"enabled_lb": {
 				Type:     schema.TypeBool,
-				Required: true,
+				Optional: true,
 			},
 			"master_instance_type_id": {
 				Type:     schema.TypeString,
@@ -114,7 +114,7 @@ func ResourceK8s() *schema.Resource {
 				ForceNew: true,
 			},
 			"docker_volume_size": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Required: true,
 				ForceNew: true,
 			},
@@ -171,43 +171,41 @@ func ResourceK8s() *schema.Resource {
 			},
 			"auto_scaling": {
 				Type:     schema.TypeBool,
-				Required: true,
+				Optional: true,
 				ForceNew: true,
 			},
 			"auto_healing": {
 				Type:     schema.TypeBool,
-				Required: true,
+				Optional: true,
 				ForceNew: true,
 			},
 			"ingress_controller": {
 				Type:     schema.TypeBool,
-				Required: true,
+				Optional: true,
 				ForceNew: true,
 			},
 			"auto_monitoring": {
 				Type:     schema.TypeBool,
-				Required: true,
+				Optional: true,
 				ForceNew: true,
 			},
-			"node_group_list": {
-				Type: schema.TypeList,
-				Elem: map[string]*schema.Schema{
-					"name": {
-						Type:     schema.TypeString,
-						Required: true,
-						ForceNew: true,
-					},
-					"node_amount": {
-						Type:     schema.TypeInt,
-						Required: true,
-					},
-					"flavor_id": {
-						Type:     schema.TypeString,
-						Required: true,
-						ForceNew: true,
-					},
-				},
-			},
+			//"node_group_list": {
+			//	Type:     schema.TypeList,
+			//	Optional: true,
+			//	Elem: map[string]*schema.Schema{
+			//		"name": {
+			//			Type:     schema.TypeString,
+			//			ForceNew: true,
+			//		},
+			//		"node_amount": {
+			//			Type: schema.TypeInt,
+			//		},
+			//		"flavor_id": {
+			//			Type:     schema.TypeString,
+			//			ForceNew: true,
+			//		},
+			//	},
+			//},
 			"ssh_key_name": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -221,6 +219,10 @@ func ResourceK8s() *schema.Resource {
 				Computed: true,
 			},
 			"end_point": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"node_group_default_id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -263,67 +265,71 @@ func ResourceK8s() *schema.Resource {
 	}
 }
 
-func buildCreateNodeGroupRequests(d *schema.ResourceData) []vserver.NodeGroupRequestModel {
-	nodeGroupList := d.Get("node_group_list").([]interface{})
-	NodeGroups := make([]vserver.NodeGroupRequestModel, len(nodeGroupList))
-
-	for _, nodeGroup := range nodeGroupList {
-		nodeGroup := nodeGroup.(map[string]interface{})
-		var request vserver.NodeGroupRequestModel
-		request.Name = nodeGroup["name"].(string)
-		request.FlavorId = nodeGroup["flavor_id"].(string)
-		request.NodeCount = nodeGroup["node_amount"].(int)
-		NodeGroups = append(NodeGroups, request)
-	}
-	return NodeGroups
-}
+//func buildCreateNodeGroupRequests(d *schema.ResourceData) []vserver.NodeGroupRequestModel {
+//	nodeGroupList := d.Get("node_group_list").([]interface{})
+//	NodeGroups := make([]vserver.NodeGroupRequestModel, len(nodeGroupList))
+//
+//	for _, nodeGroup := range nodeGroupList {
+//		nodeGroup := nodeGroup.(map[string]interface{})
+//		var request vserver.NodeGroupRequestModel
+//		request.Name = nodeGroup["name"].(string)
+//		request.FlavorId = nodeGroup["flavor_id"].(string)
+//		request.NodeCount = nodeGroup["node_amount"].(int)
+//		NodeGroups = append(NodeGroups, request)
+//	}
+//	return NodeGroups
+//}
 
 func resourceK8sCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("Create K8s")
 	projectId := d.Get("project_id").(string)
 	cli := m.(*client.Client)
 	var secGroupIdList []string
-	for _, s := range d.Get("security_group").([]string) {
-		secGroupIdList = append(secGroupIdList, s)
-	}
+	//for _, s := range d.Get("security_group").([]string) {
+	//	secGroupIdList = append(secGroupIdList, s)
+	//}
+	//nodeGroupRequestModel := make([]vserver.NodeGroupRequestModel)
 
 	cluster := vserver.CreateClusterRequest{
-		AutoHealingEnabled:        d.Get("auto_healing").(bool),
-		AutoMonitoringEnabled:     d.Get("auto_monitoring").(bool),
-		AutoScalingEnabled:        d.Get("auto_scaling").(bool),
-		BootVolumeSize:            d.Get("boot_volume_size").(int32),
-		BootVolumeTypeId:          d.Get("boot_volume_type_id").(string),
-		CalicoCidr:                d.Get("calico_cidr").(string),
-		Description:               d.Get("description").(string),
-		DockerVolumeSize:          d.Get("docker_volume_size").(int32),
-		DockerVolumeTypeId:        d.Get("docker_volume_type_id").(string),
-		EnabledLb:                 d.Get("enabled_lb").(bool),
-		EtcdVolumeSize:            d.Get("etcd_volume_size").(int32),
-		EtcdVolumeTypeId:          d.Get("etcd_volume_type_id").(string),
-		IngressControllerEnabled:  d.Get("ingress_controller").(bool),
-		IpipMode:                  d.Get("ipip_mode").(string),
-		K8sVersion:                d.Get("k8s_version").(string),
-		MasterCount:               d.Get("master_count").(int32),
-		MasterInstanceTypeId:      d.Get("master_instance_type_id").(string),
-		MaxNodeCount:              d.Get("max_node_count").(int32),
-		MinNodeCount:              d.Get("min_node_count").(int32),
-		Name:                      d.Get("name").(string),
-		NetworkId:                 d.Get("network_id").(string),
-		NetworkType:               d.Get("network_type").(string),
-		NodeCount:                 d.Get("node_count").(int32),
-		NodeFlavorId:              d.Get("node_flavor_id").(string),
-		NodeInstanceTypeId:        d.Get("node_instance_type_id").(string),
-		SecGroupIds:               secGroupIdList,
-		SshKeyId:                  d.Get("ssh_key_id").(string),
-		SubnetId:                  d.Get("subnet_id").(string),
-		NodeGroupRequestModelList: buildCreateNodeGroupRequests(d),
+		AutoHealingEnabled:       d.Get("auto_healing").(bool),
+		AutoMonitoringEnabled:    d.Get("auto_monitoring").(bool),
+		AutoScalingEnabled:       d.Get("auto_scaling").(bool),
+		BootVolumeSize:           int32(d.Get("boot_volume_size").(int)),
+		BootVolumeTypeId:         d.Get("boot_volume_type_id").(string),
+		CalicoCidr:               d.Get("calico_cidr").(string),
+		Description:              d.Get("description").(string),
+		DockerVolumeSize:         int32(d.Get("docker_volume_size").(int)),
+		DockerVolumeTypeId:       d.Get("docker_volume_type_id").(string),
+		EnabledLb:                d.Get("enabled_lb").(bool),
+		EtcdVolumeSize:           int32(d.Get("etcd_volume_size").(int)),
+		EtcdVolumeTypeId:         d.Get("etcd_volume_type_id").(string),
+		IngressControllerEnabled: d.Get("ingress_controller").(bool),
+		IpipMode:                 d.Get("ipip_mode").(string),
+		K8sVersion:               d.Get("k8s_version").(string),
+		MasterCount:              int32(d.Get("master_count").(int)),
+		MasterFlavorId:           d.Get("master_flavor_id").(string),
+		MasterInstanceTypeId:     d.Get("master_instance_type_id").(string),
+		MaxNodeCount:             int32(d.Get("max_node_count").(int)),
+		MinNodeCount:             int32(d.Get("min_node_count").(int)),
+		Name:                     d.Get("name").(string),
+		NetworkId:                d.Get("network_id").(string),
+		NetworkType:              d.Get("network_type").(string),
+		NodeCount:                int32(d.Get("node_count").(int)),
+		NodeFlavorId:             d.Get("node_flavor_id").(string),
+		NodeInstanceTypeId:       d.Get("node_instance_type_id").(string),
+		SecGroupIds:              secGroupIdList,
+		SshKeyId:                 d.Get("ssh_key_id").(string),
+		SubnetId:                 d.Get("subnet_id").(string),
+		//NodeGroupRequestModelList: d.Get("node_group_list").([]vserver.NodeGroupRequestModel),
+		//NodeGroupRequestModelList: buildCreateNodeGroupRequests(d),
+		NodeGroupRequestModelList: []vserver.NodeGroupRequestModel{},
 	}
 
 	resp, httpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.CreateClusterUsingPOST(context.TODO(), cluster, projectId)
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
-		errResponse := fmt.Errorf("request fail with errMsh: %s", responseBody)
+		errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
 		return errResponse
 	}
 
@@ -336,7 +342,7 @@ func resourceK8sCreate(d *schema.ResourceData, m interface{}) error {
 		Pending:    k8sClusterCreating,
 		Target:     k8sClusterCreated,
 		Refresh:    resourceK8sClusterStateRefreshFunc(cli, resp.Data.Uuid, projectId),
-		Timeout:    d.Timeout(schema.TimeoutCreate),
+		Timeout:    50 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
@@ -353,7 +359,7 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 	projectId := d.Get("project_id").(string)
 	clusterId := d.Id()
 	cli := m.(*client.Client)
-	resp, httpResponse, _ := cli.VserverClient.K8SClusterRestControllerApi.GetClusterUsingGET(context.TODO(), projectId, clusterId)
+	resp, httpResponse, _ := cli.VserverClient.K8SClusterRestControllerApi.GetClusterUsingGET(context.TODO(), clusterId, projectId)
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		err := fmt.Errorf("request fail with errMsg: %s", responseBody)
@@ -380,13 +386,65 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("auto_monitoring", cluster.AutoMonitoringEnabled)
 	d.Set("auto_scaling", cluster.AutoScalingEnabled)
 	d.Set("end_point", cluster.Endpoint)
+	d.set("")
 	return nil
 }
 
 func resourceK8sUpdate(d *schema.ResourceData, m interface{}) error {
-	if d.HasChange("node_group_list") {
-		//o, n := d.GetChange("node_group_list")
-		//return resourceNodeGroupResize(d, m)
+	if d.HasChange("node_count") {
+		var clusterNodeGroupDefaultUUID string
+		projectID := d.Get("project_id").(string)
+		cli := m.(*client.Client)
+		resp, httpResponse, _ := cli.VserverClient.K8SClusterRestControllerApi.ListClusterNodeGroupUsingGET(context.TODO(), d.Id(), projectID)
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			errorResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
+			return errorResponse
+		}
+
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+
+		clusterNodeGroupList := resp
+
+		for _, n := range clusterNodeGroupList {
+			if n.NodeGroupDefault {
+				clusterNodeGroupDefaultUUID = n.Uuid
+			}
+		}
+
+		o, n := d.GetChange("node_count")
+		scaleMinionRequest := vserver.ScaleMinionBackendRequest{
+			ClusterId:   d.Id(),
+			NodeCount:   n.(int32),
+			NodeGroupId: clusterNodeGroupDefaultUUID,
+		}
+
+		scaleMinionResp, scaleMinionHttpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.ScaleMinionUsingPOST(context.TODO(), d.Id(), projectID, scaleMinionRequest)
+		if CheckErrorResponse(scaleMinionHttpResponse) {
+			responseBody := GetResponseBody(scaleMinionHttpResponse)
+			errorResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
+			d.Set("node_count", o.(int))
+			return errorResponse
+		}
+		scaleMinionRespJSON, _ := json.Marshal(scaleMinionResp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(scaleMinionRespJSON))
+		log.Printf("-------------------------------------\n")
+		stateConf := &resource.StateChangeConf{
+			Pending:    clusterNodeGroupScaling,
+			Target:     clusterNodeGroupScaled,
+			Timeout:    d.Timeout(schema.TimeoutCreate),
+			Delay:      10 * time.Second,
+			MinTimeout: 1 * time.Second,
+		}
+		_, err = stateConf.WaitForState()
+		if err != nil {
+			return fmt.Errorf("error waiting for instance %s to be resizing: %s", clusterNodeGroupDefaultUUID, err)
+		}
+		return resourceK8sCreate(d, m)
 	}
 
 	return resourceK8sRead(d, m)
@@ -410,7 +468,7 @@ func resourceK8sDelete(d *schema.ResourceData, m interface{}) error {
 		Pending:    k8sClusterDeleting,
 		Target:     k8sClusterDeleted,
 		Refresh:    resourceK8sDeleteStateRefreshFunc(cli, d.Id(), projectId),
-		Timeout:    d.Timeout(schema.TimeoutCreate),
+		Timeout:    d.Timeout(schema.TimeoutDelete),
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
@@ -422,13 +480,9 @@ func resourceK8sDelete(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-//func resourceNodeGroupResize(d *schema.ResourceData, m interface{}) error {
-//
-//}
-
 func resourceK8sClusterStateRefreshFunc(cli *client.Client, clusterId string, projectId string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		resp, httpReponse, _ := cli.VserverClient.K8SClusterRestControllerApi.GetClusterUsingGET(context.TODO(), projectId, clusterId)
+		resp, httpReponse, _ := cli.VserverClient.K8SClusterRestControllerApi.GetClusterUsingGET(context.TODO(), clusterId, projectId)
 
 		if httpReponse.StatusCode != http.StatusOK {
 			return nil, "", fmt.Errorf("error describing: %s", GetResponseBody(httpReponse))
