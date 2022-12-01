@@ -49,7 +49,7 @@ resource "vngcloud_vserver_server_group" "soft_anti_affinity_server_group" {
 }
 
 data "template_file" "cloud-config-bastard" {
-  template = "${file("../init/cloud-config.tpl")}"
+  template = "${file("init/cloud-config.tpl")}"
 }
 
 data "template_cloudinit_config" "user_data" {
@@ -63,7 +63,7 @@ data "template_cloudinit_config" "user_data" {
 
   part {
     content_type = "text/x-shellscript"
-    content      = "${file("../init/install-apache.sh")}"
+    content      = "${file("init/install-apache.sh")}"
   }
 
 }
