@@ -63,7 +63,7 @@ func NewConfiguration(BasePath string, HTTPClient *http.Client) *Configuration {
 		BasePath:      BasePath,
 		DefaultHeader: make(map[string]string),
 		HTTPClient:    HTTPClient,
-		UserAgent:     "terraform-v0.0.15",
+		UserAgent:     "terraform",
 	}
 	return cfg
 }
