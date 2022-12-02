@@ -5,6 +5,17 @@ terraform {
       version = "0.0.17"
     }
   }
+  backend "s3" {
+    skip_credentials_validation = true
+    skip_metadata_api_check = true
+    skip_region_validation = true
+    bucket = "bucket-name"
+    endpoint = "https://hcm01.vstorage.vngcloud.vn/"
+    key = "terraform.tfstate"
+    region = "HCM01"
+    access_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    secret_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  }
 }
 
 provider "vngcloud" {
