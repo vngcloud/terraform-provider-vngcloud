@@ -30,15 +30,12 @@ The following arguments are supported:
 - **size** (Number, Required) Size of Volume.
 - **volume_type_id** (String, Required) ID of Volume's Type
 - **encryption_type** (String, Optional) Type encryption of volume.
-- **is_poc** (Boolean, Optional) POC wallet.
 
 ## Attributes Reference
 
 In addition to all arguments above, the following attributes are exported:
 
 - **id** (String) The ID of this Volume.
-- **owner_email** (String) Email owner of this Volume.
-- **share** (Boolean) Is volume shared?
-- **bootable** (Boolean, Required) Bootbale of Volume
+- **bootable** (Boolean, Required) Bootable of Volume
 
 

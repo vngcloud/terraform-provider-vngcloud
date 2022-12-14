@@ -94,7 +94,7 @@ func ResourceServer() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-				Optional: true,
+				Required: true,
 			},
 			"source_type": {
 				Type:     schema.TypeString,
@@ -191,11 +191,6 @@ func resourceServerStateRefreshFunc(cli *client.Client, serverID string, project
 }
 func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
-	securityGroupInterface := d.Get("security_group").([]interface{})
-	var securityGroup []string
-	for _, s := range securityGroupInterface {
-		securityGroup = append(securityGroup, s.(string))
-	}
 	if _, ok := d.GetOk("root_disk_size"); !ok {
 		return fmt.Errorf(`The argument "root_disk_size" is required, but no definition was found.`)
 	}
@@ -207,6 +202,14 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		if !okEncode {
 			return fmt.Errorf(`The argument "user data" is set, the argument "user data base64 encode" is required, but no definition was found.`)
 		}
+	}
+	securityGroupInterface := d.Get("security_group").([]interface{})
+	var securityGroup []string
+	for _, s := range securityGroupInterface {
+		securityGroup = append(securityGroup, s.(string))
+	}
+	if len(securityGroup) == 0 {
+		return fmt.Errorf(`The argument "security_group" must not be empty.`)
 	}
 	server := vserver.CreateServerRequest{
 		AttachFloating:         d.Get("attach_floating").(bool),
@@ -317,6 +320,11 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 		externalInterfaces = append(externalInterfaces, externalInterfaceMap)
 	}
 	d.Set("external_interfaces", externalInterfaces)
+	var securityGroups []string
+	for _, secGroup := range server.SecGroups {
+		securityGroups = append(securityGroups, secGroup.Uuid)
+	}
+	d.Set("security_group", securityGroups)
 	return nil
 }
 
@@ -503,6 +511,9 @@ func resourceServerUpdateSecgroup(d *schema.ResourceData, m interface{}) error {
 	var securityGroup []string
 	for _, s := range securityGroupInterface {
 		securityGroup = append(securityGroup, s.(string))
+	}
+	if len(securityGroup) == 0 {
+		return fmt.Errorf(`The argument "security_group" must not be empty.`)
 	}
 	serverChangeSecGroup := vserver.ChangeSecGroupRequest{
 		ServerId:      d.Id(),

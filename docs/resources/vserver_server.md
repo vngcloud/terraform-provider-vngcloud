@@ -44,7 +44,6 @@ The following arguments are supported:
 - **action** (String, Optional) Action with server. It can be `stop`, `start` and `reboot`.
 - **attach_floating** (Boolean, Optional) Is Server attach a floating IP.
 - **expire_password** (Boolean, Optional) Skip change password: false, else: true
-- **is_poc** (Boolean, Optional) POC wallet.
 - **os_licence** (Boolean, Optional) Licence of OS.
 - **root_disk_encryption_type** (String, Optional) Type encryption of boot volume.
 - **security_group** (List of String, Optional) ID of the SecGroups.
@@ -81,8 +80,6 @@ In addition to all arguments above, the following attributes are exported:
   -  **subnet_uuid** (String)
   -  **type** (String)
 - **os_info** (String) Info OS.
-- **owner_email** (String) Email owner of Server.
-- **share** (Boolean) Is Server Shared?
 - **ssh_key_name** (String) Name of SSH Key.
 
 
