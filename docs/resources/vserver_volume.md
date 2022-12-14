@@ -18,6 +18,7 @@ resource "vngcloud_vserver_volume" "volume" {
     size = 20
     volume_type_id = "vtype-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     project_id = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    multi_attach = false
 }
 ```
 
@@ -30,6 +31,7 @@ The following arguments are supported:
 - **size** (Number, Required) Size of Volume.
 - **volume_type_id** (String, Required) ID of Volume's Type
 - **encryption_type** (String, Optional) Type encryption of volume.
+- **multi_attach** (Boolean, Optional) Specifies whether to enable Volume Multi-Attach.
 
 ## Attributes Reference
 
