@@ -40,7 +40,7 @@ var (
 	volumeDetaching        = []string{"IN-USE", "DETACHING"}
 	volumeResizing         = []string{"RESIZING", "CHANGING-IOPS"}
 	volumeResized          = []string{"IN-USE", "AVAILABLE"}
-	volumeDetached         = []string{"AVAILABLE"}
+	volumeDetached         = []string{"AVAILABLE", "IN-USE"}
 	volumeDeleting         = []string{"DELETING"}
 	volumeDeleted          = []string{"DELETED"}
 	serverChangingSecGroup = []string{"CHANGING-SECURITY-GROUP"}
