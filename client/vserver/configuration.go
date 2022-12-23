@@ -63,7 +63,7 @@ func NewConfiguration(BasePath string, HTTPClient *http.Client) *Configuration {
 		BasePath:      BasePath,
 		DefaultHeader: map[string]string{"portal-user-id": "11212"},
 		HTTPClient:    HTTPClient,
-		UserAgent:     "terraform-v0.0.15",
+		UserAgent:     "terraform",
 	}
 	return cfg
 }
