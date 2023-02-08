@@ -1,13 +1,13 @@
 # \SubnetRestControllerV2Api
 
-All URIs are relative to *https://virtserver.swaggerhub.com/manhtu1997/vserver/1.0.2*
+All URIs are relative to *https://virtserver.swaggerhub.com/Ev4LiA/vserver/1.0.5*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**CreateSubnetUsingPOST1**](SubnetRestControllerV2Api.md#CreateSubnetUsingPOST1) | **Post** /v2/{projectId}/networks/{networkId}/subnets | createSubnet
 [**DeleteNetworkUsingDELETE2**](SubnetRestControllerV2Api.md#DeleteNetworkUsingDELETE2) | **Delete** /v2/{projectId}/networks/{networkId}/subnets/{subnetId} | Delete subnet
 [**EditSubnetUsingPATCH**](SubnetRestControllerV2Api.md#EditSubnetUsingPATCH) | **Patch** /v2/{projectId}/networks/{networkId}/subnets/{subnetId} | Edit subnet
-[**GetSubnetByIdUsingGET**](SubnetRestControllerV2Api.md#GetSubnetByIdUsingGET) | **Get** /v2/{projectId}/networks/{networkId}/subnets/{subnetId} | List subnet by id
+[**GetSubnetUsingGET1**](SubnetRestControllerV2Api.md#GetSubnetUsingGET1) | **Get** /v2/{projectId}/networks/{networkId}/subnets/{subnetId} | Get subnet by ID
 [**ListSubnetOfNetworkUsingGET**](SubnetRestControllerV2Api.md#ListSubnetOfNetworkUsingGET) | **Get** /v2/{projectId}/networks/{networkId}/subnets | List subnet of network
 
 
@@ -40,7 +40,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteNetworkUsingDELETE2**
-> DeleteNetworkUsingDELETE2(ctx, projectId, subnetId, networkId)
+> DeleteNetworkUsingDELETE2(ctx, projectId, subnetId)
 Delete subnet
 
 ### Required Parameters
@@ -50,7 +50,6 @@ Name | Type | Description  | Notes
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **projectId** | **string**| projectId | 
   **subnetId** | **string**| subnetId | 
-  **networkId** | **string**| networkId | 
 
 ### Return type
 
@@ -68,7 +67,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **EditSubnetUsingPATCH**
-> DataResponseSubnetDto EditSubnetUsingPATCH(ctx, projectId, subnetId, updateSubnetRequest, networkId)
+> DataResponseSubnetDto EditSubnetUsingPATCH(ctx, projectId, subnetId, updateSubnetRequest)
 Edit subnet
 
 ### Required Parameters
@@ -79,7 +78,6 @@ Name | Type | Description  | Notes
   **projectId** | **string**| projectId | 
   **subnetId** | **string**| subnetId | 
   **updateSubnetRequest** | [**UpdateSubnetRequest**](UpdateSubnetRequest.md)| updateSubnetRequest | 
-  **networkId** | **string**| networkId | 
 
 ### Return type
 
@@ -96,9 +94,9 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetSubnetByIdUsingGET**
-> SubnetDto GetSubnetByIdUsingGET(ctx, networkId, projectId, subnetId)
-List subnet by id
+# **GetSubnetUsingGET1**
+> SubnetDto GetSubnetUsingGET1(ctx, networkId, projectId, subnetId)
+Get subnet by ID
 
 ### Required Parameters
 

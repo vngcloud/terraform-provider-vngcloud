@@ -1,6 +1,6 @@
 # \LoadBalancerRestControllerApi
 
-All URIs are relative to *https://virtserver.swaggerhub.com/manhtu1997/vserver/1.0.2*
+All URIs are relative to *https://virtserver.swaggerhub.com/Ev4LiA/vserver/1.0.5*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -18,7 +18,7 @@ Method | HTTP request | Description
 [**GetL7PoliciesUsingGET**](LoadBalancerRestControllerApi.md#GetL7PoliciesUsingGET) | **Get** /v1/{project_id}/listeners/{listener_id}/l7policies | Get list policies of a listener
 [**GetListListenersUsingGET**](LoadBalancerRestControllerApi.md#GetListListenersUsingGET) | **Get** /v1/{project_id}/load-balancers/{load_balancer_id}/listeners | Get list of listeners of a load balancer
 [**GetListLoadBalancersUsingGET**](LoadBalancerRestControllerApi.md#GetListLoadBalancersUsingGET) | **Get** /v1/{project_id}/load-balancers | Get list of load balancers
-[**GetListPoolsUsingGET**](LoadBalancerRestControllerApi.md#GetListPoolsUsingGET) | **Get** /v1/{project_id}/load-balancers/{load_balancer_id}/pools | Get list of pools of a load balancer
+[**GetListPoolsUsingGET1**](LoadBalancerRestControllerApi.md#GetListPoolsUsingGET1) | **Get** /v1/{project_id}/load-balancers/{load_balancer_id}/pools | Get list of pools of a load balancer
 [**GetListenerUsingGET**](LoadBalancerRestControllerApi.md#GetListenerUsingGET) | **Get** /v1/{project_id}/listeners/{listener_id} | Get a specific listener
 [**GetLoadBalancerUsingGET**](LoadBalancerRestControllerApi.md#GetLoadBalancerUsingGET) | **Get** /v1/{project_id}/load-balancers/{load_balancer_id} | Get a specific load balancer
 [**GetMemberFromPoolUsingGET**](LoadBalancerRestControllerApi.md#GetMemberFromPoolUsingGET) | **Get** /v1/{project_id}/pools/{pool_id}/members | Get members from a pool
@@ -439,8 +439,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetListPoolsUsingGET**
-> PagingPool GetListPoolsUsingGET(ctx, loadBalancerId, projectId, optional)
+# **GetListPoolsUsingGET1**
+> PagingPool GetListPoolsUsingGET1(ctx, loadBalancerId, projectId, optional)
 Get list of pools of a load balancer
 
 ### Required Parameters
@@ -450,10 +450,10 @@ Name | Type | Description  | Notes
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **loadBalancerId** | **string**| load balancer id | 
   **projectId** | **string**| project id | 
- **optional** | ***LoadBalancerRestControllerApiGetListPoolsUsingGETOpts** | optional parameters | nil if no parameters
+ **optional** | ***LoadBalancerRestControllerApiGetListPoolsUsingGET1Opts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
-Optional parameters are passed through a pointer to a LoadBalancerRestControllerApiGetListPoolsUsingGETOpts struct
+Optional parameters are passed through a pointer to a LoadBalancerRestControllerApiGetListPoolsUsingGET1Opts struct
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------

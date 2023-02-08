@@ -1,11 +1,12 @@
 # \ProjectRestControllerApi
 
-All URIs are relative to *https://virtserver.swaggerhub.com/manhtu1997/vserver/1.0.2*
+All URIs are relative to *https://virtserver.swaggerhub.com/Ev4LiA/vserver/1.0.5*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**CreateProjectUsingPOST**](ProjectRestControllerApi.md#CreateProjectUsingPOST) | **Post** /v1/projects | createProject
 [**GetProjectUsingGET**](ProjectRestControllerApi.md#GetProjectUsingGET) | **Get** /v1/projects/{project_id} | getProject
+[**ListAllProjectUsingGET**](ProjectRestControllerApi.md#ListAllProjectUsingGET) | **Get** /v1/projects/all | listAllProject
 [**ListProjectUsingGET**](ProjectRestControllerApi.md#ListProjectUsingGET) | **Get** /v1/projects | listProject
 
 
@@ -45,6 +46,28 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**ProjectResponse**](ProjectResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **ListAllProjectUsingGET**
+> []ProjectInfo ListAllProjectUsingGET(ctx, )
+listAllProject
+
+### Required Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**[]ProjectInfo**](ProjectInfo.md)
 
 ### Authorization
 

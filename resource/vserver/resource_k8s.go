@@ -73,17 +73,7 @@ func ResourceK8s() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
-			"master_instance_type_id": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
 			"master_flavor_id": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-			"node_instance_type_id": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -161,13 +151,11 @@ func ResourceK8s() *schema.Resource {
 			},
 			"min_node_count": {
 				Type:     schema.TypeInt,
-				Required: true,
-				ForceNew: true,
+				Optional: true,
 			},
 			"max_node_count": {
 				Type:     schema.TypeInt,
-				Required: true,
-				ForceNew: true,
+				Optional: true,
 			},
 			"auto_scaling": {
 				Type:     schema.TypeBool,
@@ -226,18 +214,104 @@ func ResourceK8s() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"master_secgroup_id_list": {
+			"config": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"secgroup_default_master": {
 				Type:     schema.TypeList,
 				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"rules": {
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"direction": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"ethertype": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"port_range_max": {
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"port_range_min": {
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"protocol": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"remote_group_name": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"remote_ip_prefix": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
+						"sec_group_name": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
 				},
 			},
-			"minion_secgroup_id_list": {
+			"secgroup_default_minion": {
 				Type:     schema.TypeList,
 				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"rules": {
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"direction": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"ethertype": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"port_range_max": {
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"port_range_min": {
+										Type:     schema.TypeInt,
+										Computed: true,
+									},
+									"protocol": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"remote_group_name": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"remote_ip_prefix": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
+						"sec_group_name": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
 				},
 			},
 		},
@@ -283,7 +357,6 @@ func resourceK8sCreate(d *schema.ResourceData, m interface{}) error {
 		K8sVersion:               d.Get("k8s_version").(string),
 		MasterCount:              int32(d.Get("master_count").(int)),
 		MasterFlavorId:           d.Get("master_flavor_id").(string),
-		MasterInstanceTypeId:     d.Get("master_instance_type_id").(string),
 		MaxNodeCount:             int32(d.Get("max_node_count").(int)),
 		MinNodeCount:             int32(d.Get("min_node_count").(int)),
 		Name:                     d.Get("name").(string),
@@ -291,7 +364,6 @@ func resourceK8sCreate(d *schema.ResourceData, m interface{}) error {
 		NetworkType:              d.Get("network_type").(string),
 		NodeCount:                int32(d.Get("node_count").(int)),
 		NodeFlavorId:             d.Get("node_flavor_id").(string),
-		NodeInstanceTypeId:       d.Get("node_instance_type_id").(string),
 		SecGroupIds:              secGroupIdList,
 		SshKeyId:                 d.Get("ssh_key_id").(string),
 		SubnetId:                 d.Get("subnet_id").(string),
@@ -317,7 +389,7 @@ func resourceK8sCreate(d *schema.ResourceData, m interface{}) error {
 		Pending:    k8sClusterCreating,
 		Target:     k8sClusterCreated,
 		Refresh:    resourceK8sClusterStateRefreshFunc(cli, resp.Data.Uuid, projectId),
-		Timeout:    50 * time.Minute,
+		Timeout:    60 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
@@ -341,12 +413,40 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 		err := fmt.Errorf("request fail with errMsg: %s", responseBody)
 		return err
 	}
+	respSecGroup, httpResponseSecGroup, _ := cli.VserverClient.K8SClusterRestControllerApi.ListSecgroupDefaultUsingGET(context.TODO(), clusterId, projectId)
+	if CheckErrorResponse(httpResponseSecGroup) {
+		responseBody := GetResponseBody(httpResponseSecGroup)
+		err := fmt.Errorf("request fail with errMsg: %s", responseBody)
+		return err
+	}
+
+	respConfig, httpResponseConfig, _ := cli.VserverClient.K8SClusterRestControllerApi.GetConfigUsingGET(context.TODO(), clusterId, projectId)
+	if CheckErrorResponse(httpResponseConfig) {
+		responseBody := GetResponseBody(httpResponseConfig)
+		err := fmt.Errorf("request fail with errMsg: %s", responseBody)
+		return err
+	}
 
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
+
+	respSecGroupJSON, _ := json.Marshal(respSecGroup)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respSecGroupJSON))
+	log.Printf("-------------------------------------\n")
+
+	respConfigJSON, _ := json.Marshal(respConfig)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respConfigJSON))
+	log.Printf("-------------------------------------\n")
+
 	cluster := resp.Data
+	masterSecgroupDefault := respSecGroup[0].Master
+	minionSecgroupDefault := respSecGroup[0].Minion
+	config := respConfig.Configuration
+
 	d.Set("name", cluster.Name)
 	d.Set("master_count", cluster.MasterCount)
 	d.Set("node_count", cluster.NodeCount)
@@ -363,8 +463,9 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("auto_scaling", cluster.AutoScalingEnabled)
 	d.Set("end_point", cluster.Endpoint)
 	d.Set("node_group_default_id", cluster.NodegroupDefaultId)
-	d.Set("master_secgroup_id_list", cluster.MasterClusterSecGroupIdList)
-	d.Set("minion_secgroup_id_list", cluster.MinionClusterSecGroupIdList)
+	d.Set("config", config)
+	d.Set("secgroup_default_master", flattenClusterSecGroupDefault(masterSecgroupDefault))
+	d.Set("secgroup_default_minion", flattenClusterSecGroupDefault(minionSecgroupDefault))
 	return nil
 }
 
@@ -410,10 +511,10 @@ func resourceK8sDelete(d *schema.ResourceData, m interface{}) error {
 
 func resourceK8sClusterStateRefreshFunc(cli *client.Client, clusterId string, projectId string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		resp, httpReponse, _ := cli.VserverClient.K8SClusterRestControllerApi.GetClusterUsingGET(context.TODO(), clusterId, projectId)
+		resp, httpResponse, _ := cli.VserverClient.K8SClusterRestControllerApi.GetClusterUsingGET(context.TODO(), clusterId, projectId)
 
-		if httpReponse.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf("error describing: %s", GetResponseBody(httpReponse))
+		if httpResponse.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf("error describing: %s", GetResponseBody(httpResponse))
 		}
 
 		respJSON, _ := json.Marshal(resp)
@@ -442,4 +543,42 @@ func resourceK8sDeleteStateRefreshFunc(cli *client.Client, clusterId string, pro
 		cluster := resp.Data
 		return cluster, cluster.Status, nil
 	}
+}
+
+func flattenClusterSecGroupDefault(secgroupDefaults *vserver.SecGroupDefault) []map[string]interface{} {
+	if secgroupDefaults == nil {
+		return []map[string]interface{}{}
+	}
+
+	m := map[string]interface{}{
+		"rules":          flattenRules(secgroupDefaults.Rules),
+		"sec_group_name": secgroupDefaults.SecgroupName,
+	}
+	fmt.Printf("[DEBUG]: %s", m)
+
+	return []map[string]interface{}{m}
+}
+
+func flattenRules(rules []vserver.SecGroupRuleDefault) []map[string]interface{} {
+	if len(rules) == 0 {
+		return []map[string]interface{}{}
+	}
+
+	l := make([]map[string]interface{}, 0, len(rules))
+
+	for _, rule := range rules {
+		m := map[string]interface{}{
+			"direction":         rule.Direction,
+			"ethertype":         rule.Ethertype,
+			"port_range_max":    int64(rule.PortRangeMax),
+			"port_range_min":    int64(rule.PortRangeMin),
+			"protocol":          rule.Protocol,
+			"remote_group_name": rule.RemoteGroupName,
+			"remote_ip_prefix":  rule.RemoteIpPrefix,
+		}
+
+		l = append(l, m)
+	}
+
+	return l
 }

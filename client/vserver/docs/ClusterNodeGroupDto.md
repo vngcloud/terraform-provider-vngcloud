@@ -4,6 +4,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **ClusterId** | **string** |  | [optional] [default to null]
+**ClusterNodeGroupId** | **int32** |  | [optional] [default to null]
 **CreatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
 **FlavorId** | **string** |  | [optional] [default to null]
 **FlavorName** | **string** |  | [optional] [default to null]

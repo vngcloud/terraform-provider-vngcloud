@@ -165,15 +165,10 @@ func UpdateClusterNodeGroupFunc(d *schema.ResourceData, m interface{}) error {
 
 func DeleteClusterNodeGroupFunc(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
-	clusterID := d.Get("cluster_id").(string)
+	nodeGroupID := d.Id()
 	cli := m.(*client.Client)
 
-	deleterNodeGroup := vserver.DeleteNodeGroupBackendRequest{
-		ClusterId:   clusterID,
-		NodeGroupId: d.Id(),
-	}
-
-	resp, httpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.DeleteClusterNodeGroupUsingDELETE(context.TODO(), clusterID, deleterNodeGroup, projectID)
+	resp, httpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.DeleteClusterNodeGroupUsingDELETE(context.TODO(), nodeGroupID, projectID)
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -232,6 +227,7 @@ func ResourceK8sScalingNodeGroup(d *schema.ResourceData, m interface{}, nodegrou
 	}
 
 	resp, httpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.ScaleMinionUsingPOST(context.TODO(), clusterId, projectID, scaleMinionRequest)
+
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
@@ -245,7 +241,7 @@ func ResourceK8sScalingNodeGroup(d *schema.ResourceData, m interface{}, nodegrou
 	stateConf := &resource.StateChangeConf{
 		Pending:    clusterNodeGroupScaling,
 		Target:     clusterNodeGroupScaled,
-		Refresh:    resourceK8sClusterStateRefreshFunc(cli, clusterId, projectID),
+		Refresh:    resourceServerTaskStateRefreshFunc(cli, clusterId, projectID, resp.Data.Id),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,

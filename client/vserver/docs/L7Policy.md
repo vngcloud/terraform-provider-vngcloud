@@ -18,6 +18,7 @@ Name | Type | Description | Notes
 **RedirectHttpCode** | **int32** |  | [optional] [default to null]
 **RedirectPoolId** | **string** |  | [optional] [default to null]
 **RedirectUrl** | **string** |  | [optional] [default to null]
+**Status** | **string** |  | [optional] [default to null]
 **UpdatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
 **Uuid** | **string** |  | [optional] [default to null]
 

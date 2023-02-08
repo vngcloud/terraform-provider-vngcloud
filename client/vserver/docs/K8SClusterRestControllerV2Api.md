@@ -1,19 +1,26 @@
 # \K8SClusterRestControllerV2Api
 
-All URIs are relative to *https://virtserver.swaggerhub.com/Ev4LiA/vserver/1.0.0*
+All URIs are relative to *https://virtserver.swaggerhub.com/Ev4LiA/vserver/1.0.5*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**AttachToLbUsingPOST**](K8SClusterRestControllerV2Api.md#AttachToLbUsingPOST) | **Post** /v2/{projectId}/clusters/{clusterId}/attach-load-balancer | Attach Load Balancer
 [**CreateClusterNodeGroupUsingPOST**](K8SClusterRestControllerV2Api.md#CreateClusterNodeGroupUsingPOST) | **Post** /v2/{projectId}/clusters/{clusterId}/cluster-node-groups | Create Cluster Node Group
 [**CreateClusterUsingPOST**](K8SClusterRestControllerV2Api.md#CreateClusterUsingPOST) | **Post** /v2/{projectId}/clusters | Create cluster
-[**DeleteClusterNodeGroupUsingDELETE**](K8SClusterRestControllerV2Api.md#DeleteClusterNodeGroupUsingDELETE) | **Delete** /v2/{projectId}/clusters/{clusterId}/cluster-node-groups | Delete Cluster Node Group
+[**DeleteClusterNodeGroupUsingDELETE**](K8SClusterRestControllerV2Api.md#DeleteClusterNodeGroupUsingDELETE) | **Delete** /v2/{projectId}/clusters/cluster-node-groups/{nodeGroupId} | Delete Cluster Node Group
 [**DeleteClusterUsingDELETE**](K8SClusterRestControllerV2Api.md#DeleteClusterUsingDELETE) | **Delete** /v2/{projectId}/clusters/{clusterId} | Delete Cluster
 [**GetClusterNodeGroupUsingGET**](K8SClusterRestControllerV2Api.md#GetClusterNodeGroupUsingGET) | **Get** /v2/{projectId}/clusters/cluster-node-groups/{nodegroupId} | Get Cluster Node Group
 [**GetClusterUsingGET**](K8SClusterRestControllerV2Api.md#GetClusterUsingGET) | **Get** /v2/{projectId}/clusters/{clusterId} | Get cluster
 [**GetConfigUsingGET**](K8SClusterRestControllerV2Api.md#GetConfigUsingGET) | **Get** /v2/{projectId}/clusters/{clusterId}/config | Get Config
 [**GetConsoleUsingGET**](K8SClusterRestControllerV2Api.md#GetConsoleUsingGET) | **Get** /v2/{projectId}/clusters/nodes/{serverId}/console | Get Console
+[**GetEtcdPackageUsingGET**](K8SClusterRestControllerV2Api.md#GetEtcdPackageUsingGET) | **Get** /v2/{projectId}/clusters/etcd-package | List K8s ETCD Package
+[**GetFlavorLimitUsingGET**](K8SClusterRestControllerV2Api.md#GetFlavorLimitUsingGET) | **Get** /v2/{projectId}/clusters/flavor-limit | Get Flavor Limit
+[**GetK8sConfigUsingGET**](K8SClusterRestControllerV2Api.md#GetK8sConfigUsingGET) | **Get** /v2/{projectId}/clusters/k8s-config | Get K8s Config
+[**GetK8sDefaultFlavorIdUsingGET**](K8SClusterRestControllerV2Api.md#GetK8sDefaultFlavorIdUsingGET) | **Get** /v2/{projectId}/clusters/k8s-default-flavor | Get K8s Default Flavor Id
+[**GetK8sVolumeConfigUsingGET**](K8SClusterRestControllerV2Api.md#GetK8sVolumeConfigUsingGET) | **Get** /v2/{projectId}/clusters/k8s-volume-config | Get K8s Volume Config
 [**GetMaxNodeCountUsingGET**](K8SClusterRestControllerV2Api.md#GetMaxNodeCountUsingGET) | **Get** /v2/{projectId}/clusters/max-node-count | Get max node count
+[**GetNodeByIdUsingGET**](K8SClusterRestControllerV2Api.md#GetNodeByIdUsingGET) | **Get** /v2/{projectId}/clusters/{clusterId}/nodes/{nodeGroupId} | List node
+[**GetServerTaskStatusUsingGET**](K8SClusterRestControllerV2Api.md#GetServerTaskStatusUsingGET) | **Get** /v2/{projectId}/clusters/{clusterId}/server-task/{serverTaskId} | Get Server Task Status
 [**ListClusterNodeGroupUsingGET**](K8SClusterRestControllerV2Api.md#ListClusterNodeGroupUsingGET) | **Get** /v2/{projectId}/clusters/{clusterId}/cluster-node-groups | List Cluster Node Group
 [**ListClusterPoolByClusterUsingGET**](K8SClusterRestControllerV2Api.md#ListClusterPoolByClusterUsingGET) | **Get** /v2/{projectId}/clusters/{clusterId}/pools | List cluster pools
 [**ListClusterUsingGET**](K8SClusterRestControllerV2Api.md#ListClusterUsingGET) | **Get** /v2/{projectId}/clusters | List cluster
@@ -28,7 +35,7 @@ Method | HTTP request | Description
 
 
 # **AttachToLbUsingPOST**
-> DataResponseClusterDto AttachToLbUsingPOST(ctx, attachToLoadBalancerBackendRequest, clusterId, projectId)
+> DataResponseSimpleServerTaskDto AttachToLbUsingPOST(ctx, attachToLoadBalancerBackendRequest, clusterId, projectId)
 Attach Load Balancer
 
 ### Required Parameters
@@ -42,7 +49,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DataResponseClusterDto**](DataResponse«ClusterDto».md)
+[**DataResponseSimpleServerTaskDto**](DataResponse«SimpleServerTaskDto».md)
 
 ### Authorization
 
@@ -111,7 +118,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteClusterNodeGroupUsingDELETE**
-> DataResponseClusterNodeGroupDto DeleteClusterNodeGroupUsingDELETE(ctx, clusterId, deleteNodeGroupBackendRequest, projectId)
+> DataResponseClusterNodeGroupDto DeleteClusterNodeGroupUsingDELETE(ctx, nodeGroupId, projectId)
 Delete Cluster Node Group
 
 ### Required Parameters
@@ -119,9 +126,8 @@ Delete Cluster Node Group
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **clusterId** | **string**| The cluster id | 
-  **deleteNodeGroupBackendRequest** | [**DeleteNodeGroupBackendRequest**](DeleteNodeGroupBackendRequest.md)| deleteNodeGroupBackendRequest | 
-  **projectId** | **string**| THe project id | 
+  **nodeGroupId** | **string**| The cluster node group id | 
+  **projectId** | **string**| The project id | 
 
 ### Return type
 
@@ -273,6 +279,136 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **GetEtcdPackageUsingGET**
+> []K8SEtcdPackageEntity GetEtcdPackageUsingGET(ctx, projectId)
+List K8s ETCD Package
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **projectId** | **string**| The project id | 
+
+### Return type
+
+[**[]K8SEtcdPackageEntity**](K8SEtcdPackageEntity.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **GetFlavorLimitUsingGET**
+> string GetFlavorLimitUsingGET(ctx, projectId)
+Get Flavor Limit
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **projectId** | **string**| The project id | 
+
+### Return type
+
+**string**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **GetK8sConfigUsingGET**
+> string GetK8sConfigUsingGET(ctx, projectId)
+Get K8s Config
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **projectId** | **string**| the project id | 
+
+### Return type
+
+**string**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **GetK8sDefaultFlavorIdUsingGET**
+> string GetK8sDefaultFlavorIdUsingGET(ctx, projectId)
+Get K8s Default Flavor Id
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **projectId** | **string**| the project id | 
+
+### Return type
+
+**string**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **GetK8sVolumeConfigUsingGET**
+> string GetK8sVolumeConfigUsingGET(ctx, projectId)
+Get K8s Volume Config
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **projectId** | **string**| the project id | 
+
+### Return type
+
+**string**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **GetMaxNodeCountUsingGET**
 > int32 GetMaxNodeCountUsingGET(ctx, projectId)
 Get max node count
@@ -299,8 +435,64 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **GetNodeByIdUsingGET**
+> []ClusterNodeDto GetNodeByIdUsingGET(ctx, clusterId, nodeGroupId, projectId)
+List node
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **clusterId** | **string**| The cluster id | 
+  **nodeGroupId** | **string**| The node group id | 
+  **projectId** | **string**| The project Ii | 
+
+### Return type
+
+[**[]ClusterNodeDto**](ClusterNodeDto.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **GetServerTaskStatusUsingGET**
+> string GetServerTaskStatusUsingGET(ctx, clusterId, projectId, serverTaskId)
+Get Server Task Status
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **clusterId** | **string**| the cluster id | 
+  **projectId** | **string**| the project id | 
+  **serverTaskId** | **string**| the server task id | 
+
+### Return type
+
+**string**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **ListClusterNodeGroupUsingGET**
-> []ClusterNodeGroupDto ListClusterNodeGroupUsingGET(ctx, clusterId, projectId)
+> []SimpleClusterNodeGroupDto ListClusterNodeGroupUsingGET(ctx, clusterId, projectId)
 List Cluster Node Group
 
 ### Required Parameters
@@ -313,7 +505,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**[]ClusterNodeGroupDto**](ClusterNodeGroupDto.md)
+[**[]SimpleClusterNodeGroupDto**](SimpleClusterNodeGroupDto.md)
 
 ### Authorization
 
@@ -498,7 +690,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **ListSecgroupDefaultUsingGET**
-> []ClusterSecGroupDefaultDto ListSecgroupDefaultUsingGET(ctx, clusterId, projectId)
+> []ClusterSecgroupDefault ListSecgroupDefaultUsingGET(ctx, clusterId, projectId)
 List Secgroup Default
 
 ### Required Parameters
@@ -511,7 +703,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**[]ClusterSecGroupDefaultDto**](ClusterSecGroupDefaultDto.md)
+[**[]ClusterSecgroupDefault**](ClusterSecgroupDefault.md)
 
 ### Authorization
 

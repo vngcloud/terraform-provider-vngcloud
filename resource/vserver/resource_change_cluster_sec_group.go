@@ -24,10 +24,12 @@ func ResourceChangeClusterSecGroup() *schema.Resource {
 			"cluster_id": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"master": {
 				Type:     schema.TypeBool,
 				Required: true,
+				ForceNew: true,
 			},
 			"sec_group_id_list": {
 				Type:     schema.TypeList,
@@ -43,10 +45,12 @@ func ResourceChangeClusterSecGroup() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"id": {
-							Type: schema.TypeString,
+							Type:     schema.TypeString,
+							Computed: true,
 						},
 						"name": {
-							Type: schema.TypeString,
+							Type:     schema.TypeString,
+							Computed: true,
 						},
 					},
 				},
@@ -66,7 +70,8 @@ func resourceAddSecGroup(d *schema.ResourceData, m interface{}) error {
 	}
 	cli := m.(*client.Client)
 	var secGroupIdList []string
-	for _, secGroup := range d.Get("sec_group_id_list").([]string) {
+	for _, s := range d.Get("sec_group_id_list").([]interface{}) {
+		secGroup := s.(string)
 		secGroupIdList = append(secGroupIdList, secGroup)
 	}
 
@@ -93,7 +98,7 @@ func resourceAddSecGroup(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(clusterId)
-	return nil
+	return resourceReadSecGroup(d, m)
 }
 
 func resourceRemoveSecGroup(d *schema.ResourceData, m interface{}) error {
@@ -131,7 +136,7 @@ func resourceRemoveSecGroup(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(clusterId)
-	return nil
+	return resourceReadSecGroup(d, m)
 }
 
 func resourceReadSecGroup(d *schema.ResourceData, m interface{}) error {
@@ -154,6 +159,7 @@ func resourceReadSecGroup(d *schema.ResourceData, m interface{}) error {
 	}
 
 	respJSON, _ := json.Marshal(resp)
+	log.Printf("[DEBUG] %s: %s", typeOfNode, string(respJSON))
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
@@ -163,16 +169,18 @@ func resourceReadSecGroup(d *schema.ResourceData, m interface{}) error {
 
 	var secGroupList []map[string]string
 	var secGroupIdList []string
-	for _, s := range resp {
-		m := make(map[string]string)
-		m["id"] = s.SecGroupId
-		m["name"] = s.SecGroupName
-		secGroupIdList = append(secGroupIdList, s.SecGroupId)
-		secGroupList = append(secGroupList, m)
+	if len(resp) > 0 {
+		for _, s := range resp {
+			m := make(map[string]string)
+			m["id"] = s.SecGroupId
+			m["name"] = s.SecGroupName
+			secGroupIdList = append(secGroupIdList, s.SecGroupId)
+			secGroupList = append(secGroupList, m)
+		}
 	}
 
 	d.Set("cluster_id", clusterId)
-	d.Set("master", resp[0].Master)
+	d.Set("master", isMaster)
 	d.Set("sec_group_id_list", secGroupIdList)
 	d.Set("sec_group_list", secGroupList)
 
