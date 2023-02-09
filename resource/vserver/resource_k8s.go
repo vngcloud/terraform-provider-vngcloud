@@ -50,10 +50,6 @@ func ResourceK8s() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"description": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"k8s_version": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -68,10 +64,6 @@ func ResourceK8s() *schema.Resource {
 			"node_count": {
 				Type:     schema.TypeInt,
 				Required: true,
-			},
-			"enabled_lb": {
-				Type:     schema.TypeBool,
-				Optional: true,
 			},
 			"master_flavor_id": {
 				Type:     schema.TypeString,
@@ -128,10 +120,6 @@ func ResourceK8s() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"k8s_network_type": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 			"subnet_id": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -142,13 +130,13 @@ func ResourceK8s() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
-			"security_group": {
-				Type: schema.TypeList,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				Optional: true,
-			},
+			//"security_group": {
+			//	Type: schema.TypeList,
+			//	Elem: &schema.Schema{
+			//		Type: schema.TypeString,
+			//	},
+			//	Optional: true,
+			//},
 			"min_node_count": {
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -194,6 +182,10 @@ func ResourceK8s() *schema.Resource {
 			//		},
 			//	},
 			//},
+			"k8s_network_type": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"ssh_key_name": {
 				Type:     schema.TypeString,
 				Computed: true,
