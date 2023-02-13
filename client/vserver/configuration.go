@@ -61,12 +61,22 @@ type Configuration struct {
 func NewConfiguration(BasePath string, HTTPClient *http.Client) *Configuration {
 	cfg := &Configuration{
 		BasePath:      BasePath,
-		DefaultHeader: map[string]string{"portal-user-id": "11212"},
+		DefaultHeader: make(map[string]string),
 		HTTPClient:    HTTPClient,
 		UserAgent:     "terraform",
 	}
 	return cfg
 }
+
+//	func NewConfiguration(BasePath string, HTTPClient *http.Client) *Configuration {
+//		cfg := &Configuration{
+//			BasePath:      BasePath,
+//			DefaultHeader: map[string]string{"portal-user-id": "11212"},
+//			HTTPClient:    HTTPClient,
+//			UserAgent:     "terraform",
+//		}
+//		return cfg
+//	}
 func (c *Configuration) AddDefaultHeader(key string, value string) {
 	c.DefaultHeader[key] = value
 }

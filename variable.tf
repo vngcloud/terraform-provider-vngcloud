@@ -15,6 +15,7 @@ variable "image_id" {
   type = string
   default = "img-2aba43f5-281a-4978-81ee-824e68cb0fb4"
 }
+
 variable "flavor_id" {
   type = string
   default = "flav-b9b44c1b-5823-4069-a0a2-ffd5acbeccf7"
@@ -44,10 +45,10 @@ variable "ssh_key_id" {
   type = string
   default = "ssh-d07ddb73-19e6-43d0-8d13-2f291a793443"
 }
-variable "security_group_id_list" {
-  type = list(string)
-  default = ["secg-5c1e8e96-d106-4a91-8047-a76d1ae5ba9b", "secg-28aee6f4-a4f7-4a8c-a3f5-4f739ea14dcb"]
-}
+#variable "security_group_id_list" {
+#  type = list(string)
+#  default = ["secg-5c1e8e96-d106-4a91-8047-a76d1ae5ba9b", "secg-28aee6f4-a4f7-4a8c-a3f5-4f739ea14dcb"]
+#}
 
 variable "server_count" {
   type = number

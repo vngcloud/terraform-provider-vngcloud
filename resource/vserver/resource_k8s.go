@@ -130,13 +130,13 @@ func ResourceK8s() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
-			//"security_group": {
-			//	Type: schema.TypeList,
-			//	Elem: &schema.Schema{
-			//		Type: schema.TypeString,
-			//	},
-			//	Optional: true,
-			//},
+			"security_group": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional: true,
+			},
 			"min_node_count": {
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -338,10 +338,8 @@ func resourceK8sCreate(d *schema.ResourceData, m interface{}) error {
 		BootVolumeSize:           int32(d.Get("boot_volume_size").(int)),
 		BootVolumeTypeId:         d.Get("boot_volume_type_id").(string),
 		CalicoCidr:               d.Get("calico_cidr").(string),
-		Description:              d.Get("description").(string),
 		DockerVolumeSize:         int32(d.Get("docker_volume_size").(int)),
 		DockerVolumeTypeId:       d.Get("docker_volume_type_id").(string),
-		EnabledLb:                d.Get("enabled_lb").(bool),
 		EtcdVolumeSize:           int32(d.Get("etcd_volume_size").(int)),
 		EtcdVolumeTypeId:         d.Get("etcd_volume_type_id").(string),
 		IngressControllerEnabled: d.Get("ingress_controller").(bool),
