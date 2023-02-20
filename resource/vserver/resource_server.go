@@ -320,11 +320,6 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 		externalInterfaces = append(externalInterfaces, externalInterfaceMap)
 	}
 	d.Set("external_interfaces", externalInterfaces)
-	var securityGroups []string
-	for _, secGroup := range server.SecGroups {
-		securityGroups = append(securityGroups, secGroup.Uuid)
-	}
-	d.Set("security_group", securityGroups)
 	return nil
 }
 

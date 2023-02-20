@@ -78,10 +78,11 @@ func resourceServerGroupCreate(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceServerGroupUpdate(d *schema.ResourceData, m interface{}) error {
-	if d.HasChange("description") {
+	if d.HasChange("description") || d.HasChange("name") {
 		projectID := d.Get("project_id").(string)
 		updateServerGroupRequest := vserver.UpdateServerGroupRequestV2{
 			Description: d.Get("description").(string),
+			Name:        d.Get("name").(string),
 		}
 		cli := m.(*client.Client)
 		resp, httpResponse, _ := cli.VserverClient.ServerGroupRestControllerApi.UpdateServerGroupUsingPUT1(context.TODO(), projectID, d.Id(), updateServerGroupRequest)
