@@ -226,7 +226,7 @@ func ResourceK8sScalingNodeGroup(d *schema.ResourceData, m interface{}, nodegrou
 		NodeGroupId: nodegroupId,
 	}
 
-	resp, httpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.ScaleMinionUsingPOST(context.TODO(), clusterId, projectID, scaleMinionRequest)
+	resp, httpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.ScaleMinionUsingPOST(context.TODO(), clusterId, projectID, nodegroupId, scaleMinionRequest)
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)

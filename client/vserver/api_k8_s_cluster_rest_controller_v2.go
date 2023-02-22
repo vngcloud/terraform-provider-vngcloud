@@ -2339,7 +2339,7 @@ K8SClusterRestControllerV2ApiService Scale Minion
 
 @return DataResponseSimpleServerTaskDto
 */
-func (a *K8SClusterRestControllerV2ApiService) ScaleMinionUsingPOST(ctx context.Context, clusterId string, projectId string, scaleMinionBackendRequest ScaleMinionBackendRequest) (DataResponseSimpleServerTaskDto, *http.Response, error) {
+func (a *K8SClusterRestControllerV2ApiService) ScaleMinionUsingPOST(ctx context.Context, clusterId string, projectId string, nodeGroupId string, scaleMinionBackendRequest ScaleMinionBackendRequest) (DataResponseSimpleServerTaskDto, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Post")
 		localVarPostBody    interface{}
@@ -2349,9 +2349,10 @@ func (a *K8SClusterRestControllerV2ApiService) ScaleMinionUsingPOST(ctx context.
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v2/{projectId}/clusters/{clusterId}/scale-minion"
+	localVarPath := a.client.cfg.BasePath + "/v2/{projectId}/clusters/{clusterId}/scale-minion/{nodeGroupId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", fmt.Sprintf("%v", clusterId), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"projectId"+"}", fmt.Sprintf("%v", projectId), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"nodeGroupId"+"}", fmt.Sprintf("%v", nodeGroupId), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -2429,7 +2430,7 @@ K8SClusterRestControllerV2ApiService Update sec group
 
 @return DataResponseListClusterSecGroupDto
 */
-func (a *K8SClusterRestControllerV2ApiService) UpdateSecGroupUsingPUT(ctx context.Context, projectId string, updateClusterSecGroupRequest UpdateClusterSecGroupRequest) (DataResponseListClusterSecGroupDto, *http.Response, error) {
+func (a *K8SClusterRestControllerV2ApiService) UpdateSecGroupUsingPUT(ctx context.Context, projectId string, clusterId string, updateClusterSecGroupRequest UpdateClusterSecGroupRequest) (DataResponseListClusterSecGroupDto, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Put")
 		localVarPostBody    interface{}
@@ -2439,8 +2440,9 @@ func (a *K8SClusterRestControllerV2ApiService) UpdateSecGroupUsingPUT(ctx contex
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v2/{projectId}/clusters/sec-group"
+	localVarPath := a.client.cfg.BasePath + "/v2/{projectId}/clusters/{clusterId}/sec-group"
 	localVarPath = strings.Replace(localVarPath, "{"+"projectId"+"}", fmt.Sprintf("%v", projectId), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", fmt.Sprintf("%v", clusterId), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

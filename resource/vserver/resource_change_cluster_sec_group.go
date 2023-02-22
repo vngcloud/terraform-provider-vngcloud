@@ -39,22 +39,22 @@ func ResourceChangeClusterSecGroup() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"sec_group_list": {
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"id": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"name": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-					},
-				},
-			},
+			//"sec_group_list": {
+			//	Type:     schema.TypeList,
+			//	Computed: true,
+			//	Elem: &schema.Resource{
+			//		Schema: map[string]*schema.Schema{
+			//			"id": {
+			//				Type:     schema.TypeString,
+			//				Computed: true,
+			//			},
+			//			"name": {
+			//				Type:     schema.TypeString,
+			//				Computed: true,
+			//			},
+			//		},
+			//	},
+			//},
 		},
 	}
 }
@@ -81,7 +81,7 @@ func resourceAddSecGroup(d *schema.ResourceData, m interface{}) error {
 		SecGroupIds: secGroupIdList,
 	}
 
-	resp, httpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.UpdateSecGroupUsingPUT(context.TODO(), projectID, request)
+	resp, httpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.UpdateSecGroupUsingPUT(context.TODO(), projectID, clusterId, request)
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -119,7 +119,7 @@ func resourceRemoveSecGroup(d *schema.ResourceData, m interface{}) error {
 		SecGroupIds: secGroupIdList,
 	}
 
-	resp, httpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.UpdateSecGroupUsingPUT(context.TODO(), projectID, request)
+	resp, httpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.UpdateSecGroupUsingPUT(context.TODO(), projectID, clusterId, request)
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -167,22 +167,31 @@ func resourceReadSecGroup(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("error get list secgroup for %s cluster (%s) %s", typeOfNode, clusterId, err)
 	}
 
-	var secGroupList []map[string]string
+	//var secGroupList []map[string]string
+	securityGroupInterfaceRequest := d.Get("sec_group_id_list").([]interface{})
+	var secGroupIdListRequest []string
 	var secGroupIdList []string
+	for _, s := range securityGroupInterfaceRequest {
+		secGroupIdListRequest = append(secGroupIdListRequest, s.(string))
+	}
+
 	if len(resp) > 0 {
 		for _, s := range resp {
-			m := make(map[string]string)
-			m["id"] = s.SecGroupId
-			m["name"] = s.SecGroupName
 			secGroupIdList = append(secGroupIdList, s.SecGroupId)
-			secGroupList = append(secGroupList, m)
+			//m := make(map[string]string)
+			//m["id"] = s.SecGroupId
+			//m["name"] = s.SecGroupName
+			//secGroupList = append(secGroupList, m)
 		}
+	}
+
+	if !CheckListStringEqual(secGroupIdListRequest, secGroupIdList) {
+		d.Set("sec_group_id_list", secGroupIdList)
 	}
 
 	d.Set("cluster_id", clusterId)
 	d.Set("master", isMaster)
-	d.Set("sec_group_id_list", secGroupIdList)
-	d.Set("sec_group_list", secGroupList)
+	//d.Set("sec_group_list", secGroupList)
 
 	d.SetId(clusterId)
 	return nil

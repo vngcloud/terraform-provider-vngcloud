@@ -140,10 +140,12 @@ func ResourceK8s() *schema.Resource {
 			"min_node_count": {
 				Type:     schema.TypeInt,
 				Optional: true,
+				ForceNew: true,
 			},
 			"max_node_count": {
 				Type:     schema.TypeInt,
 				Optional: true,
+				ForceNew: true,
 			},
 			"auto_scaling": {
 				Type:     schema.TypeBool,
