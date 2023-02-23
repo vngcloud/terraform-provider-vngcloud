@@ -147,6 +147,11 @@ func ResourceK8s() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"enable_lb": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+			},
 			"auto_scaling": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -342,6 +347,7 @@ func resourceK8sCreate(d *schema.ResourceData, m interface{}) error {
 		CalicoCidr:               d.Get("calico_cidr").(string),
 		DockerVolumeSize:         int32(d.Get("docker_volume_size").(int)),
 		DockerVolumeTypeId:       d.Get("docker_volume_type_id").(string),
+		EnabledLb:                d.Get("enable_lb").(bool),
 		EtcdVolumeSize:           int32(d.Get("etcd_volume_size").(int)),
 		EtcdVolumeTypeId:         d.Get("etcd_volume_type_id").(string),
 		IngressControllerEnabled: d.Get("ingress_controller").(bool),
@@ -439,22 +445,39 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 	minionSecgroupDefault := respSecGroup[0].Minion
 	config := respConfig.Configuration
 
-	d.Set("name", cluster.Name)
-	d.Set("master_count", cluster.MasterCount)
-	d.Set("node_count", cluster.NodeCount)
-	d.Set("master_flavor_name", cluster.MasterFlavorName)
-	d.Set("node_flavor_name", cluster.NodeFlavorName)
-	d.Set("ssh_key_name", cluster.SshKeyName)
-	d.Set("etcd_volume_size", cluster.EtcdVolumeSize)
-	d.Set("boot_volume_size", cluster.BootVolumeSize)
-	d.Set("docker_volume_size", cluster.DockerVolumeSize)
-	d.Set("k8s_network_type", cluster.K8sNetworkType)
-	d.Set("k8s_version_name", cluster.K8sVersion)
 	d.Set("auto_healing", cluster.AutoHealingEnabled)
 	d.Set("auto_monitoring", cluster.AutoMonitoringEnabled)
 	d.Set("auto_scaling", cluster.AutoScalingEnabled)
+	d.Set("boot_volume_size", cluster.BootVolumeSize)
+	d.Set("boot_volume_type_id", cluster.BootVolumeTypeId)
+	d.Set("calico_cidr", cluster.CalicoCidr)
+	d.Set("docker_volume_size", cluster.DockerVolumeSize)
+	d.Set("docker_volume_type_id", cluster.DockerVolumeTypeId)
+	d.Set("enable_lb", cluster.EnabledLb)
 	d.Set("end_point", cluster.Endpoint)
+	d.Set("etcd_volume_size", cluster.EtcdVolumeSize)
+	d.Set("etcd_volume_type_id", cluster.EtcdVolumeTypeId)
+	d.Set("id", cluster.ClusterId)
+	d.Set("ingress_controller", cluster.IngressControllerEnabled)
+	d.Set("ipip_mode", "Always")
+	d.Set("k8s_network_type", cluster.K8sNetworkType)
+	d.Set("network_type", cluster.K8sNetworkTypeId)
+	d.Set("k8s_version_name", cluster.K8sVersion)
+	d.Set("k8s_version", cluster.K8sVersionId)
+	d.Set("master_count", cluster.MasterCount)
+	d.Set("master_flavor_name", cluster.MasterFlavorName)
+	d.Set("master_flavor_id", cluster.MasterFlavorId)
+	d.Set("max_node_count", cluster.MaxNodeCount)
+	d.Set("min_node_count", cluster.MinNodeCount)
+	d.Set("name", cluster.Name)
+	d.Set("network_id", cluster.NetworkId)
+	d.Set("node_count", cluster.NodeCount)
+	d.Set("node_flavor_name", cluster.NodeFlavorName)
+	d.Set("node_flavor_id", cluster.NodeFlavorId)
 	d.Set("node_group_default_id", cluster.NodegroupDefaultId)
+	d.Set("ssh_key_name", cluster.SshKeyName)
+	d.Set("ssh_key", cluster.SshKeyId)
+	d.Set("subnet_id", cluster.SubnetId)
 	d.Set("config", config)
 	d.Set("secgroup_default_master", flattenClusterSecGroupDefault(masterSecgroupDefault))
 	d.Set("secgroup_default_minion", flattenClusterSecGroupDefault(minionSecgroupDefault))

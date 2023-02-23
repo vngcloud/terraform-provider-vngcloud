@@ -43,7 +43,8 @@ The following arguments are supported:
 
 - **project_id** (String, Required) ID of the Project.
 - **ipip_mode** (String, Required) IPIP Encapsulation Mode. It can be `Always`.
-- **k8s_version** (String, Required) Name of Cluster.
+- **name** (String, Required) Name of Cluster.
+- **k8s_version** (String, Required) Version of Cluster.
 - **master_count** (Number, Required) Number of master node. It can be `1`, `3` or `5`.
 - **node_count** (Number, Required) Number of minion node.
 - **master_flavor_id** (String, Required) ID of the flavor of the Master Node.
@@ -59,6 +60,7 @@ The following arguments are supported:
 - **network_id** (String, Required) ID of the network.
 - **subnet_id** (String, Required) ID of the subnet.
 - **ssh_key** (String, Optional) ID of SSH key
+- **enable_lb** (Boolean, Optional) Enable HA (allow to have 3 or 5 master nodes). Default value is `false`.
 - **auto_scaling** (Boolean, Optional) Enable Auto Scaling. Default value is `false`.
 - **auto_healing** (Boolean, Optional) Enable Auto Healing. Default value is `false`.
 - **ingress_controller** (Boolean, Optional) Enable Ingress Controller. Default value is `false`.
