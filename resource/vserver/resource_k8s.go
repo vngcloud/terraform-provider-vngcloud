@@ -127,7 +127,7 @@ func ResourceK8s() *schema.Resource {
 			},
 			"ssh_key_id": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Required: true,
 				ForceNew: true,
 			},
 			"security_group": {
@@ -444,21 +444,46 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 	masterSecgroupDefault := respSecGroup[0].Master
 	minionSecgroupDefault := respSecGroup[0].Minion
 	config := respConfig.Configuration
+	if cluster.AutoHealingEnabled {
+		d.Set("auto_healing", cluster.AutoHealingEnabled)
+	} else {
+		d.Set("auto_healing", nil)
+	}
 
-	d.Set("auto_healing", cluster.AutoHealingEnabled)
-	d.Set("auto_monitoring", cluster.AutoMonitoringEnabled)
-	d.Set("auto_scaling", cluster.AutoScalingEnabled)
+	if cluster.AutoMonitoringEnabled {
+		d.Set("auto_monitoring", cluster.AutoMonitoringEnabled)
+	} else {
+		d.Set("auto_monitoring", nil)
+	}
+
+	if cluster.AutoScalingEnabled {
+		d.Set("auto_scaling", cluster.AutoScalingEnabled)
+	} else {
+		d.Set("auto_scaling", nil)
+	}
+
+	if cluster.EnabledLb {
+		d.Set("enable_lb", cluster.EnabledLb)
+	} else {
+		d.Set("enable_lb", nil)
+	}
+
 	d.Set("boot_volume_size", cluster.BootVolumeSize)
 	d.Set("boot_volume_type_id", cluster.BootVolumeTypeId)
 	d.Set("calico_cidr", cluster.CalicoCidr)
 	d.Set("docker_volume_size", cluster.DockerVolumeSize)
 	d.Set("docker_volume_type_id", cluster.DockerVolumeTypeId)
-	d.Set("enable_lb", cluster.EnabledLb)
 	d.Set("end_point", cluster.Endpoint)
 	d.Set("etcd_volume_size", cluster.EtcdVolumeSize)
 	d.Set("etcd_volume_type_id", cluster.EtcdVolumeTypeId)
 	d.Set("id", cluster.ClusterId)
-	d.Set("ingress_controller", cluster.IngressControllerEnabled)
+
+	if cluster.IngressControllerEnabled {
+		d.Set("ingress_controller", cluster.IngressControllerEnabled)
+	} else {
+		d.Set("ingress_controller", nil)
+	}
+
 	d.Set("ipip_mode", "Always")
 	d.Set("k8s_network_type", cluster.K8sNetworkType)
 	d.Set("network_type", cluster.K8sNetworkTypeId)
@@ -467,8 +492,17 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("master_count", cluster.MasterCount)
 	d.Set("master_flavor_name", cluster.MasterFlavorName)
 	d.Set("master_flavor_id", cluster.MasterFlavorId)
-	d.Set("max_node_count", cluster.MaxNodeCount)
-	d.Set("min_node_count", cluster.MinNodeCount)
+	if cluster.MaxNodeCount != 0 {
+		d.Set("max_node_count", cluster.MaxNodeCount)
+	} else {
+		d.Set("max_node_count", nil)
+	}
+
+	if cluster.MinNodeCount != 0 {
+		d.Set("min_node_count", cluster.MinNodeCount)
+	} else {
+		d.Set("min_node_count", nil)
+	}
 	d.Set("name", cluster.Name)
 	d.Set("network_id", cluster.NetworkId)
 	d.Set("node_count", cluster.NodeCount)
@@ -476,7 +510,7 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("node_flavor_id", cluster.NodeFlavorId)
 	d.Set("node_group_default_id", cluster.NodegroupDefaultId)
 	d.Set("ssh_key_name", cluster.SshKeyName)
-	d.Set("ssh_key", cluster.SshKeyId)
+	d.Set("ssh_key_id", cluster.SshKeyId)
 	d.Set("subnet_id", cluster.SubnetId)
 	d.Set("config", config)
 	d.Set("secgroup_default_master", flattenClusterSecGroupDefault(masterSecgroupDefault))

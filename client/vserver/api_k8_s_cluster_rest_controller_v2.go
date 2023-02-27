@@ -482,13 +482,13 @@ K8SClusterRestControllerV2ApiService Get Cluster Node Group
 
 @return ClusterNodeGroupDto
 */
-func (a *K8SClusterRestControllerV2ApiService) GetClusterNodeGroupUsingGET(ctx context.Context, nodegroupId string, projectId string) (ClusterNodeGroupDto, *http.Response, error) {
+func (a *K8SClusterRestControllerV2ApiService) GetClusterNodeGroupUsingGET(ctx context.Context, nodegroupId string, projectId string) (DataResponseClusterNodeGroupDto, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Get")
 		localVarPostBody    interface{}
 		localVarFileName    string
 		localVarFileBytes   []byte
-		localVarReturnValue ClusterNodeGroupDto
+		localVarReturnValue DataResponseClusterNodeGroupDto
 	)
 
 	// create path and map variables
@@ -546,7 +546,7 @@ func (a *K8SClusterRestControllerV2ApiService) GetClusterNodeGroupUsingGET(ctx c
 		}
 
 		if localVarHttpResponse.StatusCode == 200 {
-			var v ClusterNodeGroupDto
+			var v DataResponseClusterNodeGroupDto
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

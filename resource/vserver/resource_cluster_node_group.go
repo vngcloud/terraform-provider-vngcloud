@@ -99,14 +99,14 @@ func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error
 		Pending:    clusterNodeGroupCreating,
 		Target:     clusterNodeGroupCreated,
 		Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, resp.Data.Uuid, projectId),
-		Timeout:    25 * time.Minute,
+		Timeout:    20 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
 
 	_, err = stateConf.WaitForState()
 	if err != nil {
-		fmt.Errorf("error waiting for create cluster node group (%s) %s", resp.Data.Uuid, err)
+		return fmt.Errorf("error waiting for create cluster node group (%s) %s", resp.Data.Uuid, err)
 	}
 	d.SetId(resp.Data.Uuid)
 	return resourceClusterNodeGroupRead(d, m)
@@ -122,7 +122,7 @@ func resourceClusterNodeGroupStateRefreshFunc(cli *client.Client, nodegroupId st
 		log.Printf("-------------------------------------\n")
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
-		clusterNodegroup := resp
+		clusterNodegroup := resp.Data
 		return clusterNodegroup, clusterNodegroup.Status, nil
 	}
 }
@@ -145,7 +145,7 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	nodeGroup := resp
+	nodeGroup := resp.Data
 	d.Set("name", nodeGroup.Name)
 	d.Set("cluster_id", nodeGroup.ClusterId)
 	d.Set("node_count", nodeGroup.NodeCount)
@@ -210,7 +210,7 @@ func resourceClusterNodeGroupDeleteStateRefreshFunc(cli *client.Client, nodegrou
 		log.Printf("-------------------------------------\n")
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
-		nodeGroup := resp
+		nodeGroup := resp.Data
 		return nodeGroup, nodeGroup.Status, nil
 	}
 }
