@@ -41,4 +41,18 @@ In addition to all arguments above, the following attributes are exported:
 - **status** (String) Status of the Node Group
 
 
+## IAM Policy
+### Create:
+In order to **create Cluster Node Group**, user must have been granted permissions below:
+- CreateClusterNodeGroups
+- GetClusterNodeGroups
+
+### Delete
+In order to **delete Cluster Node Group**, user must have been granted permissions below:
+- DeleteClusterNodeGroups
+
+### Update
+In order to **update Cluster Node Group** (scaling Minion for Node Group), user must have been granted permissions below:
+- ScaleMinionCluster
+
 

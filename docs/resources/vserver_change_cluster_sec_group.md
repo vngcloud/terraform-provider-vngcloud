@@ -41,4 +41,15 @@ In addition to all arguments above, the following attributes are exported:
   - **name** (String) Name of Sec Group.
 
 
+## IAM Policy
+### Update:
+In order to **update Security Group for K8s**, user must have been granted permissions below:
+- UpdateClusterSecGroup
+- ListClusterSecGroup
+
+### Delete
+In order to **remove Security Group for K8s**, user must have been granted permissions below:
+- UpdateClusterSecGroup
+- ListClusterSecGroup
+
 

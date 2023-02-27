@@ -61,5 +61,17 @@ The following arguments are supported:
     - **port** (Number, Required) port of Minion.
 
 
+## IAM Policy
+### Create:
+In order to **attach Load Balancer for K8s**, user must have been granted permissions below:
+- AttachLoadBalancerToCluster
+- ListClusterPools
+
+### Delete
+In order to **remove Security Group for K8s**, user must have been granted permissions below:
+- AttachLoadBalancerToCluster
+- ListClusterPools
+
+
 
 

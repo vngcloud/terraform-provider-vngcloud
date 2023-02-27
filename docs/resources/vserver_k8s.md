@@ -100,5 +100,20 @@ In addition to all arguments above, the following attributes are exported:
 - **master_flavor_name** (String) Name of Master Node Flavor.
 - **ssh_key_name** (String) Name of SSH Key.
 
+## IAM Policy
+### Create: 
+In order to **create K8s**, user must have been granted permissions below:
+  - CreateCluster
+  - GetCluster
+  - ListClusterSecGroupDefault
+  - GetClusterConfig
 
+### Delete
+In order to **delete K8s**, user must have been granted permissions below:
+- DeleteCluster
 
+### Update
+In order to **update K8s** (scaling Minion for Default Node Group), user must have been granted permissions below:
+  - ScaleMinionCluster
+  - ListClusterSecGroupDefault
+  - GetClusterConfig
