@@ -146,11 +146,13 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 	nodeGroup := resp.Data
+	d.Set("project_id", nodeGroup.ProjectId)
 	d.Set("name", nodeGroup.Name)
 	d.Set("cluster_id", nodeGroup.ClusterId)
+	d.Set("flavor_id", nodeGroup.FlavorId)
+	d.Set("flavor_name", nodeGroup.FlavorName)
 	d.Set("node_count", nodeGroup.NodeCount)
 	d.Set("status", nodeGroup.Status)
-	d.Set("flavor_name", nodeGroup.FlavorName)
 	return nil
 }
 
