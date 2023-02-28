@@ -99,7 +99,7 @@ func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error
 		Pending:    clusterNodeGroupCreating,
 		Target:     clusterNodeGroupCreated,
 		Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, resp.Data.Uuid, projectId),
-		Timeout:    20 * time.Minute,
+		Timeout:    60 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
@@ -244,7 +244,7 @@ func ResourceK8sScalingNodeGroup(d *schema.ResourceData, m interface{}, nodegrou
 		Pending:    clusterNodeGroupScaling,
 		Target:     clusterNodeGroupScaled,
 		Refresh:    resourceServerTaskStateRefreshFunc(cli, clusterId, projectID, resp.Data.Id),
-		Timeout:    d.Timeout(schema.TimeoutCreate),
+		Timeout:    60 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}

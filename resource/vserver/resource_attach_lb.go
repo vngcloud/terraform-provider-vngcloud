@@ -109,7 +109,7 @@ func resourceClusterLbAttach(d *schema.ResourceData, m interface{}) error {
 		Pending:    k8sClusterAttachingLB,
 		Target:     k8sClusterAttachedLB,
 		Refresh:    resourceServerTaskStateRefreshFunc(cli, clusterID, projectID, resp.Data.Id),
-		Timeout:    50 * time.Minute,
+		Timeout:    60 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}

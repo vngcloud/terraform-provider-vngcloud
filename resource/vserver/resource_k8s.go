@@ -387,7 +387,7 @@ func resourceK8sCreate(d *schema.ResourceData, m interface{}) error {
 		Pending:    k8sClusterCreating,
 		Target:     k8sClusterCreated,
 		Refresh:    resourceK8sClusterStateRefreshFunc(cli, resp.Data.Uuid, projectId),
-		Timeout:    60 * time.Minute,
+		Timeout:    180 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
