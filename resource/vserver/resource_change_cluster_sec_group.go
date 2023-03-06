@@ -111,7 +111,7 @@ func resourceRemoveSecGroup(d *schema.ResourceData, m interface{}) error {
 		typeOfNode = "minion"
 	}
 	cli := m.(*client.Client)
-	var secGroupIdList []string
+	var secGroupIdList = make([]string, 0)
 
 	request := vserver.UpdateClusterSecGroupRequest{
 		ClusterId:   clusterId,
