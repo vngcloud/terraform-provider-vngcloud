@@ -155,8 +155,7 @@ func resourceSecgroupRuleDelete(d *schema.ResourceData, m interface{}) error {
 	SecurityGroupId := d.Get("security_group_id").(string)
 	cli := m.(*client.Client)
 	cli.VserverClient.SecgroupRuleRestControllerApi.DeleteSecgroupRuleUsingDELETE1(context.TODO(), projectID, SecgroupRuleId, SecurityGroupId)
-
-	return resource.Retry(10*time.Second, func() *resource.RetryError {
+	return resource.Retry(3*time.Minute, func() *resource.RetryError {
 		_, httpResponse, _ := cli.VserverClient.SecgroupRuleRestControllerApi.GetSecgroupRuleUsingGET1(context.TODO(), projectID, SecgroupRuleId, SecurityGroupId)
 		if httpResponse.StatusCode != http.StatusNotFound {
 			d.SetId("")
