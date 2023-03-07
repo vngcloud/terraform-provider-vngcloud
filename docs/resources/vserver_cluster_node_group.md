@@ -45,14 +45,14 @@ In addition to all arguments above, the following attributes are exported:
 ### Create:
 In order to **create Cluster Node Group**, user must have been granted permissions below:
 - CreateClusterNodeGroups
-- GetClusterNodeGroups
+- GetClusterNodeGroups (specify by **all resources**)
 
 ### Delete
 In order to **delete Cluster Node Group**, user must have been granted permissions below:
-- DeleteClusterNodeGroups
+- DeleteClusterNodeGroups (specify by **node group Id**)
 
 ### Update
 In order to **update Cluster Node Group** (scaling Minion for Node Group), user must have been granted permissions below:
-- ScaleMinionCluster
+- ScaleMinionCluster (specify by **cluster Id**, **node group Id**)
 
 

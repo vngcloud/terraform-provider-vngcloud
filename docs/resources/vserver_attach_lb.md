@@ -64,13 +64,13 @@ The following arguments are supported:
 ## IAM Policy
 ### Create:
 In order to **attach Load Balancer for K8s**, user must have been granted permissions below:
-- AttachLoadBalancerToCluster
-- ListClusterPools
+- AttachLoadBalancerToCluster (specify by **cluster Id**)
+- ListClusterPools (specify by **cluster Id**)
 
 ### Delete
-In order to **remove Security Group for K8s**, user must have been granted permissions below:
-- AttachLoadBalancerToCluster
-- ListClusterPools
+In order to **Detach Load Balancer out of K8s**, user must have been granted permissions below:
+- AttachLoadBalancerToCluster (specify by **cluster Id**)
+- ListClusterPools (specify by **cluster Id**)
 
 
 

@@ -44,12 +44,12 @@ In addition to all arguments above, the following attributes are exported:
 ## IAM Policy
 ### Update:
 In order to **update Security Group for K8s**, user must have been granted permissions below:
-- UpdateClusterSecGroup
-- ListClusterSecGroup
+- UpdateClusterSecGroup (specify by **cluster Id**)
+- ListClusterSecGroup (specify by **cluster Id**)
 
 ### Delete
 In order to **remove Security Group for K8s**, user must have been granted permissions below:
-- UpdateClusterSecGroup
-- ListClusterSecGroup
+- UpdateClusterSecGroup (specify by **cluster Id**)
+- ListClusterSecGroup (specify by **cluster Id**)
 
 

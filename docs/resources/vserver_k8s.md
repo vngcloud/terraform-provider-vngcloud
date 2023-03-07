@@ -104,13 +104,13 @@ In addition to all arguments above, the following attributes are exported:
 ### Create: 
 In order to **create K8s**, user must have been granted permissions below:
   - CreateCluster
-  - GetCluster
-  - ListClusterSecGroupDefault
-  - GetClusterConfig
+  - GetCluster (specify by **all resources**)
+  - ListClusterSecGroupDefault (specify by **all resources**)
+  - GetClusterConfig (specify by **all resources**)
 
 ### Delete
 In order to **delete K8s**, user must have been granted permissions below:
-- DeleteCluster
+- DeleteCluster (specify by **cluster Id**)
 
 ### Update
 In order to **update K8s** (scaling Minion for Default Node Group), user must have been granted permissions below:
