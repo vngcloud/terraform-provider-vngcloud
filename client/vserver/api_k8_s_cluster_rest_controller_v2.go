@@ -2083,7 +2083,7 @@ func (a *K8SClusterRestControllerV2ApiService) ListSecGroupUsingGET(ctx context.
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v2/{projectId}/clusters/{clusterId}/sec-group/{type}"
+	localVarPath := a.client.cfg.BasePath + "/v2/{projectId}/clusters/{clusterId}/sec-group/master/{type}"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", fmt.Sprintf("%v", clusterId), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"projectId"+"}", fmt.Sprintf("%v", projectId), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"type"+"}", fmt.Sprintf("%v", type_), -1)
