@@ -50,6 +50,10 @@ func ResourceK8s() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"description": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"k8s_version": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -347,6 +351,7 @@ func resourceK8sCreate(d *schema.ResourceData, m interface{}) error {
 		CalicoCidr:               d.Get("calico_cidr").(string),
 		DockerVolumeSize:         int32(d.Get("docker_volume_size").(int)),
 		DockerVolumeTypeId:       d.Get("docker_volume_type_id").(string),
+		Description:              d.Get("description").(string),
 		EnabledLb:                d.Get("enable_lb").(bool),
 		EtcdVolumeSize:           int32(d.Get("etcd_volume_size").(int)),
 		EtcdVolumeTypeId:         d.Get("etcd_volume_type_id").(string),
@@ -471,6 +476,7 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("boot_volume_size", cluster.BootVolumeSize)
 	d.Set("boot_volume_type_id", cluster.BootVolumeTypeId)
 	d.Set("calico_cidr", cluster.CalicoCidr)
+	d.Set("description", cluster.Description)
 	d.Set("docker_volume_size", cluster.DockerVolumeSize)
 	d.Set("docker_volume_type_id", cluster.DockerVolumeTypeId)
 	d.Set("end_point", cluster.Endpoint)
