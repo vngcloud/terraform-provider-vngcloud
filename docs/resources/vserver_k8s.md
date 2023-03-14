@@ -44,6 +44,7 @@ The following arguments are supported:
 - **project_id** (String, Required) ID of the Project.
 - **ipip_mode** (String, Required) IPIP Encapsulation Mode. It can be `Always`.
 - **name** (String, Required) Name of Cluster.
+- **description** (String, Optional) Description of Cluster.
 - **k8s_version** (String, Required) Version of Cluster.
 - **master_count** (Number, Required) Number of master node. It can be `1`, `3` or `5`.
 - **node_count** (Number, Required) Number of minion node.
