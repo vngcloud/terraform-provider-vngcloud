@@ -451,26 +451,18 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 	config := respConfig.Configuration
 	if cluster.AutoHealingEnabled {
 		d.Set("auto_healing", cluster.AutoHealingEnabled)
-	} else {
-		d.Set("auto_healing", nil)
 	}
 
 	if cluster.AutoMonitoringEnabled {
 		d.Set("auto_monitoring", cluster.AutoMonitoringEnabled)
-	} else {
-		d.Set("auto_monitoring", nil)
 	}
 
 	if cluster.AutoScalingEnabled {
 		d.Set("auto_scaling", cluster.AutoScalingEnabled)
-	} else {
-		d.Set("auto_scaling", nil)
 	}
 
 	if cluster.EnabledLb {
 		d.Set("enable_lb", cluster.EnabledLb)
-	} else {
-		d.Set("enable_lb", nil)
 	}
 
 	d.Set("boot_volume_size", cluster.BootVolumeSize)
@@ -486,8 +478,6 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 
 	if cluster.IngressControllerEnabled {
 		d.Set("ingress_controller", cluster.IngressControllerEnabled)
-	} else {
-		d.Set("ingress_controller", nil)
 	}
 
 	d.Set("ipip_mode", "Always")
@@ -498,17 +488,14 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("master_count", cluster.MasterCount)
 	d.Set("master_flavor_name", cluster.MasterFlavorName)
 	d.Set("master_flavor_id", cluster.MasterFlavorId)
-	if cluster.MaxNodeCount != 0 {
+	if cluster.AutoScalingEnabled {
 		d.Set("max_node_count", cluster.MaxNodeCount)
-	} else {
-		d.Set("max_node_count", nil)
 	}
 
-	if cluster.MinNodeCount != 0 {
+	if cluster.AutoScalingEnabled {
 		d.Set("min_node_count", cluster.MinNodeCount)
-	} else {
-		d.Set("min_node_count", nil)
 	}
+
 	d.Set("name", cluster.Name)
 	d.Set("network_id", cluster.NetworkId)
 	d.Set("node_count", cluster.NodeCount)
@@ -529,6 +516,11 @@ func resourceK8sUpdate(d *schema.ResourceData, m interface{}) error {
 		nodeGroupDefaultId := d.Get("node_group_default_id").(string)
 		clusterId := d.Id()
 		return ResourceK8sScalingNodeGroup(d, m, nodeGroupDefaultId, clusterId)
+	}
+
+	if d.HasChange("description") {
+		clusterId := d.Id()
+		return ResourceK8sUpdateDescription(d, m, clusterId)
 	}
 
 	return resourceK8sRead(d, m)
@@ -562,6 +554,36 @@ func resourceK8sDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	d.SetId("")
 	return nil
+}
+
+func ResourceK8sUpdateDescription(d *schema.ResourceData, m interface{}, clusterId string) error {
+	projectID := d.Get("project_id").(string)
+	cli := m.(*client.Client)
+
+	_, n := d.GetChange("description")
+	updateClusterDescriptionRequest := vserver.UpdateClusterDescriptionRequest{
+		ClusterId:   clusterId,
+		Description: n.(string),
+	}
+
+	resp, httpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.UpdateClusterDescriptionUsingPut(context.TODO(), projectID, clusterId, updateClusterDescriptionRequest)
+
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
+		return errResponse
+	}
+
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
+	if err != nil {
+		return fmt.Errorf("error updating description for cluster (%s) %s", clusterId, err)
+	}
+
+	d.SetId(clusterId)
+	return resourceK8sRead(d, m)
 }
 
 func resourceK8sClusterStateRefreshFunc(cli *client.Client, clusterId string, projectId string) resource.StateRefreshFunc {
