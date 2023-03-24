@@ -217,7 +217,7 @@ func ResourceK8s() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"k8s_config": {
+			"config": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -505,7 +505,7 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("ssh_key_name", cluster.SshKeyName)
 	d.Set("ssh_key_id", cluster.SshKeyId)
 	d.Set("subnet_id", cluster.SubnetId)
-	d.Set("k8s_config", config)
+	d.Set("config", config)
 	d.Set("secgroup_default_master", flattenClusterSecGroupDefault(masterSecgroupDefault))
 	d.Set("secgroup_default_minion", flattenClusterSecGroupDefault(minionSecgroupDefault))
 	return nil
