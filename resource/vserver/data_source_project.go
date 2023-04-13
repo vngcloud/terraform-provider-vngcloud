@@ -24,9 +24,11 @@ func DataSourceProject() *schema.Resource {
 func dataSourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	// id := d.Get("project_id").(string)
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ProjectRestControllerApi.ListProjectUsingGET(context.TODO())
-	if err != nil {
-		return err
+	resp, httpResponse, _ := cli.VserverClient.ProjectRestControllerApi.ListProjectUsingGET(context.TODO())
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")

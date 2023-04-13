@@ -50,9 +50,11 @@ func dataSourceVolumeTypeRead(d *schema.ResourceData, m interface{}) error {
 	zoneID := d.Get("volume_type_zone_id").(string)
 	name := d.Get("name").(string)
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.VolumeTypeRestControllerApi.ListVolumeTypeUsingGET(context.TODO(), projectID, zoneID)
-	if err != nil {
-		return err
+	resp, httpResponse, _ := cli.VserverClient.VolumeTypeRestControllerApi.ListVolumeTypeUsingGET(context.TODO(), projectID, zoneID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
