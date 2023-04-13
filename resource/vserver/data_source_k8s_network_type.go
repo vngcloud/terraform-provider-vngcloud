@@ -34,21 +34,18 @@ func dataSourceK8sNetworkTypeRead(d *schema.ResourceData, m interface{}) error {
 	k8sNetworkTypeName := d.Get("name").(string)
 	cli := m.(*client.Client)
 
-	resp, httpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.ListK8sNetworkTypeUsingGET(context.TODO(), projectID)
-
-	if err != nil {
-		return err
-	}
-	respJSON, _ := json.Marshal(resp)
-	log.Printf("-------------------------------------\n")
-	log.Printf("%s\n", string(respJSON))
-	log.Printf("-------------------------------------\n")
+	resp, httpResponse, _ := cli.VserverClient.K8SClusterRestControllerApi.ListK8sNetworkTypeUsingGET(context.TODO(), projectID)
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		err := fmt.Errorf("request fail with errMsg: %s", responseBody)
 		return err
 	}
+
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
 
 	for _, k8sNetworkType := range resp {
 		if k8sNetworkType.Name == k8sNetworkTypeName {
