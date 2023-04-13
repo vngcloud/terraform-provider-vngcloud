@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func ResourceSecgroupRule() *schema.Resource {
@@ -130,8 +131,6 @@ func resourceSecgroupRuleRead(d *schema.ResourceData, m interface{}) error {
 	resp, httpResponse, _ := cli.VserverClient.SecgroupRuleRestControllerApi.GetSecgroupRuleUsingGET1(context.TODO(), projectID, SecgroupRuleID, SecurityGroupId)
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
-		//api get sec group rule 403
-		log.Printf("tunm4new", responseBody, httpResponse.StatusCode)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		return errorResponse
 	}
@@ -155,12 +154,19 @@ func resourceSecgroupRuleDelete(d *schema.ResourceData, m interface{}) error {
 	SecgroupRuleId := d.Id()
 	SecurityGroupId := d.Get("security_group_id").(string)
 	cli := m.(*client.Client)
-	httpResponse, _ := cli.VserverClient.SecgroupRuleRestControllerApi.DeleteSecgroupRuleUsingDELETE1(context.TODO(), projectID, SecgroupRuleId, SecurityGroupId)
-	if CheckErrorResponse(httpResponse) {
-		responseBody := GetResponseBody(httpResponse)
-		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
-		return errorResponse
-	}
-	d.SetId("")
-	return nil
+	cli.VserverClient.SecgroupRuleRestControllerApi.DeleteSecgroupRuleUsingDELETE1(context.TODO(), projectID, SecgroupRuleId, SecurityGroupId)
+	return resource.Retry(3*time.Minute, func() *resource.RetryError {
+		_, httpResponse, _ := cli.VserverClient.SecgroupRuleRestControllerApi.GetSecgroupRuleUsingGET1(context.TODO(), projectID, SecgroupRuleId, SecurityGroupId)
+		if httpResponse.StatusCode != http.StatusNotFound {
+			d.SetId("")
+			return nil
+		}
+		httpResponse, _ = cli.VserverClient.SecgroupRuleRestControllerApi.DeleteSecgroupRuleUsingDELETE1(context.TODO(), projectID, SecgroupRuleId, SecurityGroupId)
+		if CheckErrorResponse(httpResponse) {
+			return resource.RetryableError(fmt.Errorf("Error when refreshing security group rule state: %s", GetResponseBody(httpResponse)))
+		} else {
+			d.SetId("")
+			return nil
+		}
+	})
 }

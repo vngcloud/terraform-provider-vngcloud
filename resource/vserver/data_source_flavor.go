@@ -54,9 +54,11 @@ func dataSourceFlavorRead(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("name").(string)
 	flavorZoneId := d.Get("flavor_zone_id").(string)
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.FlavorRestControllerApi.ListFlavorUsingGET(context.TODO(), flavorZoneId, projectID)
-	if err != nil {
-		return err
+	resp, httpResponse, _ := cli.VserverClient.FlavorRestControllerApi.ListFlavorUsingGET(context.TODO(), flavorZoneId, projectID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
