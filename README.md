@@ -1,5 +1,5 @@
 <a href="https://terraform.io">
-    <img src=".github/terraform-svgrepo-com.svg" alt="Terraform logo" title="Terraform" align="right" height="50" />
+    <img src=".github/workflows/terraform-svgrepo-com.svg" alt="Terraform logo" title="Terraform" align="right" height="50" />
 </a>
 
 # Terraform Provider for VNG Cloud
