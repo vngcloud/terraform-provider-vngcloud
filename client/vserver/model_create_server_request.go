@@ -56,4 +56,6 @@ type CreateServerRequest struct {
 	UserName string `json:"userName,omitempty"`
 	// password of user
 	UserPassword string `json:"userPassword,omitempty"`
+	// Zone of flavor. You can choose if having multiple zone
+	ZoneId string `json:"zoneId,omitempty"`
 }
