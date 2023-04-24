@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 **AllowedCidrs** | **string** | Allowed cidr. | [default to null]
 **CertificateAuthorities** | **[]string** | List of certificate authority | [optional] [default to null]
 **DefaultCertificateAuthority** | **string** | Default certificate authority that the listener will use | [optional] [default to null]
-**DefaultPoolId** | **string** | Id of the pool that this listener will forward to. | [optional] [default to null]
+**DefaultPoolId** | **string** | Id of the pool that this listener will forward to. | [default to null]
 **ListenerName** | **string** | Name of the listener. Only letters (a-z, A-Z, 0-9, &#39;_&#39;, &#39;.&#39;) are allowed and your input data must be between 6 and 20 characters. | [default to null]
 **ListenerProtocol** | **string** | Protocol of the listener. | [default to null]
 **ListenerProtocolPort** | **int32** | Port of the listener. | [default to null]

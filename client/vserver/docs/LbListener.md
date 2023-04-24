@@ -1,0 +1,18 @@
+# LbListener
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**AllowedCidrs** | **string** | Allowed cidr. | [optional] [default to null]
+**CertificateAuthorities** | **[]string** | List of certificate authority | [optional] [default to null]
+**DefaultCertificateAuthority** | **string** | Default certificate authority that the listener will use | [optional] [default to null]
+**ListenerName** | **string** | Name of the listener. Only letters (a-z, A-Z, 0-9, &#39;_&#39;, &#39;.&#39;) are allowed and your input data must be between 6 and 20 characters. | [default to null]
+**ListenerProtocol** | **string** | Protocol of the listener.The value can be HTTP or HTTPS or TCP. | [default to null]
+**ListenerProtocolPort** | **int32** | Port of the listener. From 1 to 65535 | [optional] [default to null]
+**TimeoutClient** | **int32** | Idle timeout of client. The value can be in range from 1 to 3600 seconds | [optional] [default to null]
+**TimeoutConnection** | **int32** | Idle timeout of connection. The value can be in range from 1 to 3600 seconds | [optional] [default to null]
+**TimeoutMember** | **int32** | Idle timeout of member. The value can be in range from 1 to 3600 seconds | [optional] [default to null]
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+
