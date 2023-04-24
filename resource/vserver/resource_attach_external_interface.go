@@ -54,7 +54,7 @@ func resourceExternalInterfaceAttach(d *schema.ResourceData, m interface{}) erro
 		return fmt.Errorf("error attach External Network Interface (%s) %s", networkInterfaceId, err)
 	}
 
-	respJSON, _ := json.Marshal(resp)
+	respJSON, _ := json.Marshal(resp.Data)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
@@ -64,15 +64,30 @@ func resourceExternalInterfaceAttach(d *schema.ResourceData, m interface{}) erro
 }
 
 func resourceExternalInterfaceRead(d *schema.ResourceData, m interface{}) error {
+	projectID := d.Get("project_id").(string)
+	interfaceNetworkInterfaceId := d.Id()
+	cli := m.(*client.Client)
 
+	resp, httpResponse, _ := cli.VserverClient.ServerRestControllerApi.GetExternalNetworkInterfaceUsingGET(context.TODO(), interfaceNetworkInterfaceId, projectID)
+
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
+	}
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
+	return nil
 }
 
 func resourceExternalInterfaceDetach(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
-	networkInterfaceId := d.Get("network_interface_id").(string)
+	interfaceNetworkInterfaceId := d.Id()
 	serverID := d.Get("server_id").(string)
 	detachExternalNetworkInterface := vserver.DetachExternalNetworkInterfaceRequest{}
-	detachExternalNetworkInterface.NetworkInterfaceId = networkInterfaceId
+	detachExternalNetworkInterface.NetworkInterfaceId = interfaceNetworkInterfaceId
 	cli := m.(*client.Client)
 
 	httpResponse, err := cli.VserverClient.ServerRestControllerApi.DetachExternalNetworkInterfaceUsingDELETE(context.TODO(), detachExternalNetworkInterface, projectID, serverID)
@@ -84,7 +99,7 @@ func resourceExternalInterfaceDetach(d *schema.ResourceData, m interface{}) erro
 	}
 
 	if err != nil {
-		return fmt.Errorf("error for detach External Network Interface (%s) %s", networkInterfaceId, err)
+		return fmt.Errorf("error for detach External Network Interface (%s) %s", interfaceNetworkInterfaceId, err)
 	}
 	d.SetId("")
 	return nil

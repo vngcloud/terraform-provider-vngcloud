@@ -77,7 +77,7 @@ func resourceNetworkInterfaceCreate(d *schema.ResourceData, m interface{}) error
 		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", resp.Data.Uuid, err)
 	}
 	d.SetId(resp.Data.Uuid)
-	return resourceNetworkInterfaceDelete(d, m)
+	return resourceNetworkInterfaceRead(d, m)
 }
 
 func resourceNetworkInterfaceDelete(d *schema.ResourceData, m interface{}) error {
@@ -103,7 +103,7 @@ func resourceNetworkInterfaceRead(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	networkInterfaceId := d.Id()
 	cli := m.(*client.Client)
-	resp, httpResponse, _ := cli.VserverClient.NetworkInterfaceRestControllerApi.GetNetworkInterfaceElasticUsingGET(context.TODO(), projectID, networkInterfaceId)
+	resp, httpResponse, _ := cli.VserverClient.NetworkInterfaceRestControllerApi.GetNetworkInterfaceElasticUsingGET(context.TODO(), networkInterfaceId, projectID)
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -125,7 +125,7 @@ func resourceNetworkInterfaceUpdate(d *schema.ResourceData, m interface{}) error
 	if d.HasChange("name") {
 		projectID := d.Get("project_id").(string)
 		renameNetworkInterface := vserver.RenameNetworkInterfaceRequest{
-			Name: d.Id(),
+			Name: d.Get("name").(string),
 		}
 
 		cli := m.(*client.Client)

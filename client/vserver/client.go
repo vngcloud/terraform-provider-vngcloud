@@ -118,6 +118,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.VolumeRestControllerApi = (*VolumeRestControllerV2ApiService)(&c.common)
 	c.VolumeTypeRestControllerApi = (*VolumeTypeRestControllerApiService)(&c.common)
 	c.VolumeTypeZoneRestControllerApi = (*VolumeTypeZoneRestControllerApiService)(&c.common)
+	c.NetworkInterfaceRestControllerApi = (*NetworkInterfaceElasticRestControllerV2ApiService)(&c.common)
 
 	return c
 }

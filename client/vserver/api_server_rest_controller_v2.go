@@ -29,20 +29,20 @@ type ServerRestControllerV2ApiService service
 
 /*
 ServerRestControllerV2ApiService Attach External Network Interface
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param attachExternalNetworkInterfaceRequest attachExternalNetworkInterfaceRequest
- * @param projectId The project id
- * @param serverId The server id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param attachExternalNetworkInterfaceRequest attachExternalNetworkInterfaceRequest
+  - @param projectId The project id
+  - @param serverId The server id
 
-@return DataResponse
+@return DataResponseInterfaceNetworkInterface
 */
-func (a *ServerRestControllerV2ApiService) AttachExternalNetworkInterfaceUsingPOST(ctx context.Context, attachExternalNetworkInterfaceRequest AttachExternalNetworkInterfaceRequest, projectId string, serverId string) (DataResponse, *http.Response, error) {
+func (a *ServerRestControllerV2ApiService) AttachExternalNetworkInterfaceUsingPOST(ctx context.Context, attachExternalNetworkInterfaceRequest AttachExternalNetworkInterfaceRequest, projectId string, serverId string) (DataResponseInterfaceNetworkInterface, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Post")
 		localVarPostBody    interface{}
 		localVarFileName    string
 		localVarFileBytes   []byte
-		localVarReturnValue DataResponse
+		localVarReturnValue DataResponseInterfaceNetworkInterface
 	)
 
 	// create path and map variables
@@ -102,7 +102,7 @@ func (a *ServerRestControllerV2ApiService) AttachExternalNetworkInterfaceUsingPO
 		}
 
 		if localVarHttpResponse.StatusCode == 200 {
-			var v DataResponse
+			var v DataResponseInterfaceNetworkInterface
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -120,10 +120,10 @@ func (a *ServerRestControllerV2ApiService) AttachExternalNetworkInterfaceUsingPO
 
 /*
 ServerRestControllerV2ApiService Attach Internal Network Interface
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param attachNetworkInterfaceRequest attachNetworkInterfaceRequest
- * @param projectId The project id
- * @param serverId The server id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param attachNetworkInterfaceRequest attachNetworkInterfaceRequest
+  - @param projectId The project id
+  - @param serverId The server id
 
 @return DataResponse
 */
@@ -211,13 +211,11 @@ func (a *ServerRestControllerV2ApiService) AttachNetworkInterfaceUsingPOST(ctx c
 
 /*
 ServerRestControllerV2ApiService Attach Wan IP
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param attachDetachWanIPRequest attachDetachWanIPRequest
- * @param projectId The project id
- * @param serverId The server id
- * @param wanIpId The wan ip id
-
-
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param attachDetachWanIPRequest attachDetachWanIPRequest
+  - @param projectId The project id
+  - @param serverId The server id
+  - @param wanIpId The wan ip id
 */
 func (a *ServerRestControllerV2ApiService) AttachWanIPUsingPUT(ctx context.Context, attachDetachWanIPRequest AttachDetachWanIpRequest, projectId string, serverId string, wanIpId string) (*http.Response, error) {
 	var (
@@ -286,9 +284,9 @@ func (a *ServerRestControllerV2ApiService) AttachWanIPUsingPUT(ctx context.Conte
 
 /*
 ServerRestControllerV2ApiService Create server
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param createServerRequest createServerRequest
- * @param projectId The project id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param createServerRequest createServerRequest
+  - @param projectId The project id
 
 @return DataResponse
 */
@@ -375,10 +373,10 @@ func (a *ServerRestControllerV2ApiService) CreateServerUsingPOST1(ctx context.Co
 
 /*
 ServerRestControllerV2ApiService Delete Server
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param deleteServerRequest deleteServerRequest
- * @param projectId The project id
- * @param serverId The server id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param deleteServerRequest deleteServerRequest
+  - @param projectId The project id
+  - @param serverId The server id
 
 @return DataResponse
 */
@@ -465,13 +463,99 @@ func (a *ServerRestControllerV2ApiService) DeleteServerUsingDELETE1(ctx context.
 }
 
 /*
+ServerRestControllerV2ApiService Get Attached External network Interface
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param interfaceNetworkInterfaceId The interface network interface id
+  - @param projectId The project id
+
+@return DataResponseInterfaceNetworkInterface
+*/
+func (a *ServerRestControllerV2ApiService) GetExternalNetworkInterfaceUsingGET(ctx context.Context, interfaceNetworkInterfaceId string, projectId string) (DataResponseInterfaceNetworkInterface, *http.Response, error) {
+	var (
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
+		localVarReturnValue DataResponseInterfaceNetworkInterface
+	)
+
+	// create path and map variables
+	localVarPath := a.client.cfg.BasePath + "/v2/{projectId}/servers/external-network-interfaces/{interfaceNetworkInterfaceId}"
+	localVarPath = strings.Replace(localVarPath, "{"+"interfaceNetworkInterfaceId"+"}", fmt.Sprintf("%v", interfaceNetworkInterfaceId), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"projectId"+"}", fmt.Sprintf("%v", projectId), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHttpContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
+	if localVarHttpContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+	}
+
+	// to determine the Accept header
+	localVarHttpHeaderAccepts := []string{"*/*"}
+
+	// set Accept header
+	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
+	if localVarHttpHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+	}
+	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHttpResponse, err := a.client.callAPI(r)
+	if err != nil || localVarHttpResponse == nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode >= 300 {
+		newErr := GenericSwaggerError{
+			body:  localVarBody,
+			error: localVarHttpResponse.Status,
+		}
+
+		if localVarHttpResponse.StatusCode == 200 {
+			var v DataResponseInterfaceNetworkInterface
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHttpResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHttpResponse, newErr
+		}
+
+		return localVarReturnValue, localVarHttpResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHttpResponse, nil
+}
+
+/*
 ServerRestControllerV2ApiService Detach External Network Interface
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param detachExternalNetworkInterfaceRequest detachExternalNetworkInterfaceRequest
- * @param projectId The project id
- * @param serverId The server id
-
-
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param detachExternalNetworkInterfaceRequest detachExternalNetworkInterfaceRequest
+  - @param projectId The project id
+  - @param serverId The server id
 */
 func (a *ServerRestControllerV2ApiService) DetachExternalNetworkInterfaceUsingDELETE(ctx context.Context, detachExternalNetworkInterfaceRequest DetachExternalNetworkInterfaceRequest, projectId string, serverId string) (*http.Response, error) {
 	var (
@@ -539,12 +623,10 @@ func (a *ServerRestControllerV2ApiService) DetachExternalNetworkInterfaceUsingDE
 
 /*
 ServerRestControllerV2ApiService Detach Internal Network Interface
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param detachNetworkInterfaceRequest detachNetworkInterfaceRequest
- * @param projectId The project id
- * @param serverId The server id
-
-
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param detachNetworkInterfaceRequest detachNetworkInterfaceRequest
+  - @param projectId The project id
+  - @param serverId The server id
 */
 func (a *ServerRestControllerV2ApiService) DetachNetworkInterfaceUsingDELETE(ctx context.Context, detachNetworkInterfaceRequest DetachNetworkInterfaceRequest, projectId string, serverId string) (*http.Response, error) {
 	var (
@@ -612,13 +694,11 @@ func (a *ServerRestControllerV2ApiService) DetachNetworkInterfaceUsingDELETE(ctx
 
 /*
 ServerRestControllerV2ApiService Detach Wan IP
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param attachDetachWanIPRequest attachDetachWanIPRequest
- * @param projectId The project id
- * @param serverId The server id
- * @param wanIpId The wan ip id
-
-
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param attachDetachWanIPRequest attachDetachWanIPRequest
+  - @param projectId The project id
+  - @param serverId The server id
+  - @param wanIpId The wan ip id
 */
 func (a *ServerRestControllerV2ApiService) DetachWanIPUsingPUT(ctx context.Context, attachDetachWanIPRequest AttachDetachWanIpRequest, projectId string, serverId string, wanIpId string) (*http.Response, error) {
 	var (
@@ -687,9 +767,9 @@ func (a *ServerRestControllerV2ApiService) DetachWanIPUsingPUT(ctx context.Conte
 
 /*
 ServerRestControllerV2ApiService Get console log
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param projectId The project id
- * @param serverId The server id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param projectId The project id
+  - @param serverId The server id
 
 @return DataResponsestring
 */
@@ -775,9 +855,9 @@ func (a *ServerRestControllerV2ApiService) GetConsoleLogUsingGET(ctx context.Con
 
 /*
 ServerRestControllerV2ApiService Get console url
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param projectId The project id
- * @param serverId The server id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param projectId The project id
+  - @param serverId The server id
 
 @return DataResponsestring
 */
@@ -863,9 +943,9 @@ func (a *ServerRestControllerV2ApiService) GetConsoleUrlUsingGET(ctx context.Con
 
 /*
 ServerRestControllerV2ApiService Get server by id
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param projectId The project id
- * @param serverId The server id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param projectId The project id
+  - @param serverId The server id
 
 @return DataResponseServer
 */
@@ -951,9 +1031,9 @@ func (a *ServerRestControllerV2ApiService) GetServerUsingGET1(ctx context.Contex
 
 /*
 ServerRestControllerV2ApiService List Action Of Server
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param projectId The project id
- * @param serverId The server id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param projectId The project id
+  - @param serverId The server id
 
 @return DataResponseListServerAction
 */
@@ -1039,9 +1119,9 @@ func (a *ServerRestControllerV2ApiService) ListActionUsingGET(ctx context.Contex
 
 /*
 ServerRestControllerV2ApiService List Network Interface Of Server
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param projectId The project id
- * @param serverId The server id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param projectId The project id
+  - @param serverId The server id
 
 @return DataResponseServerNetworkInterfaceDetail
 */
@@ -1127,9 +1207,9 @@ func (a *ServerRestControllerV2ApiService) ListNetworkInterfaceUsingGET(ctx cont
 
 /*
 ServerRestControllerV2ApiService List Sec Group Of Server
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param projectId The project id
- * @param serverId The server id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param projectId The project id
+  - @param serverId The server id
 
 @return DataResponseServerSecGroupDetail
 */
@@ -1321,9 +1401,9 @@ func (a *ServerRestControllerV2ApiService) ListServerUsingGET1(ctx context.Conte
 
 /*
 ServerRestControllerV2ApiService Reboot server
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param projectId The project id
- * @param serverId The server id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param projectId The project id
+  - @param serverId The server id
 
 @return DataResponse
 */
@@ -1409,10 +1489,10 @@ func (a *ServerRestControllerV2ApiService) RebootServerUsingPUT1(ctx context.Con
 
 /*
 ServerRestControllerV2ApiService Rename Server
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param projectId The project id
- * @param renameServerRequest renameServerRequest
- * @param serverId The server id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param projectId The project id
+  - @param renameServerRequest renameServerRequest
+  - @param serverId The server id
 
 @return DataResponseServer
 */
@@ -1500,10 +1580,10 @@ func (a *ServerRestControllerV2ApiService) RenameServerUsingPUT(ctx context.Cont
 
 /*
 ServerRestControllerV2ApiService Change flavor of server
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param projectId The project id
- * @param resizeServerRequest resizeServerRequest
- * @param serverId The server id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param projectId The project id
+  - @param resizeServerRequest resizeServerRequest
+  - @param serverId The server id
 
 @return DataResponse
 */
@@ -1591,9 +1671,9 @@ func (a *ServerRestControllerV2ApiService) ResizeServerUsingPUT1(ctx context.Con
 
 /*
 ServerRestControllerV2ApiService Start server
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param projectId The project id
- * @param serverId The server id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param projectId The project id
+  - @param serverId The server id
 
 @return DataResponse
 */
@@ -1679,9 +1759,9 @@ func (a *ServerRestControllerV2ApiService) StartServerUsingPUT1(ctx context.Cont
 
 /*
 ServerRestControllerV2ApiService Stop server
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param projectId The project id
- * @param serverId The server id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param projectId The project id
+  - @param serverId The server id
 
 @return DataResponse
 */
@@ -1767,10 +1847,10 @@ func (a *ServerRestControllerV2ApiService) StopServerUsingPUT1(ctx context.Conte
 
 /*
 ServerRestControllerV2ApiService Update SecGroups of server
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param changeSecGroupRequest changeSecGroupRequest
- * @param projectId The project id
- * @param serverId The project id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param changeSecGroupRequest changeSecGroupRequest
+  - @param projectId The project id
+  - @param serverId The project id
 
 @return DataResponse
 */
