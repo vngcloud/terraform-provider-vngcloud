@@ -38,9 +38,11 @@ func dataSourceImageRead(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("name").(string)
 	flavorID := d.Get("flavor_zone_id")
 	cli := m.(*client.Client)
-	resp, _, err := cli.VserverClient.ImageRestControllerApi.ListOSImageUsingGET(context.TODO(), projectID)
-	if err != nil {
-		return err
+	resp, httpResponse, _ := cli.VserverClient.ImageRestControllerApi.ListOSImageUsingGET(context.TODO(), projectID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")

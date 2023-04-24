@@ -5,6 +5,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **ConnectionNumber** | **int32** |  | [optional] [default to null]
 **DataTransfer** | **int32** |  | [optional] [default to null]
+**LbType** | **string** |  | [optional] [default to null]
 **Mode** | **string** |  | [optional] [default to null]
 **Name** | **string** |  | [optional] [default to null]
 **Type_** | **string** |  | [optional] [default to null]

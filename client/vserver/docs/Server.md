@@ -3,6 +3,7 @@
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**BootVolumeId** | **string** |  | [optional] [default to null]
 **CreatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
 **EncryptionVolume** | **bool** |  | [optional] [default to null]
 **ExternalInterfaces** | [**[]InterfaceNetworkInterface**](InterfaceNetworkInterface.md) |  | [optional] [default to null]
@@ -10,7 +11,9 @@ Name | Type | Description | Notes
 **Image** | [***OsImage**](OSImage.md) |  | [optional] [default to null]
 **InternalInterfaces** | [**[]InterfaceNetworkInterface**](InterfaceNetworkInterface.md) |  | [optional] [default to null]
 **Licence** | **bool** |  | [optional] [default to null]
+**Metadata** | **string** |  | [optional] [default to null]
 **Name** | **string** |  | [optional] [default to null]
+**Product** | **string** |  | [optional] [default to null]
 **SecGroups** | [**[]ServerSecGroup**](ServerSecGroup.md) |  | [optional] [default to null]
 **ServerGroupId** | **string** |  | [optional] [default to null]
 **ServerGroupName** | **string** |  | [optional] [default to null]

@@ -10,6 +10,7 @@
 package vserver
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -27,9 +28,9 @@ type VolumeTypeZoneRestControllerApiService service
 
 /*
 VolumeTypeZoneRestControllerApiService getVolumeTypeZone
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param projectId project_id
- * @param volumeTypeZoneId volume_type_zone_id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param projectId project_id
+  - @param volumeTypeZoneId volume_type_zone_id
 
 @return VolumeTypeZoneResponse
 */
@@ -78,8 +79,8 @@ func (a *VolumeTypeZoneRestControllerApiService) GetVolumeTypeZoneUsingGET(ctx c
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -115,8 +116,8 @@ func (a *VolumeTypeZoneRestControllerApiService) GetVolumeTypeZoneUsingGET(ctx c
 
 /*
 VolumeTypeZoneRestControllerApiService listVolumeTypeZone
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param projectId project_id
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param projectId project_id
 
 @return VolumeTypeZoneResponse
 */
@@ -164,8 +165,8 @@ func (a *VolumeTypeZoneRestControllerApiService) ListVolumeTypeZoneUsingGET(ctx 
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarBody, _ := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}

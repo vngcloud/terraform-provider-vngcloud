@@ -1,6 +1,6 @@
 # \NetworkInterfaceElasticRestControllerV2Api
 
-All URIs are relative to *https://virtserver.swaggerhub.com/manhtu1997/vserver/1.0.2*
+All URIs are relative to *https://virtserver.swaggerhub.com/Ev4LiA/vserver/1.0.5*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------

@@ -21,3 +21,24 @@ func GetResponseBody(httpResponse *http.Response) string {
 	}
 	return fmt.Sprint("Status Code: ", httpResponse.StatusCode, ", ", responseMessage)
 }
+
+func CheckContainString(list []string, findElement string) bool {
+	for _, element := range list {
+		if element == findElement {
+			return true
+		}
+	}
+	return false
+}
+
+func CheckListStringEqual(firstList []string, secondList []string) bool {
+	if len(firstList) == len(secondList) {
+		for _, element := range firstList {
+			if !CheckContainString(secondList, element) {
+				return false
+			}
+		}
+		return true
+	}
+	return false
+}

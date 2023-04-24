@@ -19,6 +19,7 @@ Name | Type | Description | Notes
 **Protocol** | **string** |  | [optional] [default to null]
 **ProtocolPort** | **int32** |  | [optional] [default to null]
 **ProvisioningStatus** | **string** |  | [optional] [default to null]
+**Status** | **string** |  | [optional] [default to null]
 **TimeoutClient** | **int32** |  | [optional] [default to null]
 **TimeoutConnection** | **int32** |  | [optional] [default to null]
 **TimeoutMember** | **int32** |  | [optional] [default to null]

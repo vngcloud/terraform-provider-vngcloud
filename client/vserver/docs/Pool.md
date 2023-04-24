@@ -15,6 +15,7 @@ Name | Type | Description | Notes
 **Protocol** | **string** |  | [optional] [default to null]
 **ProvisioningStatus** | **string** |  | [optional] [default to null]
 **SessionPersistence** | **int32** |  | [optional] [default to null]
+**Status** | **string** |  | [optional] [default to null]
 **UpdatedAt** | [**time.Time**](time.Time.md) |  | [optional] [default to null]
 **Uuid** | **string** |  | [optional] [default to null]
 

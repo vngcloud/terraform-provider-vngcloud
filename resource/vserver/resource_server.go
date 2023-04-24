@@ -320,6 +320,18 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 		externalInterfaces = append(externalInterfaces, externalInterfaceMap)
 	}
 	d.Set("external_interfaces", externalInterfaces)
+	securityGroupInterfaceRequest := d.Get("security_group").([]interface{})
+	var securityGroupRequest []string
+	for _, s := range securityGroupInterfaceRequest {
+		securityGroupRequest = append(securityGroupRequest, s.(string))
+	}
+	var securityGroupServer []string
+	for _, secGroup := range server.SecGroups {
+		securityGroupServer = append(securityGroupServer, secGroup.Uuid)
+	}
+	if !CheckListStringEqual(securityGroupRequest, securityGroupServer) {
+		d.Set("security_group", securityGroupServer)
+	}
 	return nil
 }
 
