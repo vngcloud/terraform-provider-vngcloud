@@ -5,7 +5,7 @@
 subcategory: "vContainer"
 page_title: "vngcloud_vserver_k8s Resource - terraform-provider-vngcloud"
 description: |-
-Provides a VNG Cloud VServer Kubernetes resource. This can be used to import, create, modify, and delete.
+  Provides a VNG Cloud VServer Kubernetes resource. This can be used to import, create, modify, and delete.
   
 ---
 
