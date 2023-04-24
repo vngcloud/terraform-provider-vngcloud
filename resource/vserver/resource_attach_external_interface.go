@@ -14,7 +14,7 @@ func ResourceAttachExternalInterface() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceExternalInterfaceAttach,
 		Delete: resourceExternalInterfaceDetach,
-		Read:   resourceServerRead,
+		Read:   resourceExternalInterfaceRead,
 		Schema: map[string]*schema.Schema{
 			"project_id": {
 				Type:     schema.TypeString,
@@ -59,20 +59,21 @@ func resourceExternalInterfaceAttach(d *schema.ResourceData, m interface{}) erro
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
 
-	d.SetId(serverID)
+	d.SetId(resp.Data.Uuid)
 	return nil
 }
 
+func resourceExternalInterfaceRead(d *schema.ResourceData, m interface{}) error {
+
+}
+
 func resourceExternalInterfaceDetach(d *schema.ResourceData, m interface{}) error {
-	log.Printf("---------------------------------123\n")
 	projectID := d.Get("project_id").(string)
 	networkInterfaceId := d.Get("network_interface_id").(string)
 	serverID := d.Get("server_id").(string)
-	log.Printf("---------------------------------456\n")
 	detachExternalNetworkInterface := vserver.DetachExternalNetworkInterfaceRequest{}
 	detachExternalNetworkInterface.NetworkInterfaceId = networkInterfaceId
 	cli := m.(*client.Client)
-	log.Printf("---------------------------------789\n")
 
 	httpResponse, err := cli.VserverClient.ServerRestControllerApi.DetachExternalNetworkInterfaceUsingDELETE(context.TODO(), detachExternalNetworkInterface, projectID, serverID)
 

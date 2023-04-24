@@ -80,6 +80,8 @@ type APIClient struct {
 	VolumeTypeRestControllerApi *VolumeTypeRestControllerApiService
 
 	VolumeTypeZoneRestControllerApi *VolumeTypeZoneRestControllerApiService
+
+	NetworkInterfaceRestControllerApi *NetworkInterfaceElasticRestControllerV2ApiService
 }
 
 type service struct {
