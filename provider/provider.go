@@ -37,6 +37,7 @@ func Provider() *schema.Provider {
 			"vngcloud_vserver_secgrouprule":              vserver.ResourceSecgroupRule(),
 			"vngcloud_vserver_network_interface":         vserver.ResourceNetworkInterface(),
 			"vngcloud_vserver_external_interface_attach": vserver.ResourceAttachExternalInterface(),
+			"vngcloud_vserver_internal_interface_attach": vserver.ResourceAttachInternalInterface(),
 			"vngcloud_vserver_volume_attach":             vserver.ResourceAttachVolume(),
 			"vngcloud_vserver_server_group":              vserver.ResourceServerGroup(),
 			"vngcloud_vserver_load_balancer":             vserver.ResourceLoadBalancer(),
