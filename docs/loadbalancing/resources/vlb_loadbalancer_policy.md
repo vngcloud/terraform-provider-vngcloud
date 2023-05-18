@@ -1,0 +1,104 @@
+
+---
+subcategory: "LB (Load Balancing)"
+layout: "vngcloud"
+page_title: "VNG: vng_lb_policy"
+description: |-
+Provides a load balancer policy, which can be attached to an LB listener.
+---
+
+# vngcloud_vlb_l7policy (Resource)
+
+Provides a load balancer policy, which can be attached to an LB listener. This can be used to import, create, modify and delete.
+
+## Example Usage
+
+```terraform
+resource "vngcloud_vlb_load_balancer" "example"{
+  # ...
+}
+
+
+resource "vngcloud_vlb_listener" "example" {
+  # ...
+}
+
+
+resource "vngcloud_vlb_l7policy" "example" {
+  project_id         = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  load_balancer_id   = vngcloud_vlb_load_balancer.example.id
+  listener_id        = vngcloud_vlb_listener.example.id
+  name               = "example-policy"
+  rule_type          = "PATH"
+  compare_type       = "EQUAL_TO"
+  rule_value         = "www.example.com"
+  action             = "REDIRECT_TO_URL"
+  redirect_http_code = 302
+  redirect_url       = "https://www.example.com"
+  keep_query_string  = true
+}
+```
+
+## Argument Reference
+
+The following arguments are supported:
+
+
+* `project_id` -  (String, Required) This field represents the ID of the project in which the load balancer is created.
+* `load_balancer_id` - (String, Required) The ID of the load balancer to which the L7 policy belongs.
+* `listener_id` -  (String, Required) The ID of the listener to which the Listener Rule belongs.
+* `name` - (String, Required) A name for the Listener Rule.
+* `rule_type` -(String, Required) The type of rule (e.g., `HOST_NAME`, `PATH`).
+* `compare_type` - (String, Required) The type of comparison to make when matching requests against the rule (e.g., `CONTAINS`, `EQUAL_TO`).
+* `rule_value` - (String, Optional) The value of the rule. For example, if the rule type is `HOST_NAME`, the rule value is the host name (e.g., `example.com`). If the rule type is `PATH`, the rule value is the path (e.g., `/images/*`).
+* `redirect_pool_id` - (String, Optional) The ID of the pool to which to redirect requests.
+* `redirect_url` - (String, Optional) The URL to which to redirect requests.
+* `action` - (String, Required) The action to take for requests that match the rule (e.g., `REDIRECT_TO_URL`, `REDIRECT_TO_POOL`).
+* `keep_query_string` - (Boolean, Optional) Whether to keep the query string in the request URL when performing a redirect.
+* `redirect_http_code` - (Number, Optional) This field represents the HTTP code to use when redirecting.  
+   The value field is:
+    * `301` - Moved Permanently
+    * `302` - Found
+* `position` - (Number, Optional) The position of this policy on the listener. Positions start at 1. Smaller numbers have higher priority. If not specified, the policy is appended to the end of the list.
+
+
+## Attributes Reference
+
+In addition to all arguments above, the following attributes are exported:
+* `id` - (String) The ID of this Policy
+* `status` - (String) The status of the Policy
+
+
+
+## Timeouts
+
+[Configuration options](https://developer.hashicorp.com/terraform/language/resources/syntax#operation-timeouts):
+
+- `create` - (Default `20m`)
+- `update` - (Default `20m`)
+- `delete` - (Default `20m`)
+
+## Import
+
+Policy can be imported using their unique identifier, e.g.
+The unique identifier is the ID of the project, the ID of the load balancer, the ID of the Listener and the ID of the Policy, separated by a colon.
+Example: `pro-26151c78-0470-4b4c-88a1-6ec41ef29492:lb-4e4e3476-17f0-48d1-a636-188d6584a0db:lis-d8cab8d2-5060-4d05-9ba8-f62b8dcacd02:policy-bb6f879f-8939-45db-996d-a7e0b2faa2a6`
+```
+$ terraform import vngcloud_vlb_l7policy.example pro-26151c78-0470-4b4c-88a1-6ec41ef29492:lb-4e4e3476-17f0-48d1-a636-188d6584a0db:lis-d8cab8d2-5060-4d05-9ba8-f62b8dcacd02:policy-bb6f879f-8939-45db-996d-a7e0b2faa2a6
+```
+
+## IAM Policy
+### Create:
+In order to **create L7 Policy**, user must have been granted permissions below:
+- CreateLoadBalancerL7Policy
+- GetLoadBalancerL7Policy
+
+### Update:
+In order to **update L7 Policy**, user must have been granted permissions below:
+- UpdateLoadBalancerL7Policy
+- GetLoadBalancerL7Policy
+
+### Delete
+In order to **delete L7 Policy**, user must have been granted permissions below:
+- DeleteLoadBalancerL7Policy
+

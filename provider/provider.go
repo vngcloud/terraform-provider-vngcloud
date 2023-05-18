@@ -7,6 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
+	"github.com/vngcloud/terraform-provider-vngcloud/resource/vloadbalancing"
 	"github.com/vngcloud/terraform-provider-vngcloud/resource/vserver"
 )
 
@@ -39,17 +40,19 @@ func Provider() *schema.Provider {
 			"vngcloud_vserver_secgrouprule":             vserver.ResourceSecgroupRule(),
 			"vngcloud_vserver_volume_attach":            vserver.ResourceAttachVolume(),
 			"vngcloud_vserver_server_group":             vserver.ResourceServerGroup(),
-			"vngcloud_vserver_load_balancer":            vserver.ResourceLoadBalancer(),
-			"vngcloud_vserver_listener":                 vserver.ResourceListener(),
-			"vngcloud_vserver_pool":                     vserver.ResourcePool(),
-			"vngcloud_vserver_k8s":                      vserver.ResourceK8s(),
-			"vngcloud_vserver_cluster_node_group":       vserver.ResourceClusterNodeGroup(),
-			"vngcloud_vserver_attach_lb_to_cluster":     vserver.ResourceAttachLb(),
-			"vngcloud_vserver_change_cluster_sec_group": vserver.ResourceChangeClusterSecGroup(),
+			"vngcloud_vlb_pool":                         vloadbalancing.ResourcePool(),
+			"vngcloud_vlb_load_balancer":                vloadbalancing.ResourceLoadBalancer(),
+			"vngcloud_vlb_listener":                     vloadbalancing.ResourceListener(),
+			"vngcloud_vlb_l7policy":                     vloadbalancing.ResourceListenerL7Policy(),
+			"vngcloud_vlb_certificate":                  vloadbalancing.ResourceCA(),
 			"vngcloud_vdb_database":                     vdb.ResourceDatabase(),
 			"vngcloud_vdb_backup":                       vdb.ResourceBackup(),
 			"vngcloud_vdb_configuration_group":          vdb.ResourceConfigurationGroup(),
 			"vngcloud_vdb_backup_storage":               vdb.ResourceBackupStorage(),
+			"vngcloud_vserver_k8s":                      vserver.ResourceK8s(),
+			"vngcloud_vserver_cluster_node_group":       vserver.ResourceClusterNodeGroup(),
+			"vngcloud_vserver_attach_lb_to_cluster":     vserver.ResourceAttachLb(),
+			"vngcloud_vserver_change_cluster_sec_group": vserver.ResourceChangeClusterSecGroup(),
 		},
 		Schema: map[string]*schema.Schema{
 			//"user_id": {
@@ -89,6 +92,12 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("VSERVER_BASE_URL", ""),
 				Description: "endpoint to connection with provider resource",
 			},
+			"vlb_base_url": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("VLB_BASE_URL", ""),
+				Description: "endpoint to connection with provider resource",
+			},
 		},
 		ConfigureFunc: providerConfigure,
 	}
@@ -105,6 +114,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	//vdbBaseURL := d.Get("vdb_base_url").(string)
 	vdbBaseURL := ""
 	vserverBaseURL := d.Get("vserver_base_url").(string)
+	vlbBaseURL := d.Get("vlb_base_url").(string)
 	//projectId := d.Get("project_id").(string)
 	//userId := d.Get("user_id").(string)
 	projectId := ""
@@ -112,5 +122,5 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	tokenURL := d.Get("token_url").(string)
 	clientID := d.Get("client_id").(string)
 	clientSecret := d.Get("client_secret").(string)
-	return client.NewClient(vdbBaseURL, vserverBaseURL, projectId, userId, clientID, clientSecret, tokenURL)
+	return client.NewClient(vdbBaseURL, vserverBaseURL, vlbBaseURL, projectId, userId, clientID, clientSecret, tokenURL)
 }

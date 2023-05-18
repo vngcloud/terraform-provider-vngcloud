@@ -1,0 +1,75 @@
+
+---
+subcategory: "LB (Load Balancing)”
+layout: "gcloud"
+page_title: “VNG: vng_lb"
+description: |-
+Provides a Load Balancer resource.
+---
+
+# vngcloud_vlb_load_balancer (Resource)
+
+Provides a Load Balancer resource. This can be used to import, create, and delete.
+
+## Example Usage
+
+```terraform
+resource "vngcloud_vlb_load_balancer" "example"{
+  project_id = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  name       = "example-lb"
+  package_id = "f8e62cf2-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  scheme     = "Internet"
+  subnet_id  = "sub-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  type       = "Layer 7"
+}
+```
+
+## Argument Reference
+
+The following arguments are supported:
+
+
+* `project_id` -  (String, Required) The ID of the project to create the load balancer in.
+* `name` - (String, Required) The name of the load balancer.
+* `package_id` -  (String, Required) The ID of the package that contains the load balancer.
+* `scheme` - (String, Required) The scheme of the load balancer. It can be `Internet` or `Internal`.
+* `subnet_id` - (String, Required) The ID of the subnet to create the load balancer in.
+* `type` -(String, Required) The type of the load balancer. It can be `Layer 4` or `Layer 7`.
+
+
+## Attributes Reference
+
+In addition to all arguments above, the following attributes are exported:
+* `id` - (String) The ID of this Load Balancer.
+* `status` - (String) The status of the load balancer.
+* `address` - (String) The IP address of the load balancer.
+* `private_subnet_cidr` - (String) The CIDR of the private subnet.
+
+
+## Timeouts
+
+[Configuration options](https://developer.hashicorp.com/terraform/language/resources/syntax#operation-timeouts):
+
+- `create` - (Default `20m`)
+- `update` - (Default `20m`)
+- `delete` - (Default `20m`)
+
+## Import
+
+LBs can be imported using their unique identifier, e.g.
+The unique identifier is the ID of the project and the ID of the load balancer, separated by a colon.
+Example: `pro-26151c78-0470-4b4c-88a1-6ec41ef29492:lb-38038860-3d4b-4df2-a10e-a03efbd39ac4`
+```
+$ terraform import vngcloud_vlb_load_balancer.example pro-26151c78-0470-4b4c-88a1-6ec41ef29492:lb-38038860-3d4b-4df2-a10e-a03efbd39ac4
+```
+
+## IAM Policy
+### Create:
+In order to **create Load Balancer**, user must have been granted permissions below:
+- CreateLoadBalancer
+- GetLoadBalancer
+
+### Delete
+In order to **delete Load Balancer**, user must have been granted permissions below:
+- DeleteLoadBalancer
+

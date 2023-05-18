@@ -1,0 +1,114 @@
+
+---
+subcategory: "LB (Load Balancing)"
+layout: "vngcloud"
+page_title: "VNG: vng_lb_listener"
+description: |-
+Provides a Load Balancer Listener resource.
+---
+
+# vngcloud_vlb_listener (Resource)
+
+Provides a Load Balancer Listener resource. This can be used to import, create, modify and delete. 
+
+## Example Usage
+
+```terraform
+resource "vngcloud_vlb_load_balancer" "example"{
+  # ...
+}
+
+resource "vngcloud_vlb_pool" "example" {
+  # ...
+}
+
+resource "vngcloud_vlb_listener" "example" {
+  project_id                    = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  load_balancer_id              = vngcloud_vlb_load_balancer.example.id
+  name                          = "example-listener"
+  allowed_cidrs                 = "0.0.0.0/0"
+  protocol                      = "HTTPS"
+  protocol_port                 = 81
+  timeout_client                = 50
+  timeout_connection            = 5
+  timeout_member                = 60
+  default_pool_id               = vngcloud_vlb_pool.example.id
+  certificate_authorities       = ["secret-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"]
+  default_certificate_authority = "secret-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  
+}
+```
+
+## Argument Reference
+
+The following arguments are supported:
+
+
+* `project_id` -  (String, Required) ID of the project that the listener will belong to.
+* `load_balancer_id` -  (String, Required) ID of the load balancer that the listener will be attached to.
+* `name` - (String, Required) The name of the listener.
+* `allowed_cidrs` -  (String, Optional) CIDR blocks that are allowed to connect to the listener. Defaults to `0.0.0.0/0`.
+* `protocol` - (String, Required) Protocol for connections from clients to the load balancer. For Application Load Balancers (Layer 7), valid values are `HTTP` and `HTTPS`. For Network Load Balancers (Layer 4), valid values are `TCP`.
+* `protocol_port` -(Number, Required) The port on which the listener will listen for incoming traffic. The value must be between `1` and `65535`.
+* `timeout_client` - (Number, Optional) The time in seconds to wait for a response from the client before terminating the connection. Defaults to `50`.
+* `timeout_connection` - (Number, Optional) The time in seconds to wait for a connection to be established before timing out. Defaults to `5`.
+* `timeout_member` - (Number, Optional) The time in seconds to wait for a response from a member before marking it as failed. Defaults to `50`.
+* `default_pool_id` - (String, Required) The ID of the default pool to use for the listener.
+* `certificate_authorities` - (Array of String, Optional) A list of SSL certificate authorities(SNIs) to use for `HTTPS` listeners.
+* `default_certificate_authority` - (String, Optional) The default SSL certificate authority to use for `HTTPS` listeners.
+* `client_certificate_authentication` - (String, Optional) The TLS client authentication mode to use for `HTTPS` listeners.
+* `headers` - (Array of String, Optional) A set of headers to be added to request forwarded to the default pool. Can be set if protocol is `HTTP` or `HTTPS`. Defaults to '[ "X-Forwarded-For", "X-Forwarded-Port", "X-Forwarded-Proto" ]'.
+   Allowable values are:
+      -`X-Forwarded-For`,
+      -`X-Forwarded-Port`,
+      -`X-SSL-Client-Verify`,
+      -`X-SSL-Client-Has-Cert`,
+      -`X-SSL-Client-DN`,
+      -`X-SSL-Client-CN`,
+      -`X-SSL-Issuer`,
+      -`X-SSL-Client-SHA1`,
+      -`X-SSL-Client-Not-Before`,
+      -`X-SSL-Client-Not-After`,
+      -`X-Forwarded-Proto`
+
+~> **NOTE::** Please note that listeners that are attached to Application Load Balancers(Layer 7) must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers(Layer 4) must use the `TCP` protocol.
+## Attributes Reference
+
+In addition to all arguments above, the following attributes are exported:
+* `id` - (String) The ID of this listener.
+* `status` - (String) The status of the listener.
+
+
+
+## Timeouts
+
+[Configuration options](https://developer.hashicorp.com/terraform/language/resources/syntax#operation-timeouts):
+
+- `create` - (Default `20m`)
+- `update` - (Default `20m`)
+- `delete` - (Default `20m`)
+
+## Import
+
+Listener can be imported using their unique identifier, e.g.
+The unique identifier is the ID of the project, the ID of the load balancer and the ID of the Listener, separated by a colon.
+Example: `pro-26151c78-0470-4b4c-88a1-6ec41ef29492:lb-4e4e3476-17f0-48d1-a636-188d6584a0db:lis-d8cab8d2-5060-4d05-9ba8-f62b8dcacd02`
+```
+$ terraform import vngcloud_vlb_listener.example pro-26151c78-0470-4b4c-88a1-6ec41ef29492:lb-4e4e3476-17f0-48d1-a636-188d6584a0db:lis-d8cab8d2-5060-4d05-9ba8-f62b8dcacd02
+```
+
+
+## IAM Policy
+### Create:
+In order to **create Listener**, user must have been granted permissions below:
+- CreateLoadBalancerListener 
+- GetLoadBalancerListener
+
+### Delete
+In order to **delete Listener**, user must have been granted permissions below:
+- DeleteLoadBalancerListener
+
+### Update
+In order to **update Listener**, user must have been granted permissions below:
+- UpdateLoadBalancerListener
+- GetLoadBalancerListener
