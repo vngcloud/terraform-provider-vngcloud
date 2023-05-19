@@ -48,7 +48,6 @@ func parseErrorResponse(httpResponse *http.Response) error {
 	_ = json.Unmarshal(localVarBody, &responseError)
 
 	if responseError.ErrorCode == "" && httpResponse.StatusCode != 403 {
-		log.Printf("You don't have permission")
 		return &ResponseError{
 			StatusCode: httpResponse.StatusCode,
 			Message:    string(localVarBody),
