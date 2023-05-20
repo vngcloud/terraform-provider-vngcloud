@@ -49,7 +49,8 @@ The following arguments are supported:
 * `project_id` -  (String, Required) ID of the project that the listener will belong to.
 * `load_balancer_id` -  (String, Required) ID of the load balancer that the listener will be attached to.
 * `name` - (String, Required) The name of the listener.
-* `allowed_cidrs` -  (String, Optional) CIDR blocks that are allowed to connect to the listener. Defaults to `0.0.0.0/0`.
+* `allowed_cidrs` -  (String, Optional) Access control list (ACL) to limit incoming traffic to a listener to a set of allowed source IP addresses (CIDRs). Defaults to `0.0.0.0/0`.
+   Note that: You can input multiple CIDR blocks by separating them with commas. Ex: 192.168.0.0/24, 172.16.0.0/24
 * `protocol` - (String, Required) Protocol for connections from clients to the load balancer. For Application Load Balancers (Layer 7), valid values are `HTTP` and `HTTPS`. For Network Load Balancers (Layer 4), valid values are `TCP`.
 * `protocol_port` -(Number, Required) The port on which the listener will listen for incoming traffic. The value must be between `1` and `65535`.
 * `timeout_client` - (Number, Optional) The time in seconds to wait for a response from the client before terminating the connection. Defaults to `50`.
