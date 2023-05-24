@@ -282,8 +282,6 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("-------------------------------------\n")
 	server := resp.Data
 	d.Set("name", server.Name)
-	d.Set("network_id", server.InternalInterfaces[0].NetworkUuid)
-	d.Set("subnet_id", server.InternalInterfaces[0].SubnetUuid)
 	d.Set("encryption_volume", server.EncryptionVolume)
 	d.Set("flavor_id", server.Flavor.FlavorId)
 	d.Set("os_info", server.Image.ImageVersion)
