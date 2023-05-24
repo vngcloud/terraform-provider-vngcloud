@@ -16,8 +16,6 @@ type UpdateL7PolicyRequestV2 struct {
 	CompareType string `json:"compareType"`
 	// Keep the query string or not.
 	KeepQueryString *bool `json:"keepQueryString"`
-	// Position of the policy
-	Position int64 `json:"position"`
 	// Redirect HTTP code for redirecting to other URL.
 	RedirectHttpCode *int32 `json:"redirectHttpCode"`
 	// Pool for forwarding.

@@ -52,7 +52,7 @@ The following arguments are supported:
 * `name` - (String, Required) A name for the Listener Rule.
 * `rule_type` -(String, Required) The type of rule (e.g., `HOST_NAME`, `PATH`).
 * `compare_type` - (String, Required) The type of comparison to make when matching requests against the rule (e.g., `CONTAINS`, `EQUAL_TO`).
-* `rule_value` - (String, Optional) The value of the rule. For example, if the rule type is `HOST_NAME`, the rule value is the host name (e.g., `example.com`). If the rule type is `PATH`, the rule value is the path (e.g., `/images/*`).
+* `rule_value` - (String, Required) The value of the rule. For example, if the rule type is `HOST_NAME`, the rule value is the host name (e.g., `example.com`). If the rule type is `PATH`, the rule value is the path (e.g., `/images/*`).
 * `redirect_pool_id` - (String, Optional) The ID of the pool to which to redirect requests.
 * `redirect_url` - (String, Optional) The URL to which to redirect requests.
 * `action` - (String, Required) The action to take for requests that match the rule (e.g., `REDIRECT_TO_URL`, `REDIRECT_TO_POOL`).
@@ -61,7 +61,6 @@ The following arguments are supported:
    The value field is:
     * `301` - Moved Permanently
     * `302` - Found
-* `position` - (Number, Optional) The position of this policy on the listener. Positions start at 1. Smaller numbers have higher priority. If not specified, the policy is appended to the end of the list.
 
 
 ## Attributes Reference
@@ -69,6 +68,7 @@ The following arguments are supported:
 In addition to all arguments above, the following attributes are exported:
 * `id` - (String) The ID of this Policy
 * `status` - (String) The status of the Policy
+* `position` - (Number) The position of this policy on the listener. Positions start at 1. Smaller numbers have higher priority.
 
 
 

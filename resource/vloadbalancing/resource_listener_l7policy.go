@@ -67,7 +67,7 @@ func ResourceListenerL7Policy() *schema.Resource {
 			},
 			"rule_value": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Required: true,
 			},
 			"action": {
 				Type:     schema.TypeString,
@@ -95,7 +95,6 @@ func ResourceListenerL7Policy() *schema.Resource {
 			},
 			"position": {
 				Type:     schema.TypeInt,
-				Optional: true,
 				Computed: true,
 			},
 			"status": {
@@ -363,7 +362,7 @@ func resourceListenerL7PolicyUpdate(ctx context.Context, d *schema.ResourceData,
 
 func shouldSkipUpdatePolicy(d *schema.ResourceData) bool {
 	keysToCheck := []string{"action", "compare_type", "keep_query_string",
-		"redirect_http_code", "redirect_pool_id", "redirect_url", "rule_type", "rule_value", "position"}
+		"redirect_http_code", "redirect_pool_id", "redirect_url", "rule_type", "rule_value"}
 	if d.HasChanges(keysToCheck...) {
 		return false
 	}
@@ -376,7 +375,6 @@ func updateL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Cli
 		CompareType: d.Get("compare_type").(string),
 		Type_:       d.Get("rule_type").(string),
 		Value:       d.Get("rule_value").(string),
-		Position:    int64(d.Get("position").(int)),
 	}
 
 	if v, ok := d.GetOk("keep_query_string"); ok {
