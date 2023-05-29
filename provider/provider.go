@@ -29,6 +29,7 @@ func Provider() *schema.Provider {
 			"vngcloud_vdb_subnet":                  vdb.DataSourceSubnet(),
 			"vngcloud_vdb_volume_type":             vdb.DataSourceVolumeType(),
 			"vngcloud_vdb_backup_storage_package":  vdb.DataSourceBackupStoragePackage(),
+			"vngcloud_vlb_lb_packages":             vloadbalancing.DataSourceLBPackages(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"vngcloud_vserver_volume":                   vserver.ResourceVolume(),
