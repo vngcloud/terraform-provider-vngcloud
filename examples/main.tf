@@ -33,3 +33,7 @@ module "vserver" {
 module "k8s" {
   source = "./modules/vng-cloud-k8s"
 }
+
+module "vlb" {
+  source = "./modules/vng-cloud-vlb"
+}
