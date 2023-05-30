@@ -74,16 +74,16 @@ The following arguments are supported:
 * `algorithm` -  (String, Optional) The load balancing algorithm used by the resource Pool. It can be `ROUND_ROBIN`, `LEAST_CONNECTIONS`, `SOURCE_IP`. Default value is `ROUND_ROBIN`.
 
 * `health_monitor` - (Optional)  A **_singleton list_** that contains properties related to the health monitor of the resource Pool. The following properties are available:
-  * `health_check_method` -  (String, Optional) The method used by the health monitor. It can be  `GET`, `POST`, `PUT`.
-  * `health_check_path` -  (String, Optional) The path used by the health monitor. Example: `/`
   * `health_check_protocol` -  (String, Required) The protocol used by the health monitor. It can be `HTTP`, `HTTPS`, `TCP`.
+  * `health_check_method` -  (String, Optional) The method used by the health monitor. It can be  `GET`, `POST`, `PUT`. Only available when `health_check_protocol` is `HTTP` or `HTTPS`.
+  * `health_check_path` -  (String, Optional) The path used by the health monitor. Example: `/`. Only available when `health_check_protocol` is `HTTP` or `HTTPS`.
   * `healthy_threshold` -  (Number, Optional)  The number of consecutive successful health checks required to consider a member healthy. Default value is `3`.
   * `unhealthy_threshold` -  (Number, Optional) The number of consecutive failed health checks required to consider a member unhealthy. Default value is '3'.
-  * `interval` -(Number, Optional)  The time in seconds between health checks. Default value is '30'.
   * `timeout` - (Number, Optional) The time in seconds to wait for a health check to complete. Default value is `5`.
-  * `success_code` - (Number, Optional) The expected HTTP response code for a successful health check.
-  * `domain_name` - (String, Optional) The domain name used by the health monitor. Example: `example.com`. Don't specify this parameter if `domain_name` is `1.0`.
-  * `http_version` - (String, Optional) The HTTP version used by the health monitor. It can be `1.0`, `1.1`.  If `domain_name` is specified, this value must be `1.1`.
+  * `interval` -(Number, Optional)  The time in seconds between health checks. Default value is '30'.
+  * `success_code` - (Number, Optional) The expected HTTP response code for a successful health check. Only available when `health_check_protocol` is `HTTP` or `HTTPS`.
+  * `domain_name` - (String, Optional) The domain name used by the health monitor. Example: `example.com`. Don't specify this parameter if `domain_name` is `1.0`. Only available when `health_check_protocol` is `HTTP` or `HTTPS`.
+  * `http_version` - (String, Optional) The HTTP version used by the health monitor. It can be `1.0`, `1.1`.  If `domain_name` is specified, this value must be `1.1`. Only available when `health_check_protocol` is `HTTP` or `HTTPS`.
   
 
 * `members` - (Optional)   A `list` of properties representing the members of the resource Pool. The following properties are available:
