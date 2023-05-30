@@ -515,6 +515,11 @@ func resourceK8sUpdate(d *schema.ResourceData, m interface{}) error {
 	if d.HasChange("node_count") {
 		nodeGroupDefaultId := d.Get("node_group_default_id").(string)
 		clusterId := d.Id()
+
+		if d.Get("auto_scaling") != nil && d.Get("auto_scaling").(bool) == true {
+			return fmt.Errorf("You can not scale manual node group default in cluster with auto-scale option enable.")
+		}
+
 		return ResourceK8sScalingNodeGroup(d, m, nodeGroupDefaultId, clusterId)
 	}
 
