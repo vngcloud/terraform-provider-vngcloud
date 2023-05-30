@@ -2,7 +2,7 @@ terraform {
   required_providers {
     vngcloud = {
       source  = "vngcloud/vngcloud"
-      version = "1.0.0"
+      version = "1.1.0"
     }
   }
   #  backend "s3" {
@@ -23,6 +23,7 @@ provider "vngcloud" {
   client_id        = var.client_id
   client_secret    = var.client_secret
   vserver_base_url = "https://hcm-3.api.vngcloud.vn/vserver/vserver-gateway"
+  vlb_base_url = "https://hcm-3.api.vngcloud.vn/vserver/vlb-gateway"
 }
 
 module "vserver" {
