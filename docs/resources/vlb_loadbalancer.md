@@ -5,7 +5,7 @@
 subcategory: "vLoadBalancer"
 page_title: "vngcloud_vlb_load_balancer Resource - terraform-provider-vngcloud"
 description: |-
-Provides a VNG Cloud VLB resource. This can be used to import, create, modify, and delete.
+  Provides a VNG Cloud VLB resource. This can be used to import, create, modify, and delete.
   
 ---
 

@@ -3,7 +3,7 @@
 subcategory: "vLoadBalancer"
 page_title: "vngcloud_vlb_lb_packages Data Source - terraform-provider-vngcloud"
 description: |-
-Provides information about load balancer packages.
+  Provides information about load balancer packages.
 ---
 
 # vngcloud_vlb_lb_packages (Data Source)

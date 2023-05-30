@@ -5,7 +5,7 @@
 subcategory: "vLoadBalancer"
 page_title: "vngcloud_vlb_pool Resource - terraform-provider-vngcloud"
 description: |-
-Provides a Pool resource for use with Load Balancer resources. This can be used to import, create, modify, and delete.
+  Provides a Pool resource for use with Load Balancer resources. This can be used to import, create, modify, and delete.
   
 ---
 

@@ -5,7 +5,7 @@
 subcategory: "vLoadBalancer"
 page_title: "vngcloud_vlb_certificate Resource - terraform-provider-vngcloud"
 description: |-
-ResourceCA is a Terraform resource that represents a certificate authority (CA). It can be used to import, and delete CAs in a target system.
+  ResourceCA is a Terraform resource that represents a certificate authority (CA). It can be used to import, and delete CAs in a target system.
   
 ---
 

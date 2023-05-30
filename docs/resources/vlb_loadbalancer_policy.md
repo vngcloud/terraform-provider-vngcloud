@@ -5,7 +5,7 @@
 subcategory: "vLoadBalancer"
 page_title: "vngcloud_vlb_l7policy Resource - terraform-provider-vngcloud"
 description: |-
-Provides a load balancer policy, which can be attached to an LB listener. This can be used to import, create, modify, and delete.
+  Provides a load balancer policy, which can be attached to an LB listener. This can be used to import, create, modify, and delete.
   
 ---
 

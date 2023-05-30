@@ -5,7 +5,7 @@
 subcategory: "vLoadBalancer"
 page_title: "vngcloud_vlb_listener Resource - terraform-provider-vngcloud"
 description: |-
-Provides a Load Balancer Listener resource. This can be used to import, create, modify, and delete.
+  Provides a Load Balancer Listener resource. This can be used to import, create, modify, and delete.
   
 ---
 
