@@ -1,0 +1,2508 @@
+---
+swagger: "2.0"
+info:
+  description: "Api Documentation"
+  version: "1.0"
+  title: "Api Documentation"
+  termsOfService: "urn:tos"
+  contact: {}
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0"
+host: "localhost:8089"
+basePath: "/"
+tags:
+- name: "load-balancer-listener-rest-controller-v-2"
+  description: "Load Balancer Listener Rest Controller V 2"
+- name: "load-balancer-pool-rest-controller-v-2"
+  description: "Load Balancer Pool Rest Controller V 2"
+- name: "load-balancer-rest-controller-v-2"
+  description: "Load Balancer Rest Controller V 2"
+paths:
+  /v2/{projectId}/loadBalancers:
+    get:
+      tags:
+      - "load-balancer-rest-controller-v-2"
+      summary: "List LoadBalancers Paging"
+      operationId: "getListLoadBalancerWithPagingUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "name"
+        in: "query"
+        description: "name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "page"
+        in: "query"
+        description: "page"
+        required: true
+        type: "string"
+        default: "1"
+        x-exportParamName: "Page"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - name: "size"
+        in: "query"
+        description: "size"
+        required: true
+        type: "string"
+        default: "10"
+        x-exportParamName: "Size"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Paging«LoadBalancerDto»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+    post:
+      tags:
+      - "load-balancer-rest-controller-v-2"
+      summary: "Create a new load balancer"
+      operationId: "createLoadBalancerUsingPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - in: "body"
+        name: "createLoadBalancerRequestV2"
+        description: "createLoadBalancerRequestV2"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateLoadBalancerRequestV2"
+        x-exportParamName: "CreateLoadBalancerRequestV2"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "201":
+          description: "Created"
+          schema:
+            $ref: "#/definitions/DataResponse«LoadBalancer»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+  /v2/{projectId}/loadBalancers/headers:
+    get:
+      tags:
+      - "load-balancer-rest-controller-v-2"
+      summary: "Get list headers"
+      operationId: "getHeadersUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DataResponse«List«string»»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+  /v2/{projectId}/loadBalancers/packages:
+    get:
+      tags:
+      - "load-balancer-rest-controller-v-2"
+      summary: "Get list packages"
+      operationId: "getPackagesUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Paging«LoadBalancerPackage»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+  /v2/{projectId}/loadBalancers/{loadBalancerId}:
+    get:
+      tags:
+      - "load-balancer-rest-controller-v-2"
+      summary: "Load Balancer By Load Balancer Id"
+      operationId: "getLoadBalancerUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "loadBalancerId"
+        in: "path"
+        description: "The load balancer id"
+        required: true
+        type: "string"
+        x-exportParamName: "LoadBalancerId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DataResponse«LoadBalancerDto»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+    delete:
+      tags:
+      - "load-balancer-rest-controller-v-2"
+      summary: "Delete a load balancer"
+      operationId: "deleteLoadBalancerUsingDELETE"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "loadBalancerId"
+        in: "path"
+        description: "The load balancer id"
+        required: true
+        type: "string"
+        x-exportParamName: "LoadBalancerId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+  /v2/{projectId}/loadBalancers/{loadBalancerId}/listeners:
+    get:
+      tags:
+      - "load-balancer-listener-rest-controller-v-2"
+      summary: "Get list of listeners of a Load Balancer"
+      operationId: "getListListenersByLoadBalancerUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "loadBalancerId"
+        in: "path"
+        description: "The Load Balancer id"
+        required: true
+        type: "string"
+        x-exportParamName: "LoadBalancerId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DataResponse«List«Listener»»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+    post:
+      tags:
+      - "load-balancer-listener-rest-controller-v-2"
+      summary: "Create a listener"
+      operationId: "createListenerUsingPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - in: "body"
+        name: "createListenerRequestV2"
+        description: "createListenerRequestV2"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateListenerRequestV2"
+        x-exportParamName: "CreateListenerRequestV2"
+      - name: "loadBalancerId"
+        in: "path"
+        description: "The Load Balancer id"
+        required: true
+        type: "string"
+        x-exportParamName: "LoadBalancerId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "201":
+          description: "Created"
+          schema:
+            $ref: "#/definitions/DataResponse«Listener»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+  /v2/{projectId}/loadBalancers/{loadBalancerId}/listeners/{listenerId}:
+    get:
+      tags:
+      - "load-balancer-listener-rest-controller-v-2"
+      summary: "Get a specific listener"
+      operationId: "getListenersUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "listenerId"
+        in: "path"
+        description: "The listener id"
+        required: true
+        type: "string"
+        x-exportParamName: "ListenerId"
+      - name: "loadBalancerId"
+        in: "path"
+        description: "The Load Balancer id"
+        required: true
+        type: "string"
+        x-exportParamName: "LoadBalancerId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DataResponse«Listener»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+    put:
+      tags:
+      - "load-balancer-listener-rest-controller-v-2"
+      summary: "Update a listener"
+      operationId: "updateListenerUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "listenerId"
+        in: "path"
+        description: "The listener id"
+        required: true
+        type: "string"
+        x-exportParamName: "ListenerId"
+      - name: "loadBalancerId"
+        in: "path"
+        description: "The Load Balancer id"
+        required: true
+        type: "string"
+        x-exportParamName: "LoadBalancerId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "updateListenerRequestV2"
+        description: "updateListenerRequestV2"
+        required: true
+        schema:
+          $ref: "#/definitions/UpdateListenerRequestV2"
+        x-exportParamName: "UpdateListenerRequestV2"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DataResponse«Listener»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+    delete:
+      tags:
+      - "load-balancer-listener-rest-controller-v-2"
+      summary: "Delete a listener"
+      operationId: "deleteListenerUsingDELETE"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "listenerId"
+        in: "path"
+        description: "listener id"
+        required: true
+        type: "string"
+        x-exportParamName: "ListenerId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+  /v2/{projectId}/loadBalancers/{loadBalancerId}/listeners/{listenerId}/l7policies:
+    get:
+      tags:
+      - "load-balancer-listener-rest-controller-v-2"
+      summary: "Get list policies of a listener"
+      operationId: "getListL7PoliciesUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "listenerId"
+        in: "path"
+        description: "The listener id"
+        required: true
+        type: "string"
+        x-exportParamName: "ListenerId"
+      - name: "loadBalancerId"
+        in: "path"
+        description: "The Load Balancer id"
+        required: true
+        type: "string"
+        x-exportParamName: "LoadBalancerId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DataResponse«List«L7Policy»»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+    post:
+      tags:
+      - "load-balancer-listener-rest-controller-v-2"
+      summary: "Create a l7 policy"
+      operationId: "createPolicyUsingPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - in: "body"
+        name: "createL7PolicyRequestV2"
+        description: "createL7PolicyRequestV2"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateL7PolicyRequestV2"
+        x-exportParamName: "CreateL7PolicyRequestV2"
+      - name: "listenerId"
+        in: "path"
+        description: "The listener id"
+        required: true
+        type: "string"
+        x-exportParamName: "ListenerId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "201":
+          description: "Created"
+          schema:
+            $ref: "#/definitions/DataResponse«L7Policy»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+  /v2/{projectId}/loadBalancers/{loadBalancerId}/listeners/{listenerId}/l7policies/{l7PolicyId}:
+    delete:
+      tags:
+      - "load-balancer-listener-rest-controller-v-2"
+      summary: "Delete a policy"
+      operationId: "deletePolicyUsingDELETE"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "listenerId"
+        in: "path"
+        description: "listener id"
+        required: true
+        type: "string"
+        x-exportParamName: "ListenerId"
+      - name: "policyId"
+        in: "path"
+        description: "policy id"
+        required: true
+        type: "string"
+        x-exportParamName: "PolicyId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+  /v2/{projectId}/loadBalancers/{loadBalancerId}/listeners/{listenerId}/l7policies/{policyId}:
+    put:
+      tags:
+      - "load-balancer-listener-rest-controller-v-2"
+      summary: "Update a policy"
+      operationId: "updateL7PolicyUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "listenerId"
+        in: "path"
+        description: "The listener id"
+        required: true
+        type: "string"
+        x-exportParamName: "ListenerId"
+      - name: "policyId"
+        in: "path"
+        description: "policy id"
+        required: true
+        type: "string"
+        x-exportParamName: "PolicyId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "updateL7PolicyRequestV2"
+        description: "updateL7PolicyRequestV2"
+        required: true
+        schema:
+          $ref: "#/definitions/UpdateL7PolicyRequestV2"
+        x-exportParamName: "UpdateL7PolicyRequestV2"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DataResponse«L7Policy»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+  /v2/{projectId}/loadBalancers/{loadBalancerId}/listeners/{listenerId}/reorderL7Policies:
+    put:
+      tags:
+      - "load-balancer-listener-rest-controller-v-2"
+      summary: "Reorder the L7 policies"
+      operationId: "reorderPoliciesUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "listenerId"
+        in: "path"
+        description: "listener id"
+        required: true
+        type: "string"
+        x-exportParamName: "ListenerId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "reorderPoliciesRequestV2"
+        description: "reorderPoliciesRequestV2"
+        required: true
+        schema:
+          $ref: "#/definitions/ReorderPoliciesRequestV2"
+        x-exportParamName: "ReorderPoliciesRequestV2"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "string"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+  /v2/{projectId}/loadBalancers/{loadBalancerId}/pools:
+    get:
+      tags:
+      - "load-balancer-pool-rest-controller-v-2"
+      summary: "Get list of pools of a load balancer"
+      operationId: "getListPoolsUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "loadBalancerId"
+        in: "path"
+        description: "The Load Balancer id"
+        required: true
+        type: "string"
+        x-exportParamName: "LoadBalancerId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DataResponse«List«Pool»»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+    post:
+      tags:
+      - "load-balancer-pool-rest-controller-v-2"
+      summary: "Create a new pool"
+      operationId: "createPoolUsingPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - in: "body"
+        name: "createPoolRequestV2"
+        description: "createPoolRequestV2"
+        required: true
+        schema:
+          $ref: "#/definitions/CreatePoolRequestV2"
+        x-exportParamName: "CreatePoolRequestV2"
+      - name: "loadBalancerId"
+        in: "path"
+        description: "The load balancer id"
+        required: true
+        type: "string"
+        x-exportParamName: "LoadBalancerId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "201":
+          description: "Created"
+          schema:
+            $ref: "#/definitions/DataResponse«Pool»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+  /v2/{projectId}/loadBalancers/{loadBalancerId}/pools/{poolId}:
+    get:
+      tags:
+      - "load-balancer-pool-rest-controller-v-2"
+      summary: "Get a specific pool"
+      operationId: "getPoolUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "loadBalancerId"
+        in: "path"
+        description: "The Load Balancer id"
+        required: true
+        type: "string"
+        x-exportParamName: "LoadBalancerId"
+      - name: "poolId"
+        in: "path"
+        description: "The listener id"
+        required: true
+        type: "string"
+        x-exportParamName: "PoolId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DataResponse«Pool»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+    put:
+      tags:
+      - "load-balancer-pool-rest-controller-v-2"
+      summary: "Update a pool"
+      operationId: "updatePoolUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "poolId"
+        in: "path"
+        description: "The pool id"
+        required: true
+        type: "string"
+        x-exportParamName: "PoolId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "updatePoolRequestV2"
+        description: "updatePoolRequestV2"
+        required: true
+        schema:
+          $ref: "#/definitions/UpdatePoolRequestV2"
+        x-exportParamName: "UpdatePoolRequestV2"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DataResponse«Pool»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+    delete:
+      tags:
+      - "load-balancer-pool-rest-controller-v-2"
+      summary: "Delete a pool"
+      operationId: "deletePoolUsingDELETE"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "poolId"
+        in: "path"
+        description: "The pool id"
+        required: true
+        type: "string"
+        x-exportParamName: "PoolId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "204":
+          description: "No Content"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+  /v2/{projectId}/loadBalancers/{loadBalancerId}/pools/{poolId}/healthMonitor:
+    get:
+      tags:
+      - "load-balancer-pool-rest-controller-v-2"
+      summary: "Get the health monitor associated with a specific pool"
+      operationId: "getHealthMonitorFromPoolUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "poolId"
+        in: "path"
+        description: "pool id"
+        required: true
+        type: "string"
+        x-exportParamName: "PoolId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DataResponse«HealthMonitor»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+  /v2/{projectId}/loadBalancers/{loadBalancerId}/pools/{poolId}/members:
+    get:
+      tags:
+      - "load-balancer-pool-rest-controller-v-2"
+      summary: "Get members from a pool"
+      operationId: "getMembersFromPoolUsingGET"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "poolId"
+        in: "path"
+        description: "pool id"
+        required: true
+        type: "string"
+        x-exportParamName: "PoolId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DataResponse«List«Member»»"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+    put:
+      tags:
+      - "load-balancer-pool-rest-controller-v-2"
+      summary: "Update list members"
+      operationId: "updateMembersUsingPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "*/*"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Access Token"
+        required: true
+        type: "string"
+        x-exportParamName: "Authorization"
+      - name: "poolId"
+        in: "path"
+        description: "The pool id"
+        required: true
+        type: "string"
+        x-exportParamName: "PoolId"
+      - name: "portal-user-id"
+        in: "header"
+        description: "portal-user-id"
+        required: true
+        type: "integer"
+        format: "int32"
+        x-exportParamName: "PortalUserId"
+      - name: "projectId"
+        in: "path"
+        description: "The project id"
+        required: true
+        type: "string"
+        x-exportParamName: "ProjectId"
+      - in: "body"
+        name: "updateMembersRequestV2"
+        description: "updateMembersRequestV2"
+        required: true
+        schema:
+          $ref: "#/definitions/UpdateMembersRequestV2"
+        x-exportParamName: "UpdateMembersRequestV2"
+      deprecated: false
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "string"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal Server Error"
+definitions:
+  CreateHealthMonitorRequest:
+    type: "object"
+    required:
+    - "healthCheckProtocol"
+    - "healthyThreshold"
+    - "interval"
+    - "timeout"
+    - "unhealthyThreshold"
+    properties:
+      healthCheckMethod:
+        type: "string"
+        example: "GET"
+        description: "Health check method for the HTTP protocol."
+        enum:
+        - "GET"
+        - "POST"
+        - "PUT"
+      healthCheckPath:
+        type: "string"
+        example: "/"
+        description: "Health check path for the HTTP protocol."
+      healthCheckProtocol:
+        type: "string"
+        example: "TCP"
+        description: "Protocol for performing health check. The protocol can be TCP\
+          \ or HTTP."
+        enum:
+        - "TCP"
+        - "HTTP"
+      healthyThreshold:
+        type: "integer"
+        format: "int64"
+        example: 3
+        description: "Healthy threshold. The value must be in range from 2 to 10."
+      interval:
+        type: "integer"
+        format: "int64"
+        example: 30
+        description: "Health check interval. The value must be from 5 to 3600 seconds."
+      successCode:
+        type: "string"
+        example: "200"
+        description: "Health check success code for HTTP health check protocol."
+      timeout:
+        type: "integer"
+        format: "int64"
+        example: 5
+        description: "Timeout of health check. The value must be from 2 to 120 seconds"
+      unhealthyThreshold:
+        type: "integer"
+        format: "int64"
+        example: 3
+        description: "Unhealthy threshold. The value must be in range from 2 to 10."
+    title: "CreateHealthMonitorRequest"
+    example:
+      healthCheckPath: "/"
+      unhealthyThreshold: 3
+      healthCheckMethod: "GET"
+      interval: 30
+      healthyThreshold: 3
+      healthCheckProtocol: "TCP"
+      timeout: 5
+      successCode: "200"
+  CreateL7PolicyRequestV2:
+    type: "object"
+    required:
+    - "action"
+    - "compareType"
+    - "name"
+    - "type"
+    properties:
+      action:
+        type: "string"
+        example: "REDIRECT_TO_URL"
+        description: "Action. This indicates how the listener will route traffic.\
+          \ The value can be REDIRECT_TO_POOL or REDIRECT_TO_URL."
+        enum:
+        - "REDIRECT_TO_POOL"
+        - "REDIRECT_TO_URL"
+      compareType:
+        type: "string"
+        example: "EQUAL_TO"
+        description: "Compare operation. The value can be CONTAINS or EQUAL_TO"
+        enum:
+        - "CONTAINS"
+        - "EQUAL_TO"
+      keepQueryString:
+        type: "boolean"
+        example: true
+        description: "Keep the query string or not."
+      name:
+        type: "string"
+        example: "l7policy_1"
+        description: "Policy name. Only letters (a-z, A-Z, 0-9, '_', '.') are allowed\
+          \ and your input data must be between 6 and 20 characters."
+      redirectHttpCode:
+        type: "integer"
+        format: "int32"
+        example: 301
+        description: "Redirect HTTP code for redirecting to other URL."
+        enum:
+        - 301
+        - 302
+      redirectPoolId:
+        type: "string"
+        example: "pool-1a007f28-bafa-450f-963b-3d177730c3b8"
+        description: "Pool for forwarding."
+      redirectUrl:
+        type: "string"
+        example: "https://www.example.com"
+        description: "URL for forwarding."
+      type:
+        type: "string"
+        example: "PATH"
+        description: "Which attribute to compare. The value can be PATH or HOST_NAME"
+        enum:
+        - "PATH"
+        - "HOST_NAME"
+      value:
+        type: "string"
+        example: "www.example.com"
+        description: "The value to compare with attribute."
+    title: "CreateL7PolicyRequestV2"
+    example:
+      compareType: "EQUAL_TO"
+      redirectUrl: "https://www.example.com"
+      redirectPoolId: "pool-1a007f28-bafa-450f-963b-3d177730c3b8"
+      name: "l7policy_1"
+      redirectHttpCode: 301
+      action: "REDIRECT_TO_URL"
+      keepQueryString: true
+      type: "PATH"
+      value: "www.example.com"
+  CreateListenerRequestV2:
+    type: "object"
+    required:
+    - "allowedCidrs"
+    - "defaultPoolId"
+    - "listenerName"
+    - "listenerProtocol"
+    - "listenerProtocolPort"
+    - "timeoutClient"
+    - "timeoutConnection"
+    - "timeoutMember"
+    properties:
+      allowedCidrs:
+        type: "string"
+        example: "0.0.0.0/0"
+        description: "Allowed cidr."
+      certificateAuthorities:
+        type: "array"
+        example:
+        - "secret-4ea86b49-9427-4b14-b080-8ac88a1f5efe"
+        description: "List of certificate authority"
+        items:
+          type: "string"
+      defaultCertificateAuthority:
+        type: "string"
+        example: "secret-4ea86b49-9427-4b14-b080-8ac88a1f5efe"
+        description: "Default certificate authority that the listener will use"
+      defaultPoolId:
+        type: "string"
+        example: "pool-1a007f28-bafa-450f-963b-3d177730c3b8"
+        description: "Id of the pool that this listener will forward to."
+      listenerName:
+        type: "string"
+        example: "listener_02"
+        description: "Name of the listener. Only letters (a-z, A-Z, 0-9, '_', '.')\
+          \ are allowed and your input data must be between 6 and 20 characters."
+      listenerProtocol:
+        type: "string"
+        example: "HTTP"
+        description: "Protocol of the listener."
+        enum:
+        - "HTTP"
+        - "HTTPS"
+        - "TCP"
+      listenerProtocolPort:
+        type: "integer"
+        format: "int32"
+        example: 80
+        description: "Port of the listener."
+      timeoutClient:
+        type: "integer"
+        format: "int32"
+        example: 50
+        description: "Idle timeout of client. The value can be in range from 1 to\
+          \ 3600 seconds"
+      timeoutConnection:
+        type: "integer"
+        format: "int32"
+        example: 5
+        description: "Idle timeout of connection. The value can be in range from 1\
+          \ to 3600 seconds"
+      timeoutMember:
+        type: "integer"
+        format: "int32"
+        example: 50
+        description: "Idle timeout of member. The value can be in range from 1 to\
+          \ 3600 seconds"
+    title: "CreateListenerRequestV2"
+    example:
+      certificateAuthorities:
+      - "secret-4ea86b49-9427-4b14-b080-8ac88a1f5efe"
+      defaultCertificateAuthority: "secret-4ea86b49-9427-4b14-b080-8ac88a1f5efe"
+      listenerName: "listener_02"
+      listenerProtocol: "HTTP"
+      listenerProtocolPort: 80
+      timeoutClient: 50
+      defaultPoolId: "pool-1a007f28-bafa-450f-963b-3d177730c3b8"
+      allowedCidrs: "0.0.0.0/0"
+      timeoutConnection: 5
+      timeoutMember: 50
+  CreateLoadBalancerRequestV2:
+    type: "object"
+    required:
+    - "name"
+    - "packageId"
+    - "scheme"
+    - "subnetId"
+    - "type"
+    properties:
+      listener:
+        description: "Listener of the load balancer."
+        $ref: "#/definitions/LbListener"
+      name:
+        type: "string"
+        example: "loadbalancer_01"
+        description: "Load balancer's name. Only letters (a-z, A-Z, 0-9, '_', '.')\
+          \ are allowed and your input data must be between 6 and 20 characters."
+      packageId:
+        type: "string"
+        example: "f8e62cf2-d84c-11e9-8a34-2a2ae2dbcce4"
+        description: "Package ID of the load balancer."
+      pool:
+        description: "Pool of the load balancer."
+        $ref: "#/definitions/LbPool"
+      scheme:
+        type: "string"
+        example: "Internet"
+        description: "Schema of the load balancer, it may be Internet or Internal."
+        enum:
+        - "Internet"
+        - "Internal"
+      subnetId:
+        type: "string"
+        example: "sub-375e0685-f828-40bc-b8e9-53271fd7860d"
+        description: "Subnet ID for the load balancer."
+      type:
+        type: "string"
+        example: "Layer 7"
+        description: "Type of the load balancer. It may be Layer 4 or Layer 7"
+        enum:
+        - "Layer 4"
+        - "Layer 7"
+    title: "CreateLoadBalancerRequestV2"
+    example:
+      subnetId: "sub-375e0685-f828-40bc-b8e9-53271fd7860d"
+      scheme: "Internet"
+      listener:
+        certificateAuthorities:
+        - "secret-4ea86b49-9427-4b14-b080-8ac88a1f5efe"
+        defaultCertificateAuthority: "secret-4ea86b49-9427-4b14-b080-8ac88a1f5efe"
+        listenerName: "listener_01"
+        listenerProtocol: "HTTP"
+        listenerProtocolPort: 80
+        timeoutClient: 50
+        allowedCidrs: "0.0.0.0/0"
+        timeoutConnection: 5
+        timeoutMember: 50
+      name: "loadbalancer_01"
+      packageId: "f8e62cf2-d84c-11e9-8a34-2a2ae2dbcce4"
+      pool:
+        stickiness: true
+        poolProtocol: "HTTP"
+        healthCheckProtocol: "TCP"
+        timeout: 5
+        successCode: "200"
+        healthCheckPath: "/"
+        members:
+        - subnetId: "subnetId"
+          backup: false
+          port: 80
+          ipAddress: "192.168.0.1"
+          name: "name"
+          weight: 1
+          monitorPort: 1000
+        - subnetId: "subnetId"
+          backup: false
+          port: 80
+          ipAddress: "192.168.0.1"
+          name: "name"
+          weight: 1
+          monitorPort: 1000
+        unhealthyThreshold: 3
+        healthCheckMethod: "GET"
+        interval: 30
+        healthyThreshold: 3
+        algorithm: "ROUND_ROBIN"
+        poolName: "This_is_a_pool"
+      type: "Layer 7"
+  CreateMemberRequest:
+    type: "object"
+    required:
+    - "backup"
+    - "ipAddress"
+    - "port"
+    - "subnetId"
+    properties:
+      backup:
+        type: "boolean"
+        example: false
+        description: "Enable backup."
+      ipAddress:
+        type: "string"
+        example: "192.168.0.1"
+        description: "IP address of the server."
+      monitorPort:
+        type: "integer"
+        format: "int32"
+        example: 1000
+        description: "Port for monitoring the member."
+      name:
+        type: "string"
+        description: "Friendly name for the member to be recognizable."
+      port:
+        type: "integer"
+        format: "int32"
+        example: 80
+        description: "Port of the server to handle request."
+      subnetId:
+        type: "string"
+        description: "Subnet ID of the server. Must be in the subnet of the load balancer."
+      weight:
+        type: "integer"
+        format: "int32"
+        example: 1
+        description: "Weight for the member. Higher weight will make that member receive\
+          \ more requests."
+    title: "CreateMemberRequest"
+    description: "Members of the pool"
+    example:
+      subnetId: "subnetId"
+      backup: false
+      port: 80
+      ipAddress: "192.168.0.1"
+      name: "name"
+      weight: 1
+      monitorPort: 1000
+  CreatePoolRequestV2:
+    type: "object"
+    required:
+    - "algorithm"
+    - "poolName"
+    - "poolProtocol"
+    properties:
+      algorithm:
+        type: "string"
+        example: "ROUND_ROBIN"
+        description: "Algorithm of the pool. The algorithm can be \"ROUND_ROBIN\"\
+          \ or \"LEAST_CONNECTIONS\" or \"SOURCE_IP\""
+        enum:
+        - "ROUND_ROBIN"
+        - "LEAST_CONNECTIONS"
+        - "SOURCE_IP"
+      healthMonitor:
+        description: "Request for creating health check monitor."
+        $ref: "#/definitions/CreateHealthMonitorRequest"
+      members:
+        type: "array"
+        description: "List of members of the pool."
+        items:
+          $ref: "#/definitions/CreateMemberRequest"
+      poolName:
+        type: "string"
+        example: "pool_01"
+        description: "Name of the pool. Only letters (a-z, A-Z, 0-9, '_', '.') are\
+          \ allowed and your input data must be between 6 and 20 characters."
+      poolProtocol:
+        type: "string"
+        example: "HTTP"
+        description: "Protocol of the pool."
+        enum:
+        - "HTTP"
+        - "TCP"
+        - "PROXY"
+      stickiness:
+        type: "boolean"
+        example: true
+        description: "Enable sticky sessions."
+    title: "CreatePoolRequestV2"
+    example:
+      healthMonitor:
+        healthCheckPath: "/"
+        unhealthyThreshold: 3
+        healthCheckMethod: "GET"
+        interval: 30
+        healthyThreshold: 3
+        healthCheckProtocol: "TCP"
+        timeout: 5
+        successCode: "200"
+      stickiness: true
+      members:
+      - subnetId: "subnetId"
+        backup: false
+        port: 80
+        ipAddress: "192.168.0.1"
+        name: "name"
+        weight: 1
+        monitorPort: 1000
+      - subnetId: "subnetId"
+        backup: false
+        port: 80
+        ipAddress: "192.168.0.1"
+        name: "name"
+        weight: 1
+        monitorPort: 1000
+      poolProtocol: "HTTP"
+      algorithm: "ROUND_ROBIN"
+      poolName: "pool_01"
+  DataResponse«HealthMonitor»:
+    type: "object"
+    properties:
+      data:
+        $ref: "#/definitions/HealthMonitor"
+    title: "DataResponse«HealthMonitor»"
+  DataResponse«L7Policy»:
+    type: "object"
+    properties:
+      data:
+        $ref: "#/definitions/L7Policy"
+    title: "DataResponse«L7Policy»"
+  DataResponse«Listener»:
+    type: "object"
+    properties:
+      data:
+        $ref: "#/definitions/Listener"
+    title: "DataResponse«Listener»"
+  DataResponse«List«L7Policy»»:
+    type: "object"
+    properties:
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/L7Policy"
+    title: "DataResponse«List«L7Policy»»"
+  DataResponse«List«Listener»»:
+    type: "object"
+    properties:
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/Listener"
+    title: "DataResponse«List«Listener»»"
+  DataResponse«List«Member»»:
+    type: "object"
+    properties:
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/Member"
+    title: "DataResponse«List«Member»»"
+  DataResponse«List«Pool»»:
+    type: "object"
+    properties:
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/Pool"
+    title: "DataResponse«List«Pool»»"
+  DataResponse«List«string»»:
+    type: "object"
+    properties:
+      data:
+        type: "array"
+        items:
+          type: "string"
+    title: "DataResponse«List«string»»"
+  DataResponse«LoadBalancerDto»:
+    type: "object"
+    properties:
+      data:
+        $ref: "#/definitions/LoadBalancerDto"
+    title: "DataResponse«LoadBalancerDto»"
+  DataResponse«LoadBalancer»:
+    type: "object"
+    properties:
+      data:
+        $ref: "#/definitions/LoadBalancer"
+    title: "DataResponse«LoadBalancer»"
+  DataResponse«Pool»:
+    type: "object"
+    properties:
+      data:
+        $ref: "#/definitions/Pool"
+    title: "DataResponse«Pool»"
+  HealthMonitor:
+    type: "object"
+    properties:
+      createdAt:
+        type: "string"
+        format: "date-time"
+      healthCheckMethod:
+        type: "string"
+      healthCheckPath:
+        type: "string"
+      healthCheckProtocol:
+        type: "string"
+      healthyThreshold:
+        type: "integer"
+        format: "int64"
+      interval:
+        type: "integer"
+        format: "int64"
+      poolId:
+        type: "string"
+      projectId:
+        type: "string"
+      provisioningStatus:
+        type: "string"
+      successCode:
+        type: "string"
+      timeout:
+        type: "integer"
+        format: "int64"
+      unhealthyThreshold:
+        type: "integer"
+        format: "int64"
+      updatedAt:
+        type: "string"
+        format: "date-time"
+      uuid:
+        type: "string"
+    title: "HealthMonitor"
+  L7Policy:
+    type: "object"
+    properties:
+      action:
+        type: "string"
+      adminStateUp:
+        type: "boolean"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      description:
+        type: "string"
+      keepQueryString:
+        type: "boolean"
+      l7Rule:
+        $ref: "#/definitions/L7Rule"
+      listenerId:
+        type: "string"
+      name:
+        type: "string"
+      operatingStatus:
+        type: "string"
+      position:
+        type: "integer"
+        format: "int64"
+      projectId:
+        type: "string"
+      provisioningStatus:
+        type: "string"
+      redirectHttpCode:
+        type: "integer"
+        format: "int32"
+      redirectPoolId:
+        type: "string"
+      redirectUrl:
+        type: "string"
+      updatedAt:
+        type: "string"
+        format: "date-time"
+      uuid:
+        type: "string"
+    title: "L7Policy"
+  L7Rule:
+    type: "object"
+    properties:
+      adminStateUp:
+        type: "boolean"
+      compareType:
+        type: "string"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      invert:
+        type: "boolean"
+      operatingStatus:
+        type: "string"
+      policyId:
+        type: "string"
+      projectId:
+        type: "string"
+      provisioningStatus:
+        type: "string"
+      ruleKey:
+        type: "string"
+      ruleType:
+        type: "string"
+      ruleValue:
+        type: "string"
+      updatedAt:
+        type: "string"
+        format: "date-time"
+      uuid:
+        type: "string"
+    title: "L7Rule"
+  LbListener:
+    type: "object"
+    required:
+    - "listenerName"
+    - "listenerProtocol"
+    properties:
+      allowedCidrs:
+        type: "string"
+        example: "0.0.0.0/0"
+        description: "Allowed cidr."
+      certificateAuthorities:
+        type: "array"
+        example:
+        - "secret-4ea86b49-9427-4b14-b080-8ac88a1f5efe"
+        description: "List of certificate authority"
+        items:
+          type: "string"
+      defaultCertificateAuthority:
+        type: "string"
+        example: "secret-4ea86b49-9427-4b14-b080-8ac88a1f5efe"
+        description: "Default certificate authority that the listener will use"
+      listenerName:
+        type: "string"
+        example: "listener_01"
+        description: "Name of the listener. Only letters (a-z, A-Z, 0-9, '_', '.')\
+          \ are allowed and your input data must be between 6 and 20 characters."
+      listenerProtocol:
+        type: "string"
+        example: "HTTP"
+        description: "Protocol of the listener.The value can be HTTP or HTTPS or TCP."
+        enum:
+        - "HTTP"
+        - "HTTPS"
+        - "TCP"
+      listenerProtocolPort:
+        type: "integer"
+        format: "int32"
+        example: 80
+        description: "Port of the listener. From 1 to 65535"
+      timeoutClient:
+        type: "integer"
+        format: "int32"
+        example: 50
+        description: "Idle timeout of client. The value can be in range from 1 to\
+          \ 3600 seconds"
+      timeoutConnection:
+        type: "integer"
+        format: "int32"
+        example: 5
+        description: "Idle timeout of connection. The value can be in range from 1\
+          \ to 3600 seconds"
+      timeoutMember:
+        type: "integer"
+        format: "int32"
+        example: 50
+        description: "Idle timeout of member. The value can be in range from 1 to\
+          \ 3600 seconds"
+    title: "LbListener"
+    example:
+      certificateAuthorities:
+      - "secret-4ea86b49-9427-4b14-b080-8ac88a1f5efe"
+      defaultCertificateAuthority: "secret-4ea86b49-9427-4b14-b080-8ac88a1f5efe"
+      listenerName: "listener_01"
+      listenerProtocol: "HTTP"
+      listenerProtocolPort: 80
+      timeoutClient: 50
+      allowedCidrs: "0.0.0.0/0"
+      timeoutConnection: 5
+      timeoutMember: 50
+  LbPool:
+    type: "object"
+    required:
+    - "algorithm"
+    - "healthCheckProtocol"
+    - "poolName"
+    - "poolProtocol"
+    properties:
+      algorithm:
+        type: "string"
+        example: "ROUND_ROBIN"
+        description: "Algorithm of the pool. The algorithm can be \"ROUND_ROBIN\"\
+          \ or \"LEAST_CONNECTIONS\" or \"SOURCE_IP\""
+        enum:
+        - "ROUND_ROBIN"
+        - "LEAST_CONNECTIONS"
+        - "SOURCE_IP"
+      healthCheckMethod:
+        type: "string"
+        example: "GET"
+        description: "Health check method for the HTTP protocol."
+        enum:
+        - "GET"
+        - "POST"
+        - "PUT"
+      healthCheckPath:
+        type: "string"
+        example: "/"
+        description: "Health check path for the HTTP protocol."
+      healthCheckProtocol:
+        type: "string"
+        example: "TCP"
+        description: "Protocol for performing health check."
+        enum:
+        - "TCP"
+        - "HTTP"
+        - "HTTPS"
+      healthyThreshold:
+        type: "integer"
+        format: "int64"
+        example: 3
+        description: "Healthy threshold. The value must be in range from 2 to 10."
+      interval:
+        type: "integer"
+        format: "int64"
+        example: 30
+        description: "Health check interval. The value must be from 5 to 3600 seconds."
+      members:
+        type: "array"
+        description: "List of members of the pool."
+        items:
+          $ref: "#/definitions/CreateMemberRequest"
+      poolName:
+        type: "string"
+        example: "This_is_a_pool"
+        description: "Name of the pool. Only letters (a-z, A-Z, 0-9, '_', '.') are\
+          \ allowed and your input data must be between 6 and 20 characters."
+      poolProtocol:
+        type: "string"
+        example: "HTTP"
+        description: "Protocol of the pool."
+        enum:
+        - "HTTP"
+        - "TCP"
+        - "PROXY"
+      stickiness:
+        type: "boolean"
+        example: true
+        description: "Enable sticky sessions."
+      successCode:
+        type: "string"
+        example: "200"
+        description: "Health check success code for HTTP health check protocol."
+      timeout:
+        type: "integer"
+        format: "int64"
+        example: 5
+        description: "Timeout of health check. The value must be from 2 to 120 seconds"
+      unhealthyThreshold:
+        type: "integer"
+        format: "int64"
+        example: 3
+        description: "Unhealthy threshold. The value must be in range from 2 to 10."
+    title: "LbPool"
+    example:
+      stickiness: true
+      poolProtocol: "HTTP"
+      healthCheckProtocol: "TCP"
+      timeout: 5
+      successCode: "200"
+      healthCheckPath: "/"
+      members:
+      - subnetId: "subnetId"
+        backup: false
+        port: 80
+        ipAddress: "192.168.0.1"
+        name: "name"
+        weight: 1
+        monitorPort: 1000
+      - subnetId: "subnetId"
+        backup: false
+        port: 80
+        ipAddress: "192.168.0.1"
+        name: "name"
+        weight: 1
+        monitorPort: 1000
+      unhealthyThreshold: 3
+      healthCheckMethod: "GET"
+      interval: 30
+      healthyThreshold: 3
+      algorithm: "ROUND_ROBIN"
+      poolName: "This_is_a_pool"
+  Listener:
+    type: "object"
+    properties:
+      adminStateUp:
+        type: "boolean"
+      allowedCidrs:
+        type: "string"
+      clientAuthenticationCertId:
+        type: "string"
+      connectionLimit:
+        type: "integer"
+        format: "int32"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      defaultPoolId:
+        type: "string"
+      defaultTlsContainerRef:
+        type: "string"
+      description:
+        type: "string"
+      headers:
+        type: "array"
+        items:
+          type: "string"
+      loadBalancerId:
+        type: "string"
+      name:
+        type: "string"
+      operatingStatus:
+        type: "string"
+      projectId:
+        type: "string"
+      protocol:
+        type: "string"
+      protocolPort:
+        type: "integer"
+        format: "int32"
+      provisioningStatus:
+        type: "string"
+      timeoutClient:
+        type: "integer"
+        format: "int32"
+      timeoutConnection:
+        type: "integer"
+        format: "int32"
+      timeoutMember:
+        type: "integer"
+        format: "int32"
+      updatedAt:
+        type: "string"
+        format: "date-time"
+      uuid:
+        type: "string"
+    title: "Listener"
+  LoadBalancer:
+    type: "object"
+    properties:
+      address:
+        type: "string"
+      adminStateUp:
+        type: "boolean"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      description:
+        type: "string"
+      loadBalancerSchema:
+        type: "string"
+      name:
+        type: "string"
+      operatingStatus:
+        type: "string"
+      packageId:
+        type: "string"
+      privateSubnetCidr:
+        type: "string"
+      privateSubnetId:
+        type: "string"
+      projectId:
+        type: "string"
+      provisioningStatus:
+        type: "string"
+      subnetId:
+        type: "string"
+      type:
+        type: "string"
+      updatedAt:
+        type: "string"
+        format: "date-time"
+      uuid:
+        type: "string"
+    title: "LoadBalancer"
+  LoadBalancerDto:
+    type: "object"
+    properties:
+      address:
+        type: "string"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      description:
+        type: "string"
+      loadBalancerSchema:
+        type: "string"
+      name:
+        type: "string"
+      packageId:
+        type: "string"
+      privateSubnetCidr:
+        type: "string"
+      privateSubnetId:
+        type: "string"
+      status:
+        type: "string"
+      subnetId:
+        type: "string"
+      type:
+        type: "string"
+      uuid:
+        type: "string"
+    title: "LoadBalancerDto"
+  LoadBalancerPackage:
+    type: "object"
+    properties:
+      connectionNumber:
+        type: "integer"
+        format: "int32"
+      dataTransfer:
+        type: "integer"
+        format: "int32"
+      lbType:
+        type: "string"
+      mode:
+        type: "string"
+      name:
+        type: "string"
+      type:
+        type: "string"
+      uuid:
+        type: "string"
+    title: "LoadBalancerPackage"
+  Member:
+    type: "object"
+    properties:
+      address:
+        type: "string"
+      adminStateUp:
+        type: "boolean"
+      backup:
+        type: "integer"
+        format: "int32"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      monitorPort:
+        type: "integer"
+        format: "int32"
+      name:
+        type: "string"
+      operatingStatus:
+        type: "string"
+      poolId:
+        type: "string"
+      projectId:
+        type: "string"
+      protocolPort:
+        type: "integer"
+        format: "int32"
+      provisioningStatus:
+        type: "string"
+      subnetId:
+        type: "string"
+      typeCreate:
+        type: "string"
+      updatedAt:
+        type: "string"
+        format: "date-time"
+      uuid:
+        type: "string"
+      weight:
+        type: "integer"
+        format: "int32"
+    title: "Member"
+  Paging«LoadBalancerDto»:
+    type: "object"
+    properties:
+      listData:
+        type: "array"
+        items:
+          $ref: "#/definitions/LoadBalancerDto"
+      page:
+        type: "integer"
+        format: "int32"
+      pageSize:
+        type: "integer"
+        format: "int32"
+      totalItem:
+        type: "integer"
+        format: "int64"
+      totalPage:
+        type: "integer"
+        format: "int32"
+    title: "Paging«LoadBalancerDto»"
+  Paging«LoadBalancerPackage»:
+    type: "object"
+    properties:
+      listData:
+        type: "array"
+        items:
+          $ref: "#/definitions/LoadBalancerPackage"
+      page:
+        type: "integer"
+        format: "int32"
+      pageSize:
+        type: "integer"
+        format: "int32"
+      totalItem:
+        type: "integer"
+        format: "int64"
+      totalPage:
+        type: "integer"
+        format: "int32"
+    title: "Paging«LoadBalancerPackage»"
+  Pool:
+    type: "object"
+    properties:
+      adminStateUp:
+        type: "boolean"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      description:
+        type: "string"
+      healthMonitor:
+        $ref: "#/definitions/HealthMonitor"
+      loadBalanceMethod:
+        type: "string"
+      loadBalancerId:
+        type: "string"
+      name:
+        type: "string"
+      operatingStatus:
+        type: "string"
+      projectId:
+        type: "string"
+      protocol:
+        type: "string"
+      provisioningStatus:
+        type: "string"
+      sessionPersistence:
+        type: "integer"
+        format: "int32"
+      updatedAt:
+        type: "string"
+        format: "date-time"
+      uuid:
+        type: "string"
+    title: "Pool"
+  ReorderPoliciesRequestV2:
+    type: "object"
+    required:
+    - "policies"
+    properties:
+      policies:
+        type: "array"
+        description: "List of policies to reorder, start from 1 to ...."
+        items:
+          $ref: "#/definitions/ReorderPolicyRequest"
+    title: "ReorderPoliciesRequestV2"
+    example:
+      policies:
+      - policyId: "policy-4ca4af07-271c-4617-ba9a-1dd01bf2c93c"
+        position: 1
+      - policyId: "policy-4ca4af07-271c-4617-ba9a-1dd01bf2c93c"
+        position: 1
+  ReorderPolicyRequest:
+    type: "object"
+    required:
+    - "policyId"
+    - "position"
+    properties:
+      policyId:
+        type: "string"
+        example: "policy-4ca4af07-271c-4617-ba9a-1dd01bf2c93c"
+        description: "Policy's id to reorder"
+      position:
+        type: "integer"
+        format: "int64"
+        example: 1
+        description: "New position of the policy, start from 1 to ..."
+    title: "ReorderPolicyRequest"
+    example:
+      policyId: "policy-4ca4af07-271c-4617-ba9a-1dd01bf2c93c"
+      position: 1
+  UpdateHealthMonitorRequest:
+    type: "object"
+    required:
+    - "healthyThreshold"
+    - "interval"
+    - "timeout"
+    - "unhealthyThreshold"
+    properties:
+      healthCheckMethod:
+        type: "string"
+        example: "GET"
+        description: "Health check method for the HTTP protocol."
+      healthCheckPath:
+        type: "string"
+        example: "/"
+        description: "Health check path for the HTTP protocol."
+      healthyThreshold:
+        type: "integer"
+        format: "int64"
+        example: 3
+        description: "Healthy threshold. The value must be in range from 2 to 10."
+      interval:
+        type: "integer"
+        format: "int64"
+        example: 30
+        description: "Health check interval. The value must be from 5 to 3600 seconds."
+      successCode:
+        type: "string"
+        example: "200"
+        description: "Health check success code for HTTP health check protocol."
+      timeout:
+        type: "integer"
+        format: "int64"
+        example: 5
+        description: "Timeout of health check. The value must be from 2 to 120 seconds"
+      unhealthyThreshold:
+        type: "integer"
+        format: "int64"
+        example: 3
+        description: "Unhealthy threshold. The value must be in range from 2 to 10."
+    title: "UpdateHealthMonitorRequest"
+    example:
+      healthCheckPath: "/"
+      unhealthyThreshold: 3
+      healthCheckMethod: "GET"
+      interval: 30
+      healthyThreshold: 3
+      timeout: 5
+      successCode: "200"
+  UpdateL7PolicyRequestV2:
+    type: "object"
+    required:
+    - "action"
+    - "compareType"
+    - "type"
+    properties:
+      action:
+        type: "string"
+        example: "REDIRECT_TO_URL"
+        description: "Action. This indicates how the listener will route traffic.\
+          \ The value can be REDIRECT_TO_POOL or REDIRECT_TO_URL."
+        enum:
+        - "REDIRECT_TO_POOL"
+        - "REDIRECT_TO_URL"
+      compareType:
+        type: "string"
+        example: "EQUAL_TO"
+        description: "Compare operation. The value can be CONTAINS or EQUAL_TO"
+        enum:
+        - "CONTAINS"
+        - "EQUAL_TO"
+      keepQueryString:
+        type: "boolean"
+        example: false
+        description: "Keep the query string or not."
+      position:
+        type: "integer"
+        format: "int64"
+        example: 1
+        description: "Position of the policy"
+      redirectHttpCode:
+        type: "integer"
+        format: "int32"
+        example: 302
+        description: "Redirect HTTP code for redirecting to other URL."
+        enum:
+        - 301
+        - 302
+      redirectPoolId:
+        type: "string"
+        example: "pool-1a007f28-bafa-450f-963b-3d177730c3b8"
+        description: "Pool for forwarding."
+      redirectUrl:
+        type: "string"
+        example: "https://www.example.com"
+        description: "URL for forwarding."
+      type:
+        type: "string"
+        example: "PATH"
+        description: "Which attribute to compare. The value can be PATH or HOST_NAME"
+        enum:
+        - "PATH"
+        - "HOST_NAME"
+      value:
+        type: "string"
+        example: "www.example.com"
+        description: "The value to compare with attribute."
+    title: "UpdateL7PolicyRequestV2"
+    example:
+      compareType: "EQUAL_TO"
+      redirectUrl: "https://www.example.com"
+      redirectPoolId: "pool-1a007f28-bafa-450f-963b-3d177730c3b8"
+      redirectHttpCode: 302
+      action: "REDIRECT_TO_URL"
+      keepQueryString: false
+      position: 1
+      type: "PATH"
+      value: "www.example.com"
+  UpdateListenerRequestV2:
+    type: "object"
+    required:
+    - "allowedCidrs"
+    - "defaultPoolId"
+    - "timeoutClient"
+    - "timeoutConnection"
+    - "timeoutMember"
+    properties:
+      allowedCidrs:
+        type: "string"
+        example: "0.0.0.0/0"
+        description: "Allowed cidr."
+      clientCertificate:
+        type: "string"
+        example: "secret-4ea86b49-9427-4b14-b080-8ac88a1f5efe"
+        description: "Client certificate"
+      defaultCertificateAuthority:
+        type: "string"
+        example: "secret-4ea86b49-9427-4b14-b080-8ac88a1f5efe"
+        description: "Default certificate authority."
+      defaultPoolId:
+        type: "string"
+        example: "pool-1a007f28-bafa-450f-963b-3d177730c3b8"
+        description: "Id of the pool that this listener will forward to."
+      headers:
+        type: "array"
+        example: "X-Forwarded-For"
+        description: "List Headers"
+        items:
+          type: "string"
+          enum:
+          - "X-Forwarded-For"
+          - "X-Forwarded-Port"
+          - "X-SSL-Client-Verify"
+          - "X-SSL-Client-Has-Cert"
+          - "X-SSL-Client-DN"
+          - "X-SSL-Client-CN"
+          - "X-SSL-Issuer"
+          - "X-SSL-Client-SHA1"
+          - "X-SSL-Client-Not-Before"
+          - "X-SSL-Client-Not-After"
+          - "X-Forwarded-Proto"
+      timeoutClient:
+        type: "integer"
+        format: "int32"
+        example: 50
+        description: "Idle timeout of client. The value can be in range from 1 to\
+          \ 3600 seconds"
+      timeoutConnection:
+        type: "integer"
+        format: "int32"
+        example: 5
+        description: "Idle timeout of connection. The value can be in range from 1\
+          \ to 3600 seconds"
+      timeoutMember:
+        type: "integer"
+        format: "int32"
+        example: 50
+        description: "Idle timeout of member. The value can be in range from 1 to\
+          \ 3600 seconds"
+    title: "UpdateListenerRequestV2"
+    example:
+      headers: "X-Forwarded-For"
+      clientCertificate: "secret-4ea86b49-9427-4b14-b080-8ac88a1f5efe"
+      defaultCertificateAuthority: "secret-4ea86b49-9427-4b14-b080-8ac88a1f5efe"
+      timeoutClient: 50
+      defaultPoolId: "pool-1a007f28-bafa-450f-963b-3d177730c3b8"
+      allowedCidrs: "0.0.0.0/0"
+      timeoutConnection: 5
+      timeoutMember: 50
+  UpdateMembersRequestV2:
+    type: "object"
+    properties:
+      members:
+        type: "array"
+        description: "List of members of the pool."
+        items:
+          $ref: "#/definitions/CreateMemberRequest"
+    title: "UpdateMembersRequestV2"
+    example:
+      members:
+      - subnetId: "subnetId"
+        backup: false
+        port: 80
+        ipAddress: "192.168.0.1"
+        name: "name"
+        weight: 1
+        monitorPort: 1000
+      - subnetId: "subnetId"
+        backup: false
+        port: 80
+        ipAddress: "192.168.0.1"
+        name: "name"
+        weight: 1
+        monitorPort: 1000
+  UpdatePoolRequestV2:
+    type: "object"
+    required:
+    - "algorithm"
+    properties:
+      algorithm:
+        type: "string"
+        example: "ROUND_ROBIN"
+        description: "Algorithm of the pool. The algorithm can be \"ROUND_ROBIN\"\
+          \ or \"LEAST_CONNECTIONS\" or \"SOURCE_IP\""
+        enum:
+        - "ROUND_ROBIN"
+        - "LEAST_CONNECTIONS"
+        - "SOURCE_IP"
+      healthMonitor:
+        description: "Update request for health monitor"
+        $ref: "#/definitions/UpdateHealthMonitorRequest"
+      stickiness:
+        type: "boolean"
+        example: true
+        description: "Enable sticky sessions."
+    title: "UpdatePoolRequestV2"
+    example:
+      healthMonitor:
+        healthCheckPath: "/"
+        unhealthyThreshold: 3
+        healthCheckMethod: "GET"
+        interval: 30
+        healthyThreshold: 3
+        timeout: 5
+        successCode: "200"
+      stickiness: true
+      algorithm: "ROUND_ROBIN"

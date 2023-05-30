@@ -7,7 +7,7 @@ import (
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vserver"
 )
 
-// this class unpack message from returned error from swagger library
+// ErrorResponse this class unpack message from returned error from swagger library
 type ErrorResponse struct {
 	Message string `json:"message,omitempty"`
 }
@@ -18,6 +18,9 @@ func GetErrorMessage(e error) error {
 	if !ok {
 		return e
 	}
-	json.Unmarshal(e.(vserver.GenericSwaggerError).Body(), &resp)
+	err := json.Unmarshal(e.(vserver.GenericSwaggerError).Body(), &resp)
+	if err != nil {
+		return err
+	}
 	return fmt.Errorf("%v%v", e, resp.Message)
 }
