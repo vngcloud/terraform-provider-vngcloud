@@ -19,7 +19,7 @@ ResourceCA is a Terraform resource that represents a certificate authority (CA).
 
 resource "vngcloud_vlb_certificate" "example" {
   project_id          = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-  name                = "my-ca"
+  name                = "my_ca"
   type                = "TLS/SSL"
   certificate         = "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----\n"
   private_key         = "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
@@ -28,7 +28,7 @@ resource "vngcloud_vlb_certificate" "example" {
 }
 
 ```
-Note: You can use the `file()` function to read the contents of a file into a string.
+~> **NOTE::** You can use the `file()` function to read the contents of a file into a string.
 For example, the following code reads the contents of a file named `my-ca.pem` into the `certificate` argument:
 
 ```terraform

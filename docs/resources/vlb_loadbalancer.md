@@ -18,7 +18,7 @@ Provides a Load Balancer resource. This can be used to import, create, and delet
 ```terraform
 resource "vngcloud_vlb_load_balancer" "example"{
   project_id = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-  name       = "example-lb"
+  name       = "example_lb"
   package_id = "f8e62cf2-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   scheme     = "Internet"
   subnet_id  = "sub-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"

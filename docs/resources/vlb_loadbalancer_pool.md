@@ -23,7 +23,7 @@ resource "vngcloud_vlb_load_balancer" "example"{
 resource "vngcloud_vlb_pool" "example" {
   project_id       = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   load_balancer_id = vngcloud_vlb_load_balancer.example.id
-  name             = "example-Pool"
+  name             = "example_Pool"
   protocol         = "HTTP"
   stickiness       = false
   algorithm        = "ROUND_ROBIN"
@@ -37,6 +37,7 @@ resource "vngcloud_vlb_pool" "example" {
     interval              = 30
     timeout               = 5
     success_code          = 200
+    http_version          = "1.0"
   }
 
   members {

@@ -19,7 +19,7 @@ data "vngcloud_vlb_lb_packages" "lb_packages" {
 
 
 output "lb_packages" {
-  value = data.vngcloud_vlb_lb_packages.all.packages
+  value = data.vngcloud_vlb_lb_packages.lb_packages.packages
 }
 ```
 
