@@ -150,13 +150,10 @@ func resourceListenerImportState(ctx context.Context, d *schema.ResourceData, me
 func resourceListenerCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("Creating listener")
 	var listenerId string
-
-	loadBalancerId := d.Get("load_balancer_id").(string)
-	projectId := d.Get("project_id").(string)
 	cli := m.(*client.Client)
 
 	retryErr := resource.RetryContext(ctx, 10*time.Minute, func() *resource.RetryError {
-		listener, httpResponse, err := createListenerResource(ctx, d, cli, loadBalancerId, projectId)
+		listener, httpResponse, err := createListenerResource(ctx, d, cli)
 
 		if checkErrorResponse(httpResponse) {
 			responseError := parseErrorResponse(httpResponse).(*ResponseError)
@@ -187,7 +184,7 @@ func resourceListenerCreate(ctx context.Context, d *schema.ResourceData, m inter
 	stateConf := &resource.StateChangeConf{
 		Pending:    listenerCreating,
 		Target:     listenerCreated,
-		Refresh:    resourceListenerStateRefreshFunc(ctx, cli, listenerId, loadBalancerId, projectId),
+		Refresh:    resourceListenerStateRefreshFunc(ctx, d, cli, listenerId),
 		Timeout:    timeout,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
@@ -205,7 +202,9 @@ func resourceListenerCreate(ctx context.Context, d *schema.ResourceData, m inter
 	return resourceListenerRead(ctx, d, m)
 }
 
-func createListenerResource(ctx context.Context, d *schema.ResourceData, cli *client.Client, loadbalancerId string, projectId string) (map[string]string, *http.Response, error) {
+func createListenerResource(ctx context.Context, d *schema.ResourceData, cli *client.Client) (map[string]string, *http.Response, error) {
+	loadBalancerId := d.Get("load_balancer_id").(string)
+	projectId := d.Get("project_id").(string)
 
 	req := vloadbalancing.CreateListenerRequestV2{
 		AllowedCidrs:         d.Get("allowed_cidrs").(string),
@@ -247,7 +246,7 @@ func createListenerResource(ctx context.Context, d *schema.ResourceData, cli *cl
 		}
 	}
 
-	listener, httpResponse, err := cli.VlbClient.LoadBalancerListenerRestControllerV2Api.CreateListenerUsingPOST(ctx, req, loadbalancerId, projectId)
+	listener, httpResponse, err := cli.VlbClient.LoadBalancerListenerRestControllerV2Api.CreateListenerUsingPOST(ctx, req, loadBalancerId, projectId)
 
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", "Request Accepted !!!. Waiting for the resource to be created")
@@ -256,10 +255,12 @@ func createListenerResource(ctx context.Context, d *schema.ResourceData, cli *cl
 	return listener, httpResponse, err
 }
 
-func resourceListenerStateRefreshFunc(ctx context.Context, cli *client.Client, listenerID string, loadBalancerID string, projectID string) resource.StateRefreshFunc {
+func resourceListenerStateRefreshFunc(ctx context.Context, d *schema.ResourceData, cli *client.Client, listenerID string) resource.StateRefreshFunc {
+	loadBalancerId := d.Get("load_balancer_id").(string)
+	projectId := d.Get("project_id").(string)
 	return func() (interface{}, string, error) {
 		// Check the current state of the resource
-		resp, httpResponse, _ := cli.VlbClient.LoadBalancerListenerRestControllerV2Api.GetListenersUsingGET(ctx, listenerID, loadBalancerID, projectID)
+		resp, httpResponse, _ := cli.VlbClient.LoadBalancerListenerRestControllerV2Api.GetListenersUsingGET(ctx, listenerID, loadBalancerId, projectId)
 		if httpResponse.StatusCode != http.StatusOK {
 			return resp, "", fmt.Errorf(errorCheckingListenerStatus, getResponseBody(httpResponse))
 		}
@@ -324,21 +325,16 @@ func resourceListenerRead(ctx context.Context, d *schema.ResourceData, m interfa
 }
 
 func resourceListenerUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-
 	if shouldSkipUpdate(d) {
 		return nil
 	}
 
 	log.Printf("Updating listener")
-
-	projectId := d.Get("project_id").(string)
-	loadBalancerId := d.Get("load_balancer_id").(string)
 	listenerId := d.Id()
-
 	cli := m.(*client.Client)
 
 	retryErr := resource.RetryContext(ctx, 10*time.Minute, func() *resource.RetryError {
-		httpResponse, err := updateListener(ctx, d, cli, loadBalancerId, listenerId, projectId)
+		httpResponse, err := updateListener(ctx, d, cli)
 
 		if checkErrorResponse(httpResponse) {
 			responseError := parseErrorResponse(httpResponse).(*ResponseError)
@@ -364,7 +360,7 @@ func resourceListenerUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	stateConf := &resource.StateChangeConf{
 		Pending:    listenerUpdating,
 		Target:     listenerUpdated,
-		Refresh:    resourceListenerStateRefreshFunc(ctx, cli, d.Id(), loadBalancerId, projectId),
+		Refresh:    resourceListenerStateRefreshFunc(ctx, d, cli, d.Id()),
 		Timeout:    timeout,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
@@ -390,7 +386,10 @@ func shouldSkipUpdate(d *schema.ResourceData) bool {
 	return true
 }
 
-func updateListener(ctx context.Context, d *schema.ResourceData, cli *client.Client, loadBalancerId string, listenerId string, projectId string) (*http.Response, error) {
+func updateListener(ctx context.Context, d *schema.ResourceData, cli *client.Client) (*http.Response, error) {
+	projectId := d.Get("project_id").(string)
+	loadBalancerId := d.Get("load_balancer_id").(string)
+	listenerId := d.Id()
 
 	req := vloadbalancing.UpdateListenerRequestV2{
 		AllowedCidrs:      d.Get("allowed_cidrs").(string),

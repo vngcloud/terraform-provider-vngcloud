@@ -192,14 +192,10 @@ func resourceListenerL7PolicyRead(ctx context.Context, d *schema.ResourceData, m
 func resourceListenerL7PolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("Creating l7 policy load balancer")
 	var policyId string
-
-	listenerId := d.Get("listener_id").(string)
-	projectId := d.Get("project_id").(string)
-	loadBalancerId := d.Get("load_balancer_id").(string)
 	cli := m.(*client.Client)
 
 	retryErr := resource.RetryContext(ctx, 20*time.Minute, func() *resource.RetryError {
-		policy, httpResponse, err := createL7Policy(ctx, d, cli, loadBalancerId, listenerId, projectId)
+		policy, httpResponse, err := createL7Policy(ctx, d, cli)
 
 		if checkErrorResponse(httpResponse) {
 			responseError := parseErrorResponse(httpResponse).(*ResponseError)
@@ -229,7 +225,7 @@ func resourceListenerL7PolicyCreate(ctx context.Context, d *schema.ResourceData,
 	stateConf := &resource.StateChangeConf{
 		Pending:    l7PolicyCreating,
 		Target:     l7PolicyCreated,
-		Refresh:    resourceL7PolicyStateRefreshFunc(ctx, cli, policyId, listenerId, loadBalancerId, projectId),
+		Refresh:    resourceL7PolicyStateRefreshFunc(ctx, d, cli, policyId),
 		Timeout:    timeout,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
@@ -247,7 +243,11 @@ func resourceListenerL7PolicyCreate(ctx context.Context, d *schema.ResourceData,
 	return resourceListenerL7PolicyRead(ctx, d, m)
 }
 
-func createL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Client, loadBalancerId string, listenerId string, projectId string) (map[string]string, *http.Response, error) {
+func createL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Client) (map[string]string, *http.Response, error) {
+	listenerId := d.Get("listener_id").(string)
+	projectId := d.Get("project_id").(string)
+	loadBalancerId := d.Get("load_balancer_id").(string)
+
 	req := vloadbalancing.CreateL7PolicyRequestV2{
 		Action:      d.Get("action").(string),
 		CompareType: d.Get("compare_type").(string),
@@ -285,7 +285,11 @@ func createL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Cli
 	return policy, httpResponse, err
 }
 
-func resourceL7PolicyStateRefreshFunc(ctx context.Context, cli *client.Client, l7PolicyId string, listenerId string, loadBalancerId string, projectId string) resource.StateRefreshFunc {
+func resourceL7PolicyStateRefreshFunc(ctx context.Context, d *schema.ResourceData, cli *client.Client, l7PolicyId string) resource.StateRefreshFunc {
+	listenerId := d.Get("listener_id").(string)
+	projectId := d.Get("project_id").(string)
+	loadBalancerId := d.Get("load_balancer_id").(string)
+
 	return func() (interface{}, string, error) {
 		// Check the current state of the resource
 		resp, httpResponse, _ := cli.VlbClient.LoadBalancerListenerRestControllerV2Api.GetL7PolicyUsingGET(ctx, l7PolicyId, listenerId, loadBalancerId, projectId)
@@ -310,16 +314,11 @@ func resourceListenerL7PolicyUpdate(ctx context.Context, d *schema.ResourceData,
 	}
 
 	log.Printf("Updating l7 policy load balancer")
-
-	projectId := d.Get("project_id").(string)
-	loadBalancerId := d.Get("load_balancer_id").(string)
-	listenerId := d.Get("listener_id").(string)
 	policyId := d.Id()
-
 	cli := m.(*client.Client)
 
 	retryErr := resource.RetryContext(ctx, 20*time.Minute, func() *resource.RetryError {
-		httpResponse, err := updateL7Policy(ctx, d, cli, loadBalancerId, listenerId, policyId, projectId)
+		httpResponse, err := updateL7Policy(ctx, d, cli, policyId)
 
 		if checkErrorResponse(httpResponse) {
 			responseError := parseErrorResponse(httpResponse).(*ResponseError)
@@ -345,7 +344,7 @@ func resourceListenerL7PolicyUpdate(ctx context.Context, d *schema.ResourceData,
 	stateConf := &resource.StateChangeConf{
 		Pending:    l7PolicyUpdating,
 		Target:     l7PolicyUpdated,
-		Refresh:    resourceL7PolicyStateRefreshFunc(ctx, cli, policyId, listenerId, loadBalancerId, projectId),
+		Refresh:    resourceL7PolicyStateRefreshFunc(ctx, d, cli, policyId),
 		Timeout:    timeout,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
@@ -353,7 +352,7 @@ func resourceListenerL7PolicyUpdate(ctx context.Context, d *schema.ResourceData,
 
 	_, err := stateConf.WaitForStateContext(ctx)
 	if err != nil {
-		return diag.FromErr(fmt.Errorf(errorWaitingL7PolicyUpdate, listenerId, err))
+		return diag.FromErr(fmt.Errorf(errorWaitingL7PolicyUpdate, policyId, err))
 	}
 
 	log.Printf("Updated l7 policy load balancer successfully")
@@ -369,7 +368,11 @@ func shouldSkipUpdatePolicy(d *schema.ResourceData) bool {
 	return true
 }
 
-func updateL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Client, loadBalancerId string, listenerId string, policyId string, projectId string) (*http.Response, error) {
+func updateL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Client, policyId string) (*http.Response, error) {
+	projectId := d.Get("project_id").(string)
+	loadBalancerId := d.Get("load_balancer_id").(string)
+	listenerId := d.Get("listener_id").(string)
+
 	req := vloadbalancing.UpdateL7PolicyRequestV2{
 		Action:      d.Get("action").(string),
 		CompareType: d.Get("compare_type").(string),

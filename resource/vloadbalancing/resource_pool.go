@@ -205,13 +205,10 @@ func resourcePoolImport(ctx context.Context, d *schema.ResourceData, meta interf
 func resourcePoolCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("Creating pool")
 	var poolId string
-
-	projectId := d.Get("project_id").(string)
 	cli := m.(*client.Client)
-	loadBalancerId := d.Get("load_balancer_id").(string)
 
 	retryErr := resource.RetryContext(ctx, 10*time.Minute, func() *resource.RetryError {
-		pool, httpResponse, err := createPoolResource(ctx, d, cli, loadBalancerId, projectId)
+		pool, httpResponse, err := createPoolResource(ctx, d, cli)
 
 		if checkErrorResponse(httpResponse) {
 			responseError := parseErrorResponse(httpResponse).(*ResponseError)
@@ -242,7 +239,7 @@ func resourcePoolCreate(ctx context.Context, d *schema.ResourceData, m interface
 	stateConf := &resource.StateChangeConf{
 		Pending:    poolCreating,
 		Target:     poolCreated,
-		Refresh:    resourcePoolStateRefreshFunc(ctx, cli, poolId, loadBalancerId, projectId),
+		Refresh:    resourcePoolStateRefreshFunc(ctx, d, cli, poolId),
 		Timeout:    timeout,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
@@ -260,7 +257,9 @@ func resourcePoolCreate(ctx context.Context, d *schema.ResourceData, m interface
 	return resourcePoolRead(ctx, d, m)
 }
 
-func createPoolResource(ctx context.Context, d *schema.ResourceData, cli *client.Client, loadBalancerId string, projectId string) (map[string]string, *http.Response, error) {
+func createPoolResource(ctx context.Context, d *schema.ResourceData, cli *client.Client) (map[string]string, *http.Response, error) {
+	projectId := d.Get("project_id").(string)
+	loadBalancerId := d.Get("load_balancer_id").(string)
 	req := vloadbalancing.CreatePoolRequestV2{
 		Algorithm:     d.Get("algorithm").(string),
 		PoolName:      d.Get("name").(string),
@@ -357,10 +356,12 @@ func expandHealthMonitorForCreating(vHealthMonitor []interface{}) *vloadbalancin
 	return createHealthMonitor
 }
 
-func resourcePoolStateRefreshFunc(ctx context.Context, cli *client.Client, poolId string, loadBalancerID string, projectID string) resource.StateRefreshFunc {
+func resourcePoolStateRefreshFunc(ctx context.Context, d *schema.ResourceData, cli *client.Client, poolId string) resource.StateRefreshFunc {
+	projectId := d.Get("project_id").(string)
+	loadBalancerId := d.Get("load_balancer_id").(string)
 	return func() (interface{}, string, error) {
 		// Check the current state of the resource
-		resp, httpResponse, _ := cli.VlbClient.LoadBalancerPoolRestControllerV2Api.GetPoolUsingGET(ctx, loadBalancerID, poolId, projectID)
+		resp, httpResponse, _ := cli.VlbClient.LoadBalancerPoolRestControllerV2Api.GetPoolUsingGET(ctx, loadBalancerId, poolId, projectId)
 
 		if httpResponse.StatusCode != http.StatusOK {
 			return resp, "", fmt.Errorf(errorCheckingPoolStatus, getResponseBody(httpResponse))
@@ -606,7 +607,7 @@ func waitingUpdatePool(ctx context.Context, d *schema.ResourceData, cli *client.
 	stateConf := &resource.StateChangeConf{
 		Pending:    poolUpdating,
 		Target:     poolUpdated,
-		Refresh:    resourcePoolStateRefreshFunc(ctx, cli, d.Id(), loadBalancerId, projectId),
+		Refresh:    resourcePoolStateRefreshFunc(ctx, d, cli, d.Id()),
 		Timeout:    timeout,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
