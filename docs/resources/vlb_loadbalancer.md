@@ -5,7 +5,7 @@
 subcategory: "vLoadBalancer"
 page_title: "vngcloud_vlb_load_balancer Resource - terraform-provider-vngcloud"
 description: |-
-  Provides a VNG Cloud VLB resource. This can be used to import, create, modify, and delete.
+  Provides a VNG Cloud VLB resource. This can be used to import, create, modify, resize, and delete.
   
 ---
 
@@ -70,6 +70,10 @@ $ terraform import vngcloud_vlb_load_balancer.example pro-26151c78-0470-4b4c-88a
 In order to **create Load Balancer**, user must have been granted permissions below:
 - CreateLoadBalancer
 - GetLoadBalancer
+
+### Update
+In order to **update Load Balancer**, user must have been granted permissions below:
+- ResizeLoadBalancer
 
 ### Delete
 In order to **delete Load Balancer**, user must have been granted permissions below:
