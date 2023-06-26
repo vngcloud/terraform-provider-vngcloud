@@ -29,6 +29,7 @@ const (
 	errorRetryDeleteListener    = "[DEBUG] Retrying Deleting Listener with Id(%s) follow error: %s"
 	errorRetryUpdateListener    = "[DEBUG] Retrying Updating Listener with Id(%s) follow error: %s"
 	errorRetryCreateListener    = "[DEBUG] Retrying Creating Listener with follow error: %s"
+	errorWaitingListenerDelete  = "error waiting for Listener (%s) to be deleted: %s"
 )
 
 func ResourceListener() *schema.Resource {
@@ -435,27 +436,67 @@ func resourceListenerDelete(ctx context.Context, d *schema.ResourceData, m inter
 	listenerId := d.Id()
 
 	cli := m.(*client.Client)
-	err := resource.RetryContext(ctx, 5*time.Minute, func() *resource.RetryError {
+	retryErr := resource.RetryContext(ctx, 5*time.Minute, func() *resource.RetryError {
 		httpResponse, _ := cli.VlbClient.LoadBalancerListenerRestControllerV2Api.DeleteListenerUsingDELETE(ctx, loadBalancerId, listenerId, projectId)
 
 		if checkErrorResponse(httpResponse) {
-			errorResponse := fmt.Errorf(errorListenerDelete, listenerId, getResponseBody(httpResponse))
-			if httpResponse.StatusCode == 500 {
-				log.Printf(errorRetryDeleteListener, listenerId, errorResponse)
-				return resource.RetryableError(errorResponse)
-			} else {
-				return resource.NonRetryableError(errorResponse)
+			responseError := parseErrorResponse(httpResponse).(*ResponseError)
+			if errorCodeEquals(responseError, ErrorCodeLoadBalancerNotReady) {
+				log.Printf(errorRetryDeleteListener, listenerId, responseError.ErrorMessage())
+				// Delay for 30 seconds before continuing
+				time.Sleep(30 * time.Second)
+				return resource.RetryableError(responseError)
 			}
+			err := fmt.Errorf(errorListenerDelete, listenerId, responseError.ErrorMessage())
+			return resource.NonRetryableError(err)
 		}
 
 		return nil
 	})
+	if retryErr != nil {
+		return diag.FromErr(retryErr)
+	}
+
+	// Wait for the resource to reach the desired state
+	timeout := d.Timeout(schema.TimeoutDelete)
+	stateConf := &resource.StateChangeConf{
+		Pending:    listenerDeleting,
+		Target:     listenerDeleted,
+		Refresh:    resourceListenerDeleteStateRefreshFunc(ctx, d, cli, listenerId),
+		Timeout:    timeout,
+		Delay:      10 * time.Second,
+		MinTimeout: 1 * time.Second,
+	}
+
+	_, err := stateConf.WaitForStateContext(ctx)
 	if err != nil {
-		return diag.FromErr(err)
+		return diag.FromErr(fmt.Errorf(errorWaitingListenerDelete, listenerId, err))
 	}
 
 	d.SetId("")
 
 	log.Printf("Deleted listener successfully")
 	return nil
+}
+
+func resourceListenerDeleteStateRefreshFunc(ctx context.Context, d *schema.ResourceData, cli *client.Client, listenerId string) resource.StateRefreshFunc {
+	projectId := d.Get("project_id").(string)
+	loadBalancerId := d.Get("load_balancer_id").(string)
+	return func() (interface{}, string, error) {
+		resp, httpResponse, _ := cli.VlbClient.LoadBalancerListenerRestControllerV2Api.GetListenersUsingGET(ctx, listenerId, loadBalancerId, projectId)
+		if httpResponse.StatusCode != http.StatusOK {
+			if httpResponse.StatusCode == http.StatusNotFound {
+				return vloadbalancing.Listener{ProgressStatus: "DELETED"}, "DELETED", nil
+			} else {
+				return nil, "", fmt.Errorf(errorListenerRead, listenerId, getResponseBody(httpResponse))
+			}
+		}
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+
+		listener := resp.Data
+		return listener, "DELETING", nil
+	}
 }

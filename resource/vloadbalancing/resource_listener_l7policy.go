@@ -422,7 +422,7 @@ func resourceListenerL7PolicyDelete(ctx context.Context, d *schema.ResourceData,
 
 		if checkErrorResponse(httpResponse) {
 			errorResponse := fmt.Errorf(errorL7PolicyDelete, policyId, getResponseBody(httpResponse))
-			if httpResponse.StatusCode == 500 {
+			if httpResponse.StatusCode == http.StatusInternalServerError {
 				log.Printf(errorRetryDeleteL7Policy, policyId, errorResponse)
 				return resource.RetryableError(errorResponse)
 			} else {

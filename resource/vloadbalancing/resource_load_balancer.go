@@ -308,7 +308,7 @@ func resourceLoadBalancerDelete(ctx context.Context, d *schema.ResourceData, m i
 		httpResponse, _ := cli.VlbClient.LoadBalancerRestControllerV2Api.DeleteLoadBalancerUsingDELETE(ctx, loadBalancerId, projectId)
 		if checkErrorResponse(httpResponse) {
 			errorResponse := fmt.Errorf(errorLoadBalancerDelete, loadBalancerId, getResponseBody(httpResponse))
-			if httpResponse.StatusCode == 500 {
+			if httpResponse.StatusCode == http.StatusInternalServerError {
 				log.Printf(errorRetryDeleteLB, loadBalancerId, errorResponse)
 				return resource.RetryableError(errorResponse)
 			} else {

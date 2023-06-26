@@ -32,6 +32,7 @@ const (
 	errorRetryDeletePool    = "[DEBUG] Retrying Deleting Pool with Id(%s) follow error: %s"
 	errorRetryCreatePool    = "[DEBUG] Retrying Creating Pool follow error: %s"
 	errorRetryUpdatePool    = "[DEBUG] Retrying Updating Pool with Id(%s) follow error: %s"
+	errorWaitingPoolDelete  = "error waiting for Pool (%s) to be deleted: %s"
 )
 
 func ResourcePool() *schema.Resource {
@@ -676,7 +677,7 @@ func resourcePoolDelete(ctx context.Context, d *schema.ResourceData, m interface
 	poolId := d.Id()
 
 	cli := m.(*client.Client)
-	err := resource.RetryContext(ctx, 5*time.Minute, func() *resource.RetryError {
+	retryErr := resource.RetryContext(ctx, 5*time.Minute, func() *resource.RetryError {
 		httpResponse, _ := cli.VlbClient.LoadBalancerPoolRestControllerV2Api.DeletePoolUsingDELETE(
 			ctx,
 			loadBalancerId,
@@ -685,24 +686,64 @@ func resourcePoolDelete(ctx context.Context, d *schema.ResourceData, m interface
 		)
 
 		if checkErrorResponse(httpResponse) {
-			errorResponse := fmt.Errorf(errorPoolDelete, poolId, getResponseBody(httpResponse))
-			if httpResponse.StatusCode == 500 {
-				log.Printf(errorRetryDeletePool, poolId, errorResponse)
-				return resource.RetryableError(errorResponse)
-			} else {
-				return resource.NonRetryableError(errorResponse)
+			responseError := parseErrorResponse(httpResponse).(*ResponseError)
+			if errorCodeEquals(responseError, ErrorCodeLoadBalancerNotReady) {
+				log.Printf(errorRetryDeletePool, poolId, responseError)
+				// Delay for 30 seconds before continuing
+				time.Sleep(30 * time.Second)
+				return resource.RetryableError(responseError)
 			}
+			err := fmt.Errorf(errorPoolDelete, poolId, responseError.ErrorMessage())
+			return resource.NonRetryableError(err)
 		}
 
 		return nil
 	})
 
+	if retryErr != nil {
+		return diag.FromErr(retryErr)
+	}
+
+	// Wait for the resource to reach the desired state
+	timeout := d.Timeout(schema.TimeoutDelete)
+	stateConf := &resource.StateChangeConf{
+		Pending:    poolDeleting,
+		Target:     poolDeleted,
+		Refresh:    resourcePoolDeleteStateRefreshFunc(ctx, d, cli, poolId),
+		Timeout:    timeout,
+		Delay:      10 * time.Second,
+		MinTimeout: 1 * time.Second,
+	}
+
+	_, err := stateConf.WaitForStateContext(ctx)
 	if err != nil {
-		return diag.FromErr(err)
+		return diag.FromErr(fmt.Errorf(errorWaitingPoolDelete, poolId, err))
 	}
 
 	d.SetId("")
 
 	log.Printf("Deleted pool successfully")
 	return nil
+}
+
+func resourcePoolDeleteStateRefreshFunc(ctx context.Context, d *schema.ResourceData, cli *client.Client, poolId string) resource.StateRefreshFunc {
+	projectId := d.Get("project_id").(string)
+	loadBalancerId := d.Get("load_balancer_id").(string)
+	return func() (interface{}, string, error) {
+		resp, httpResponse, _ := cli.VlbClient.LoadBalancerPoolRestControllerV2Api.GetPoolUsingGET(ctx, loadBalancerId, poolId, projectId)
+		if httpResponse.StatusCode != http.StatusOK {
+			if httpResponse.StatusCode == http.StatusNotFound {
+				return vloadbalancing.Pool{ProgressStatus: "DELETED"}, "DELETED", nil
+			} else {
+				return nil, "", fmt.Errorf(errorPoolRead, poolId, getResponseBody(httpResponse))
+			}
+		}
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+
+		pool := resp.Data
+		return pool, "DELETING", nil
+	}
 }

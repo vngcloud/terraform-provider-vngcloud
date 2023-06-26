@@ -22,7 +22,7 @@ func checkErrorResponse(httpResponse *http.Response) bool {
 func getResponseBody(httpResponse *http.Response) string {
 	localVarBody, _ := io.ReadAll(httpResponse.Body)
 	responseMessage := string(localVarBody)
-	if httpResponse.StatusCode == 403 {
+	if httpResponse.StatusCode == http.StatusForbidden {
 		responseMessage = "You don't have permission to do this action"
 	}
 	return fmt.Sprint("StatusCode: ", httpResponse.StatusCode, ", ", responseMessage)
@@ -47,7 +47,7 @@ func parseErrorResponse(httpResponse *http.Response) error {
 	var responseError ResponseError
 	_ = json.Unmarshal(localVarBody, &responseError)
 
-	if responseError.ErrorCode == "" && httpResponse.StatusCode != 403 {
+	if responseError.ErrorCode == "" && httpResponse.StatusCode != http.StatusForbidden {
 		return &ResponseError{
 			StatusCode: httpResponse.StatusCode,
 			Message:    string(localVarBody),
@@ -55,7 +55,7 @@ func parseErrorResponse(httpResponse *http.Response) error {
 		}
 	}
 
-	if httpResponse.StatusCode == 403 {
+	if httpResponse.StatusCode == http.StatusForbidden {
 		log.Printf("You don't have permission to do this action %s\n", httpResponse.Request.URL.Path)
 		return &ResponseError{
 			StatusCode: httpResponse.StatusCode,
