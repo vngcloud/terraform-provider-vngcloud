@@ -238,7 +238,7 @@ func resourceLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData, m i
 		return nil
 	}
 	log.Printf("Resize load balancer")
-	loadBalancerId := d.Get("load_balancer_id").(string)
+	loadBalancerId := d.Id()
 
 	cli := m.(*client.Client)
 	retryErr := resource.RetryContext(ctx, 10*time.Minute, func() *resource.RetryError {
@@ -285,7 +285,7 @@ func resourceLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData, m i
 
 func resizeLoadBalancer(ctx context.Context, d *schema.ResourceData, cli *client.Client) (*http.Response, error) {
 	projectId := d.Get("project_id").(string)
-	loadBalancerId := d.Get("load_balancer_id").(string)
+	loadBalancerId := d.Id()
 
 	req := vloadbalancing.ResizeLoadBalancerRequest{
 		PackageId: d.Get("package_id").(string),
