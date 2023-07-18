@@ -47,14 +47,6 @@ func parseErrorResponse(httpResponse *http.Response) error {
 	var responseError ResponseError
 	_ = json.Unmarshal(localVarBody, &responseError)
 
-	if responseError.ErrorCode == "" && httpResponse.StatusCode != http.StatusForbidden {
-		return &ResponseError{
-			StatusCode: httpResponse.StatusCode,
-			Message:    string(localVarBody),
-			ErrorCode:  "Unknown",
-		}
-	}
-
 	if httpResponse.StatusCode == http.StatusForbidden {
 		log.Printf("You don't have permission to do this action %s\n", httpResponse.Request.URL.Path)
 		return &ResponseError{
@@ -62,9 +54,32 @@ func parseErrorResponse(httpResponse *http.Response) error {
 			Message:    "You don't have permission to do this action",
 			ErrorCode:  "Forbidden",
 		}
-	}
+	} else if httpResponse.StatusCode == http.StatusInternalServerError {
+		log.Printf("Internal server error %s\n", httpResponse.Request.URL.Path)
+		return &ResponseError{
+			StatusCode: httpResponse.StatusCode,
+			Message:    string(localVarBody),
+			ErrorCode:  "Unknown",
+		}
+	} else {
+		log.Printf("Error %s\n", httpResponse.Request.URL.Path)
 
-	return &responseError
+		statusCode := httpResponse.StatusCode
+		if responseError.StatusCode != 0 {
+			statusCode = responseError.StatusCode
+		}
+
+		errorCode := responseError.ErrorCode
+		if errorCode == "" {
+			errorCode = "Unknown"
+		}
+
+		return &ResponseError{
+			StatusCode: statusCode,
+			Message:    string(localVarBody),
+			ErrorCode:  errorCode,
+		}
+	}
 }
 
 func errorCodeEquals(err error, code string) bool {
