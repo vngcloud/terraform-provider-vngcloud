@@ -362,7 +362,7 @@ func resourceLoadBalancerDeleteStateRefreshFunc(ctx context.Context, d *schema.R
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
 
-		pool := resp.Data
-		return pool, "DELETING", nil
+		lb := resp.Data
+		return lb, "DELETING", nil
 	}
 }
