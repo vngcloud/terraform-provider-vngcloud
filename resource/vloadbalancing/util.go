@@ -76,7 +76,7 @@ func parseErrorResponse(httpResponse *http.Response) error {
 
 		return &ResponseError{
 			StatusCode: statusCode,
-			Message:    string(localVarBody),
+			Message:    responseError.Message,
 			ErrorCode:  errorCode,
 		}
 	}

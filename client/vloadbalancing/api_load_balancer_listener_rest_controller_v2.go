@@ -962,7 +962,7 @@ func (a *LoadBalancerRestControllerV2ApiService) ResizeLoadBalancerUsingPUT(ctx 
 	}
 
 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarHttpResponse, err
 	}
