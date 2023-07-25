@@ -10,6 +10,7 @@ import (
 
 var (
 	ErrorCodeLoadBalancerNotReady = "LoadBalancerNotReady"
+	ErrorCodeListenerNotReady     = "ListenerNotReady"
 )
 
 func checkErrorResponse(httpResponse *http.Response) bool {
