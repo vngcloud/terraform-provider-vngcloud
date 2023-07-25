@@ -200,7 +200,7 @@ func resourceListenerL7PolicyCreate(ctx context.Context, d *schema.ResourceData,
 
 		if checkErrorResponse(httpResponse) {
 			responseError := parseErrorResponse(httpResponse).(*ResponseError)
-			if errorCodeEquals(responseError, ErrorCodeLoadBalancerNotReady) {
+			if errorCodeEquals(responseError, ErrorCodeLoadBalancerNotReady) || errorCodeEquals(responseError, ErrorCodeListenerNotReady) {
 				log.Printf(errorRetryCreateL7Policy, responseError.ErrorMessage())
 				// Delay for 90 seconds before continuing
 				time.Sleep(90 * time.Second)
@@ -323,7 +323,7 @@ func resourceListenerL7PolicyUpdate(ctx context.Context, d *schema.ResourceData,
 
 		if checkErrorResponse(httpResponse) {
 			responseError := parseErrorResponse(httpResponse).(*ResponseError)
-			if errorCodeEquals(responseError, ErrorCodeLoadBalancerNotReady) {
+			if errorCodeEquals(responseError, ErrorCodeLoadBalancerNotReady) || errorCodeEquals(responseError, ErrorCodeListenerNotReady) {
 				log.Printf(errorRetryUpdateL7Policy, policyId, responseError.ErrorMessage())
 				// Delay for 90 seconds before continuing
 				time.Sleep(90 * time.Second)
