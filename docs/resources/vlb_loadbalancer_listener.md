@@ -51,7 +51,7 @@ The following arguments are supported:
 * `name` - (String, Required) The name of the listener.
 * `allowed_cidrs` -  (String, Optional) Access control list (ACL) to limit incoming traffic to a listener to a set of allowed source IP addresses (CIDRs). Defaults to `0.0.0.0/0`.
   ~> **NOTE::**  You can input multiple CIDR blocks by separating them with commas. Ex: 192.168.0.0/24, 172.16.0.0/24
-* `protocol` - (String, Required) Protocol for connections from clients to the load balancer. For Application Load Balancers (Layer 7), valid values are `HTTP` and `HTTPS`. For Network Load Balancers (Layer 4), valid values are `TCP`.
+* `protocol` - (String, Required) Protocol for connections from clients to the load balancer. For Application Load Balancers (Layer 7), valid values are `HTTP` and `HTTPS`. For Network Load Balancers (Layer 4), valid values are `TCP`, `UDP`.
 * `protocol_port` -(Number, Required) The port on which the listener will listen for incoming traffic. The value must be between `1` and `65535`.
 * `timeout_client` - (Number, Optional) The time in seconds to wait for a response from the client before terminating the connection. Defaults to `50`.
 * `timeout_connection` - (Number, Optional) The time in seconds to wait for a connection to be established before timing out. Defaults to `5`.
