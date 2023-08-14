@@ -49,8 +49,6 @@ type APIClient struct {
 
 	BandwidthControllerApi *BandwidthControllerApiService
 
-	CaRestControllerV2Api *CaRestControllerV2ApiService
-
 	ElasticIpRestControllerV2Api *ElasticIpRestControllerV2ApiService
 
 	FlavorRestControllerApi *FlavorRestControllerApiService
@@ -60,12 +58,6 @@ type APIClient struct {
 	ImageRestControllerApi *ImageRestControllerApiService
 
 	K8SClusterRestControllerApi *K8SClusterRestControllerV2ApiService
-
-	LoadBalancerListenerRestControllerApi *LoadBalancerListenerRestControllerV2ApiService
-
-	LoadBalancerPoolRestControllerApi *LoadBalancerPoolRestControllerV2ApiService
-
-	LoadBalancerRestControllerApi *LoadBalancerRestControllerApiService
 
 	NetworkAclRestControllerApi *NetworkAclRestControllerV2ApiService
 
@@ -128,15 +120,11 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	// API Services
 	c.AttachmentControllerApi = (*AttachmentControllerApiService)(&c.common)
 	c.BandwidthControllerApi = (*BandwidthControllerApiService)(&c.common)
-	c.CaRestControllerV2Api = (*CaRestControllerV2ApiService)(&c.common)
 	c.ElasticIpRestControllerV2Api = (*ElasticIpRestControllerV2ApiService)(&c.common)
 	c.FlavorRestControllerApi = (*FlavorRestControllerApiService)(&c.common)
 	c.FlavorZoneRestControllerApi = (*FlavorZoneRestControllerApiService)(&c.common)
 	c.ImageRestControllerApi = (*ImageRestControllerApiService)(&c.common)
 	c.K8SClusterRestControllerApi = (*K8SClusterRestControllerV2ApiService)(&c.common)
-	c.LoadBalancerListenerRestControllerApi = (*LoadBalancerListenerRestControllerV2ApiService)(&c.common)
-	c.LoadBalancerPoolRestControllerApi = (*LoadBalancerPoolRestControllerV2ApiService)(&c.common)
-	c.LoadBalancerRestControllerApi = (*LoadBalancerRestControllerApiService)(&c.common)
 	c.NetworkAclRestControllerApi = (*NetworkAclRestControllerV2ApiService)(&c.common)
 	c.NetworkInterfaceElasticRestControllerApi = (*NetworkInterfaceElasticRestControllerV2ApiService)(&c.common)
 	c.NetworkRestControllerApi = (*NetworkRestControllerV2ApiService)(&c.common)
