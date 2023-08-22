@@ -23,7 +23,7 @@ resource "vngcloud_vserver_server" "server"{
     network_id = "net-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     root_disk_size = 20
     root_disk_type_id = "vtype-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-    ssh_key_id = "ssh-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    ssh_key = "ssh-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     security_group = ["secg-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"]
     subnet_id = "sub-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 }
@@ -49,7 +49,7 @@ The following arguments are supported:
 - **root_disk_encryption_type** (String, Optional) Type encryption of boot volume.
 - **security_group** (List of String, Optional) ID of the SecGroups.
 - **source_type** (String, Optional)
-- **ssh_key_id** (String, Optional) ID of SSH key
+- **ssh_key** (String, Optional) ID of SSH key
 - **user_name** (String, Optional) Name of user
 - **user_password** (String, Optional) Password of user
 - **server_group** (String, Optional) ID of Server Group.
