@@ -25,7 +25,7 @@ resource "vngcloud_vserver_k8s" "k8s" {
   calico_cidr           = "xx.xx.xx.xx/16"
   network_id            = "net-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   subnet_id             = "sub-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-  ssh_key               = "ssh-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  ssh_key_id            = "ssh-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   master_flavor_id      = "flav-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   node_flavor_id        = "flav-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   etcd_volume_size      = 20
@@ -61,7 +61,7 @@ The following arguments are supported:
 - **calico_cidr** (String, Required) Calico CIDR. It can not be overlapped with Vpc CIDR.
 - **network_id** (String, Required) ID of the network.
 - **subnet_id** (String, Required) ID of the subnet.
-- **ssh_key** (String, Optional) ID of SSH key
+- **ssh_key_id** (String, Optional) ID of SSH key
 - **enable_lb** (Boolean, Optional) Enable HA (allow to have 3 or 5 master nodes). Default value is `false`.
 - **auto_scaling** (Boolean, Optional) Enable Auto Scaling. Default value is `false`.
 - **auto_healing** (Boolean, Optional) Enable Auto Healing. Default value is `false`.

@@ -100,7 +100,7 @@ func ResourceServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"ssh_key": {
+			"ssh_key_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
@@ -224,7 +224,7 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		RootDiskSize:           int32(d.Get("root_disk_size").(int)),
 		RootDiskTypeId:         d.Get("root_disk_type_id").(string),
 		SecurityGroup:          securityGroup,
-		SshKeyId:               d.Get("ssh_key").(string),
+		SshKeyId:               d.Get("ssh_key_id").(string),
 		SubnetId:               d.Get("subnet_id").(string),
 		ServerGroupId:          d.Get("server_group_id").(string),
 		UserName:               d.Get("user_name").(string),
