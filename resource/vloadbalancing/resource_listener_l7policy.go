@@ -257,7 +257,7 @@ func createL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Cli
 		Value:       d.Get("rule_value").(string),
 	}
 
-	if v, ok := d.GetOk("keep_query_string"); ok {
+	if v, ok := d.GetOkExists("keep_query_string"); ok {
 		req.KeepQueryString = new(bool)
 		*req.KeepQueryString = v.(bool)
 	}
@@ -381,7 +381,7 @@ func updateL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Cli
 		Value:       d.Get("rule_value").(string),
 	}
 
-	if v, ok := d.GetOk("keep_query_string"); ok {
+	if v, ok := d.GetOkExists("keep_query_string"); ok {
 		req.KeepQueryString = new(bool)
 		*req.KeepQueryString = v.(bool)
 	}
