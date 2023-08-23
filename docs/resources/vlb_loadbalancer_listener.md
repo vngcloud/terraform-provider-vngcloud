@@ -58,7 +58,7 @@ The following arguments are supported:
 * `timeout_member` - (Number, Optional) The time in seconds to wait for a response from a member before marking it as failed. Defaults to `50`.
 * `default_pool_id` - (String, Required) The ID of the default pool to use for the listener.
 * `certificate_authorities` - (Array of String, Optional) A list of SSL certificate authorities(SNIs) to use for `HTTPS` listeners.
-* `default_certificate_authority` - (String, Optional) The default SSL certificate authority to use for `HTTPS` listeners.
+* `default_certificate_authority` - (String, Required) The default SSL certificate authority to use for `HTTPS` listeners.
 * `client_certificate_authentication` - (String, Optional) The TLS client authentication mode to use for `HTTPS` listeners.
 * `headers` - (Array of String, Optional) A set of headers to be added to request forwarded to the default pool. Can be set if protocol is `HTTP` or `HTTPS`. Defaults to '[ "X-Forwarded-For", "X-Forwarded-Port", "X-Forwarded-Proto" ]'.
    Allowable values are:
