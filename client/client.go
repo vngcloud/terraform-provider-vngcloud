@@ -42,3 +42,26 @@ func NewClient(vdbBaseURL string, vserverBaseURL string, vlbBaseURL string, proj
 	}
 	return client, nil
 }
+
+func NewClientV2(vserverBaseURL string, vlbBaseURL string, ClientID string, ClientSecret string, TokenURL string) (*Client, error) {
+	authenConfig := authen.NewConfiguration(ClientID, ClientSecret, TokenURL)
+	authenClient, err := authen.NewAuthenClient(authenConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	vserverConfig := vserver.NewConfiguration(vserverBaseURL, authenClient.Client)
+	vserverClient := vserver.NewAPIClient(vserverConfig)
+
+	vlbConfig := vloadbalancing.NewConfiguration(vlbBaseURL, authenClient.Client)
+	vlbClient := vloadbalancing.NewAPIClient(vlbConfig)
+
+	client := &Client{
+		AuthenClient:  authenClient,
+		VserverClient: vserverClient,
+		VdbClient:     nil,
+		VlbClient:     vlbClient,
+		ProjectId:     "projectId",
+	}
+	return client, nil
+}

@@ -56,17 +56,9 @@ func Provider() *schema.Provider {
 			"vngcloud_vserver_change_cluster_sec_group": vserver.ResourceChangeClusterSecGroup(),
 		},
 		Schema: map[string]*schema.Schema{
-			//"user_id": {
-			//	Type:     schema.TypeString,
-			//	Required: true,
-			//},
-			//"project_id": {
-			//	Type:     schema.TypeString,
-			//	Required: true,
-			//},
 			"token_url": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("TOKEN_ADDRESS", ""),
 				Description: "endpoint for terraform request token",
 			},
@@ -82,20 +74,15 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("CLIENT_ID", ""),
 				Description: "client id for auth get access token",
 			},
-			//"vdb_base_url": {
-			//	Type:        schema.TypeString,
-			//	Required:    true,
-			//	DefaultFunc: schema.EnvDefaultFunc("CLIENT_ID", ""),
-			//},
 			"vserver_base_url": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("VSERVER_BASE_URL", ""),
 				Description: "endpoint to connection with provider resource",
 			},
 			"vlb_base_url": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("VLB_BASE_URL", ""),
 				Description: "endpoint to connection with provider resource",
 			},
@@ -104,24 +91,23 @@ func Provider() *schema.Provider {
 	}
 }
 
-//func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-//	address := d.Get("address").(string)
-//	user := d.Get("user").(string)
-//	accessKey := d.Get("access_key").(string)
-//	return client.NewVDBClient(address, user, accessKey), nil
-//}
-
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-	//vdbBaseURL := d.Get("vdb_base_url").(string)
-	vdbBaseURL := ""
-	vserverBaseURL := d.Get("vserver_base_url").(string)
-	vlbBaseURL := d.Get("vlb_base_url").(string)
-	//projectId := d.Get("project_id").(string)
-	//userId := d.Get("user_id").(string)
-	projectId := ""
-	userId := "0"
-	tokenURL := d.Get("token_url").(string)
+	vserverBaseURL := "https://hcm-3.api.vngcloud.vn/vserver/vserver-gateway"
+	_, hasVserverBaseUrl := d.GetOk("vserver_base_url")
+	if hasVserverBaseUrl {
+		vserverBaseURL = d.Get("vserver_base_url").(string)
+	}
+	_, hasVlbBaseUrl := d.GetOk("vlb_base_url")
+	vlbBaseURL := "https://hcm-3.api.vngcloud.vn/vserver/vlb-gateway"
+	if hasVlbBaseUrl {
+		vlbBaseURL = d.Get("vlb_base_url").(string)
+	}
+	_, hasTokenUrl := d.GetOk("token_url")
+	tokenURL := "https://iamapis.vngcloud.vn/accounts-api/v2/auth/token"
+	if hasTokenUrl {
+		tokenURL = d.Get("token_url").(string)
+	}
 	clientID := d.Get("client_id").(string)
 	clientSecret := d.Get("client_secret").(string)
-	return client.NewClient(vdbBaseURL, vserverBaseURL, vlbBaseURL, projectId, userId, clientID, clientSecret, tokenURL)
+	return client.NewClientV2(vserverBaseURL, vlbBaseURL, clientID, clientSecret, tokenURL)
 }
