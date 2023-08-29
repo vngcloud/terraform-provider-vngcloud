@@ -19,11 +19,15 @@ const (
 	errorLoadBalancerCreate         = "error creating LoadBalancer: %s"
 	errorLoadBalancerRead           = "error reading LoadBalancer with Id(%s): %s"
 	errorLoadBalancerDelete         = "error deleting LoadBalancer (%s): %s"
+	errorLoadBalancerResize         = "error resize LoadBalancer (%s): %s"
 	errorWaitingLoadBalancerCreate  = "error waiting for LoadBalancer (%s) to be ready: %s"
+	errorWaitingLoadBalancerUpdate  = "error waiting for LoadBalancer (%s) to be ready: %s"
 	errorCheckingLoadBalancerStatus = "error checking Load Balancer: %s"
 	errorImportLoadBalancer         = "import format error: to import a Load Balancer use the format {projectId}:{loadBalancerId}"
 	errorLoadBalancerNotFound       = "Load Balancer with Id(%s) not found, removing from state"
 	errorRetryDeleteLB              = "[DEBUG] Retrying Deleting Load Balancer with Id(%s) follow error: %s"
+	errorRetryLoadBalancerRead      = "[DEBUG] Retrying Load Balancer with Id(%s) follow error: %s"
+	errorWaitingLoadBalancerDelete  = "error waiting for Load Balancer (%s) to be deleted: %s"
 )
 
 func ResourceLoadBalancer() *schema.Resource {
@@ -34,6 +38,7 @@ func resourceLoadBalancerInstance() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceLoadBalancerCreate,
 		ReadContext:   resourceLoadBalancerRead,
+		UpdateContext: resourceLoadBalancerUpdate,
 		DeleteContext: resourceLoadBalancerDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceLoadBalancerImportState,
@@ -51,7 +56,6 @@ func resourceLoadBalancerInstance() *schema.Resource {
 			},
 			"package_id": {
 				Type:     schema.TypeString,
-				ForceNew: true,
 				Required: true,
 			},
 			"scheme": {
@@ -107,10 +111,9 @@ func resourceLoadBalancerImportState(ctx context.Context, d *schema.ResourceData
 func resourceLoadBalancerCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("Create load balancer")
 	var loadBalancerId string
-	projectId := d.Get("project_id").(string)
 	cli := m.(*client.Client)
 
-	loadbalancer, httpResponse, err := createLBResource(ctx, d, cli, projectId)
+	loadbalancer, httpResponse, err := createLBResource(ctx, d, cli)
 
 	if err != nil {
 		log.Printf("[ERROR] %s\n", err)
@@ -132,7 +135,7 @@ func resourceLoadBalancerCreate(ctx context.Context, d *schema.ResourceData, m i
 	stateConf := &resource.StateChangeConf{
 		Pending:    loadBalancerCreating,
 		Target:     loadBalancerCreated,
-		Refresh:    resourceLBStateRefreshFunc(ctx, cli, loadBalancerId, projectId),
+		Refresh:    resourceLBStateRefreshFunc(ctx, d, cli, loadBalancerId),
 		Timeout:    timeout,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
@@ -150,7 +153,8 @@ func resourceLoadBalancerCreate(ctx context.Context, d *schema.ResourceData, m i
 	return resourceLoadBalancerRead(ctx, d, m)
 }
 
-func createLBResource(ctx context.Context, d *schema.ResourceData, cli *client.Client, projectId string) (map[string]string, *http.Response, error) {
+func createLBResource(ctx context.Context, d *schema.ResourceData, cli *client.Client) (map[string]string, *http.Response, error) {
+	projectId := d.Get("project_id").(string)
 	req := vloadbalancing.CreateLoadBalancerRequestV2{
 		Name:      d.Get("name").(string),
 		PackageId: d.Get("package_id").(string),
@@ -168,10 +172,11 @@ func createLBResource(ctx context.Context, d *schema.ResourceData, cli *client.C
 	return loadbalancer, httpResponse, err
 }
 
-func resourceLBStateRefreshFunc(ctx context.Context, cli *client.Client, loadBalancerID string, projectID string) resource.StateRefreshFunc {
+func resourceLBStateRefreshFunc(ctx context.Context, d *schema.ResourceData, cli *client.Client, loadBalancerID string) resource.StateRefreshFunc {
+	projectId := d.Get("project_id").(string)
 	return func() (interface{}, string, error) {
 		// Check the current state of the resource
-		resp, httpResponse, _ := cli.VlbClient.LoadBalancerRestControllerV2Api.GetLoadBalancerUsingGET(ctx, loadBalancerID, projectID)
+		resp, httpResponse, _ := cli.VlbClient.LoadBalancerRestControllerV2Api.GetLoadBalancerUsingGET(ctx, loadBalancerID, projectId)
 		if httpResponse.StatusCode != http.StatusOK {
 			return resp, "", fmt.Errorf(errorCheckingLoadBalancerStatus, getResponseBody(httpResponse))
 		}
@@ -228,6 +233,71 @@ func resourceLoadBalancerRead(ctx context.Context, d *schema.ResourceData, m int
 	return nil
 }
 
+func resourceLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	if !d.HasChange("package_id") {
+		return nil
+	}
+	log.Printf("Resize load balancer")
+	loadBalancerId := d.Id()
+
+	cli := m.(*client.Client)
+	retryErr := resource.RetryContext(ctx, 10*time.Minute, func() *resource.RetryError {
+		httpResponse, err := resizeLoadBalancer(ctx, d, cli)
+
+		if checkErrorResponse(httpResponse) {
+			responseError := parseErrorResponse(httpResponse).(*ResponseError)
+			if errorCodeEquals(responseError, ErrorCodeLoadBalancerNotReady) {
+				log.Printf(errorRetryLoadBalancerRead, loadBalancerId, responseError.ErrorMessage())
+				// Delay for 30 seconds before continuing
+				time.Sleep(30 * time.Second)
+				return resource.RetryableError(responseError)
+			}
+			err = fmt.Errorf(errorLoadBalancerResize, loadBalancerId, responseError.ErrorMessage())
+			return resource.NonRetryableError(err)
+		}
+
+		return nil
+	})
+
+	if retryErr != nil {
+		return diag.FromErr(retryErr)
+	}
+
+	// Wait for the resource to reach the desired state
+	timeout := d.Timeout(schema.TimeoutUpdate)
+	stateConf := &resource.StateChangeConf{
+		Pending:    loadBalancerUpdating,
+		Target:     loadBalancerUpdated,
+		Refresh:    resourceLBStateRefreshFunc(ctx, d, cli, loadBalancerId),
+		Timeout:    timeout,
+		Delay:      10 * time.Second,
+		MinTimeout: 1 * time.Second,
+	}
+
+	_, err := stateConf.WaitForStateContext(ctx)
+	if err != nil {
+		return diag.FromErr(fmt.Errorf(errorWaitingLoadBalancerUpdate, loadBalancerId, err))
+	}
+
+	log.Printf("Updated Load Balancer successfully")
+	return resourceLoadBalancerRead(ctx, d, m)
+}
+
+func resizeLoadBalancer(ctx context.Context, d *schema.ResourceData, cli *client.Client) (*http.Response, error) {
+	projectId := d.Get("project_id").(string)
+	loadBalancerId := d.Id()
+
+	req := vloadbalancing.ResizeLoadBalancerRequest{
+		PackageId: d.Get("package_id").(string),
+	}
+
+	httpResponse, err := cli.VlbClient.LoadBalancerRestControllerV2Api.ResizeLoadBalancerUsingPUT(ctx, loadBalancerId, projectId, req)
+
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", "Request Accepted !!!. Waiting for the resource to be updated")
+	log.Printf("-------------------------------------\n")
+	return httpResponse, err
+}
 func resourceLoadBalancerDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("Deleting load balancer")
 
@@ -235,11 +305,11 @@ func resourceLoadBalancerDelete(ctx context.Context, d *schema.ResourceData, m i
 	loadBalancerId := d.Id()
 
 	cli := m.(*client.Client)
-	err := resource.RetryContext(ctx, 5*time.Minute, func() *resource.RetryError {
+	retryErr := resource.RetryContext(ctx, 5*time.Minute, func() *resource.RetryError {
 		httpResponse, _ := cli.VlbClient.LoadBalancerRestControllerV2Api.DeleteLoadBalancerUsingDELETE(ctx, loadBalancerId, projectId)
 		if checkErrorResponse(httpResponse) {
 			errorResponse := fmt.Errorf(errorLoadBalancerDelete, loadBalancerId, getResponseBody(httpResponse))
-			if httpResponse.StatusCode == 500 {
+			if httpResponse.StatusCode == http.StatusInternalServerError {
 				log.Printf(errorRetryDeleteLB, loadBalancerId, errorResponse)
 				return resource.RetryableError(errorResponse)
 			} else {
@@ -250,12 +320,49 @@ func resourceLoadBalancerDelete(ctx context.Context, d *schema.ResourceData, m i
 		return nil
 	})
 
+	if retryErr != nil {
+		return diag.FromErr(retryErr)
+	}
+
+	// Wait for the resource to reach the desired state
+	timeout := d.Timeout(schema.TimeoutDelete)
+	stateConf := &resource.StateChangeConf{
+		Pending:    loadBalancerDeleting,
+		Target:     loadBalancerDeleted,
+		Refresh:    resourceLoadBalancerDeleteStateRefreshFunc(ctx, d, cli, loadBalancerId),
+		Timeout:    timeout,
+		Delay:      10 * time.Second,
+		MinTimeout: 1 * time.Second,
+	}
+
+	_, err := stateConf.WaitForStateContext(ctx)
 	if err != nil {
-		return diag.FromErr(err)
+		return diag.FromErr(fmt.Errorf(errorWaitingLoadBalancerDelete, loadBalancerId, err))
 	}
 
 	d.SetId("")
 
 	log.Printf("Deleted load balancer successfully")
 	return nil
+}
+
+func resourceLoadBalancerDeleteStateRefreshFunc(ctx context.Context, d *schema.ResourceData, cli *client.Client, loadBalancerId string) resource.StateRefreshFunc {
+	projectId := d.Get("project_id").(string)
+	return func() (interface{}, string, error) {
+		resp, httpResponse, _ := cli.VlbClient.LoadBalancerRestControllerV2Api.GetLoadBalancerUsingGET(ctx, loadBalancerId, projectId)
+		if httpResponse.StatusCode != http.StatusOK {
+			if httpResponse.StatusCode == http.StatusNotFound {
+				return vloadbalancing.LoadBalancerDto{ProgressStatus: "DELETED"}, "DELETED", nil
+			} else {
+				return nil, "", fmt.Errorf(errorLoadBalancerRead, loadBalancerId, getResponseBody(httpResponse))
+			}
+		}
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+
+		lb := resp.Data
+		return lb, "DELETING", nil
+	}
 }

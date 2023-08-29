@@ -2,7 +2,9 @@ package vloadbalancing
 
 var (
 	loadBalancerCreating = []string{"DELETING", "UPDATING", "CREATING", "CREATING-BILLING"}
+	loadBalancerUpdating = []string{"DELETING", "UPDATING", "CREATING", "CREATING-BILLING"}
 	loadBalancerCreated  = []string{"CREATED"}
+	loadBalancerUpdated  = []string{"CREATED"}
 	loadBalancerDeleting = []string{"DELETING"}
 	loadBalancerDeleted  = []string{"DELETED"}
 

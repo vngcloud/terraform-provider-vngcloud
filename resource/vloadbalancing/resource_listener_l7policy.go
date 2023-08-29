@@ -29,6 +29,7 @@ const (
 	errorRetryUpdateL7Policy    = "[DEBUG] Retrying Updating L7Policy with Id(%s) follow error: %s"
 	errorRetryCreateL7Policy    = "[DEBUG] Retrying Creating L7Policy follow error: %s"
 	errorRetryDeleteL7Policy    = "[DEBUG] Retrying Deleting Policy with Id(%s) follow error: %s"
+	errorWaitingL7PolicyDelete  = "error waiting for L7Policy (%s) to be deleted: %s"
 )
 
 func ResourceListenerL7Policy() *schema.Resource {
@@ -192,18 +193,14 @@ func resourceListenerL7PolicyRead(ctx context.Context, d *schema.ResourceData, m
 func resourceListenerL7PolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("Creating l7 policy load balancer")
 	var policyId string
-
-	listenerId := d.Get("listener_id").(string)
-	projectId := d.Get("project_id").(string)
-	loadBalancerId := d.Get("load_balancer_id").(string)
 	cli := m.(*client.Client)
 
 	retryErr := resource.RetryContext(ctx, 20*time.Minute, func() *resource.RetryError {
-		policy, httpResponse, err := createL7Policy(ctx, d, cli, loadBalancerId, listenerId, projectId)
+		policy, httpResponse, err := createL7Policy(ctx, d, cli)
 
 		if checkErrorResponse(httpResponse) {
 			responseError := parseErrorResponse(httpResponse).(*ResponseError)
-			if errorCodeEquals(responseError, ErrorCodeLoadBalancerNotReady) {
+			if errorCodeEquals(responseError, ErrorCodeLoadBalancerNotReady) || errorCodeEquals(responseError, ErrorCodeListenerNotReady) {
 				log.Printf(errorRetryCreateL7Policy, responseError.ErrorMessage())
 				// Delay for 90 seconds before continuing
 				time.Sleep(90 * time.Second)
@@ -229,7 +226,7 @@ func resourceListenerL7PolicyCreate(ctx context.Context, d *schema.ResourceData,
 	stateConf := &resource.StateChangeConf{
 		Pending:    l7PolicyCreating,
 		Target:     l7PolicyCreated,
-		Refresh:    resourceL7PolicyStateRefreshFunc(ctx, cli, policyId, listenerId, loadBalancerId, projectId),
+		Refresh:    resourceL7PolicyStateRefreshFunc(ctx, d, cli, policyId),
 		Timeout:    timeout,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
@@ -247,7 +244,11 @@ func resourceListenerL7PolicyCreate(ctx context.Context, d *schema.ResourceData,
 	return resourceListenerL7PolicyRead(ctx, d, m)
 }
 
-func createL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Client, loadBalancerId string, listenerId string, projectId string) (map[string]string, *http.Response, error) {
+func createL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Client) (map[string]string, *http.Response, error) {
+	listenerId := d.Get("listener_id").(string)
+	projectId := d.Get("project_id").(string)
+	loadBalancerId := d.Get("load_balancer_id").(string)
+
 	req := vloadbalancing.CreateL7PolicyRequestV2{
 		Action:      d.Get("action").(string),
 		CompareType: d.Get("compare_type").(string),
@@ -256,7 +257,7 @@ func createL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Cli
 		Value:       d.Get("rule_value").(string),
 	}
 
-	if v, ok := d.GetOk("keep_query_string"); ok {
+	if v, ok := d.GetOkExists("keep_query_string"); ok {
 		req.KeepQueryString = new(bool)
 		*req.KeepQueryString = v.(bool)
 	}
@@ -285,7 +286,11 @@ func createL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Cli
 	return policy, httpResponse, err
 }
 
-func resourceL7PolicyStateRefreshFunc(ctx context.Context, cli *client.Client, l7PolicyId string, listenerId string, loadBalancerId string, projectId string) resource.StateRefreshFunc {
+func resourceL7PolicyStateRefreshFunc(ctx context.Context, d *schema.ResourceData, cli *client.Client, l7PolicyId string) resource.StateRefreshFunc {
+	listenerId := d.Get("listener_id").(string)
+	projectId := d.Get("project_id").(string)
+	loadBalancerId := d.Get("load_balancer_id").(string)
+
 	return func() (interface{}, string, error) {
 		// Check the current state of the resource
 		resp, httpResponse, _ := cli.VlbClient.LoadBalancerListenerRestControllerV2Api.GetL7PolicyUsingGET(ctx, l7PolicyId, listenerId, loadBalancerId, projectId)
@@ -310,20 +315,15 @@ func resourceListenerL7PolicyUpdate(ctx context.Context, d *schema.ResourceData,
 	}
 
 	log.Printf("Updating l7 policy load balancer")
-
-	projectId := d.Get("project_id").(string)
-	loadBalancerId := d.Get("load_balancer_id").(string)
-	listenerId := d.Get("listener_id").(string)
 	policyId := d.Id()
-
 	cli := m.(*client.Client)
 
 	retryErr := resource.RetryContext(ctx, 20*time.Minute, func() *resource.RetryError {
-		httpResponse, err := updateL7Policy(ctx, d, cli, loadBalancerId, listenerId, policyId, projectId)
+		httpResponse, err := updateL7Policy(ctx, d, cli, policyId)
 
 		if checkErrorResponse(httpResponse) {
 			responseError := parseErrorResponse(httpResponse).(*ResponseError)
-			if errorCodeEquals(responseError, ErrorCodeLoadBalancerNotReady) {
+			if errorCodeEquals(responseError, ErrorCodeLoadBalancerNotReady) || errorCodeEquals(responseError, ErrorCodeListenerNotReady) {
 				log.Printf(errorRetryUpdateL7Policy, policyId, responseError.ErrorMessage())
 				// Delay for 90 seconds before continuing
 				time.Sleep(90 * time.Second)
@@ -345,7 +345,7 @@ func resourceListenerL7PolicyUpdate(ctx context.Context, d *schema.ResourceData,
 	stateConf := &resource.StateChangeConf{
 		Pending:    l7PolicyUpdating,
 		Target:     l7PolicyUpdated,
-		Refresh:    resourceL7PolicyStateRefreshFunc(ctx, cli, policyId, listenerId, loadBalancerId, projectId),
+		Refresh:    resourceL7PolicyStateRefreshFunc(ctx, d, cli, policyId),
 		Timeout:    timeout,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
@@ -353,7 +353,7 @@ func resourceListenerL7PolicyUpdate(ctx context.Context, d *schema.ResourceData,
 
 	_, err := stateConf.WaitForStateContext(ctx)
 	if err != nil {
-		return diag.FromErr(fmt.Errorf(errorWaitingL7PolicyUpdate, listenerId, err))
+		return diag.FromErr(fmt.Errorf(errorWaitingL7PolicyUpdate, policyId, err))
 	}
 
 	log.Printf("Updated l7 policy load balancer successfully")
@@ -369,7 +369,11 @@ func shouldSkipUpdatePolicy(d *schema.ResourceData) bool {
 	return true
 }
 
-func updateL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Client, loadBalancerId string, listenerId string, policyId string, projectId string) (*http.Response, error) {
+func updateL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Client, policyId string) (*http.Response, error) {
+	projectId := d.Get("project_id").(string)
+	loadBalancerId := d.Get("load_balancer_id").(string)
+	listenerId := d.Get("listener_id").(string)
+
 	req := vloadbalancing.UpdateL7PolicyRequestV2{
 		Action:      d.Get("action").(string),
 		CompareType: d.Get("compare_type").(string),
@@ -377,7 +381,7 @@ func updateL7Policy(ctx context.Context, d *schema.ResourceData, cli *client.Cli
 		Value:       d.Get("rule_value").(string),
 	}
 
-	if v, ok := d.GetOk("keep_query_string"); ok {
+	if v, ok := d.GetOkExists("keep_query_string"); ok {
 		req.KeepQueryString = new(bool)
 		*req.KeepQueryString = v.(bool)
 	}
@@ -414,26 +418,67 @@ func resourceListenerL7PolicyDelete(ctx context.Context, d *schema.ResourceData,
 	policyId := d.Id()
 
 	cli := m.(*client.Client)
-	err := resource.RetryContext(ctx, 5*time.Minute, func() *resource.RetryError {
+	retryErr := resource.RetryContext(ctx, 5*time.Minute, func() *resource.RetryError {
 		httpResponse, _ := cli.VlbClient.LoadBalancerListenerRestControllerV2Api.DeletePolicyUsingDELETE(ctx, loadBalancerId, listenerId, policyId, projectId)
 
 		if checkErrorResponse(httpResponse) {
-			errorResponse := fmt.Errorf(errorL7PolicyDelete, policyId, getResponseBody(httpResponse))
-			if httpResponse.StatusCode == 500 {
-				log.Printf(errorRetryDeleteL7Policy, policyId, errorResponse)
-				return resource.RetryableError(errorResponse)
-			} else {
-				return resource.NonRetryableError(errorResponse)
+			responseError := parseErrorResponse(httpResponse).(*ResponseError)
+			if errorCodeEquals(responseError, ErrorCodeLoadBalancerNotReady) {
+				log.Printf(errorRetryDeleteL7Policy, policyId, responseError.ErrorMessage())
+				// Delay for 30 seconds before continuing
+				time.Sleep(30 * time.Second)
+				return resource.RetryableError(responseError)
 			}
+			err := fmt.Errorf(errorL7PolicyDelete, policyId, responseError.ErrorMessage())
+			return resource.NonRetryableError(err)
 		}
 		return nil
 	})
 
+	if retryErr != nil {
+		return diag.FromErr(retryErr)
+	}
+
+	// Wait for the resource to reach the desired state
+	timeout := d.Timeout(schema.TimeoutDelete)
+	stateConf := &resource.StateChangeConf{
+		Pending:    l7PolicyDeleting,
+		Target:     l7PolicyDeleted,
+		Refresh:    resourceL7PolicyDeleteStateRefreshFunc(ctx, d, cli, policyId),
+		Timeout:    timeout,
+		Delay:      10 * time.Second,
+		MinTimeout: 1 * time.Second,
+	}
+
+	_, err := stateConf.WaitForStateContext(ctx)
 	if err != nil {
-		return diag.FromErr(err)
+		return diag.FromErr(fmt.Errorf(errorWaitingL7PolicyDelete, policyId, err))
 	}
 	d.SetId("")
 
 	log.Printf("Deleted l7 policy load balancer successfully")
 	return nil
+}
+
+func resourceL7PolicyDeleteStateRefreshFunc(ctx context.Context, d *schema.ResourceData, cli *client.Client, policyId string) resource.StateRefreshFunc {
+	projectId := d.Get("project_id").(string)
+	loadBalancerId := d.Get("load_balancer_id").(string)
+	listenerId := d.Get("listener_id").(string)
+	return func() (interface{}, string, error) {
+		resp, httpResponse, _ := cli.VlbClient.LoadBalancerListenerRestControllerV2Api.GetL7PolicyUsingGET(ctx, policyId, listenerId, loadBalancerId, projectId)
+		if httpResponse.StatusCode != http.StatusOK {
+			if httpResponse.StatusCode == http.StatusNotFound {
+				return vloadbalancing.L7Policy{ProgressStatus: "DELETED"}, "DELETED", nil
+			} else {
+				return nil, "", fmt.Errorf(errorL7PolicyRead, policyId, getResponseBody(httpResponse))
+			}
+		}
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+
+		policyData := resp.Data
+		return policyData, "DELETING", nil
+	}
 }

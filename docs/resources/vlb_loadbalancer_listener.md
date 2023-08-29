@@ -27,7 +27,7 @@ resource "vngcloud_vlb_pool" "example" {
 resource "vngcloud_vlb_listener" "example" {
   project_id                    = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   load_balancer_id              = vngcloud_vlb_load_balancer.example.id
-  name                          = "example-listener"
+  name                          = "example_listener"
   allowed_cidrs                 = "0.0.0.0/0"
   protocol                      = "HTTPS"
   protocol_port                 = 81
@@ -50,15 +50,15 @@ The following arguments are supported:
 * `load_balancer_id` -  (String, Required) ID of the load balancer that the listener will be attached to.
 * `name` - (String, Required) The name of the listener.
 * `allowed_cidrs` -  (String, Optional) Access control list (ACL) to limit incoming traffic to a listener to a set of allowed source IP addresses (CIDRs). Defaults to `0.0.0.0/0`.
-   Note that: You can input multiple CIDR blocks by separating them with commas. Ex: 192.168.0.0/24, 172.16.0.0/24
-* `protocol` - (String, Required) Protocol for connections from clients to the load balancer. For Application Load Balancers (Layer 7), valid values are `HTTP` and `HTTPS`. For Network Load Balancers (Layer 4), valid values are `TCP`.
+  ~> **NOTE::**  You can input multiple CIDR blocks by separating them with commas. Ex: 192.168.0.0/24, 172.16.0.0/24
+* `protocol` - (String, Required) Protocol for connections from clients to the load balancer. For Application Load Balancers (Layer 7), valid values are `HTTP` and `HTTPS`. For Network Load Balancers (Layer 4), valid values are `TCP`, `UDP`.
 * `protocol_port` -(Number, Required) The port on which the listener will listen for incoming traffic. The value must be between `1` and `65535`.
 * `timeout_client` - (Number, Optional) The time in seconds to wait for a response from the client before terminating the connection. Defaults to `50`.
 * `timeout_connection` - (Number, Optional) The time in seconds to wait for a connection to be established before timing out. Defaults to `5`.
 * `timeout_member` - (Number, Optional) The time in seconds to wait for a response from a member before marking it as failed. Defaults to `50`.
 * `default_pool_id` - (String, Required) The ID of the default pool to use for the listener.
 * `certificate_authorities` - (Array of String, Optional) A list of SSL certificate authorities(SNIs) to use for `HTTPS` listeners.
-* `default_certificate_authority` - (String, Optional) The default SSL certificate authority to use for `HTTPS` listeners.
+* `default_certificate_authority` - (String, Required) The default SSL certificate authority to use for `HTTPS` listeners.
 * `client_certificate_authentication` - (String, Optional) The TLS client authentication mode to use for `HTTPS` listeners.
 * `headers` - (Array of String, Optional) A set of headers to be added to request forwarded to the default pool. Can be set if protocol is `HTTP` or `HTTPS`. Defaults to '[ "X-Forwarded-For", "X-Forwarded-Port", "X-Forwarded-Proto" ]'.
    Allowable values are:

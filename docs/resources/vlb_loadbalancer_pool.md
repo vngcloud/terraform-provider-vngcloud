@@ -23,7 +23,7 @@ resource "vngcloud_vlb_load_balancer" "example"{
 resource "vngcloud_vlb_pool" "example" {
   project_id       = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   load_balancer_id = vngcloud_vlb_load_balancer.example.id
-  name             = "example-Pool"
+  name             = "example_Pool"
   protocol         = "HTTP"
   stickiness       = false
   algorithm        = "ROUND_ROBIN"
@@ -37,6 +37,7 @@ resource "vngcloud_vlb_pool" "example" {
     interval              = 30
     timeout               = 5
     success_code          = 200
+    http_version          = "1.0"
   }
 
   members {
@@ -68,13 +69,13 @@ The following arguments are supported:
 * `project_id` -  (String, Required) The ID of the project to create the Pool in.
 * `load_balancer_id` -  (String, Required) The ID of the load balancer in which the resource Pool is defined.
 * `name` - (String, Required) The name of the resource Pool.
-* `protocol` -  (String, Required) Protocol to use for routing traffic to the members of the resource Pool. It can be `HTTP`, `PROXY`, `TCP`.
+* `protocol` -  (String, Required) Protocol to use for routing traffic to the members of the resource Pool. For Application Load Balancers (Layer 7), valid value is `HTTP`. For Network Load Balancers (Layer 4), valid values are `TCP`, `UDP`, `PROXY`,
 * `stickiness` - (Boolean, Optional) A boolean indicating whether stickiness is enabled for the resource Pool. Only available when `protocol` is `HTTP`.
 * `tls_encryption` - (Boolean, Optional) A boolean indicating whether TLS Encryption is enabled for the resource Pool. Only available when `protocol` is `HTTP`.
 * `algorithm` -  (String, Optional) The load balancing algorithm used by the resource Pool. It can be `ROUND_ROBIN`, `LEAST_CONNECTIONS`, `SOURCE_IP`. Default value is `ROUND_ROBIN`.
 
 * `health_monitor` - (Optional)  A **_singleton list_** that contains properties related to the health monitor of the resource Pool. The following properties are available:
-  * `health_check_protocol` -  (String, Required) The protocol used by the health monitor. It can be `HTTP`, `HTTPS`, `TCP`.
+  * `health_check_protocol` -  (String, Required) The protocol used by the health monitor. It can be `HTTP`, `HTTPS`, `TCP`, `PING-UDP`.
   * `health_check_method` -  (String, Optional) The method used by the health monitor. It can be  `GET`, `POST`, `PUT`. Only available when `health_check_protocol` is `HTTP` or `HTTPS`.
   * `health_check_path` -  (String, Optional) The path used by the health monitor. Example: `/`. Only available when `health_check_protocol` is `HTTP` or `HTTPS`.
   * `healthy_threshold` -  (Number, Optional)  The number of consecutive successful health checks required to consider a member healthy. Default value is `3`.

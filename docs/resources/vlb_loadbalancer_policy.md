@@ -30,7 +30,7 @@ resource "vngcloud_vlb_l7policy" "example" {
   project_id         = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   load_balancer_id   = vngcloud_vlb_load_balancer.example.id
   listener_id        = vngcloud_vlb_listener.example.id
-  name               = "example-policy"
+  name               = "example_policy"
   rule_type          = "PATH"
   compare_type       = "EQUAL_TO"
   rule_value         = "www.example.com"
