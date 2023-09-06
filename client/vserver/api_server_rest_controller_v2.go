@@ -1947,7 +1947,7 @@ ServerRestControllerV2ApiService Attach Internal Network Interface With Floating
 
 @return DataResponseInterfaceNetworkInterface
 */
-func (a *ServerRestControllerV2ApiService) AttachNetworkInterfaceWithWanIpUsingPOST(ctx context.Context, attachNetworkInterfaceWithWanIpRequest AttachNetworkInterfaceWithWanIpRequest, floatingIpId string, projectId string, serverId string, subnetId string) (DataResponseInterfaceNetworkInterface, *http.Response, error) {
+func (a *ServerRestControllerV2ApiService) AttachNetworkInterfaceWithWanIpUsingPOST(ctx context.Context, attachNetworkInterfaceWithWanIpRequest AttachNetworkInterfaceWithWanIpRequest, serverId string, projectId string) (DataResponseInterfaceNetworkInterface, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Post")
 		localVarPostBody    interface{}
@@ -1958,7 +1958,7 @@ func (a *ServerRestControllerV2ApiService) AttachNetworkInterfaceWithWanIpUsingP
 
 	// create path and map variables
 	localVarPath := a.client.cfg.BasePath + "/v2/{projectId}/servers/{serverId}/internal-network-interfaces-floating"
-	localVarPath = strings.Replace(localVarPath, "{"+"floatingIpId"+"}", fmt.Sprintf("%v", floatingIpId), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"serverId"+"}", fmt.Sprintf(serverId), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"projectId"+"}", fmt.Sprintf("%v", projectId), -1)
 
 	localVarHeaderParams := make(map[string]string)

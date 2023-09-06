@@ -56,16 +56,16 @@ func ResourceAttachInternalInterface() *schema.Resource {
 
 func resourceInternalInterfaceAttach(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
-	subnetID := d.Get("subnet_id").(string)
 	serverID := d.Get("server_id").(string)
-	floatingIpID := d.Get("floating_ip_id").(string)
 
 	attachInternalNetworkInterface := vserver.AttachNetworkInterfaceWithWanIpRequest{
-		Ip: d.Get("ip").(string),
+		SubnetId: d.Get("subnet_id").(string),
+		WanIpId:  d.Get("floating_ip_id").(string),
+		Ip:       d.Get("ip").(string),
 	}
 
 	cli := m.(*client.Client)
-	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.AttachNetworkInterfaceWithWanIpUsingPOST(context.TODO(), attachInternalNetworkInterface, floatingIpID, projectID, serverID, subnetID)
+	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.AttachNetworkInterfaceWithWanIpUsingPOST(context.TODO(), attachInternalNetworkInterface, serverID, projectID)
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
