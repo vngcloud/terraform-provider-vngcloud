@@ -1957,11 +1957,9 @@ func (a *ServerRestControllerV2ApiService) AttachNetworkInterfaceWithWanIpUsingP
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v2/{projectId}/servers/{serverId}/internal-network-interfaces-floating/subnet/{subnetId}/floating-ip/{floatingIpId}"
+	localVarPath := a.client.cfg.BasePath + "/v2/{projectId}/servers/{serverId}/internal-network-interfaces-floating"
 	localVarPath = strings.Replace(localVarPath, "{"+"floatingIpId"+"}", fmt.Sprintf("%v", floatingIpId), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"projectId"+"}", fmt.Sprintf("%v", projectId), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"serverId"+"}", fmt.Sprintf("%v", serverId), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"subnetId"+"}", fmt.Sprintf("%v", subnetId), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
