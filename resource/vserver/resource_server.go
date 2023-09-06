@@ -288,7 +288,10 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("ssh_key_name", server.SshKeyName)
 	d.Set("server_group_id", server.ServerGroupId)
 	d.Set("root_disk_id", server.BootVolumeId)
-	d.Set("zone_id", server.ZoneId)
+	_, ok := d.GetOk("zone_id")
+	if ok {
+		d.Set("zone_id", server.ZoneId)
+	}
 	var internalInterfaces []map[string]string
 	for _, internalInterface := range server.InternalInterfaces {
 		internalInterfaceMap := make(map[string]string)
