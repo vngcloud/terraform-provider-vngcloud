@@ -2,7 +2,7 @@ terraform {
   required_providers {
     vngcloud = {
       source  = "vngcloud/vngcloud"
-      version = "1.1.1"
+      version = "1.1.2"
     }
   }
   #  backend "s3" {
