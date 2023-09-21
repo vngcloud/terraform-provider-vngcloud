@@ -15,4 +15,6 @@ type ResizeServerRequest struct {
 	FlavorId string `json:"flavorId"`
 	// Id of server
 	ServerId string `json:"serverId"`
+	// Zone of flavor. You can choose if having multiple zone
+	HostGroupId string `json:"hostGroupId,omitempty"`
 }

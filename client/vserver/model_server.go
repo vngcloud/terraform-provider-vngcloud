@@ -29,4 +29,5 @@ type Server struct {
 	SshKeyName         string                      `json:"sshKeyName,omitempty"`
 	Status             string                      `json:"status,omitempty"`
 	Uuid               string                      `json:"uuid,omitempty"`
+	HostGroupId        string                      `json:"hostGroupId,omitempty"`
 }

@@ -128,6 +128,10 @@ func ResourceServer() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"host_group_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"external_interfaces": {
 				Computed: true,
 				Type:     schema.TypeList,
@@ -211,6 +215,7 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 	if len(securityGroup) == 0 {
 		return fmt.Errorf(`The argument "security_group" must not be empty.`)
 	}
+
 	server := vserver.CreateServerRequest{
 		AttachFloating:         d.Get("attach_floating").(bool),
 		EncryptionVolume:       d.Get("encryption_volume").(bool),
@@ -231,6 +236,7 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		UserPassword:           d.Get("user_password").(string),
 		UserData:               d.Get("user_data").(string),
 		UserDataBase64Encoded:  d.Get("user_data_base64_encode").(bool),
+		HostGroupId:            d.Get("host_group_id").(string),
 	}
 	cli := m.(*client.Client)
 	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.CreateServerUsingPOST1(context.TODO(), server, projectID)
@@ -276,14 +282,16 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("-------------------------------------\n")
 	server := resp.Data
 	d.Set("name", server.Name)
-	d.Set("network_id", server.InternalInterfaces[0].NetworkUuid)
-	d.Set("subnet_id", server.InternalInterfaces[0].SubnetUuid)
 	d.Set("encryption_volume", server.EncryptionVolume)
 	d.Set("flavor_id", server.Flavor.FlavorId)
 	d.Set("os_info", server.Image.ImageVersion)
 	d.Set("ssh_key_name", server.SshKeyName)
 	d.Set("server_group_id", server.ServerGroupId)
 	d.Set("root_disk_id", server.BootVolumeId)
+	_, ok := d.GetOk("host_group_id")
+	if ok {
+		d.Set("host_group_id", server.HostGroupId)
+	}
 	var internalInterfaces []map[string]string
 	for _, internalInterface := range server.InternalInterfaces {
 		internalInterfaceMap := make(map[string]string)
@@ -336,7 +344,7 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceServerUpdate(d *schema.ResourceData, m interface{}) error {
-	if d.HasChange("flavor_id") {
+	if d.HasChange("flavor_id") || d.HasChange("host_group_id") {
 		return resourceServerResize(d, m)
 	}
 	if d.HasChange("action") {
@@ -394,8 +402,9 @@ func resourceServerResize(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 
 	serverResizeRequest := vserver.ResizeServerRequest{
-		ServerId: d.Id(),
-		FlavorId: d.Get("flavor_id").(string),
+		ServerId:    d.Id(),
+		FlavorId:    d.Get("flavor_id").(string),
+		HostGroupId: d.Get("host_group_id").(string),
 	}
 	cli := m.(*client.Client)
 	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.ResizeServerUsingPUT1(context.TODO(), projectID, serverResizeRequest, d.Id())
@@ -403,7 +412,9 @@ func resourceServerResize(d *schema.ResourceData, m interface{}) error {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		oldFlavor, _ := d.GetChange("flavor_id")
+		oldZone, _ := d.GetChange("host_group_id")
 		d.Set("flavor_id", oldFlavor)
+		d.Set("host_group_id", oldZone)
 		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
