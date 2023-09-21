@@ -35,6 +35,7 @@ The following arguments are supported:
 
 - **encryption_volume** (Boolean, Required) Is Server use Encryption volume.
 - **flavor_id** (String, Required) ID of the flavor.
+- **host_group_id** (String, Optional) ID of the host group.
 - **image_id** (String, Required) ID of the Image.
 - **name** (String, Required) Name of Server.
 - **network_id** (String, Required) ID of the network.

@@ -97,6 +97,8 @@ type APIClient struct {
 
 	VolumeTypeZoneRestControllerApi *VolumeTypeZoneRestControllerApiService
 
+	NetworkInterfaceRestControllerApi *NetworkInterfaceElasticRestControllerV2ApiService
+
 	VpcExternalCallbackControllerApi *VpcExternalCallbackControllerApiService
 
 	WanIpRestControllerApi *WanIpRestControllerV2ApiService
@@ -143,6 +145,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.VolumeRestControllerApi = (*VolumeRestControllerV2ApiService)(&c.common)
 	c.VolumeTypeRestControllerApi = (*VolumeTypeRestControllerApiService)(&c.common)
 	c.VolumeTypeZoneRestControllerApi = (*VolumeTypeZoneRestControllerApiService)(&c.common)
+	c.NetworkInterfaceRestControllerApi = (*NetworkInterfaceElasticRestControllerV2ApiService)(&c.common)
 	c.VpcExternalCallbackControllerApi = (*VpcExternalCallbackControllerApiService)(&c.common)
 	c.WanIpRestControllerApi = (*WanIpRestControllerV2ApiService)(&c.common)
 

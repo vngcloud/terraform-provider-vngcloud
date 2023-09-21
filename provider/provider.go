@@ -54,7 +54,13 @@ func Provider() *schema.Provider {
 			"vngcloud_vserver_cluster_node_group":       vserver.ResourceClusterNodeGroup(),
 			"vngcloud_vserver_attach_lb_to_cluster":     vserver.ResourceAttachLb(),
 			"vngcloud_vserver_change_cluster_sec_group": vserver.ResourceChangeClusterSecGroup(),
-		},
+			"vngcloud_vserver_network_interface":         vserver.ResourceNetworkInterface(),
+			"vngcloud_vserver_external_interface_attach": vserver.ResourceAttachExternalInterface(),
+			"vngcloud_vserver_internal_interface_attach": vserver.ResourceAttachInternalInterface(),
+			"vngcloud_vserver_load_balancer":             vserver.ResourceLoadBalancer(),
+			"vngcloud_vserver_listener":                  vserver.ResourceListener(),
+			"vngcloud_vserver_pool":                      vserver.ResourcePool(),
+			},
 		Schema: map[string]*schema.Schema{
 			"token_url": {
 				Type:        schema.TypeString,
