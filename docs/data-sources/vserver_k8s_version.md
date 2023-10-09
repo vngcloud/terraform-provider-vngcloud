@@ -23,7 +23,7 @@ data "vngcloud_vserver_k8s_version" "k8sVersion" {
 
 The following arguments are supported:
 
-- **name** (String, Required) Name of K8s version (Version 1.18.7, Version 1.19.15, Version 1.20.12, Version 1.21.5).
+- **name** (String, Required) Name of K8s version (Version 1.22.17, Version 1.23.16).
 - **project_id** (String, Required) ID of project.
 
 ## Attributes Reference
