@@ -4,7 +4,7 @@ variable "project_id" {
 }
 variable "s_general_4x8" {
   type    = string
-  default = "flav-05f97524-0410-46a4-87a8-af92aa759231"
+  default = "flav-f5e0201d-606f-4480-be72-de11f46d48ff"
 }
 variable "image_id" {
   type    = string
