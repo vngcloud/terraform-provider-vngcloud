@@ -1,6 +1,6 @@
 # \RouteTableControllerApi
 
-All URIs are relative to *https://virtserver.swaggerhub.com/manhtu1997/vserver/1.0.2*
+All URIs are relative to *https://localhost:8089*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -14,7 +14,7 @@ Method | HTTP request | Description
 
 
 # **CreateRouteTableUsingPOST**
-> BaseResponse CreateRouteTableUsingPOST(ctx, createRouteTableRequest, projectId)
+> BaseResponse CreateRouteTableUsingPOST(ctx, authorization, createRouteTableRequest, projectId)
 Create route-table
 
 ### Required Parameters
@@ -22,6 +22,7 @@ Create route-table
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **authorization** | **string**| Access Token | 
   **createRouteTableRequest** | [**CreateRouteTableRequest**](CreateRouteTableRequest.md)| createRouteTableRequest | 
   **projectId** | **string**| The project id | 
 
@@ -41,7 +42,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteRouteTableUsingDELETE**
-> BaseResponse DeleteRouteTableUsingDELETE(ctx, projectId, uuid)
+> BaseResponse DeleteRouteTableUsingDELETE(ctx, authorization, projectId, uuid)
 Delete Route Table
 
 ### Required Parameters
@@ -49,6 +50,7 @@ Delete Route Table
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **authorization** | **string**| Access Token | 
   **projectId** | **string**| The project id | 
   **uuid** | **string**| The route-table uuid | 
 
@@ -68,7 +70,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteRouteTablesUsingDELETE**
-> BaseResponse DeleteRouteTablesUsingDELETE(ctx, projectId)
+> BaseResponse DeleteRouteTablesUsingDELETE(ctx, authorization, projectId)
 Delete all route-tables
 
 ### Required Parameters
@@ -76,6 +78,7 @@ Delete all route-tables
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **authorization** | **string**| Access Token | 
   **projectId** | **string**| The project id | 
 
 ### Return type
@@ -94,7 +97,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **GetRouteTableUsingGET**
-> RouteTableResponse GetRouteTableUsingGET(ctx, projectId, uuid)
+> RouteTableResponse GetRouteTableUsingGET(ctx, authorization, projectId, uuid)
 Get route-table by uuid
 
 ### Required Parameters
@@ -102,6 +105,7 @@ Get route-table by uuid
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **authorization** | **string**| Access Token | 
   **projectId** | **string**| The project id | 
   **uuid** | **string**| The route-table uuid | 
 
@@ -121,7 +125,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **ListRouteTablesUsingGET**
-> ListRouteTablesResponse ListRouteTablesUsingGET(ctx, projectId)
+> ListRouteTablesResponse ListRouteTablesUsingGET(ctx, authorization, projectId)
 List route-tables
 
 ### Required Parameters
@@ -129,6 +133,7 @@ List route-tables
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **authorization** | **string**| Access Token | 
   **projectId** | **string**| The project id | 
 
 ### Return type
@@ -147,7 +152,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UpdateRouteTableRoutesUsingPUT**
-> RouteTableResponse UpdateRouteTableRoutesUsingPUT(ctx, projectId, updateRouteRequest, uuid)
+> RouteTableResponse UpdateRouteTableRoutesUsingPUT(ctx, authorization, changeRoutesReq, projectId, uuid)
 Add/remove routes of route-table
 
 ### Required Parameters
@@ -155,8 +160,9 @@ Add/remove routes of route-table
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **authorization** | **string**| Access Token | 
+  **changeRoutesReq** | [**ChangeRoutesRequest**](ChangeRoutesRequest.md)| changeRoutesReq | 
   **projectId** | **string**| The project id | 
-  **updateRouteRequest** | [**RouteTableUpdateRouteRequest**](RouteTableUpdateRouteRequest.md)| updateRouteRequest | 
   **uuid** | **string**| The route-table uuid | 
 
 ### Return type
@@ -175,7 +181,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UpdateRouteTableSubnetsUsingPUT**
-> RouteTableResponse UpdateRouteTableSubnetsUsingPUT(ctx, projectId, updateSubnetRequest, uuid)
+> RouteTableResponse UpdateRouteTableSubnetsUsingPUT(ctx, authorization, projectId, updateSubnetRequest, uuid)
 Add/remove subnets of route-table
 
 ### Required Parameters
@@ -183,6 +189,7 @@ Add/remove subnets of route-table
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **authorization** | **string**| Access Token | 
   **projectId** | **string**| The project id | 
   **updateSubnetRequest** | [**RouteTableUpdateSubnetRequest**](RouteTableUpdateSubnetRequest.md)| updateSubnetRequest | 
   **uuid** | **string**| The route-table uuid | 

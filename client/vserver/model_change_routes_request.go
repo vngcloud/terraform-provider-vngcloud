@@ -9,7 +9,7 @@
 
 package vserver
 
-type RouteTableUpdateSubnetRequest struct {
-	// The updated subnet uuid list of route-table
-	Subnets []string `json:"subnets,omitempty"`
+type ChangeRoutesRequest struct {
+	// The updated routes list of route-table
+	Routes []RouteRequest `json:"routes,omitempty"`
 }

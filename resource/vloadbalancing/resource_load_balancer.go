@@ -264,12 +264,11 @@ func resourceLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData, m i
 	}
 
 	// Wait for the resource to reach the desired state
-	timeout := d.Timeout(schema.TimeoutUpdate)
 	stateConf := &resource.StateChangeConf{
 		Pending:    loadBalancerUpdating,
 		Target:     loadBalancerUpdated,
 		Refresh:    resourceLBStateRefreshFunc(ctx, d, cli, loadBalancerId),
-		Timeout:    timeout,
+		Timeout:    45 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}

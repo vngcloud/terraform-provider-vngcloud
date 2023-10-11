@@ -73,7 +73,7 @@ type APIClient struct {
 
 	QuotaRestControllerApi *QuotaRestControllerV2ApiService
 
-	RouteTableControllerApi *RouteTableControllerApiService
+	RouteTableControllerApi *RouteTableRestControllerV2ApiService
 
 	SecgroupRestControllerApi *SecgroupRestControllerV2ApiService
 
@@ -135,7 +135,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.ProtocolRestControllerApi = (*ProtocolRestControllerV2ApiService)(&c.common)
 	c.QuotaRestControllerApi = (*QuotaRestControllerV2ApiService)(&c.common)
 	c.QuotaRestControllerApi = (*QuotaRestControllerV2ApiService)(&c.common)
-	c.RouteTableControllerApi = (*RouteTableControllerApiService)(&c.common)
+	c.RouteTableControllerApi = (*RouteTableRestControllerV2ApiService)(&c.common)
 	c.SecgroupRestControllerApi = (*SecgroupRestControllerV2ApiService)(&c.common)
 	c.SecgroupRuleRestControllerApi = (*SecgroupRuleRestControllerV2ApiService)(&c.common)
 	c.ServerGroupRestControllerApi = (*ServerGroupRestControllerV2ApiService)(&c.common)
@@ -148,6 +148,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.NetworkInterfaceRestControllerApi = (*NetworkInterfaceElasticRestControllerV2ApiService)(&c.common)
 	c.VpcExternalCallbackControllerApi = (*VpcExternalCallbackControllerApiService)(&c.common)
 	c.WanIpRestControllerApi = (*WanIpRestControllerV2ApiService)(&c.common)
+	c.VirtualIpAddressRestControllerV2Api = (*VirtualIpAddressRestControllerV2ApiService)(&c.common)
 
 	return c
 }
