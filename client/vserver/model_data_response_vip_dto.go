@@ -9,7 +9,6 @@
 
 package vserver
 
-type RouteTableUpdateSubnetRequest struct {
-	// The updated subnet uuid list of route-table
-	Subnets []string `json:"subnets,omitempty"`
+type DataResponseVipDto struct {
+	Data *VipDto `json:"data,omitempty"`
 }

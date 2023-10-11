@@ -150,7 +150,7 @@ func resourceCAImporting(ctx context.Context, d *schema.ResourceData, m interfac
 	d.SetId(ca.Data.Uuid)
 
 	log.Printf("Imported Certificate Authority successfully")
-	return nil
+	return resourceCARead(ctx, d, m)
 }
 
 func resourceCADelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
