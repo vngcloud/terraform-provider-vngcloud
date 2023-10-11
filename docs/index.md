@@ -15,7 +15,7 @@ terraform {
   required_providers {
     vngcloud = {
       source  = "vngcloud/vngcloud"
-      version = "1.1.2"
+      version = "1.1.3"
     }
   }
 }

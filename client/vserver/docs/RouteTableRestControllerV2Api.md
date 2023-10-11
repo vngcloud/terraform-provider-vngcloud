@@ -1,19 +1,19 @@
 # \RouteTableRestControllerV2Api
 
-All URIs are relative to *https://virtserver.swaggerhub.com/Ev4LiA/vserver/1.0.5*
+All URIs are relative to *https://localhost:8089*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**CreateRouteTableUsingPOST1**](RouteTableRestControllerV2Api.md#CreateRouteTableUsingPOST1) | **Post** /v2/{projectId}/route-table | Create Route-table
 [**DeleteRouteTableUsingDELETE1**](RouteTableRestControllerV2Api.md#DeleteRouteTableUsingDELETE1) | **Delete** /v2/{projectId}/route-table/{routeId} | Delete Route Table
 [**GetRouteTableUsingGET1**](RouteTableRestControllerV2Api.md#GetRouteTableUsingGET1) | **Get** /v2/{projectId}/route-table/{uuid} | Get Route table by uuid
-[**ListRouteTablesWithPagingUsingGET**](RouteTableRestControllerV2Api.md#ListRouteTablesWithPagingUsingGET) | **Get** /v2/{projectId}/route-table/route/{routeTableId} | List Route from Route-Table
-[**ListRouteTablesWithPagingUsingGET1**](RouteTableRestControllerV2Api.md#ListRouteTablesWithPagingUsingGET1) | **Get** /v2/{projectId}/route-table | List Route Table V2
+[**ListRouteFromRouteTableIdUsingGET**](RouteTableRestControllerV2Api.md#ListRouteFromRouteTableIdUsingGET) | **Get** /v2/{projectId}/route-table/route/{routeTableId} | List Route from Route-Table
+[**ListRouteTableUsingGET**](RouteTableRestControllerV2Api.md#ListRouteTableUsingGET) | **Get** /v2/{projectId}/route-table | List Route Table V2
 [**UpdateRouteTableDetailUsingPUT**](RouteTableRestControllerV2Api.md#UpdateRouteTableDetailUsingPUT) | **Put** /v2/{projectId}/route-table/{uuid}/routes | Add or remove Route to Route-Table
 
 
 # **CreateRouteTableUsingPOST1**
-> DataResponseRouteTableDto CreateRouteTableUsingPOST1(ctx, createRouteTableRequest, projectId)
+> map[string]string CreateRouteTableUsingPOST1(ctx, authorization, createReq, portalUserId, projectId)
 Create Route-table
 
 ### Required Parameters
@@ -21,12 +21,14 @@ Create Route-table
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **createRouteTableRequest** | [**CreateRouteTableRequest**](CreateRouteTableRequest.md)| createRouteTableRequest | 
+  **authorization** | **string**| Access Token | 
+  **createReq** | [**CreateRouteTableRequest**](CreateRouteTableRequest.md)| createReq | 
+  **portalUserId** | **int32**| portal-user-id | 
   **projectId** | **string**| The project id | 
 
 ### Return type
 
-[**DataResponseRouteTableDto**](DataResponse«RouteTableDto».md)
+**map[string]string**
 
 ### Authorization
 
@@ -40,7 +42,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteRouteTableUsingDELETE1**
-> DeleteRouteTableUsingDELETE1(ctx, projectId, routeId)
+> DeleteRouteTableUsingDELETE1(ctx, authorization, portalUserId, projectId, routeId)
 Delete Route Table
 
 ### Required Parameters
@@ -48,6 +50,8 @@ Delete Route Table
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **authorization** | **string**| Access Token | 
+  **portalUserId** | **int32**| portal-user-id | 
   **projectId** | **string**| projectId | 
   **routeId** | **string**| routeId | 
 
@@ -67,7 +71,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **GetRouteTableUsingGET1**
-> DataResponseRouteTableDto GetRouteTableUsingGET1(ctx, projectId, uuid)
+> DataResponseRouteTableDto GetRouteTableUsingGET1(ctx, authorization, portalUserId, projectId, uuid)
 Get Route table by uuid
 
 ### Required Parameters
@@ -75,6 +79,8 @@ Get Route table by uuid
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **authorization** | **string**| Access Token | 
+  **portalUserId** | **int32**| portal-user-id | 
   **projectId** | **string**| project id | 
   **uuid** | **string**| The route-table uuid | 
 
@@ -93,8 +99,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **ListRouteTablesWithPagingUsingGET**
-> DataResponseListRoutesDto ListRouteTablesWithPagingUsingGET(ctx, projectId, routeTableId)
+# **ListRouteFromRouteTableIdUsingGET**
+> DataResponseListRoutesDto ListRouteFromRouteTableIdUsingGET(ctx, authorization, portalUserId, projectId, routeTableId)
 List Route from Route-Table
 
 ### Required Parameters
@@ -102,6 +108,8 @@ List Route from Route-Table
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **authorization** | **string**| Access Token | 
+  **portalUserId** | **int32**| portal-user-id | 
   **projectId** | **string**| projectId | 
   **routeTableId** | **string**| routeTableId | 
 
@@ -120,8 +128,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **ListRouteTablesWithPagingUsingGET1**
-> PagingRouteTableDto ListRouteTablesWithPagingUsingGET1(ctx, name, page, projectId, size)
+# **ListRouteTableUsingGET**
+> PagingRouteTableDto ListRouteTableUsingGET(ctx, authorization, name, page, portalUserId, projectId, size)
 List Route Table V2
 
 ### Required Parameters
@@ -129,8 +137,10 @@ List Route Table V2
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **authorization** | **string**| Access Token | 
   **name** | **string**| name | 
   **page** | **string**| page | [default to 1]
+  **portalUserId** | **int32**| portal-user-id | 
   **projectId** | **string**| project id | 
   **size** | **string**| size | [default to 10]
 
@@ -150,7 +160,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UpdateRouteTableDetailUsingPUT**
-> DataResponseRouteTableDto UpdateRouteTableDetailUsingPUT(ctx, projectId, updateRouteRequest, uuid)
+> UpdateRouteTableDetailUsingPUT(ctx, authorization, changeRoutesReq, portalUserId, projectId, uuid)
 Add or remove Route to Route-Table
 
 ### Required Parameters
@@ -158,13 +168,15 @@ Add or remove Route to Route-Table
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **authorization** | **string**| Access Token | 
+  **changeRoutesReq** | [**ChangeRoutesRequest**](ChangeRoutesRequest.md)| changeRoutesReq | 
+  **portalUserId** | **int32**| portal-user-id | 
   **projectId** | **string**| The project id | 
-  **updateRouteRequest** | [**RouteTableUpdateRouteRequest**](RouteTableUpdateRouteRequest.md)| updateRouteRequest | 
   **uuid** | **string**| The route-table uuid | 
 
 ### Return type
 
-[**DataResponseRouteTableDto**](DataResponse«RouteTableDto».md)
+ (empty response body)
 
 ### Authorization
 
