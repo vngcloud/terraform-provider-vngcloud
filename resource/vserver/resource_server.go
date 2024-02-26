@@ -174,6 +174,11 @@ func ResourceServer() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"is_poc": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+			},
 		},
 	}
 }
@@ -237,6 +242,7 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		UserData:               d.Get("user_data").(string),
 		UserDataBase64Encoded:  d.Get("user_data_base64_encode").(bool),
 		HostGroupId:            d.Get("host_group_id").(string),
+		IsPoc:                  d.Get("is_poc").(bool),
 	}
 	cli := m.(*client.Client)
 	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.CreateServerUsingPOST1(context.TODO(), server, projectID)

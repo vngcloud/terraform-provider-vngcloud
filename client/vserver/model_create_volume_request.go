@@ -23,4 +23,6 @@ type CreateVolumeRequest struct {
 	Size int32 `json:"size"`
 	// Id of volume type
 	VolumeTypeId string `json:"volumeTypeId"`
+	// is POC
+	IsPoc bool `json:"isPoc,omitempty"`
 }

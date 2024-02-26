@@ -67,6 +67,11 @@ func ResourceVolume() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"is_poc": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+			},
 		},
 	}
 }
@@ -92,6 +97,7 @@ func resourceVolumeCreate(d *schema.ResourceData, m interface{}) error {
 		Size:           int32(d.Get("size").(int)),
 		VolumeTypeId:   d.Get("volume_type_id").(string),
 		MultiAttach:    d.Get("multi_attach").(bool),
+		IsPoc:          d.Get("is_poc").(bool),
 	}
 	cli := m.(*client.Client)
 	resp, httpResponse, err := cli.VserverClient.VolumeRestControllerApi.CreateVolumeUsingPOST1(context.TODO(), a, projectID)

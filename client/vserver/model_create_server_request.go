@@ -58,4 +58,6 @@ type CreateServerRequest struct {
 	UserPassword string `json:"userPassword,omitempty"`
 	// Zone of flavor. You can choose if having multiple zone
 	HostGroupId string `json:"hostGroupId,omitempty"`
+	// is POC
+	IsPoc bool `json:"isPoc,omitempty"`
 }

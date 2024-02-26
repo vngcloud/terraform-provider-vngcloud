@@ -33,6 +33,7 @@ The following arguments are supported:
 - **volume_type_id** (String, Required) ID of Volume's Type
 - **encryption_type** (String, Optional) Type encryption of volume.
 - **multi_attach** (Boolean, Optional) Specifies whether to enable Volume Multi-Attach.
+- **is_poc** (Boolean, Optional) Is Poc Resource.
 
 ## Attributes Reference
 
