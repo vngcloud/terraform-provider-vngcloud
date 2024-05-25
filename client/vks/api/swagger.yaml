@@ -1,0 +1,1083 @@
+openapi: 3.0.3
+info:
+  title: vks-api API
+  version: 1.0-SNAPSHOT
+servers:
+- url: /
+paths:
+  /v1/clusters:
+    get:
+      tags:
+      - V 1 Cluster Controller
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          default: "{}"
+      - name: page
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 0
+          type: integer
+          format: int32
+          default: 0
+      - name: pageSize
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 1
+          type: integer
+          format: int32
+          default: 10
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagingResultDtoClusterDto'
+    post:
+      tags:
+      - V 1 Cluster Controller
+      parameters:
+      - name: poc
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+          default: false
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClusterComboDto'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClusterDto'
+  /v1/clusters/{clusterId}:
+    get:
+      tags:
+      - V 1 Cluster Controller
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClusterDetailDto'
+    put:
+      tags:
+      - V 1 Cluster Controller
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateClusterDto'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClusterDto'
+    delete:
+      tags:
+      - V 1 Cluster Controller
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClusterDto'
+  /v1/clusters/{clusterId}/kubeconfig:
+    get:
+      tags:
+      - V 1 Cluster Controller
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+                x-content-type: text/plain
+  /v1/clusters/{clusterId}/node-groups:
+    get:
+      tags:
+      - V 1 Node Group Controller
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 0
+          type: integer
+          format: int32
+          default: 0
+      - name: pageSize
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 1
+          type: integer
+          format: int32
+          default: 10
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagingResultDtoNodeGroupDto'
+    post:
+      tags:
+      - V 1 Node Group Controller
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNodeGroupDto'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeGroupDto'
+  /v1/clusters/{clusterId}/node-groups/{nodeGroupId}:
+    get:
+      tags:
+      - V 1 Node Group Controller
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nodeGroupId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeGroupDetailDto'
+    put:
+      tags:
+      - V 1 Node Group Controller
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nodeGroupId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateNodeGroupDto'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeGroupDto'
+    delete:
+      tags:
+      - V 1 Node Group Controller
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nodeGroupId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeGroupDto'
+  /v1/clusters/{clusterId}/node-groups/{nodeGroupId}/nodes:
+    get:
+      tags:
+      - V 1 Node Group Controller
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: nodeGroupId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 0
+          type: integer
+          format: int32
+          default: 0
+      - name: pageSize
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 1
+          type: integer
+          format: int32
+          default: 10
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagingResultDtoNodeDto'
+  /v1/node-group-images:
+    get:
+      tags:
+      - V 1 Node Group Image Controller
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NodeGroupImageDto'
+                x-content-type: application/json
+  /v1/workspace:
+    get:
+      tags:
+      - V 1 Workspace Controller
+      parameters:
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceDto'
+    post:
+      tags:
+      - V 1 Workspace Controller
+      parameters:
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceDto'
+  /v1/workspace/reset-service-account:
+    post:
+      tags:
+      - V 1 Workspace Controller
+      parameters:
+      - name: portal-user-id
+        in: header
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceDto'
+components:
+  schemas:
+    ClusterDetailDto:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        version:
+          type: string
+        numNodes:
+          type: integer
+          format: int64
+        createdAt:
+          $ref: '#/components/schemas/Date'
+        updatedAt:
+          $ref: '#/components/schemas/Date'
+        enablePrivateCluster:
+          type: boolean
+        networkType:
+          $ref: '#/components/schemas/NetworkType'
+        vpcId:
+          type: string
+        subnetId:
+          type: string
+        cidr:
+          type: string
+        enabledLoadBalancerPlugin:
+          type: boolean
+        enabledBlockStoreCsiPlugin:
+          type: boolean
+        whitelistNodeCIDRs:
+          type: array
+          items:
+            type: string
+      example:
+        subnetId: subnetId
+        enabledBlockStoreCsiPlugin: true
+        enabledLoadBalancerPlugin: true
+        whitelistNodeCIDRs:
+        - whitelistNodeCIDRs
+        - whitelistNodeCIDRs
+        description: description
+        version: version
+        createdAt: 2022-03-10T00:00:00.000+00:00
+        numNodes: 0
+        vpcId: vpcId
+        name: name
+        cidr: cidr
+        id: id
+        networkType: CALICO
+        enablePrivateCluster: true
+        status: status
+        updatedAt: null
+    ClusterDto:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        version:
+          type: string
+        numNodes:
+          type: integer
+          format: int64
+        createdAt:
+          $ref: '#/components/schemas/Date'
+        updatedAt:
+          $ref: '#/components/schemas/Date'
+      example:
+        createdAt: 2022-03-10T00:00:00.000+00:00
+        numNodes: 0
+        name: name
+        description: description
+        id: id
+        version: version
+        status: status
+        updatedAt: null
+    CreateClusterComboDto:
+      required:
+      - cidr
+      - enablePrivateCluster
+      - name
+      - networkType
+      - nodeGroups
+      - subnetId
+      - version
+      - vpcId
+      type: object
+      properties:
+        name:
+          pattern: "^[a-zA-Z0-9_\\-.]{5,50}$"
+          type: string
+        description:
+          pattern: "^[a-zA-Z0-9_\\-. @]{0,255}$"
+          type: string
+        version:
+          pattern: "^v[0-9]+.[0-9]+.[0-9]+$"
+          type: string
+        enablePrivateCluster:
+          type: boolean
+        networkType:
+          pattern: ^CALICO$
+          type: string
+        vpcId:
+          maxLength: 50
+          minLength: 1
+          type: string
+        subnetId:
+          maxLength: 50
+          minLength: 1
+          type: string
+        cidr:
+          pattern: "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/\\d{1,2}$"
+          type: string
+        enabledLoadBalancerPlugin:
+          type: boolean
+        enabledBlockStoreCsiPlugin:
+          type: boolean
+        nodeGroups:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateNodeGroupDto'
+    CreateNodeGroupDto:
+      required:
+      - diskSize
+      - diskType
+      - enablePrivateNodes
+      - flavorId
+      - imageId
+      - name
+      - numNodes
+      - securityGroups
+      - sshKeyId
+      - upgradeConfig
+      type: object
+      properties:
+        name:
+          maxLength: 50
+          minLength: 5
+          pattern: "^[a-zA-Z0-9_\\-.]+$"
+          type: string
+        numNodes:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+        autoScaleConfig:
+          $ref: '#/components/schemas/NodeGroupAutoScaleConfigDto'
+        upgradeConfig:
+          $ref: '#/components/schemas/NodeGroupUpgradeConfigDto'
+        imageId:
+          maxLength: 50
+          minLength: 1
+          type: string
+        flavorId:
+          maxLength: 50
+          minLength: 1
+          type: string
+        diskSize:
+          maximum: 5000
+          minimum: 20
+          type: integer
+          format: int32
+        diskType:
+          maxLength: 50
+          minLength: 1
+          type: string
+        enablePrivateNodes:
+          type: boolean
+        securityGroups:
+          type: array
+          items:
+            type: string
+        sshKeyId:
+          maxLength: 50
+          minLength: 1
+          type: string
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+        taints:
+          maxItems: 50
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeGroupTaintDto'
+    Date:
+      type: string
+      format: date
+      example: 2022-03-10
+    NetworkType:
+      type: string
+      enum:
+      - CALICO
+      - CILIUM
+    NodeDto:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        floatingIp:
+          type: string
+        fixedIp:
+          type: string
+        ready:
+          type: boolean
+      example:
+        floatingIp: floatingIp
+        ready: true
+        name: name
+        fixedIp: fixedIp
+        id: id
+        status: status
+    NodeGroupAutoScaleConfigDto:
+      required:
+      - maxSize
+      - minSize
+      type: object
+      properties:
+        minSize:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+        maxSize:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+      example:
+        minSize: 15
+        maxSize: 60
+    NodeGroupDetailDto:
+      type: object
+      properties:
+        id:
+          type: string
+        clusterId:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        numNodes:
+          type: integer
+          format: int64
+        imageId:
+          type: string
+        createdAt:
+          $ref: '#/components/schemas/Date'
+        updatedAt:
+          $ref: '#/components/schemas/Date'
+        flavorId:
+          type: string
+        diskSize:
+          type: integer
+          format: int32
+        diskType:
+          type: string
+        enablePrivateNodes:
+          type: boolean
+        sshKeyId:
+          type: string
+        securityGroups:
+          type: array
+          items:
+            type: string
+        autoScaleConfig:
+          $ref: '#/components/schemas/NodeGroupAutoScaleConfigDto'
+        upgradeConfig:
+          $ref: '#/components/schemas/NodeGroupUpgradeConfigDto'
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+        taints:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeGroupTaintDto'
+      example:
+        imageId: imageId
+        enablePrivateNodes: true
+        autoScaleConfig:
+          minSize: 15
+          maxSize: 60
+        flavorId: flavorId
+        clusterId: clusterId
+        taints:
+        - effect: effect
+          value: value
+          key: key
+        - effect: effect
+          value: value
+          key: key
+        sshKeyId: sshKeyId
+        upgradeConfig:
+          maxSurge: 56
+          maxUnavailable: 23
+          strategy: strategy
+        labels:
+          key: labels
+        createdAt: 2022-03-10T00:00:00.000+00:00
+        numNodes: 0
+        diskSize: 6
+        name: name
+        securityGroups:
+        - securityGroups
+        - securityGroups
+        id: id
+        diskType: diskType
+        status: status
+        updatedAt: null
+    NodeGroupDto:
+      type: object
+      properties:
+        id:
+          type: string
+        clusterId:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        numNodes:
+          type: integer
+          format: int64
+        imageId:
+          type: string
+        createdAt:
+          $ref: '#/components/schemas/Date'
+        updatedAt:
+          $ref: '#/components/schemas/Date'
+      example:
+        createdAt: 2022-03-10T00:00:00.000+00:00
+        numNodes: 0
+        imageId: imageId
+        name: name
+        id: id
+        clusterId: clusterId
+        status: status
+        updatedAt: null
+    NodeGroupImageDto:
+      type: object
+      properties:
+        id:
+          type: string
+        os:
+          type: string
+        kubernetesVersion:
+          type: string
+        enable:
+          type: boolean
+      example:
+        os: os
+        enable: true
+        id: id
+        kubernetesVersion: kubernetesVersion
+    NodeGroupTaintDto:
+      required:
+      - effect
+      - key
+      - value
+      type: object
+      properties:
+        key:
+          pattern: "^([a-zA-Z0-9]([a-zA-Z0-9._\\-/][a-zA-Z0-9])?){1,63}$"
+          type: string
+        value:
+          pattern: "^[a-zA-Z0-9._\\-/]{1,63}$"
+          type: string
+        effect:
+          pattern: ^NoSchedule|PreferNoSchedule|NoExecute$
+          type: string
+      example:
+        effect: effect
+        value: value
+        key: key
+    NodeGroupUpgradeConfigDto:
+      required:
+      - strategy
+      type: object
+      properties:
+        strategy:
+          pattern: ^SURGE$
+          type: string
+        maxSurge:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+        maxUnavailable:
+          maximum: 100
+          minimum: 0
+          type: integer
+          format: int32
+      example:
+        maxSurge: 56
+        maxUnavailable: 23
+        strategy: strategy
+    PagingResultDtoClusterDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClusterDto'
+        total:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+      example:
+        total: 6
+        pageSize: 5
+        page: 1
+        items:
+        - createdAt: 2022-03-10T00:00:00.000+00:00
+          numNodes: 0
+          name: name
+          description: description
+          id: id
+          version: version
+          status: status
+          updatedAt: null
+        - createdAt: 2022-03-10T00:00:00.000+00:00
+          numNodes: 0
+          name: name
+          description: description
+          id: id
+          version: version
+          status: status
+          updatedAt: null
+    PagingResultDtoNodeDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeDto'
+        total:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+      example:
+        total: 0
+        pageSize: 1
+        page: 6
+        items:
+        - floatingIp: floatingIp
+          ready: true
+          name: name
+          fixedIp: fixedIp
+          id: id
+          status: status
+        - floatingIp: floatingIp
+          ready: true
+          name: name
+          fixedIp: fixedIp
+          id: id
+          status: status
+    PagingResultDtoNodeGroupDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeGroupDto'
+        total:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+      example:
+        total: 6
+        pageSize: 5
+        page: 1
+        items:
+        - createdAt: 2022-03-10T00:00:00.000+00:00
+          numNodes: 0
+          imageId: imageId
+          name: name
+          id: id
+          clusterId: clusterId
+          status: status
+          updatedAt: null
+        - createdAt: 2022-03-10T00:00:00.000+00:00
+          numNodes: 0
+          imageId: imageId
+          name: name
+          id: id
+          clusterId: clusterId
+          status: status
+          updatedAt: null
+    UpdateClusterDto:
+      required:
+      - version
+      - whitelistNodeCIDRs
+      type: object
+      properties:
+        version:
+          type: string
+        whitelistNodeCIDRs:
+          maxItems: 10
+          minItems: 1
+          type: array
+          items:
+            type: string
+    UpdateNodeGroupDto:
+      required:
+      - imageId
+      - securityGroups
+      - upgradeConfig
+      type: object
+      properties:
+        autoScaleConfig:
+          $ref: '#/components/schemas/NodeGroupAutoScaleConfigDto'
+        numNodes:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int64
+        upgradeConfig:
+          $ref: '#/components/schemas/NodeGroupUpgradeConfigDto'
+        securityGroups:
+          type: array
+          items:
+            type: string
+        imageId:
+          maxLength: 50
+          minLength: 1
+          type: string
+    WorkspaceDto:
+      type: object
+      properties:
+        projectId:
+          type: string
+        serviceAccountId:
+          type: string
+        status:
+          type: string
+      example:
+        serviceAccountId: serviceAccountId
+        projectId: projectId
+        status: status

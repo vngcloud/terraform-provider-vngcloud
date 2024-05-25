@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"github.com/vngcloud/terraform-provider-vngcloud/resource/vks"
 	"log"
 
 	"github.com/vngcloud/terraform-provider-vngcloud/resource/vdb"
@@ -60,6 +61,7 @@ func Provider() *schema.Provider {
 			"vngcloud_vserver_network_interface":                 vserver.ResourceNetworkInterface(),
 			"vngcloud_vserver_external_interface_attach":         vserver.ResourceAttachExternalInterface(),
 			"vngcloud_vserver_internal_interface_attach":         vserver.ResourceAttachInternalInterface(),
+			"vngcloud_vks_cluster":                               vks.ResourceCluster(),
 		},
 		Schema: map[string]*schema.Schema{
 			"token_url": {
@@ -92,6 +94,12 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("VLB_BASE_URL", ""),
 				Description: "endpoint to connection with provider resource",
 			},
+			"vks_base_url": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("VKS_BASE_URL", ""),
+				Description: "endpoint to connection with provider resource",
+			},
 		},
 		ConfigureFunc: providerConfigure,
 	}
@@ -115,5 +123,11 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	}
 	clientID := d.Get("client_id").(string)
 	clientSecret := d.Get("client_secret").(string)
-	return client.NewClientV2(vserverBaseURL, vlbBaseURL, clientID, clientSecret, tokenURL)
+
+	vksBaseURL := "https://vks.api.vngcloud.vn"
+	_, hasVksBaseUrl := d.GetOk("vks_base_url")
+	if hasVksBaseUrl {
+		vksBaseURL = d.Get("vks_base_url").(string)
+	}
+	return client.NewClientV2(vserverBaseURL, vlbBaseURL, vksBaseURL, clientID, clientSecret, tokenURL)
 }
