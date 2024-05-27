@@ -62,6 +62,7 @@ func Provider() *schema.Provider {
 			"vngcloud_vserver_external_interface_attach":         vserver.ResourceAttachExternalInterface(),
 			"vngcloud_vserver_internal_interface_attach":         vserver.ResourceAttachInternalInterface(),
 			"vngcloud_vks_cluster":                               vks.ResourceCluster(),
+			"vngcloud_vks_cluster_node_group":                    vks.ResourceClusterNodeGroup(),
 		},
 		Schema: map[string]*schema.Schema{
 			"token_url": {

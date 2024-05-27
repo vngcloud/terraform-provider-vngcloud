@@ -63,7 +63,7 @@ func ResourceCluster() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				DefaultFunc: func() (interface{}, error) {
-					return "v1.29.1", nil
+					return fetchByKey("k8s_version")
 				},
 			},
 			"white_list_node_cidr": {
@@ -121,7 +121,14 @@ func ResourceCluster() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 				Elem: &schema.Resource{
-					Schema: schemaNodeGroup,
+					Schema: MergeSchemas(
+						schemaNodeGroup,
+						map[string]*schema.Schema{
+							"node_group_id": {
+								Type:     schema.TypeString,
+								Computed: true,
+							},
+						}),
 				},
 			},
 		},
@@ -235,14 +242,15 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 			if httpResponse.StatusCode != http.StatusOK {
 				return fmt.Errorf("Error : %s", GetResponseBody(httpResponse))
 			}
-			defaultConfig := []interface{}{
+			upgradeConfig := []interface{}{
 				map[string]interface{}{
 					"strategy":        clusterNodeGroupDetail.UpgradeConfig.Strategy,
 					"max_surge":       clusterNodeGroupDetail.UpgradeConfig.MaxSurge,
 					"max_unavailable": clusterNodeGroupDetail.UpgradeConfig.MaxUnavailable,
 				},
 			}
-			nodeGroup["upgrade_config"] = defaultConfig
+			nodeGroup["upgrade_config"] = upgradeConfig
+			nodeGroup["node_group_id"] = clusterNodeGroupDetail.Id
 		}
 
 		updatedNodeGroups[i] = nodeGroup
@@ -276,52 +284,9 @@ func expandNodeGroupForCreating(node_group []interface{}) []vks.CreateNodeGroupD
 		nodeGroupsJson, _ := json.Marshal(nodeGroup)
 		log.Printf("bbbbb-------------------------------------\n")
 		log.Printf("%s\n", string(nodeGroupsJson))
-		createNodeGroupRequest := getCreateNodeGroupReuqest(nodeGroup)
+		createNodeGroupRequest := getCreateNodeGroupRequestForCluster(nodeGroup)
 		createNodeGroupRequests[i] = createNodeGroupRequest
 	}
-	//tfMap, ok := node_group[0].(map[string]interface{})
-	//if !ok {
-	//}
-
-	//createHealthMonitor := &vloadbalancing.CreateHealthMonitorRequest{}
-	//if v, ok := tfMap["health_check_method"]; ok && v != "" {
-	//	createHealthMonitor.HealthCheckMethod = new(string)
-	//	*createHealthMonitor.HealthCheckMethod = v.(string)
-	//}
-	//if v, ok := tfMap["health_check_path"]; ok && v != "" {
-	//	createHealthMonitor.HealthCheckPath = new(string)
-	//	*createHealthMonitor.HealthCheckPath = v.(string)
-	//}
-	//if vHealthCheckProtocol, ok := tfMap["health_check_protocol"]; ok {
-	//	createHealthMonitor.HealthCheckProtocol = vHealthCheckProtocol.(string)
-	//}
-	//if v, ok := tfMap["healthy_threshold"]; ok {
-	//	createHealthMonitor.HealthyThreshold = int64(v.(int))
-	//}
-	//if vUnhealthyThreshold, ok := tfMap["unhealthy_threshold"]; ok {
-	//	createHealthMonitor.UnhealthyThreshold = int64(vUnhealthyThreshold.(int))
-	//}
-	//if v, ok := tfMap["interval"]; ok {
-	//	createHealthMonitor.Interval = int64(v.(int))
-	//}
-	//if v, ok := tfMap["timeout"]; ok {
-	//	createHealthMonitor.Timeout = int64(v.(int))
-	//}
-	//if v, ok := tfMap["success_code"]; ok && v != "" {
-	//	createHealthMonitor.SuccessCode = new(string)
-	//	*createHealthMonitor.SuccessCode = v.(string)
-	//}
-	//
-	//if v, ok := tfMap["http_version"]; ok && v != "" {
-	//	createHealthMonitor.HttpVersion = new(string)
-	//	*createHealthMonitor.HttpVersion = v.(string)
-	//}
-	//
-	//if v, ok := tfMap["domain_name"]; ok && v != "" {
-	//	createHealthMonitor.DomainName = new(string)
-	//	*createHealthMonitor.DomainName = v.(string)
-	//}
-	//
 	return createNodeGroupRequests
 }
 
@@ -418,6 +383,57 @@ func changeWhiteListNodeOrVersion(d *schema.ResourceData, m interface{}) error {
 }
 
 func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
+	cli := m.(*client.Client)
+	nodeGroups := d.Get("node_group").([]interface{})
+	for _, ng := range nodeGroups {
+		nodeGroup := ng.(map[string]interface{})
+
+		securityGroupsRequest := nodeGroup["security_groups"].([]interface{})
+		var securityGroups []string
+		for _, s := range securityGroupsRequest {
+			securityGroups = append(securityGroups, s.(string))
+		}
+		if securityGroups == nil {
+			securityGroups = make([]string, 0)
+		}
+		autoScaleConfig := getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{}))
+		upgradeConfig := getUpgradeConfig(nodeGroup["upgrade_config"].([]interface{}))
+		numNodes := int32(nodeGroup["num_nodes"].(int))
+		imageId := nodeGroup["image_id"].(string)
+		updateNodeGroupRequest := vks.UpdateNodeGroupDto{
+			AutoScaleConfig: autoScaleConfig,
+			NumNodes:        numNodes,
+			UpgradeConfig:   &upgradeConfig,
+			SecurityGroups:  securityGroups,
+			ImageId:         imageId,
+		}
+		requestPutOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdPutOpts{
+			Body: optional.NewInterface(updateNodeGroupRequest),
+		}
+		resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdPut(context.TODO(), d.Id(), nodeGroup["node_group_id"].(string), &requestPutOpts)
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
+			return errResponse
+		}
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+
+		stateConf := &resource.StateChangeConf{
+			Pending:    UPDATING,
+			Target:     ACTIVE,
+			Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, d.Id(), nodeGroup["node_group_id"].(string)),
+			Timeout:    180 * time.Minute,
+			Delay:      10 * time.Second,
+			MinTimeout: 1 * time.Second,
+		}
+		_, err := stateConf.WaitForState()
+		if err != nil {
+			return fmt.Errorf("error waiting for update cluster node group (%s) %s", resp.Id, err)
+		}
+	}
 	return resourceClusterRead(d, m)
 }
 
@@ -501,5 +517,30 @@ func resourceNodeGroupForClusterStateRefreshFunc(cli *client.Client, clusterID s
 			}
 		}
 		return clusterNodeGroups, status, nil
+	}
+}
+
+func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) vks.CreateNodeGroupDto {
+	taintsInput, ok := nodeGroup["taints"].([]interface{})
+	var tains []vks.NodeGroupTaintDto
+	if ok {
+		tains = getTaints(taintsInput)
+	} else {
+		tains = nil
+	}
+	return vks.CreateNodeGroupDto{
+		Name:               nodeGroup["name"].(string),
+		NumNodes:           int32(nodeGroup["initial_node_count"].(int)),
+		ImageId:            nodeGroup["image_id"].(string),
+		FlavorId:           nodeGroup["flavor_id"].(string),
+		DiskSize:           int32(nodeGroup["disk_size"].(int)),
+		DiskType:           nodeGroup["disk_type"].(string),
+		EnablePrivateNodes: nodeGroup["enable_private_nodes"].(bool),
+		SshKeyId:           nodeGroup["ssh_key_id"].(string),
+		Labels:             getLabels(nodeGroup["labels"].(map[string]interface{})),
+		Taints:             tains,
+		SecurityGroups:     getSecurityGroups(nodeGroup["security_groups"].([]interface{})),
+		UpgradeConfig:      getUpgradeConfig(nodeGroup["upgrade_config"].([]interface{})),
+		AutoScaleConfig:    getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{})),
 	}
 }
