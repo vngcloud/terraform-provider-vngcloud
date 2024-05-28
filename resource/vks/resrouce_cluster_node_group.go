@@ -12,12 +12,13 @@ import (
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vks"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
 func ResourceClusterNodeGroup() *schema.Resource {
 	return &schema.Resource{
-		SchemaVersion: 1,
+		SchemaVersion: 0,
 		//MigrateState:  resourceClusterNodeGroupMigrateState,
 		//StateUpgraders: []schema.StateUpgrader{
 		//	{
@@ -31,19 +32,27 @@ func ResourceClusterNodeGroup() *schema.Resource {
 		Read:   resourceClusterNodeGroupRead,
 		Update: resourceClusterNodeGroupUpdate,
 		Delete: resourceClusterNodeGroupDelete,
-		//Importer: &schema.ResourceImporter{
-		//	State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
-		//		idParts := strings.Split(d.Id(), ":")
-		//		if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
-		//			return nil, fmt.Errorf("Unexpected format of ID (%q), expected ProjectID:VolumeID", d.Id())
-		//		}
-		//		projectID := idParts[0]
-		//		volumeID := idParts[1]
-		//		d.SetId(volumeID)
-		//		d.Set("project_id", projectID)
-		//		return []*schema.ResourceData{d}, nil
-		//	},
-		//},
+		Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+				idParts := strings.Split(d.Id(), ":")
+				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
+					return nil, fmt.Errorf("Unexpected format of ID (%q), expected ClusterID:NodeGroupId", d.Id())
+				}
+				clusterID := idParts[0]
+				nodeGroupID := idParts[1]
+				cli := m.(*client.Client)
+				_, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterID, nodeGroupID, nil)
+				if CheckErrorResponse(httpResponse) {
+					responseBody := GetResponseBody(httpResponse)
+					errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
+					return nil, errResponse
+				}
+				d.SetId(nodeGroupID)
+				d.Set("cluster_id", clusterID)
+				resourceClusterNodeGroupRead(d, m)
+				return []*schema.ResourceData{d}, nil
+			},
+		},
 		Schema: MergeSchemas(
 			schemaNodeGroup,
 			map[string]*schema.Schema{
@@ -344,6 +353,14 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 	if !checkSecurityGroupsSame(d, resp) {
 		d.Set("security_groups", resp.SecurityGroups)
 	}
+	d.Set("disk_size", resp.DiskSize)
+	d.Set("disk_type", resp.DiskType)
+	d.Set("enable_private_nodes", resp.EnablePrivateNodes)
+	d.Set("flavor_id", resp.FlavorId)
+	d.Set("initial_node_count", resp.NumNodes)
+	d.Set("name", resp.Name)
+	d.Set("ssh_key_id", resp.SshKeyId)
+
 	return nil
 }
 

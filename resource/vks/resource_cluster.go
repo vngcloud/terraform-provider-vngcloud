@@ -17,13 +17,13 @@ import (
 
 func ResourceCluster() *schema.Resource {
 	return &schema.Resource{
-		SchemaVersion: 1,
-		MigrateState:  resourceClusterMigrateState,
+		SchemaVersion: 0,
+		//MigrateState:  resourceClusterMigrateState,
 		//StateUpgraders: []schema.StateUpgrader{
 		//	{
 		//		Type:    resourceContainerClusterResourceV1().CoreConfigSchema().ImpliedType(),
 		//		Upgrade: ResourceContainerClusterUpgradeV1,
-		//		Version: 1,
+		//		Version: 0,
 		//	},
 		//},
 
@@ -31,19 +31,19 @@ func ResourceCluster() *schema.Resource {
 		Read:   resourceClusterRead,
 		Update: resourceClusterUpdate,
 		Delete: resourceClusterDelete,
-		//Importer: &schema.ResourceImporter{
-		//	State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
-		//		idParts := strings.Split(d.Id(), ":")
-		//		if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
-		//			return nil, fmt.Errorf("Unexpected format of ID (%q), expected ProjectID:VolumeID", d.Id())
-		//		}
-		//		projectID := idParts[0]
-		//		volumeID := idParts[1]
-		//		d.SetId(volumeID)
-		//		d.Set("project_id", projectID)
-		//		return []*schema.ResourceData{d}, nil
-		//	},
-		//},
+		Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+				cli := m.(*client.Client)
+				_, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdGet(context.TODO(), d.Id(), nil)
+				if CheckErrorResponse(httpResponse) {
+					responseBody := GetResponseBody(httpResponse)
+					errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
+					return nil, errResponse
+				}
+				resourceClusterRead(d, m)
+				return []*schema.ResourceData{d}, nil
+			},
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -317,6 +317,14 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 	if !CheckListStringEqual(whiteListNodeCIDR, whiteListCIDRCluster) {
 		d.Set("white_list_node_cidr", whiteListCIDRCluster)
 	}
+	d.Set("cidr", cluster.Cidr)
+	d.Set("vpc_id", cluster.VpcId)
+	d.Set("subnet_id", cluster.SubnetId)
+	d.Set("network_type", cluster.NetworkType)
+	d.Set("name", cluster.Name)
+	d.Set("enabled_load_balancer_plugin", cluster.EnabledLoadBalancerPlugin)
+	d.Set("enabled_block_store_csi_plugin", cluster.EnabledBlockStoreCsiPlugin)
+	d.Set("enable_private_cluster", cluster.EnablePrivateCluster)
 	log.Printf("GetConfig\n")
 	configResp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdKubeconfigGet(context.TODO(), clusterID, nil)
 	if !CheckErrorResponse(httpResponse) {
