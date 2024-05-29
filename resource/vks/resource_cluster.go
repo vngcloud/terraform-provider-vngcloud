@@ -252,7 +252,9 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 			nodeGroup["upgrade_config"] = upgradeConfig
 			nodeGroup["node_group_id"] = clusterNodeGroupDetail.Id
 		}
-
+		if nodeGroup["num_nodes"] != nil && int32(nodeGroup["num_nodes"].(int)) != 0 {
+			nodeGroup["num_nodes"] = clusterNodeGroup.NumNodes
+		}
 		updatedNodeGroups[i] = nodeGroup
 	}
 
@@ -294,6 +296,10 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 	clusterID := d.Id()
 	cli := m.(*client.Client)
 	resp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdGet(context.TODO(), clusterID, nil)
+	if httpResponse.StatusCode == http.StatusNotFound {
+		d.SetId("")
+		return nil
+	}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)

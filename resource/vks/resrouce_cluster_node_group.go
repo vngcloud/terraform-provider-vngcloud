@@ -318,6 +318,10 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 	clusterID := d.Get("cluster_id").(string)
 	cli := m.(*client.Client)
 	resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterID, d.Id(), nil)
+	if httpResponse.StatusCode == http.StatusNotFound {
+		d.SetId("")
+		return nil
+	}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
