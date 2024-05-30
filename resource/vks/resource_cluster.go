@@ -234,7 +234,7 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 	clusterNodeGroups := resp.Items
 	for i, ng := range nodeGroups {
 		nodeGroup := ng.(map[string]interface{})
-		clusterNodeGroup := clusterNodeGroups[i]
+		clusterNodeGroup := clusterNodeGroups[len(clusterNodeGroups)-i-1]
 		// Set the value for a specific field
 		upgradeConfig := nodeGroup["upgrade_config"].([]interface{})
 		if len(upgradeConfig) == 0 {
