@@ -73,8 +73,9 @@ var schemaNodeGroup = map[string]*schema.Schema{
 		ForceNew: true,
 	},
 	"num_nodes": {
-		Type:     schema.TypeInt,
-		Optional: true,
+		Type:         schema.TypeInt,
+		Optional:     true,
+		ValidateFunc: validation.IntAtLeast(-1),
 	},
 	"initial_node_count": {
 		Type:     schema.TypeInt,
@@ -350,8 +351,61 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 	} else {
 		d.Set("auto_scale_config", nil)
 	}
-	if d.Get("num_nodes") != nil && int32(d.Get("num_nodes").(int)) != 0 {
+	if d.Get("num_nodes") != nil && int32(d.Get("num_nodes").(int)) != -1 {
 		d.Set("num_nodes", resp.NumNodes)
+	}
+	d.Set("image_id", resp.ImageId)
+	if !checkSecurityGroupsSame(d, resp) {
+		d.Set("security_groups", resp.SecurityGroups)
+	}
+	d.Set("disk_size", resp.DiskSize)
+	d.Set("disk_type", resp.DiskType)
+	d.Set("enable_private_nodes", resp.EnablePrivateNodes)
+	d.Set("flavor_id", resp.FlavorId)
+	if d.Get("initial_node_count") == nil {
+		d.Set("initial_node_count", resp.NumNodes)
+	}
+	d.Set("name", resp.Name)
+	d.Set("ssh_key_id", resp.SshKeyId)
+
+	return nil
+}
+
+func resourceClusterNodeGroupReadForCreate(d *schema.ResourceData, m interface{}) error {
+	clusterID := d.Get("cluster_id").(string)
+	cli := m.(*client.Client)
+	resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterID, d.Id(), nil)
+	if httpResponse.StatusCode == http.StatusNotFound {
+		d.SetId("")
+		return nil
+	}
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
+	}
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
+	upgradeConfig := []interface{}{
+		map[string]interface{}{
+			"strategy":        resp.UpgradeConfig.Strategy,
+			"max_surge":       resp.UpgradeConfig.MaxSurge,
+			"max_unavailable": resp.UpgradeConfig.MaxUnavailable,
+		},
+	}
+	d.Set("upgrade_config", upgradeConfig)
+	if resp.AutoScaleConfig != nil {
+		autoScaleConfig := []interface{}{
+			map[string]interface{}{
+				"min_size": resp.AutoScaleConfig.MinSize,
+				"max_size": resp.AutoScaleConfig.MaxSize,
+			},
+		}
+		d.Set("auto_scale_config", autoScaleConfig)
+	} else {
+		d.Set("auto_scale_config", nil)
 	}
 	d.Set("image_id", resp.ImageId)
 	if !checkSecurityGroupsSame(d, resp) {
@@ -401,24 +455,8 @@ func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error
 	if err != nil {
 		return fmt.Errorf("error waiting for create cluster node group (%s) %s", resp.Id, err)
 	}
-	//upgradeConfig := d.Get("upgrade_config").([]interface{})
-	//if len(upgradeConfig) == 0 {
-	//	clusterNodeGroupDetail, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterId, clusterNodeGroup.Id, nil)
-	//	if httpResponse.StatusCode != http.StatusOK {
-	//		return fmt.Errorf("Error : %s", GetResponseBody(httpResponse))
-	//	}
-	//	upgradeConfig := []interface{}{
-	//		map[string]interface{}{
-	//			"strategy":        clusterNodeGroupDetail.UpgradeConfig.Strategy,
-	//			"max_surge":       clusterNodeGroupDetail.UpgradeConfig.MaxSurge,
-	//			"max_unavailable": clusterNodeGroupDetail.UpgradeConfig.MaxUnavailable,
-	//		},
-	//	}
-	//	d.Set("upgrade_config", upgradeConfig)
-	//}
 	d.SetId(resp.Id)
-
-	return resourceClusterNodeGroupRead(d, m)
+	return resourceClusterNodeGroupReadForCreate(d, m)
 }
 
 func getCreateNodeGroupRequest(d *schema.ResourceData) vks.CreateNodeGroupDto {
@@ -476,11 +514,29 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 		autoScaleConfig := getAutoScaleConfig(d.Get("auto_scale_config").([]interface{}))
 		upgradeConfig := getUpgradeConfig(d.Get("upgrade_config").([]interface{}))
 		var numNodes *int32
-		if v, ok := d.GetOk("num_nodes"); ok {
-			num := int32(v.(int))
-			if num > 0 {
+		if value, ok := d.GetOkExists("num_nodes"); ok {
+			num := int32(value.(int))
+			if num != -1 {
 				numNodes = &num
 			}
+		}
+		var err error
+		if autoScaleConfig != nil && numNodes != nil {
+			err = fmt.Errorf("If auto_scale_config is set then num_nodes must be -1\n")
+		}
+		if autoScaleConfig == nil && numNodes == nil {
+			err = fmt.Errorf("If auto_scale_config is not set then num_nodes must be different from -1\n")
+		}
+		if err != nil {
+			if d.HasChange("auto_scale_config") {
+				oldAutoScaleConfig, _ := d.GetChange("auto_scale_config")
+				d.Set("auto_scale_config", oldAutoScaleConfig)
+			}
+			if d.HasChange("num_nodes") {
+				oldNumNodes, _ := d.GetChange("num_nodes")
+				d.Set("num_nodes", oldNumNodes)
+			}
+			return err
 		}
 		imageId := d.Get("image_id").(string)
 		updateNodeGroupRequest := vks.UpdateNodeGroupDto{
@@ -512,7 +568,7 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 			Delay:      10 * time.Second,
 			MinTimeout: 1 * time.Second,
 		}
-		_, err := stateConf.WaitForState()
+		_, err = stateConf.WaitForState()
 		if err != nil {
 			return fmt.Errorf("error waiting for update cluster node group (%s) %s", resp.Id, err)
 		}

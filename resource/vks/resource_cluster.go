@@ -149,15 +149,7 @@ func resourceClusterStateRefreshFunc(cli *client.Client, clusterID string) resou
 	}
 }
 func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
-	nodeGroupsJson, _ := json.Marshal(d.Get("node_group").([]interface{}))
-	log.Printf("xxxxx-------------------------------------\n")
-	log.Printf("%s\n", string(nodeGroupsJson))
-	log.Printf("-------------------------------------\n")
 	createNodeGroupRequests := expandNodeGroupForCreating(d.Get("node_group").([]interface{}))
-	nodeGroupsJson, _ = json.Marshal(createNodeGroupRequests)
-	log.Printf("------------------node_group_request-------------------\n")
-	log.Printf("%s\n", string(nodeGroupsJson))
-	log.Printf("-------------------------------------\n")
 	createClusterRequest := vks.CreateClusterComboDto{
 		Name:                       d.Get("name").(string),
 		Description:                d.Get("description").(string),
@@ -252,9 +244,9 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 			nodeGroup["upgrade_config"] = upgradeConfig
 			nodeGroup["node_group_id"] = clusterNodeGroupDetail.Id
 		}
-		if nodeGroup["num_nodes"] != nil && int32(nodeGroup["num_nodes"].(int)) != 0 {
-			nodeGroup["num_nodes"] = clusterNodeGroup.NumNodes
-		}
+		//if nodeGroup["num_nodes"] != nil && int32(nodeGroup["num_nodes"].(int)) != -1 {
+		//	nodeGroup["num_nodes"] = clusterNodeGroup.NumNodes
+		//}
 		updatedNodeGroups[i] = nodeGroup
 	}
 
@@ -341,6 +333,12 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceClusterUpdate(d *schema.ResourceData, m interface{}) error {
+	if d.HasChange("node_group") {
+		err := checkRequestNodeGroup(d)
+		if err != nil {
+			return err
+		}
+	}
 	if d.HasChange("white_list_node_cidr") || d.HasChange("version") {
 		err := changeWhiteListNodeOrVersion(d, m)
 		if err != nil {
@@ -354,6 +352,34 @@ func resourceClusterUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 	return resourceClusterRead(d, m)
+}
+
+func checkRequestNodeGroup(d *schema.ResourceData) error {
+	nodeGroups := d.Get("node_group").([]interface{})
+	for _, ng := range nodeGroups {
+		nodeGroup := ng.(map[string]interface{})
+		autoScaleConfig := getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{}))
+		var numNodes *int32
+		if value, ok := nodeGroup["num_nodes"]; ok {
+			num := int32(value.(int))
+			if num != -1 {
+				numNodes = &num
+			}
+		}
+		var err error
+		if autoScaleConfig != nil && numNodes != nil {
+			err = fmt.Errorf("If auto_scale_config is set then num_nodes must be -1\n")
+		}
+		if autoScaleConfig == nil && numNodes == nil {
+			err = fmt.Errorf("If auto_scale_config is not set then num_nodes must be different from -1\n")
+		}
+		if err != nil {
+			oldNodeGroup, _ := d.GetChange("node_group")
+			d.Set("node_group", oldNodeGroup)
+			return err
+		}
+	}
+	return nil
 }
 
 func changeWhiteListNodeOrVersion(d *schema.ResourceData, m interface{}) error {
@@ -419,9 +445,9 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 		autoScaleConfig := getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{}))
 		upgradeConfig := getUpgradeConfig(nodeGroup["upgrade_config"].([]interface{}))
 		var numNodes *int32
-		if v, ok := d.GetOk("num_nodes"); ok {
-			num := int32(v.(int))
-			if num > 0 {
+		if value, ok := nodeGroup["num_nodes"]; ok {
+			num := int32(value.(int))
+			if num != -1 {
 				numNodes = &num
 			}
 		}
