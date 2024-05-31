@@ -475,7 +475,13 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 		}
 		autoScaleConfig := getAutoScaleConfig(d.Get("auto_scale_config").([]interface{}))
 		upgradeConfig := getUpgradeConfig(d.Get("upgrade_config").([]interface{}))
-		numNodes := int32(d.Get("num_nodes").(int))
+		var numNodes *int32
+		if v, ok := d.GetOk("num_nodes"); ok {
+			num := int32(v.(int))
+			if num > 0 {
+				numNodes = &num
+			}
+		}
 		imageId := d.Get("image_id").(string)
 		updateNodeGroupRequest := vks.UpdateNodeGroupDto{
 			AutoScaleConfig: autoScaleConfig,

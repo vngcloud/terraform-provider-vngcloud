@@ -342,10 +342,16 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceClusterUpdate(d *schema.ResourceData, m interface{}) error {
 	if d.HasChange("white_list_node_cidr") || d.HasChange("version") {
-		return changeWhiteListNodeOrVersion(d, m)
+		err := changeWhiteListNodeOrVersion(d, m)
+		if err != nil {
+			return err
+		}
 	}
 	if d.HasChange("node_group") {
-		return changeNodeGroup(d, m)
+		err := changeNodeGroup(d, m)
+		if err != nil {
+			return err
+		}
 	}
 	return resourceClusterRead(d, m)
 }
@@ -412,7 +418,13 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 		}
 		autoScaleConfig := getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{}))
 		upgradeConfig := getUpgradeConfig(nodeGroup["upgrade_config"].([]interface{}))
-		numNodes := int32(nodeGroup["num_nodes"].(int))
+		var numNodes *int32
+		if v, ok := d.GetOk("num_nodes"); ok {
+			num := int32(v.(int))
+			if num > 0 {
+				numNodes = &num
+			}
+		}
 		imageId := nodeGroup["image_id"].(string)
 		updateNodeGroupRequest := vks.UpdateNodeGroupDto{
 			AutoScaleConfig: autoScaleConfig,
