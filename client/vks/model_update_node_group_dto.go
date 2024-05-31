@@ -10,7 +10,7 @@ package vks
 
 type UpdateNodeGroupDto struct {
 	AutoScaleConfig *NodeGroupAutoScaleConfigDto `json:"autoScaleConfig,omitempty"`
-	NumNodes        int32                        `json:"numNodes,omitempty"`
+	NumNodes        int32                        `json:"numNodes"`
 	UpgradeConfig   *NodeGroupUpgradeConfigDto   `json:"upgradeConfig"`
 	SecurityGroups  []string                     `json:"securityGroups"`
 	ImageId         string                       `json:"imageId"`
