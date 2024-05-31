@@ -361,7 +361,9 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("disk_type", resp.DiskType)
 	d.Set("enable_private_nodes", resp.EnablePrivateNodes)
 	d.Set("flavor_id", resp.FlavorId)
-	d.Set("initial_node_count", resp.NumNodes)
+	if d.Get("initial_node_count") == nil {
+		d.Set("initial_node_count", resp.NumNodes)
+	}
 	d.Set("name", resp.Name)
 	d.Set("ssh_key_id", resp.SshKeyId)
 
