@@ -244,9 +244,11 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 			nodeGroup["upgrade_config"] = upgradeConfig
 			nodeGroup["node_group_id"] = clusterNodeGroupDetail.Id
 		}
-		//if nodeGroup["num_nodes"] != nil && int32(nodeGroup["num_nodes"].(int)) != -1 {
-		//	nodeGroup["num_nodes"] = clusterNodeGroup.NumNodes
-		//}
+		if nodeGroup["num_nodes"] != nil && int32(nodeGroup["num_nodes"].(int)) != -1 {
+			log.Printf("num_nodes !=nil\n")
+		} else {
+			nodeGroup["num_nodes"] = clusterNodeGroup.NumNodes
+		}
 		updatedNodeGroups[i] = nodeGroup
 	}
 
@@ -275,9 +277,6 @@ func expandNodeGroupForCreating(node_group []interface{}) []vks.CreateNodeGroupD
 		if !ok {
 			log.Fatalf("Element at index %d is not a map", i)
 		}
-		nodeGroupsJson, _ := json.Marshal(nodeGroup)
-		log.Printf("bbbbb-------------------------------------\n")
-		log.Printf("%s\n", string(nodeGroupsJson))
 		createNodeGroupRequest := getCreateNodeGroupRequestForCluster(nodeGroup)
 		createNodeGroupRequests[i] = createNodeGroupRequest
 	}
@@ -361,9 +360,11 @@ func checkRequestNodeGroup(d *schema.ResourceData) error {
 		autoScaleConfig := getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{}))
 		var numNodes *int32
 		if value, ok := nodeGroup["num_nodes"]; ok {
-			num := int32(value.(int))
-			if num != -1 {
-				numNodes = &num
+			if value != nil {
+				num := int32(value.(int))
+				if num != -1 {
+					numNodes = &num
+				}
 			}
 		}
 		var err error
@@ -582,7 +583,7 @@ func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) vks.C
 	}
 	return vks.CreateNodeGroupDto{
 		Name:               nodeGroup["name"].(string),
-		NumNodes:           int32(nodeGroup["initial_node_count"].(int)),
+		NumNodes:           int32(nodeGroup["num_nodes"].(int)),
 		ImageId:            nodeGroup["image_id"].(string),
 		FlavorId:           nodeGroup["flavor_id"].(string),
 		DiskSize:           int32(nodeGroup["disk_size"].(int)),

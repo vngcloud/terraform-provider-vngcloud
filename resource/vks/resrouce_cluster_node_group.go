@@ -75,14 +75,15 @@ var schemaNodeGroup = map[string]*schema.Schema{
 	"num_nodes": {
 		Type:         schema.TypeInt,
 		Optional:     true,
+		Default:      1,
 		ValidateFunc: validation.IntAtLeast(-1),
 	},
-	"initial_node_count": {
-		Type:     schema.TypeInt,
-		Optional: true,
-		ForceNew: true,
-		Default:  1,
-	},
+	//"initial_node_count": {
+	//	Type:     schema.TypeInt,
+	//	Optional: true,
+	//	ForceNew: true,
+	//	Default:  1,
+	//},
 	"auto_scale_config": {
 		Type:     schema.TypeList,
 		MaxItems: 1,
@@ -351,78 +352,71 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 	} else {
 		d.Set("auto_scale_config", nil)
 	}
-	if d.Get("num_nodes") != nil && int32(d.Get("num_nodes").(int)) != -1 {
+	d.Set("image_id", resp.ImageId)
+	if !checkSecurityGroupsSame(d, resp) {
+		d.Set("security_groups", resp.SecurityGroups)
+	}
+	d.Set("disk_size", resp.DiskSize)
+	d.Set("disk_type", resp.DiskType)
+	d.Set("enable_private_nodes", resp.EnablePrivateNodes)
+	d.Set("flavor_id", resp.FlavorId)
+	d.Set("name", resp.Name)
+	d.Set("ssh_key_id", resp.SshKeyId)
+	if _, ok := d.GetOkExists("num_nodes"); ok && int32(d.Get("num_nodes").(int)) != -1 {
 		d.Set("num_nodes", resp.NumNodes)
 	}
-	d.Set("image_id", resp.ImageId)
-	if !checkSecurityGroupsSame(d, resp) {
-		d.Set("security_groups", resp.SecurityGroups)
-	}
-	d.Set("disk_size", resp.DiskSize)
-	d.Set("disk_type", resp.DiskType)
-	d.Set("enable_private_nodes", resp.EnablePrivateNodes)
-	d.Set("flavor_id", resp.FlavorId)
-	if d.Get("initial_node_count") == nil {
-		d.Set("initial_node_count", resp.NumNodes)
-	}
-	d.Set("name", resp.Name)
-	d.Set("ssh_key_id", resp.SshKeyId)
-
 	return nil
 }
 
-func resourceClusterNodeGroupReadForCreate(d *schema.ResourceData, m interface{}) error {
-	clusterID := d.Get("cluster_id").(string)
-	cli := m.(*client.Client)
-	resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterID, d.Id(), nil)
-	if httpResponse.StatusCode == http.StatusNotFound {
-		d.SetId("")
-		return nil
-	}
-	if CheckErrorResponse(httpResponse) {
-		responseBody := GetResponseBody(httpResponse)
-		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
-		return errorResponse
-	}
-	respJSON, _ := json.Marshal(resp)
-	log.Printf("-------------------------------------\n")
-	log.Printf("%s\n", string(respJSON))
-	log.Printf("-------------------------------------\n")
-	upgradeConfig := []interface{}{
-		map[string]interface{}{
-			"strategy":        resp.UpgradeConfig.Strategy,
-			"max_surge":       resp.UpgradeConfig.MaxSurge,
-			"max_unavailable": resp.UpgradeConfig.MaxUnavailable,
-		},
-	}
-	d.Set("upgrade_config", upgradeConfig)
-	if resp.AutoScaleConfig != nil {
-		autoScaleConfig := []interface{}{
-			map[string]interface{}{
-				"min_size": resp.AutoScaleConfig.MinSize,
-				"max_size": resp.AutoScaleConfig.MaxSize,
-			},
-		}
-		d.Set("auto_scale_config", autoScaleConfig)
-	} else {
-		d.Set("auto_scale_config", nil)
-	}
-	d.Set("image_id", resp.ImageId)
-	if !checkSecurityGroupsSame(d, resp) {
-		d.Set("security_groups", resp.SecurityGroups)
-	}
-	d.Set("disk_size", resp.DiskSize)
-	d.Set("disk_type", resp.DiskType)
-	d.Set("enable_private_nodes", resp.EnablePrivateNodes)
-	d.Set("flavor_id", resp.FlavorId)
-	if d.Get("initial_node_count") == nil {
-		d.Set("initial_node_count", resp.NumNodes)
-	}
-	d.Set("name", resp.Name)
-	d.Set("ssh_key_id", resp.SshKeyId)
-
-	return nil
-}
+//func resourceClusterNodeGroupReadForCreate(d *schema.ResourceData, m interface{}) error {
+//	clusterID := d.Get("cluster_id").(string)
+//	cli := m.(*client.Client)
+//	resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterID, d.Id(), nil)
+//	if httpResponse.StatusCode == http.StatusNotFound {
+//		d.SetId("")
+//		return nil
+//	}
+//	if CheckErrorResponse(httpResponse) {
+//		responseBody := GetResponseBody(httpResponse)
+//		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+//		return errorResponse
+//	}
+//	respJSON, _ := json.Marshal(resp)
+//	log.Printf("-------------------------------------\n")
+//	log.Printf("%s\n", string(respJSON))
+//	log.Printf("-------------------------------------\n")
+//	upgradeConfig := []interface{}{
+//		map[string]interface{}{
+//			"strategy":        resp.UpgradeConfig.Strategy,
+//			"max_surge":       resp.UpgradeConfig.MaxSurge,
+//			"max_unavailable": resp.UpgradeConfig.MaxUnavailable,
+//		},
+//	}
+//	d.Set("upgrade_config", upgradeConfig)
+//	if resp.AutoScaleConfig != nil {
+//		autoScaleConfig := []interface{}{
+//			map[string]interface{}{
+//				"min_size": resp.AutoScaleConfig.MinSize,
+//				"max_size": resp.AutoScaleConfig.MaxSize,
+//			},
+//		}
+//		d.Set("auto_scale_config", autoScaleConfig)
+//	} else {
+//		d.Set("auto_scale_config", nil)
+//	}
+//	d.Set("image_id", resp.ImageId)
+//	if !checkSecurityGroupsSame(d, resp) {
+//		d.Set("security_groups", resp.SecurityGroups)
+//	}
+//	d.Set("disk_size", resp.DiskSize)
+//	d.Set("disk_type", resp.DiskType)
+//	d.Set("enable_private_nodes", resp.EnablePrivateNodes)
+//	d.Set("flavor_id", resp.FlavorId)
+//	d.Set("name", resp.Name)
+//	d.Set("ssh_key_id", resp.SshKeyId)
+//
+//	return nil
+//}
 
 func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error {
 
@@ -456,7 +450,7 @@ func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error
 		return fmt.Errorf("error waiting for create cluster node group (%s) %s", resp.Id, err)
 	}
 	d.SetId(resp.Id)
-	return resourceClusterNodeGroupReadForCreate(d, m)
+	return resourceClusterNodeGroupRead(d, m)
 }
 
 func getCreateNodeGroupRequest(d *schema.ResourceData) vks.CreateNodeGroupDto {
@@ -469,7 +463,7 @@ func getCreateNodeGroupRequest(d *schema.ResourceData) vks.CreateNodeGroupDto {
 	}
 	return vks.CreateNodeGroupDto{
 		Name:               d.Get("name").(string),
-		NumNodes:           int32(d.Get("initial_node_count").(int)),
+		NumNodes:           int32(d.Get("num_nodes").(int)),
 		ImageId:            d.Get("image_id").(string),
 		FlavorId:           d.Get("flavor_id").(string),
 		DiskSize:           int32(d.Get("disk_size").(int)),
