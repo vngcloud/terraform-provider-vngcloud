@@ -574,7 +574,7 @@ func resourceNodeGroupForClusterStateRefreshFunc(cli *client.Client, clusterID s
 }
 
 func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) vks.CreateNodeGroupDto {
-	taintsInput, ok := nodeGroup["taints"].([]interface{})
+	taintsInput, ok := nodeGroup["taint"].([]interface{})
 	var tains []vks.NodeGroupTaintDto
 	if ok {
 		tains = getTaints(taintsInput)
