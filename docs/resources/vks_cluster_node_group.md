@@ -65,7 +65,7 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
 
 * `cluster_id` - (Required) The Cluster ID which you want to create one or more node group into.
 * `name` - (Required) The name of the node group. Only letters (a-z, 0-9, '-') are allowed. Your input data length must be between 5 and 15.
-* `num_nodes` - (Optional) The desired number of nodes that the group should launch with initially. The number of nodes are between 1 and 10 nodes. If `auto_scale_config` is set then `num_nodes` must be -1. If `auto_scale_config` is not set then `num_nodes` must be different from -1
+* `num_nodes` - (Optional) The desired number of nodes that the group should launch with initially. The number of nodes are between 1 and 10 nodes. If `auto_scale_config` is set, `num_nodes` must be -1. If `auto_scale_config` is not set, `num_nodes` must not be -1
 * `auto_scale_config` - (Optional) Configuration required by cluster autoscaler to adjust the size of the node group to the current cluster usage.
   * `min_size` - (Optional) Minimum number of nodes in the Node Group. Must be >=0 and <= 10 and <= max_size.
   * `max_size` - (Optional) Maximum number of nodes in the Node Group. Must be >=0 and <= 10 and >= min_size.
