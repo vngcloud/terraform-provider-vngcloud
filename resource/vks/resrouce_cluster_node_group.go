@@ -454,7 +454,7 @@ func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error
 }
 
 func getCreateNodeGroupRequest(d *schema.ResourceData) vks.CreateNodeGroupDto {
-	taintsInput, ok := d.Get("taints").([]interface{})
+	taintsInput, ok := d.Get("taint").([]interface{})
 	var tains []vks.NodeGroupTaintDto
 	if ok {
 		tains = getTaints(taintsInput)
