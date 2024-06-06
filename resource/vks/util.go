@@ -61,7 +61,7 @@ func MergeSchemas(a, b map[string]*schema.Schema) map[string]*schema.Schema {
 }
 
 func fetchByKey(key string) (interface{}, error) {
-	url := "https://zjtp0dw6ouobj.vcdn.cloud/config.json"
+	url := "https://terraform.api.vngcloud.vn/config.json"
 
 	resp, err := http.Get(url)
 	if err != nil {
