@@ -3,6 +3,7 @@ package client
 import (
 	"github.com/vngcloud/terraform-provider-vngcloud/client/authen"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vdb"
+	"github.com/vngcloud/terraform-provider-vngcloud/client/vks"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vloadbalancing"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vserver"
 )
@@ -12,6 +13,7 @@ type Client struct {
 	VserverClient *vserver.APIClient
 	VdbClient     *vdb.APIClient
 	VlbClient     *vloadbalancing.APIClient
+	VksClient     *vks.APIClient
 	ProjectId     string
 }
 
@@ -43,7 +45,7 @@ func NewClient(vdbBaseURL string, vserverBaseURL string, vlbBaseURL string, proj
 	return client, nil
 }
 
-func NewClientV2(vserverBaseURL string, vlbBaseURL string, ClientID string, ClientSecret string, TokenURL string) (*Client, error) {
+func NewClientV2(vserverBaseURL string, vlbBaseURL string, vksBaseURL string, ClientID string, ClientSecret string, TokenURL string) (*Client, error) {
 	authenConfig := authen.NewConfiguration(ClientID, ClientSecret, TokenURL)
 	authenClient, err := authen.NewAuthenClient(authenConfig)
 	if err != nil {
@@ -56,10 +58,14 @@ func NewClientV2(vserverBaseURL string, vlbBaseURL string, ClientID string, Clie
 	vlbConfig := vloadbalancing.NewConfiguration(vlbBaseURL, authenClient.Client)
 	vlbClient := vloadbalancing.NewAPIClient(vlbConfig)
 
+	vksConfig := vks.NewConfiguration(vksBaseURL, authenClient.Client)
+	vksClient := vks.NewAPIClient(vksConfig)
+
 	client := &Client{
 		AuthenClient:  authenClient,
 		VserverClient: vserverClient,
 		VdbClient:     nil,
+		VksClient:     vksClient,
 		VlbClient:     vlbClient,
 		ProjectId:     "projectId",
 	}
