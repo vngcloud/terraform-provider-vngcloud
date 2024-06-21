@@ -278,7 +278,6 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("ssh_key_name", server.SshKeyName)
 	d.Set("server_group_id", server.ServerGroupId)
 	d.Set("root_disk_id", server.BootVolumeId)
-	d.Set("image_id", server.Image.Id)
 	d.Set("os_licence", server.Licence)
 	_, ok := d.GetOk("host_group_id")
 	if ok {
@@ -366,6 +365,7 @@ func resourceServerImport(ctx context.Context, d *schema.ResourceData, m interfa
 		d.Set("network_id", "")
 		d.Set("subnet_id", "")
 	}
+	d.Set("image_id", serverResp.Data.Image.Id)
 	return resourceServerReadForImport(d, volumeResp)
 }
 
