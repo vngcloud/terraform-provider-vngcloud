@@ -65,6 +65,6 @@ resource "vngcloud_vks_cluster" "primary" {
 * `vpc_id` (Required) The VPC ID for the cluster. You need create a VPC on vServer and put the VPC's ID on this field.
 * `subnet_id` (Required) The subnet ID for the cluster. You need create a Subnet on vServer and put the Subnet's ID on this field.
 * `cidr` (Required) The CIDR block for the cluster. You can enter CIDR as private IP and can select from the following options (10.0.0.0 - 10.255.0.0 / 172.16.0.0 - 172.24.0.0 / 192.168.0.0).
-* `enabled_load_balancer_plugin` (Optional) Automatically deploy and manage the BlockStore Persistent Disk CSI Driver via Kubernetes YAML.
-* `enabled_block_store_csi_plugin` (Optional) Allow attaching load balancers (network and application) via the Kubernetes YAML.
+* `enabled_block_store_csi_plugin` (Optional) Automatically deploy and manage the BlockStore Persistent Disk CSI Driver via Kubernetes YAML.
+* `enabled_load_balancer_plugin` (Optional) Allow attaching load balancers (network and application) via the Kubernetes YAML.
 
