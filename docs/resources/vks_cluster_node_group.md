@@ -63,22 +63,18 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
 
 ## Argument Reference
 
-* `cluster_id` - (Required) The Cluster ID which you want to create one or more node group into.
-* `name` - (Required) The name of the node group. Only letters (a-z, 0-9, '-') are allowed. Your input data length must be between 5 and 15.
-* `num_nodes` - (Optional) The desired number of nodes that the group should launch with initially. The number of nodes are between 1 and 10 nodes. If `auto_scale_config` is set, `num_nodes` must be -1. If `auto_scale_config` is not set, `num_nodes` must not be -1
-* `auto_scale_config` - (Optional) Configuration required by cluster autoscaler to adjust the size of the node group to the current cluster usage.
-  * `min_size` - (Optional) Minimum number of nodes in the Node Group. Must be >=0 and <= 10 and <= max_size.
-  * `max_size` - (Optional) Maximum number of nodes in the Node Group. Must be >=0 and <= 10 and >= min_size.
-* `upgrade_config` - (Optional) Specify node upgrade settings to change how VKS upgrades nodes. The maximum number of nodes upgraded simultaneously is limited to 20.
-  * `strategy` - (Optional) Strategy used for node group update. Strategy can only be SURGE.
-  * `max_surge` - (Optional) The number of additional nodes that can be added to the node pool during
-    an upgrade. Increasing `max_surge` raises the number of nodes that can be upgraded simultaneously.
-    Can be set to 0 or greater.  By default, an extra temporary node is generated during each node upgrade. To minimize expenses (although with a higher risk of disruption), consider configuring Max Surge to 1 and Max Unavailable to 0.
-  * `max_unvailable` - (Optional) The number of nodes that can be simultaneously unavailable during
-    an upgrade. Increasing `max_unavailable` raises the number of nodes that can be upgraded in
-    parallel. Can be set to 0 or greater.  To mitigate risk for workloads that are sensitive to disruptions, this approach involves creating a fresh node pool while retaining the old nodes temporarily. It offers flexible upgrade pacing through batch requests and straightforward rollbacks. However, it comes with a higher cost compared to surge upgrades.
-* `image_id` - (Optional) The image that you want to use for your node group. You can get the Image's ID on VKS Portal or [here](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/tham-khao-them/danh-sach-system-image-dang-ho-tro) and input to this field.
-* `flavor_id` - (Optional) The flavor that you want to use for your node on your node group. You can get the Flavor's ID in [here](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/tham-khao-them/danh-sach-flavor-dang-ho-tro) and input to this field.
+* `cluster_id` - (Required) The ID of the Cluster into which you want to create one or more node groups.
+* `name` - (Required) The name of the node group. Only letters (a-z), numbers (0-9), and hyphens ('-') are allowed. The length of your input must be between 5 and 15 characters.
+* `num_nodes` - (Optional) The number of nodes to create in this cluster's node group. The number of nodes are between 1 and 10 nodes. If `auto_scale_config` is set, `num_nodes` need to be greater than or equal to Minimum node, and less than or equal to Maximum node. If `auto_scale_config` is not set, `num_nodes` need to be greater than or equal to 0, and less than or equal to 10.
+* `auto_scale_config` - (Optional) Configuration required by the cluster autoscaler to adjust the size of the node group based on current cluster usage.
+  * `min_size` - (Optional) Minimum number of nodes in the Node Group. `min_size` need to be greater than or equal to 0 and less than or equal to 10 and less than or equal to `max_size`.
+  * `max_size` - (Optional) Maximum number of nodes in the Node Group. `max_size` need to be greater than or equal to 0 and less than or equal to 10 and greater than or equal to `min_size`.
+* `upgrade_config` - (Optional) Specifies node upgrade settings to control how VKS upgrades nodes. The maximum number of nodes upgraded simultaneously is limited to 20.
+  * `strategy` - (Optional) The strategy used for node group updates. The only available strategy is SURGE.
+  * `max_surge` - (Optional) The number of additional nodes that can be added to the node pool during an upgrade. Increasing `max_surge` allows more nodes to be upgraded simultaneously. It can be set to 0 or greater. By default, an extra temporary node is created during each node upgrade. To minimize costs (though with a higher risk of disruption), consider setting  `max_surge` to 1 and `max_unavailable` to 0.
+  * `max_unvailable` - (Optional) The number of nodes that can be unavailable simultaneously during an upgrade. Increasing `max_unavailable` allows more nodes to be upgraded in parallel. It can be set to 0 or greater. To reduce risk for workloads sensitive to disruptions, this approach involves creating a new node pool while temporarily retaining the old nodes. It offers flexible upgrade pacing through batch requests and straightforward rollbacks but comes with higher costs compared to surge upgrades.
+* `image_id` - (Optional) Specifies the image you want to use for your node group. You can obtain the Image ID from the VKS Portal or from this [link](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/tham-khao-them/danh-sach-system-image-dang-ho-tro) and enter it in this field.
+* `flavor_id` - (Optional) Specifies the flavor you want to use for your node in the node group. You can obtain the Flavor ID from this [link](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/tham-khao-them/danh-sach-flavor-dang-ho-tro) and enter it in this field. 
 * `disk_size` - (Optional) The Size of Data Disk will be used when new nodes are created using this node group. Disk size must be greater than or equal 20 GB and the largest is 5000 GB.
 * `disk_type` - (Optional) The Type of Data Disk will be used when new nodes are created using this node group. At that time, we only provide one type SSD Disk.
 * `enable_private_nodes` - (Optional) You can choose the mode that you want your node group works.  The VKS public node groups include worker nodes deployed in public subnets within a VPC.  These worker nodes have public IP addresses and CAN communicate directly with the public internet.  The private node groups configuration involves deploying worker nodes within subnets of a VPC, ensuring they cannot directly access the public internet. All outbound traffic from these nodes is routed exclusively through a NAT gateway service.
