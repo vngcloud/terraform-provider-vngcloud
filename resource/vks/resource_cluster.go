@@ -12,6 +12,7 @@ import (
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vks"
 	"log"
 	"net/http"
+	"reflect"
 	"time"
 )
 
@@ -324,6 +325,12 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("enable_private_cluster", cluster.EnablePrivateCluster)
 	log.Printf("GetConfig\n")
 	configResp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdKubeconfigGet(context.TODO(), clusterID, nil)
+	log.Printf("-------------------------------------\n")
+	log.Printf("status %s\n", string(httpResponse.Status))
+	log.Printf("-------------------------------------\n")
+	aaa, _ := json.Marshal(configResp)
+	log.Printf("config %s\n", string(aaa))
+
 	if !CheckErrorResponse(httpResponse) {
 		log.Printf("SetConfig\n")
 		d.Set("config", configResp)
@@ -332,12 +339,6 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceClusterUpdate(d *schema.ResourceData, m interface{}) error {
-	if d.HasChange("node_group") {
-		err := checkRequestNodeGroup(d)
-		if err != nil {
-			return err
-		}
-	}
 	if d.HasChange("white_list_node_cidr") || d.HasChange("version") {
 		err := changeWhiteListNodeOrVersion(d, m)
 		if err != nil {
@@ -351,36 +352,6 @@ func resourceClusterUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 	return resourceClusterRead(d, m)
-}
-
-func checkRequestNodeGroup(d *schema.ResourceData) error {
-	nodeGroups := d.Get("node_group").([]interface{})
-	for _, ng := range nodeGroups {
-		nodeGroup := ng.(map[string]interface{})
-		autoScaleConfig := getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{}))
-		var numNodes *int32
-		if value, ok := nodeGroup["num_nodes"]; ok {
-			if value != nil {
-				num := int32(value.(int))
-				if num != -1 {
-					numNodes = &num
-				}
-			}
-		}
-		var err error
-		if autoScaleConfig != nil && numNodes != nil {
-			err = fmt.Errorf("If auto_scale_config is set then num_nodes must be -1\n")
-		}
-		if autoScaleConfig == nil && numNodes == nil {
-			err = fmt.Errorf("If auto_scale_config is not set then num_nodes must be different from -1\n")
-		}
-		if err != nil {
-			oldNodeGroup, _ := d.GetChange("node_group")
-			d.Set("node_group", oldNodeGroup)
-			return err
-		}
-	}
-	return nil
 }
 
 func changeWhiteListNodeOrVersion(d *schema.ResourceData, m interface{}) error {
@@ -432,9 +403,13 @@ func changeWhiteListNodeOrVersion(d *schema.ResourceData, m interface{}) error {
 func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
 	nodeGroups := d.Get("node_group").([]interface{})
-	for _, ng := range nodeGroups {
+	oldNodeGroupSch, _ := d.GetChange("node_group")
+	oldNodeGroups := oldNodeGroupSch.([]interface{})
+	for i, ng := range nodeGroups {
+		if reflect.DeepEqual(ng, oldNodeGroups[i]) {
+			continue
+		}
 		nodeGroup := ng.(map[string]interface{})
-
 		securityGroupsRequest := nodeGroup["security_groups"].([]interface{})
 		var securityGroups []string
 		for _, s := range securityGroupsRequest {
@@ -443,14 +418,14 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 		if securityGroups == nil {
 			securityGroups = make([]string, 0)
 		}
-		autoScaleConfig := getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{}))
 		upgradeConfig := getUpgradeConfig(nodeGroup["upgrade_config"].([]interface{}))
-		var numNodes *int32
-		if value, ok := nodeGroup["num_nodes"]; ok {
-			num := int32(value.(int))
-			if num != -1 {
-				numNodes = &num
-			}
+		oldNodeGroup := oldNodeGroups[i].(map[string]interface{})
+
+		autoScaleConfig := getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{}))
+		var numNodes *int32 = nil
+		if int32(oldNodeGroup["num_nodes"].(int)) != int32(nodeGroup["num_nodes"].(int)) {
+			num := int32(nodeGroup["num_nodes"].(int))
+			numNodes = &num
 		}
 		imageId := nodeGroup["image_id"].(string)
 		updateNodeGroupRequest := vks.UpdateNodeGroupDto{
