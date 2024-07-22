@@ -495,10 +495,7 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 		if securityGroups == nil {
 			securityGroups = make([]string, 0)
 		}
-		var autoScaleConfig *vks.NodeGroupAutoScaleConfigDto = nil
-		if d.HasChange("auto_scale_config") {
-			autoScaleConfig = getAutoScaleConfig(d.Get("auto_scale_config").([]interface{}))
-		}
+		autoScaleConfig := getAutoScaleConfig(d.Get("auto_scale_config").([]interface{}))
 		upgradeConfig := getUpgradeConfig(d.Get("upgrade_config").([]interface{}))
 		var numNodes *int32 = nil
 		if d.HasChange("num_nodes") {
