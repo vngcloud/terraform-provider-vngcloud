@@ -515,6 +515,16 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 		}
 		resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdPut(context.TODO(), clusterId, clusterNodeGroupId, &requestPutOpts)
 		if CheckErrorResponse(httpResponse) {
+			autoScaleConfig, _ := d.GetChange("auto_scale_config")
+			numNodes, _ := d.GetChange("num_nodes")
+			upgradeConfig, _ := d.GetChange("upgrade_config")
+			imageId, _ := d.GetChange("image_id")
+			securityGroups, _ := d.GetChange("security_groups")
+			d.Set("auto_scale_config", autoScaleConfig)
+			d.Set("num_nodes", numNodes)
+			d.Set("upgrade_config", upgradeConfig)
+			d.Set("image_id", imageId)
+			d.Set("security_groups", securityGroups)
 			responseBody := GetResponseBody(httpResponse)
 			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
 			return errResponse

@@ -440,6 +440,7 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 		}
 		resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdPut(context.TODO(), d.Id(), nodeGroup["node_group_id"].(string), &requestPutOpts)
 		if CheckErrorResponse(httpResponse) {
+			d.Set("node_group", oldNodeGroupSch)
 			responseBody := GetResponseBody(httpResponse)
 			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
 			return errResponse
