@@ -73,17 +73,10 @@ var schemaNodeGroup = map[string]*schema.Schema{
 		ForceNew: true,
 	},
 	"num_nodes": {
-		Type:         schema.TypeInt,
-		Optional:     true,
-		Default:      1,
-		ValidateFunc: validation.IntAtLeast(-1),
+		Type:     schema.TypeInt,
+		Optional: true,
+		Default:  1,
 	},
-	//"initial_node_count": {
-	//	Type:     schema.TypeInt,
-	//	Optional: true,
-	//	ForceNew: true,
-	//	Default:  1,
-	//},
 	"auto_scale_config": {
 		Type:     schema.TypeList,
 		MaxItems: 1,
@@ -362,9 +355,6 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("flavor_id", resp.FlavorId)
 	d.Set("name", resp.Name)
 	d.Set("ssh_key_id", resp.SshKeyId)
-	if _, ok := d.GetOkExists("num_nodes"); ok && int32(d.Get("num_nodes").(int)) != -1 {
-		d.Set("num_nodes", resp.NumNodes)
-	}
 	return nil
 }
 
@@ -507,30 +497,10 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 		}
 		autoScaleConfig := getAutoScaleConfig(d.Get("auto_scale_config").([]interface{}))
 		upgradeConfig := getUpgradeConfig(d.Get("upgrade_config").([]interface{}))
-		var numNodes *int32
-		if value, ok := d.GetOkExists("num_nodes"); ok {
-			num := int32(value.(int))
-			if num != -1 {
-				numNodes = &num
-			}
-		}
-		var err error
-		if autoScaleConfig != nil && numNodes != nil {
-			err = fmt.Errorf("If auto_scale_config is set then num_nodes must be -1\n")
-		}
-		if autoScaleConfig == nil && numNodes == nil {
-			err = fmt.Errorf("If auto_scale_config is not set then num_nodes must be different from -1\n")
-		}
-		if err != nil {
-			if d.HasChange("auto_scale_config") {
-				oldAutoScaleConfig, _ := d.GetChange("auto_scale_config")
-				d.Set("auto_scale_config", oldAutoScaleConfig)
-			}
-			if d.HasChange("num_nodes") {
-				oldNumNodes, _ := d.GetChange("num_nodes")
-				d.Set("num_nodes", oldNumNodes)
-			}
-			return err
+		var numNodes *int32 = nil
+		if d.HasChange("num_nodes") {
+			num := int32(d.Get("num_nodes").(int))
+			numNodes = &num
 		}
 		imageId := d.Get("image_id").(string)
 		updateNodeGroupRequest := vks.UpdateNodeGroupDto{
@@ -545,6 +515,16 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 		}
 		resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdPut(context.TODO(), clusterId, clusterNodeGroupId, &requestPutOpts)
 		if CheckErrorResponse(httpResponse) {
+			autoScaleConfig, _ := d.GetChange("auto_scale_config")
+			numNodes, _ := d.GetChange("num_nodes")
+			upgradeConfig, _ := d.GetChange("upgrade_config")
+			imageId, _ := d.GetChange("image_id")
+			securityGroups, _ := d.GetChange("security_groups")
+			d.Set("auto_scale_config", autoScaleConfig)
+			d.Set("num_nodes", numNodes)
+			d.Set("upgrade_config", upgradeConfig)
+			d.Set("image_id", imageId)
+			d.Set("security_groups", securityGroups)
 			responseBody := GetResponseBody(httpResponse)
 			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
 			return errResponse
@@ -562,7 +542,7 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 			Delay:      10 * time.Second,
 			MinTimeout: 1 * time.Second,
 		}
-		_, err = stateConf.WaitForState()
+		_, err := stateConf.WaitForState()
 		if err != nil {
 			return fmt.Errorf("error waiting for update cluster node group (%s) %s", resp.Id, err)
 		}
