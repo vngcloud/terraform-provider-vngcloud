@@ -1,5 +1,5 @@
 <a href="https://terraform.io">
-    <img src="https://cdn.rawgit.com/hashicorp/terraform-website/master/content/source/assets/images/logo-hashicorp.svg" alt="Terraform logo" title="Terraform" align="right" height="50" />
+    <img src=".github/workflows/terraform-svgrepo-com.svg" alt="Terraform logo" title="Terraform" align="right" height="50" />
 </a>
 
 # Terraform Provider for VNG Cloud
@@ -12,7 +12,7 @@ The Terraform VNG Cloud provider is a plugin for Terraform that allows for the f
 
 ## Quick Starts
 
-- [Example](https://docs.vngcloud.vn/pages/viewpage.action?pageId=31555959)
+- [Example](https://docs.vngcloud.vn/pages/viewpage.action?pageId=49650381)
 - [Using the provider](https://registry.terraform.io/providers/vngcloud/vngcloud/latest/docs)
 
 ## Documentation

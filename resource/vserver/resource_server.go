@@ -22,17 +22,7 @@ func ResourceServer() *schema.Resource {
 		Update: resourceServerUpdate,
 		Delete: resourceServerDelete,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
-				idParts := strings.Split(d.Id(), ":")
-				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
-					return nil, fmt.Errorf("Unexpected format of ID (%q), expected ProjectID:ServerID", d.Id())
-				}
-				projectID := idParts[0]
-				serverID := idParts[1]
-				d.SetId(serverID)
-				d.Set("project_id", projectID)
-				return []*schema.ResourceData{d}, nil
-			},
+			StateContext: resourceServerImport,
 		},
 		Schema: map[string]*schema.Schema{
 			"project_id": {
@@ -288,6 +278,7 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("ssh_key_name", server.SshKeyName)
 	d.Set("server_group_id", server.ServerGroupId)
 	d.Set("root_disk_id", server.BootVolumeId)
+	d.Set("os_licence", server.Licence)
 	_, ok := d.GetOk("host_group_id")
 	if ok {
 		d.Set("host_group_id", server.HostGroupId)
@@ -341,6 +332,48 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("security_group", securityGroupServer)
 	}
 	return nil
+}
+
+func resourceServerImport(ctx context.Context, d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+	idParts := strings.Split(d.Id(), ":")
+	if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
+		return nil, fmt.Errorf("Unexpected format of ID (%q), expected ProjectID:ServerID", d.Id())
+	}
+	projectID := idParts[0]
+	serverID := idParts[1]
+	cli := m.(*client.Client)
+	serverResp, httpResponse, _ := cli.VserverClient.ServerRestControllerApi.GetServerUsingGET1(context.TODO(), projectID, serverID)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		err := fmt.Errorf("Get Server fail with errMsg : %s", responseBody)
+		return nil, err
+	}
+	volumeResp, httpResponse, _ := cli.VserverClient.VolumeRestControllerApi.
+		GetVolumeUsingGET2(context.TODO(), projectID, serverResp.Data.BootVolumeId)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("Get Boot Volume fail with errMsg : %s", responseBody)
+		return nil, errorResponse
+	}
+	d.SetId(serverID)
+	d.Set("project_id", projectID)
+	if len(serverResp.Data.InternalInterfaces) > 0 {
+		networkInterface := serverResp.Data.InternalInterfaces[0]
+		d.Set("network_id", networkInterface.NetworkUuid)
+		d.Set("subnet_id", networkInterface.SubnetUuid)
+	} else {
+		d.Set("network_id", "")
+		d.Set("subnet_id", "")
+	}
+	d.Set("image_id", serverResp.Data.Image.Id)
+	return resourceServerReadForImport(d, volumeResp)
+}
+
+func resourceServerReadForImport(d *schema.ResourceData, volumeResp vserver.DataResponseVolume) ([]*schema.ResourceData, error) {
+	d.Set("root_disk_encryption_type", volumeResp.Data.EncryptionType)
+	d.Set("root_disk_size", volumeResp.Data.Size)
+	d.Set("root_disk_type_id", volumeResp.Data.VolumeTypeId)
+	return []*schema.ResourceData{d}, nil
 }
 
 func resourceServerUpdate(d *schema.ResourceData, m interface{}) error {
