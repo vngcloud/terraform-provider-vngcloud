@@ -76,7 +76,7 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
 * `image_id` - (Optional) Specifies the image you want to use for your node group. You can obtain the Image ID from the VKS Portal or from this [link](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/tham-khao-them/danh-sach-system-image-dang-ho-tro) and enter it in this field.
 * `flavor_id` - (Optional) Specifies the flavor you want to use for your node in the node group. You can obtain the Flavor ID from this [link](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/tham-khao-them/danh-sach-flavor-dang-ho-tro) and enter it in this field. 
 * `disk_size` - (Optional) - Specifies the data disk size for new nodes in this node group. Must be between 20 GB and 1000 GB. The default value is "100".
-* `disk_type` - (Optional) - Specifies the type of data disk for new nodes in this node group. Currently, SSD disks and NVME disks are available. The default value is "SSD".
+* `disk_type` - (Optional) - Specifies the type of data disk for new nodes in this node group. Currently, SSD disks and NVME disks are available. 
 * `enable_private_nodes` - (Optional) You can choose the mode that you want your node group works.  The VKS public node groups include worker nodes deployed in public subnets within a VPC.  These worker nodes have public IP addresses and CAN communicate directly with the public internet. The private node groups configuration involves deploying worker nodes within subnets of a VPC, ensuring they cannot directly access the public internet. All outbound traffic from these nodes is routed exclusively through a NAT gateway service. The default value is "false".
 * `security_groups` - (Optional) - Specifies the security group for your cluster. A security group acts as a virtual firewall, controlling inbound and outbound traffic for associated resources. You can find the Security Group ID on the vServer Portal and input it here.
 * `ssh_key_id` - (Required) - Specifies the SSH key for secure credentials to prove your identity when connecting to the server. You can import a key and get the SSH Key ID on the vServer Portal to input here
@@ -110,15 +110,15 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
   upgrade_config {
     strategy = "SURGE"
     max_surge = 1
-	  max_unavailable = 0
+    max_unavailable = 0
   }
-  image_id = "img-108b3a77-ab58-4000-9b3e-190d0b4b07fc"
+  image_id = "img-108b3a77-ab58-4000-9b3e-190d0b4b0123"
   flavor_id = "flav-9e88cfb4-ec31-4ad4-8ba5-243459f6d123"
   disk_size = 50
-  disk_type = "vtype-61c3fc5b-f4e9-45b4-8957-8aa7b6029018"
+  disk_type = "vtype-61c3fc5b-f4e9-45b4-8957-8aa7b6029123"
   enable_private_nodes = false
   ssh_key_id= "ssh-f923c53c-cba7-4131-9f86-175d04ae2123"
-  security_groups = ["secg-faf05344-fbd6-4f10-80a2-cda08d15ba5e"]
+  security_groups = ["secg-faf05344-fbd6-4f10-80a2-cda08d15b123"]
   labels = {
     "test" = "terraform"
   }
@@ -157,15 +157,15 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
   upgrade_config {
     strategy = "SURGE"
     max_surge = 1
-	  max_unavailable = 0
+    max_unavailable = 0
   }
-  image_id = "img-108b3a77-ab58-4000-9b3e-190d0b4b07fc"
+  image_id = "img-108b3a77-ab58-4000-9b3e-190d0b4b0123"
   flavor_id = "flav-9e88cfb4-ec31-4ad4-8ba5-243459f6d123"
   disk_size = 50
-  disk_type = "vtype-61c3fc5b-f4e9-45b4-8957-8aa7b6029018"
+  disk_type = "vtype-61c3fc5b-f4e9-45b4-8957-8aa7b6029123"
   enable_private_nodes = false
   ssh_key_id= "ssh-f923c53c-cba7-4131-9f86-175d04ae2123"
-  security_groups = ["secg-faf05344-fbd6-4f10-80a2-cda08d15ba5e"]
+  security_groups = ["secg-faf05344-fbd6-4f10-80a2-cda08d15b123"]
   labels = {
     "test" = "terraform"
   }

@@ -34,7 +34,7 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
 }
 ```
 
-**Important Note**: We suggest managing node groups as independent resources, as shown in this example. This approach enables you to add or remove node groups without having to rebuild the entire cluster. If you embed node groups directly within the vngcloud_vks_cluster resource, you will need to recreate the cluster to remove them.
+**Important Note**: We suggest managing node groups as independent resources, as shown in this example. This approach enables you to add or remove node groups without having to rebuild the entire cluster. If you embed node groups directly within the `vngcloud_vks_cluster` resource, you will need to recreate the cluster to remove them.
 
 ## Example Usage - with the default node group
 
@@ -91,7 +91,7 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
   upgrade_config {
     strategy = "SURGE"
     max_surge = 1
-	  max_unavailable = 0
+    max_unavailable = 0
   }
   image_id = "img-108b3a77-ab58-4000-9b3e-190d0b4b07fc"
   flavor_id = "flav-9e88cfb4-ec31-4ad4-8ba5-243459f6d123"
@@ -138,7 +138,7 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
   upgrade_config {
     strategy = "SURGE"
     max_surge = 1
-	  max_unavailable = 0
+    max_unavailable = 0
   }
   image_id = "img-108b3a77-ab58-4000-9b3e-190d0b4b07fc"
   flavor_id = "flav-9e88cfb4-ec31-4ad4-8ba5-243459f6d123"
