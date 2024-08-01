@@ -53,7 +53,7 @@ The following arguments are supported:
 - **ssh_key** (String, Optional) ID of SSH key
 - **user_name** (String, Optional) Name of user
 - **user_password** (String, Optional) Password of user
-- **server_group** (String, Optional) ID of Server Group.
+- **server_group_id** (String, Optional) ID of Server Group.
 - **user_data** (String, Optional) User data to provide when launching the server.
 - **user_data_base64_encode** (Boolean, Optional) Can be used instead of user_data to pass base64-encoded binary data directly. Use this instead of user_data whenever the value is not a valid UTF-8 string.
 - **is_poc** (Boolean, Optional) Is Poc Resource.

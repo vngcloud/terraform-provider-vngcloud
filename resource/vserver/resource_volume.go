@@ -146,6 +146,7 @@ func resourceVolumeRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("size", int(volume.Size))
 	d.Set("volume_type_id", volume.VolumeTypeId)
 	d.Set("bootable", volume.Bootable)
+	d.Set("multi_attach", volume.MultiAttach)
 	return nil
 }
 
