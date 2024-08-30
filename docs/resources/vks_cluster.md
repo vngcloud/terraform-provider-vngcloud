@@ -61,6 +61,7 @@ resource "vngcloud_vks_cluster" "primary" {
 * `white_list_node_cidr` - (Optional) The IP Address range can connect to the control plane. The feature only works on Private Node Group mode.
 * `enable_private_cluster` (Optional) - Enables the private cluster feature,
   creating a private endpoint on the cluster. The VKS public clusters refer to a type of Kubernetes cluster configuration where the Kubernetes API server endpoint is publicly accessible over the internet. In an VKS public cluster, the API server endpoint is not restricted to private access within a VPC (Virtual Private Cloud) and can be accessed over the public internet. The VKS private clusters are configured to have private access to the Kubernetes API server endpoint. This means that the API server endpoint is only accessible from within a specific Virtual Private Cloud (VPC) and is not exposed to the public internet. Private clusters provide enhanced security by restricting access to the Kubernetes API to resources within the VPC. At this time, the default value of this field is false and we only offer Public Cluster mode.
+* `enable_service_endpoint` (Optional) - Enables the service endpoint feature.
 * `network_type` - (Optional) The type of network for the cluster. Defaults to "CALICO".
 * `vpc_id` (Required) The VPC ID for the cluster. You need create a VPC on vServer and put the VPC's ID on this field.
 * `subnet_id` (Required) The subnet ID for the cluster. You need create a Subnet on vServer and put the Subnet's ID on this field.
