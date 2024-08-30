@@ -18,6 +18,7 @@ type ClusterDetailDto struct {
 	CreatedAt                  string       `json:"createdAt,omitempty"`
 	UpdatedAt                  string       `json:"updatedAt,omitempty"`
 	EnablePrivateCluster       bool         `json:"enablePrivateCluster,omitempty"`
+	EnableServiceEndpoint      bool         `json:"enabledServiceEndpoint"`
 	NetworkType                *NetworkType `json:"networkType,omitempty"`
 	VpcId                      string       `json:"vpcId,omitempty"`
 	SubnetId                   string       `json:"subnetId,omitempty"`
