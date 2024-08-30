@@ -7,7 +7,6 @@ import (
 	"github.com/antihax/optional"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vks"
 	"log"
@@ -18,15 +17,15 @@ import (
 
 func ResourceCluster() *schema.Resource {
 	return &schema.Resource{
-		SchemaVersion: 0,
+		SchemaVersion: 1,
 		//MigrateState:  resourceClusterMigrateState,
-		//StateUpgraders: []schema.StateUpgrader{
-		//	{
-		//		Type:    resourceContainerClusterResourceV1().CoreConfigSchema().ImpliedType(),
-		//		Upgrade: ResourceContainerClusterUpgradeV1,
-		//		Version: 0,
-		//	},
-		//},
+		StateUpgraders: []schema.StateUpgrader{
+			{
+				Type:    resourceContainerClusterResourceV1().CoreConfigSchema().ImpliedType(),
+				Upgrade: resourceClusterStateUpgradeV0,
+				Version: 0,
+			},
+		},
 
 		Create: resourceClusterCreate,
 		Read:   resourceClusterRead,
@@ -81,6 +80,14 @@ func ResourceCluster() *schema.Resource {
 				ForceNew: true,
 				DefaultFunc: func() (interface{}, error) {
 					return false, nil
+				},
+			},
+			"enable_service_endpoint": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				DefaultFunc: func() (interface{}, error) {
+					return true, nil
 				},
 			},
 			"network_type": {
@@ -156,6 +163,7 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 		Description:                d.Get("description").(string),
 		Version:                    d.Get("version").(string),
 		EnablePrivateCluster:       d.Get("enable_private_cluster").(bool),
+		EnabledServiceEndpoint:     d.Get("enable_service_endpoint").(bool),
 		NetworkType:                d.Get("network_type").(string),
 		VpcId:                      d.Get("vpc_id").(string),
 		SubnetId:                   d.Get("subnet_id").(string),
@@ -512,19 +520,48 @@ func resourceClusterDeleteStateRefreshFunc(cli *client.Client, clusterId string)
 	}
 }
 
-func resourceClusterMigrateState(
-	v int, is *terraform.InstanceState, meta interface{}) (*terraform.InstanceState, error) {
-	if is.Empty() {
-		log.Println("[DEBUG] Empty InstanceState; nothing to migrate.")
-		return is, nil
+//func resourceClusterMigrateState(
+//	v int, is *terraform.InstanceState, meta interface{}) (*terraform.InstanceState, error) {
+//	if is.Empty() {
+//		log.Println("[DEBUG] Empty InstanceState; nothing to migrate.")
+//		return is, nil
+//	}
+//	switch v {
+//	case 1:
+//		log.Println("[INFO] Found Cluster State v1 in legacy migration function; returning as non-op")
+//		cli := meta.(*client.Client)
+//		resp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdGet(context.TODO(), clusterID, nil)
+//		if CheckErrorResponse(httpResponse) {
+//			responseBody := GetResponseBody(httpResponse)
+//			errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+//			return is, errorResponse
+//		}
+//		is.Set("enable_endpoint", resp.EnablePrivateCluster)
+//		return is, nil
+//	default:
+//		return is, fmt.Errorf("Unexpected schema version: %d", v)
+//	}
+//}
+
+func resourceClusterStateUpgradeV0(ctx context.Context, rawState map[string]interface{}, meta interface{}) (map[string]interface{}, error) {
+	log.Printf("resourceClusterStateUpgradeV0\n")
+	cli := meta.(*client.Client)
+	id, ok := rawState["id"].(string)
+	if !ok {
+		return nil, fmt.Errorf("id is missing or not a string")
 	}
-	switch v {
-	case 1:
-		log.Println("[INFO] Found Cluster State v1 in legacy migration function; returning as non-op")
-		return is, nil
-	default:
-		return is, fmt.Errorf("Unexpected schema version: %d", v)
+	resp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdGet(context.TODO(), id, nil)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return rawState, errorResponse
 	}
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
+	rawState["enable_service_endpoint"] = resp.EnableServiceEndpoint
+	return rawState, nil
 }
 
 func resourceNodeGroupForClusterStateRefreshFunc(cli *client.Client, clusterID string) resource.StateRefreshFunc {
@@ -571,5 +608,98 @@ func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) vks.C
 		SecurityGroups:     getSecurityGroups(nodeGroup["security_groups"].([]interface{})),
 		UpgradeConfig:      getUpgradeConfig(nodeGroup["upgrade_config"].([]interface{})),
 		AutoScaleConfig:    getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{})),
+	}
+}
+
+func resourceContainerClusterResourceV1() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"name": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"config": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"description": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"version": {
+				Type:     schema.TypeString,
+				Optional: true,
+				DefaultFunc: func() (interface{}, error) {
+					return fetchByKey("k8s_version")
+				},
+			},
+			"white_list_node_cidr": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"enable_private_cluster": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				DefaultFunc: func() (interface{}, error) {
+					return false, nil
+				},
+			},
+			"network_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "CALICO",
+				ForceNew: true,
+			},
+			"vpc_id": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"subnet_id": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"cidr": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"enabled_load_balancer_plugin": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				Default:  true,
+			},
+			"enabled_block_store_csi_plugin": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				Default:  true,
+			},
+			"node_group": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
+				Elem: &schema.Resource{
+					Schema: MergeSchemas(
+						schemaNodeGroup,
+						map[string]*schema.Schema{
+							"node_group_id": {
+								Type:     schema.TypeString,
+								Computed: true,
+							},
+						}),
+				},
+			},
+		},
 	}
 }

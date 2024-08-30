@@ -13,6 +13,7 @@ type CreateClusterComboDto struct {
 	Description                string               `json:"description,omitempty"`
 	Version                    string               `json:"version"`
 	EnablePrivateCluster       bool                 `json:"enablePrivateCluster"`
+	EnabledServiceEndpoint     bool                 `json:"enabledServiceEndpoint"`
 	NetworkType                string               `json:"networkType"`
 	VpcId                      string               `json:"vpcId"`
 	SubnetId                   string               `json:"subnetId"`
