@@ -3,6 +3,7 @@ package client
 import (
 	"github.com/vngcloud/terraform-provider-vngcloud/client/authen"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vdb"
+	"github.com/vngcloud/terraform-provider-vngcloud/client/vdbv2"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vks"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vloadbalancing"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vserver"
@@ -14,6 +15,7 @@ type Client struct {
 	VdbClient     *vdb.APIClient
 	VlbClient     *vloadbalancing.APIClient
 	VksClient     *vks.APIClient
+	Vdbv2Client   *vdbv2.APIClient
 	ProjectId     string
 }
 
