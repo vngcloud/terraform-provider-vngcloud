@@ -12,6 +12,8 @@ type NetworkType string
 
 // List of NetworkType
 const (
-	CALICO_NetworkType NetworkType = "CALICO"
-	CILIUM_NetworkType NetworkType = "CILIUM"
+	CALICO_NetworkType                NetworkType = "CALICO"
+	CILIUM_NetworkType                NetworkType = "CILIUM"
+	CILIUM_NATIVE_ROUTING_NetworkType NetworkType = "CILIUM_NATIVE_ROUTING"
+	CILIUM_OVERLAY_NetworkType        NetworkType = "CILIUM_OVERLAY"
 )

@@ -26,4 +26,5 @@ type ClusterDetailDto struct {
 	EnabledLoadBalancerPlugin  bool         `json:"enabledLoadBalancerPlugin,omitempty"`
 	EnabledBlockStoreCsiPlugin bool         `json:"enabledBlockStoreCsiPlugin,omitempty"`
 	WhitelistNodeCIDRs         []string     `json:"whitelistNodeCIDRs,omitempty"`
+	SecondarySubnets           []string     `json:"secondarySubnets,omitempty"`
 }
