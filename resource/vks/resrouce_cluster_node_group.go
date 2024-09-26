@@ -216,6 +216,7 @@ var schemaNodeGroup = map[string]*schema.Schema{
 	"secondary_subnets": {
 		Type:     schema.TypeList,
 		Optional: true,
+		ForceNew: true,
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
