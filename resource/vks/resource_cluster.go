@@ -7,6 +7,7 @@ import (
 	"github.com/antihax/optional"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vks"
 	"log"
@@ -136,6 +137,13 @@ func ResourceCluster() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"node_netmask_size": {
+				Type:         schema.TypeInt,
+				Optional:     true,
+				ForceNew:     true,
+				Default:      25,
+				ValidateFunc: validation.IntBetween(17, 26),
+			},
 			"node_group": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -184,6 +192,7 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 		EnabledLoadBalancerPlugin:  d.Get("enabled_load_balancer_plugin").(bool),
 		EnabledBlockStoreCsiPlugin: d.Get("enabled_block_store_csi_plugin").(bool),
 		SecondarySubnets:           getSecondarySubnets(d.Get("secondary_subnets").([]interface{})),
+		NodeNetmaskSize:            int32(d.Get("node_netmask_size").(int)),
 		NodeGroups:                 createNodeGroupRequests,
 	}
 	cli := m.(*client.Client)
@@ -337,8 +346,9 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 	if !CheckListStringEqual(whiteListNodeCIDR, whiteListCIDRCluster) {
 		d.Set("white_list_node_cidr", whiteListCIDRCluster)
 	}
-	if !checkSecondarySubnetsSame(d, resp.SecondarySubnets) {
+	if *resp.NetworkType == vks.CILIUM_NATIVE_ROUTING_NetworkType && !checkSecondarySubnetsSame(d, resp.SecondarySubnets) {
 		d.Set("secondary_subnets", resp.SecondarySubnets)
+		d.Set("node_netmask_size", resp.NodeNetmaskSize)
 	}
 	d.Set("cidr", cluster.Cidr)
 	d.Set("vpc_id", cluster.VpcId)
@@ -750,8 +760,8 @@ func resourceClusterStateUpgradeV1(ctx context.Context, rawState map[string]inte
 	log.Printf("-------------------------------------\n")
 	if *resp.NetworkType == vks.CILIUM_NATIVE_ROUTING_NetworkType {
 		rawState["secondary_subnets"] = resp.SecondarySubnets
+		rawState["node_netmask_size"] = resp.NodeNetmaskSize
 	}
-	rawState["enable_service_endpoint"] = resp.EnableServiceEndpoint
 	return rawState, nil
 }
 

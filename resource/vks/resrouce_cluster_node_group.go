@@ -833,20 +833,30 @@ func resourceClusterNodeGroupStateUpgradeV0(ctx context.Context, rawState map[st
 		return nil, fmt.Errorf("id is missing or not a string")
 	}
 
-	resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterId, id, nil)
-
+	resp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdGet(context.TODO(), clusterId, nil)
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
-		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		errorResponse := fmt.Errorf("request cluster fail with errMsg : %s", responseBody)
 		return rawState, errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	rawState["secondary_subnets"] = resp.SecondarySubnets
-	rawState["enabled_encryption_volume"] = resp.EnabledEncryptionVolume
-	rawState["subnet_id"] = resp.SubnetId
+	if *resp.NetworkType == vks.CILIUM_NATIVE_ROUTING_NetworkType {
+		nodeGroupResponse, httpNodeGroupResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterId, id, nil)
+
+		if CheckErrorResponse(httpNodeGroupResponse) {
+			responseBodyNodeGroup := GetResponseBody(httpNodeGroupResponse)
+			errorResponseNodeGroup := fmt.Errorf("request cluster node group fail with errMsg : %s", responseBodyNodeGroup)
+			return rawState, errorResponseNodeGroup
+		}
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+		rawState["secondary_subnets"] = nodeGroupResponse.SecondarySubnets
+	}
 
 	return rawState, nil
 }
