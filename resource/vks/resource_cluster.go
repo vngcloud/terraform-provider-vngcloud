@@ -346,9 +346,11 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 	if !CheckListStringEqual(whiteListNodeCIDR, whiteListCIDRCluster) {
 		d.Set("white_list_node_cidr", whiteListCIDRCluster)
 	}
-	if *resp.NetworkType == vks.CILIUM_NATIVE_ROUTING_NetworkType && !checkSecondarySubnetsSame(d, resp.SecondarySubnets) {
-		d.Set("secondary_subnets", resp.SecondarySubnets)
-		d.Set("node_netmask_size", resp.NodeNetmaskSize)
+	if resp.NetworkType == "CILIUM_NATIVE_ROUTING" {
+		if !checkSecondarySubnetsSame(d, resp.SecondarySubnets) {
+			d.Set("secondary_subnets", resp.SecondarySubnets)
+			d.Set("node_netmask_size", resp.NodeNetmaskSize)
+		}
 	} else {
 		d.Set("cidr", cluster.Cidr)
 	}
@@ -759,7 +761,7 @@ func resourceClusterStateUpgradeV1(ctx context.Context, rawState map[string]inte
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if *resp.NetworkType == vks.CILIUM_NATIVE_ROUTING_NetworkType {
+	if resp.NetworkType == "CILIUM_NATIVE_ROUTING" {
 		rawState["secondary_subnets"] = resp.SecondarySubnets
 		rawState["node_netmask_size"] = resp.NodeNetmaskSize
 	}

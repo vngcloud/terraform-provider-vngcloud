@@ -379,7 +379,7 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSONCluster))
 	log.Printf("-------------------------------------\n")
-	if *respCluster.NetworkType == vks.CILIUM_NATIVE_ROUTING_NetworkType && !checkSecondarySubnetsSame(d, resp.SecondarySubnets) {
+	if respCluster.NetworkType == "CILIUM_NATIVE_ROUTING" && !checkSecondarySubnetsSame(d, resp.SecondarySubnets) {
 		d.Set("secondary_subnets", resp.SecondarySubnets)
 	}
 	d.Set("disk_size", resp.DiskSize)
@@ -853,7 +853,7 @@ func resourceClusterNodeGroupStateUpgradeV0(ctx context.Context, rawState map[st
 	log.Printf("-------------------------------------\n")
 	log.Printf("%s\n", string(respJSON))
 	log.Printf("-------------------------------------\n")
-	if *resp.NetworkType == vks.CILIUM_NATIVE_ROUTING_NetworkType {
+	if resp.NetworkType == "CILIUM_NATIVE_ROUTING" {
 		nodeGroupResponse, httpNodeGroupResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterId, id, nil)
 
 		if CheckErrorResponse(httpNodeGroupResponse) {
