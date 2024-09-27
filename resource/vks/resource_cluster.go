@@ -867,10 +867,12 @@ func resourceContainerClusterResourceV2() *schema.Resource {
 }
 
 func checkSecondarySubnetsSame(d *schema.ResourceData, secondarySubnetResponse []string) bool {
-	secondarySubnetsRequest := d.Get("secondary_subnets").([]interface{})
+	secondarySubnetsRequest, ok := d.GetOk("secondary_subnets")
 	var secondarySubnets []string
-	for _, s := range secondarySubnetsRequest {
-		secondarySubnets = append(secondarySubnets, s.(string))
+	if ok {
+		for _, s := range secondarySubnetsRequest.([]interface{}) {
+			secondarySubnets = append(secondarySubnets, s.(string))
+		}
 	}
 	var secondarySubnetsCluster []string
 	for _, secondarySubnet := range secondarySubnetResponse {

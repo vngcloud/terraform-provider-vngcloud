@@ -369,7 +369,17 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 	if !checkSecurityGroupsSame(d, resp) {
 		d.Set("security_groups", resp.SecurityGroups)
 	}
-	if !checkSecondarySubnetsSame(d, resp.SecondarySubnets) {
+	respCluster, httpResponseCluster, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdGet(context.TODO(), clusterID, nil)
+	if CheckErrorResponse(httpResponseCluster) {
+		responseBodyCluster := GetResponseBody(httpResponseCluster)
+		errorResponseCluster := fmt.Errorf("request cluster fail with errMsg : %s", responseBodyCluster)
+		return errorResponseCluster
+	}
+	respJSONCluster, _ := json.Marshal(respCluster)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSONCluster))
+	log.Printf("-------------------------------------\n")
+	if *respCluster.NetworkType == vks.CILIUM_NATIVE_ROUTING_NetworkType && !checkSecondarySubnetsSame(d, resp.SecondarySubnets) {
 		d.Set("secondary_subnets", resp.SecondarySubnets)
 	}
 	d.Set("disk_size", resp.DiskSize)
