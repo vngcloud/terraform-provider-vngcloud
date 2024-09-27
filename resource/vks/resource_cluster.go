@@ -349,8 +349,9 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 	if *resp.NetworkType == vks.CILIUM_NATIVE_ROUTING_NetworkType && !checkSecondarySubnetsSame(d, resp.SecondarySubnets) {
 		d.Set("secondary_subnets", resp.SecondarySubnets)
 		d.Set("node_netmask_size", resp.NodeNetmaskSize)
+	} else {
+		d.Set("cidr", cluster.Cidr)
 	}
-	d.Set("cidr", cluster.Cidr)
 	d.Set("vpc_id", cluster.VpcId)
 	d.Set("subnet_id", cluster.SubnetId)
 	d.Set("network_type", cluster.NetworkType)
