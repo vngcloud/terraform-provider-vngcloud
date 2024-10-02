@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"github.com/vngcloud/terraform-provider-vngcloud/resource/vdbv2"
 	"github.com/vngcloud/terraform-provider-vngcloud/resource/vks"
 	"log"
 
@@ -54,6 +55,7 @@ func Provider() *schema.Provider {
 			"vngcloud_vdb_backup":                                vdb.ResourceBackup(),
 			"vngcloud_vdb_configuration_group":                   vdb.ResourceConfigurationGroup(),
 			"vngcloud_vdb_backup_storage":                        vdb.ResourceBackupStorage(),
+			"vngcloud_vdb_relational_config_group":               vdbv2.ResourceRelationalConfigurationGroup(),
 			"vngcloud_vserver_k8s":                               vserver.ResourceK8s(),
 			"vngcloud_vserver_cluster_node_group":                vserver.ResourceClusterNodeGroup(),
 			"vngcloud_vserver_attach_lb_to_cluster":              vserver.ResourceAttachLb(),
