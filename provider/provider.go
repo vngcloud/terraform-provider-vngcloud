@@ -56,6 +56,7 @@ func Provider() *schema.Provider {
 			"vngcloud_vdb_configuration_group":                   vdb.ResourceConfigurationGroup(),
 			"vngcloud_vdb_backup_storage":                        vdb.ResourceBackupStorage(),
 			"vngcloud_vdb_relational_config_group":               vdbv2.ResourceRelationalConfigurationGroup(),
+			"vngcloud_vdb_relational_backup_storage":             vdbv2.ResourceBackupStorage(),
 			"vngcloud_vserver_k8s":                               vserver.ResourceK8s(),
 			"vngcloud_vserver_cluster_node_group":                vserver.ResourceClusterNodeGroup(),
 			"vngcloud_vserver_attach_lb_to_cluster":              vserver.ResourceAttachLb(),
