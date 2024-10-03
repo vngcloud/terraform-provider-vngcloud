@@ -9,6 +9,7 @@
 package vdbv2
 
 type OrderResponse struct {
-	OrderUrl string `json:"orderUrl,omitempty"`
-	OrderId  string `json:"orderId,omitempty"`
+	OrderUrl   string `json:"orderUrl,omitempty"`
+	OrderId    string `json:"orderId,omitempty"`
+	ResourceId string `json:"resourceId,omitempty"`
 }
