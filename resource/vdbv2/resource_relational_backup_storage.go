@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func ResourceBackupStorage() *schema.Resource {
+func ResourceRelationalBackupStorage() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceBackupStorageCreate,
 		Read:   resourceBackupStorageRead,
@@ -58,15 +58,15 @@ func resourceBackupStorageRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	if backupStorageResult.Data == nil || len(backupStorageResult.Data) == 0 {
-		d.SetId("")
-		return nil
-	}
-
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		return errorResponse
+	}
+
+	if backupStorageResult.Data == nil || len(backupStorageResult.Data) == 0 {
+		d.SetId("")
+		return nil
 	}
 
 	backupStorageInfo := backupStorageResult.Data[0]

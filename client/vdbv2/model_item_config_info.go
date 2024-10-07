@@ -11,6 +11,7 @@ package vdbv2
 type ItemConfigInfo struct {
 	Id                   string                 `json:"id,omitempty"`
 	Name                 string                 `json:"name,omitempty"`
+	Status               string                 `json:"status,omitempty"`
 	DatastoreName        string                 `json:"datastoreName,omitempty"`
 	DatastoreVersionName string                 `json:"datastoreVersionName,omitempty"`
 	Description          string                 `json:"description,omitempty"`

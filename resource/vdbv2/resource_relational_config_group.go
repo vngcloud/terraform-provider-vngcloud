@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vdbv2"
 	"log"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -110,17 +112,16 @@ func resourceConfigurationGroupCreate(d *schema.ResourceData, m interface{}) err
 		return errorResponse
 	}
 	log.Println("[DEBUG]  Created " + resp.Data.Id)
-
+	time.Sleep(10 * time.Second)
 	d.SetId(resp.Data.Id)
 
-	time.Sleep(1 * time.Second)
 	_, ok := d.Get("values").([]interface{})
 	if ok {
 		err := resourceConfigurationGroupUpdate(d, m)
 		if err != nil {
 			return err
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 	return resourceConfigurationGroupRead(d, m)
 }
@@ -136,15 +137,15 @@ func resourceConfigurationGroupRead(d *schema.ResourceData, m interface{}) error
 		return err
 	}
 
-	if resp.Data == nil {
-		d.SetId("")
-		return nil
-	}
-
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		return errorResponse
+	}
+
+	if resp.Data == nil {
+		d.SetId("")
+		return nil
 	}
 
 	d.Set("datastore_type", resp.Data.DatastoreName)
@@ -186,7 +187,7 @@ func resourceConfigurationGroupDelete(d *schema.ResourceData, m interface{}) err
 	request[0] = deleteReq
 	body, _ := json.Marshal(request)
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.DeleteConfigs1(context.TODO(), string(body))
+	resp, httpResponse, err := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.DeleteConfigs1(context.TODO(), string(body))
 	if err != nil {
 		return err
 	}
@@ -197,7 +198,27 @@ func resourceConfigurationGroupDelete(d *schema.ResourceData, m interface{}) err
 		return errorResponse
 	}
 
-	log.Println("[DEBUG]  Deleted " + d.Id())
+	if resp.Data[0].Success == false {
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", resp.Data[0].ErrorMsg)
+		return errorResponse
+	}
+
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
+	stateConf := &resource.StateChangeConf{
+		Pending:    []string{"ACTIVE"},
+		Target:     []string{"DELETED"},
+		Refresh:    resourceConfigGroupDeleteStateRefreshFunc(cli, d.Id()),
+		Timeout:    10 * time.Minute,
+		Delay:      10 * time.Second,
+		MinTimeout: 10 * time.Second,
+	}
+	_, err = stateConf.WaitForState()
+	if err != nil {
+		return fmt.Errorf("error waiting for delete config group (%s) : %s", d.Id(), err)
+	}
 	d.SetId("")
 
 	return nil
@@ -272,4 +293,26 @@ func getValues(input map[string]interface{}) map[string]interface{} {
 	}
 
 	return values
+}
+
+func resourceConfigGroupDeleteStateRefreshFunc(cli *client.Client, backupId string) resource.StateRefreshFunc {
+	return func() (interface{}, string, error) {
+		dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.GetConfigsById1(context.TODO(), backupId)
+		if httpResponse.StatusCode != http.StatusOK {
+			if httpResponse.StatusCode == http.StatusNotFound {
+				return vdbv2.ItemConfigInfo{Status: "DELETED"}, "DELETED", nil
+			} else {
+				return nil, "", fmt.Errorf("error describing config group: %s", GetResponseBody(httpResponse))
+			}
+		} else {
+			if dbResp.Data == nil {
+				return vdbv2.ItemConfigInfo{Status: "DELETED"}, "DELETED", nil
+			}
+		}
+		respJSON, _ := json.Marshal(dbResp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+		return vdbv2.ItemConfigInfo{Status: "ACTIVE"}, "ACTIVE", nil
+	}
 }
