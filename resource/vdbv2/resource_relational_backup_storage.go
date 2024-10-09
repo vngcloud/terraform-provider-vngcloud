@@ -123,16 +123,16 @@ func resourceBackupStorageResizeQuota(d *schema.ResourceData, m interface{}) err
 
 	cli := m.(*client.Client)
 
-	instance := Instance{
+	instance := BackupStorageInstance{
 		InstancesID: d.Id(),
-		Config: Config{
+		Config: BackupStorageConfig{
 			BackupPackageID: d.Get("backup_storage_package_id").(string),
 			IsPoc:           d.Get("is_poc").(bool),
 		},
 	}
-	instances := make([]Instance, 1)
+	instances := make([]BackupStorageInstance, 1)
 	instances[0] = instance
-	resizeQuotaRequest := ResizeBackupStorageRequest{
+	resizeQuotaRequest := BackupStorageRequest{
 		ResourceType:      "dbaas-backup-storage",
 		Action:            "resize",
 		DatabaseInstances: instances,
@@ -160,15 +160,12 @@ func resourceBackupStorageDelete(d *schema.ResourceData, m interface{}) error {
 
 	cli := m.(*client.Client)
 
-	instance := Instance{
+	instance := BackupStorageInstance{
 		InstancesID: d.Id(),
-		Config: Config{
-			EngineGroup: 1,
-		},
 	}
-	instances := make([]Instance, 1)
+	instances := make([]BackupStorageInstance, 1)
 	instances[0] = instance
-	deleteBackupStorageRequest := DeleteBackupStorageRequest{
+	deleteBackupStorageRequest := BackupStorageRequest{
 		ResourceType:      "dbaas-backup-storage",
 		Action:            "delete",
 		DatabaseInstances: instances,
@@ -192,30 +189,24 @@ func resourceBackupStorageDelete(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-type ResizeBackupStorageRequest struct {
-	ResourceType      string     `json:"resourceType"`
-	Action            string     `json:"action"`
-	DatabaseInstances []Instance `json:"databaseInstances"`
+type BackupStorageConfig struct {
+	BackupPackageID string `json:"backupPackageId,omitempty"`
+	IsPoc           bool   `json:"poc,omitempty"`
+	EngineGroup     int    `json:"engineGroup,omitempty"`
 }
 
-type DeleteBackupStorageRequest struct {
-	ResourceType      string     `json:"resType"`
-	Action            string     `json:"action"`
-	DatabaseInstances []Instance `json:"databaseInstances"`
+type BackupStorageInstance struct {
+	InstancesID string              `json:"instancesId,omitempty"`
+	Config      BackupStorageConfig `json:"config,omitempty"`
 }
 
-type Config struct {
-	BackupPackageID string `json:"backupPackageId"`
-	IsPoc           bool   `json:"isPoc"`
-	EngineGroup     int    `json:"engineGroup"`
-}
-
-type Instance struct {
-	InstancesID string `json:"instancesId"`
-	Config      Config `json:"config"`
+type BackupStorageRequest struct {
+	ResourceType      string                  `json:"resourceType,omitempty"`
+	Action            string                  `json:"action,omitempty"`
+	DatabaseInstances []BackupStorageInstance `json:"databaseInstances,omitempty"`
 }
 
 type CreateBackupStorageRequest struct {
-	BackupPackageID string `json:"backupPackageId"`
-	IsPoc           bool   `json:"isPoc"`
+	BackupPackageID string `json:"backupPackageId,omitempty"`
+	IsPoc           bool   `json:"poc,omitempty"`
 }

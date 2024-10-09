@@ -295,47 +295,39 @@ func resourceBackupDelete(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func generateRestoreBackupRequest(projectId string, d *schema.ResourceData) vdb.RestoreRequest {
-	// TODO
-	restoreRequest := vdb.RestoreRequest{
-		AutoRenewPeriod:      1,
+func generateRestoreBackupRequest(d *schema.ResourceData) RestoreBackupRequest {
+	config := RestoreBackupConfig{
 		BackupAuto:           d.Get("backup_auto").(bool),
-		BackupDuration:       int32(d.Get("backup_duration").(int)),
-		BackupId:             d.Get("backup_id").(string),
+		BackupDuration:       d.Get("backup_duration").(int),
+		BackupID:             d.Get("backup_id").(string),
 		BackupTime:           d.Get("backup_time").(string),
-		CartItemId:           0,
-		CartItemState:        0,
-		ConfigId:             d.Get("config_id").(string),
-		Cost:                 0,
+		ConfigID:             d.Get("config_id").(string),
 		DatastoreType:        d.Get("datastore_type").(string),
 		DatastoreVersion:     d.Get("datastore_version").(string),
-		EnableAutoRenew:      false,
-		EndTime:              nil,
-		EngineGroup:          int32(d.Get("engine_group").(int)),
-		Extra:                nil,
-		FlavorId:             d.Get("flavor_id").(string),
-		InvoiceId:            0,
 		Name:                 d.Get("name").(string),
 		NetIds:               []string{d.Get("network_id").(string)},
-		PackageId:            d.Get("package_id").(string),
-		Period:               1,
-		Poc:                  false,
-		PriceKey:             d.Get("price_key").(string),
-		ProjectId:            projectId,
+		PackageID:            d.Get("package_id").(string),
+		IsPoc:                d.Get("is_poc").(bool),
 		PublicAccess:         d.Get("public_access").(bool),
-		Ram:                  int32(d.Get("ram").(int)),
 		RedisPassword:        d.Get("redis_password").(string),
 		RedisPasswordEnabled: d.Get("redis_password_enabled").(bool),
-		StartTime:            time.Now(),
-		UseTrial:             false,
-		Vcpus:                int32(d.Get("vcpus").(int)),
-		VolumeSize:           int32(d.Get("volume_size").(int)),
+		VolumeSize:           d.Get("volume_size").(int),
 		VolumeType:           d.Get("volume_type").(string),
-		VolumeTypeZoneId:     d.Get("volume_type_zone_id").(string),
-		ZoneId:               int32(d.Get("zone_id").(int)),
 	}
 
-	return restoreRequest
+	instance := RestoreBackupInstance{
+		InstancesID: d.Id(),
+		Config:      config,
+	}
+	instances := make([]RestoreBackupInstance, 1)
+	instances[0] = instance
+	restoreBackupRequest := RestoreBackupRequest{
+		ResourceType:      "dbaas-backup",
+		Action:            "restore_backup",
+		DatabaseInstances: instances,
+	}
+
+	return restoreBackupRequest
 }
 
 func resourceBackupDeleteStateRefreshFunc(cli *client.Client, backupId string) resource.StateRefreshFunc {
@@ -363,4 +355,34 @@ func resourceBackupDeleteStateRefreshFunc(cli *client.Client, backupId string) r
 
 type BackupDeleteRequest []struct {
 	BackupID string `json:"backupId"`
+}
+
+type RestoreBackupConfig struct {
+	BackupID             string   `json:"backupId,omitempty"`
+	Name                 string   `json:"name,omitempty"`
+	VolumeSize           int      `json:"volumeSize,omitempty"`
+	DatastoreType        string   `json:"datastoreType,omitempty"`
+	DatastoreVersion     string   `json:"datastoreVersion,omitempty"`
+	NetIds               []string `json:"netIds,omitempty"`
+	ConfigID             string   `json:"configId,omitempty"`
+	PublicAccess         bool     `json:"publicAccess,omitempty"`
+	BackupAuto           bool     `json:"backupAuto,omitempty"`
+	VolumeType           string   `json:"volumeType,omitempty"`
+	PackageID            string   `json:"packageId,omitempty"`
+	BackupDuration       int      `json:"backupDuration,omitempty"`
+	BackupTime           string   `json:"backupTime,omitempty"`
+	RedisPassword        string   `json:"redisPassword,omitempty"`
+	RedisPasswordEnabled bool     `json:"redisPasswordEnabled,omitempty"`
+	IsPoc                bool     `json:"poc,omitempty"`
+}
+
+type RestoreBackupInstance struct {
+	InstancesID string              `json:"instancesId,omitempty"`
+	Config      RestoreBackupConfig `json:"config,omitempty"`
+}
+
+type RestoreBackupRequest struct {
+	ResourceType      string                  `json:"resourceType,omitempty"`
+	Action            string                  `json:"action,omitempty"`
+	DatabaseInstances []RestoreBackupInstance `json:"databaseInstances,omitempty"`
 }

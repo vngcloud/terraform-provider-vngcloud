@@ -598,6 +598,7 @@ func (a *RelationalBackupAPIApiService) RestoreBackup1(ctx context.Context, body
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["user-type"] = "IAM_USER"
 	if localVarOptionals != nil && localVarOptionals.UserType.IsSet() {
 		localVarHeaderParams["user-type"] = parameterToString(localVarOptionals.UserType.Value(), "")
 	}

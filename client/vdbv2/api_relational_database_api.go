@@ -71,6 +71,7 @@ func (a *RelationalDatabaseAPIApiService) CreateRelationalDatabaseInstance(ctx c
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["user-type"] = "IAM_USER"
 	if localVarOptionals != nil && localVarOptionals.UserType.IsSet() {
 		localVarHeaderParams["user-type"] = parameterToString(localVarOptionals.UserType.Value(), "")
 	}
@@ -1446,7 +1447,7 @@ RelationalDatabaseAPIApiService
  * @param instanceId
 @return WrapContentListSecurityGroupRuleEntity
 */
-func (a *RelationalDatabaseAPIApiService) GetSecurityRules(ctx context.Context, body []SecurityGroupRuleEntity, instanceId string) (WrapContentListSecurityGroupRuleEntity, *http.Response, error) {
+func (a *RelationalDatabaseAPIApiService) UpdateSecurityRules(ctx context.Context, body []SecurityGroupRuleEntity, instanceId string) (WrapContentListSecurityGroupRuleEntity, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Put")
 		localVarPostBody    interface{}
@@ -1533,7 +1534,7 @@ RelationalDatabaseAPIApiService
  * @param instanceId
 @return WrapContentListSecurityGroupRuleEntity
 */
-func (a *RelationalDatabaseAPIApiService) GetSecurityRules2(ctx context.Context, instanceId string) (WrapContentListSecurityGroupRuleEntity, *http.Response, error) {
+func (a *RelationalDatabaseAPIApiService) GetSecurityRules(ctx context.Context, instanceId string) (WrapContentListSecurityGroupRuleEntity, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Get")
 		localVarPostBody    interface{}
@@ -1926,6 +1927,7 @@ func (a *RelationalDatabaseAPIApiService) ResizeInstance1(ctx context.Context, b
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["user-type"] = "IAM_USER"
 	if localVarOptionals != nil && localVarOptionals.UserType.IsSet() {
 		localVarHeaderParams["user-type"] = parameterToString(localVarOptionals.UserType.Value(), "")
 	}
@@ -2024,6 +2026,7 @@ func (a *RelationalDatabaseAPIApiService) ResizeStorage(ctx context.Context, bod
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["user-type"] = "IAM_USER"
 	if localVarOptionals != nil && localVarOptionals.UserType.IsSet() {
 		localVarHeaderParams["user-type"] = parameterToString(localVarOptionals.UserType.Value(), "")
 	}
