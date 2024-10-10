@@ -867,6 +867,8 @@ func resourceClusterNodeGroupStateUpgradeV0(ctx context.Context, rawState map[st
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
 		rawState["secondary_subnets"] = nodeGroupResponse.SecondarySubnets
+	} else {
+		rawState["secondary_subnets"] = nil
 	}
 
 	return rawState, nil
