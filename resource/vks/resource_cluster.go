@@ -178,7 +178,10 @@ func resourceClusterStateRefreshFunc(cli *client.Client, clusterID string) resou
 	}
 }
 func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
-	createNodeGroupRequests := expandNodeGroupForCreating(d.Get("node_group").([]interface{}))
+	createNodeGroupRequests, errNodeGroup := expandNodeGroupForCreating(d.Get("node_group").([]interface{}), d.Get("network_type").(string))
+	if errNodeGroup != nil {
+		return errNodeGroup
+	}
 	createClusterRequest := vks.CreateClusterComboDto{
 		Name:                       d.Get("name").(string),
 		Description:                d.Get("description").(string),
@@ -292,16 +295,15 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 	return nil
 }
 
-func expandNodeGroupForCreating(node_group []interface{}) []vks.CreateNodeGroupDto {
+func expandNodeGroupForCreating(node_group []interface{}, networkType string) ([]vks.CreateNodeGroupDto, error) {
 	if len(node_group) == 0 {
 		log.Printf("node_group 0\n")
-		return []vks.CreateNodeGroupDto{}
+		return []vks.CreateNodeGroupDto{}, nil
 	} else if node_group[0] == nil {
 		log.Printf("node_group nil\n")
-		return []vks.CreateNodeGroupDto{}
+		return []vks.CreateNodeGroupDto{}, nil
 	}
 	nodeGroupsJson, _ := json.Marshal(node_group)
-	log.Printf("aaaaa-------------------------------------\n")
 	log.Printf("%s\n", string(nodeGroupsJson))
 	createNodeGroupRequests := make([]vks.CreateNodeGroupDto, len(node_group))
 	for i, ng := range node_group {
@@ -309,10 +311,13 @@ func expandNodeGroupForCreating(node_group []interface{}) []vks.CreateNodeGroupD
 		if !ok {
 			log.Fatalf("Element at index %d is not a map", i)
 		}
+		if networkType == "CILIUM_NATIVE_ROUTING" && (nodeGroup["secondary_subnets"] == nil || len(nodeGroup["secondary_subnets"].([]interface{})) == 0) {
+			return nil, fmt.Errorf("secondary_subnets is required when cluster network type is set to CILIUM_NATIVE_ROUTING")
+		}
 		createNodeGroupRequest := getCreateNodeGroupRequestForCluster(nodeGroup)
 		createNodeGroupRequests[i] = createNodeGroupRequest
 	}
-	return createNodeGroupRequests
+	return createNodeGroupRequests, nil
 }
 
 func resourceClusterRead(d *schema.ResourceData, m interface{}) error {

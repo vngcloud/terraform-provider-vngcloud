@@ -216,7 +216,6 @@ var schemaNodeGroup = map[string]*schema.Schema{
 	"secondary_subnets": {
 		Type:     schema.TypeList,
 		Optional: true,
-		Computed: true,
 		ForceNew: true,
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
@@ -448,6 +447,23 @@ func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error
 
 	createNodeGroupRequest := getCreateNodeGroupRequest(d)
 	cli := m.(*client.Client)
+	clusterId := d.Get("cluster_id").(string)
+
+	respCluster, httpResponseCluster, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdGet(context.TODO(), clusterId, nil)
+	if CheckErrorResponse(httpResponseCluster) {
+		responseBodyCluster := GetResponseBody(httpResponseCluster)
+		errResponseCluster := fmt.Errorf("request get cluster fail with errMsg: %s", responseBodyCluster)
+		return errResponseCluster
+	}
+	respJSONCluster, _ := json.Marshal(respCluster)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSONCluster))
+	log.Printf("-------------------------------------\n")
+
+	if respCluster.NetworkType == "CILIUM_NATIVE_ROUTING" && (d.Get("secondary_subnets") == nil || len(d.Get("secondary_subnets").([]interface{})) == 0) {
+		return fmt.Errorf("secondary_subnets is required when cluster network type is set to CILIUM_NATIVE_ROUTING")
+	}
+
 	request := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsPostOpts{
 		Body: optional.NewInterface(createNodeGroupRequest),
 	}
@@ -867,8 +883,6 @@ func resourceClusterNodeGroupStateUpgradeV0(ctx context.Context, rawState map[st
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
 		rawState["secondary_subnets"] = nodeGroupResponse.SecondarySubnets
-	} else {
-		rawState["secondary_subnets"] = nil
 	}
 
 	return rawState, nil
