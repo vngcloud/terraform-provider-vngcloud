@@ -47,7 +47,7 @@ func NewClient(vdbBaseURL string, vserverBaseURL string, vlbBaseURL string, proj
 	return client, nil
 }
 
-func NewClientV2(vserverBaseURL string, vlbBaseURL string, vksBaseURL string, ClientID string, ClientSecret string, TokenURL string) (*Client, error) {
+func NewClientV2(vserverBaseURL string, vlbBaseURL string, vksBaseURL string, vdbBaseURL string, ClientID string, ClientSecret string, TokenURL string) (*Client, error) {
 	authenConfig := authen.NewConfiguration(ClientID, ClientSecret, TokenURL)
 	authenClient, err := authen.NewAuthenClient(authenConfig)
 	if err != nil {
@@ -63,10 +63,13 @@ func NewClientV2(vserverBaseURL string, vlbBaseURL string, vksBaseURL string, Cl
 	vksConfig := vks.NewConfiguration(vksBaseURL, authenClient.Client)
 	vksClient := vks.NewAPIClient(vksConfig)
 
+	vdbConfig := vdbv2.NewConfiguration(vdbBaseURL, authenClient.Client)
+	vdbClient := vdbv2.NewAPIClient(vdbConfig)
+
 	client := &Client{
 		AuthenClient:  authenClient,
 		VserverClient: vserverClient,
-		VdbClient:     nil,
+		Vdbv2Client:   vdbClient,
 		VksClient:     vksClient,
 		VlbClient:     vlbClient,
 		ProjectId:     "projectId",

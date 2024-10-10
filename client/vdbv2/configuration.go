@@ -57,11 +57,12 @@ type Configuration struct {
 	HTTPClient    *http.Client
 }
 
-func NewConfiguration() *Configuration {
+func NewConfiguration(BasePath string, HTTPClient *http.Client) *Configuration {
 	cfg := &Configuration{
-		BasePath:      "https://vdb-gateway.vngcloud.vn",
+		BasePath:      BasePath,
 		DefaultHeader: make(map[string]string),
-		UserAgent:     "Swagger-Codegen/1.0.0/go",
+		HTTPClient:    HTTPClient,
+		UserAgent:     "terraform",
 	}
 	return cfg
 }

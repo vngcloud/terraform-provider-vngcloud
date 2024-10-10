@@ -53,14 +53,17 @@ func ResourceRelationalDatabase() *schema.Resource {
 			"database_name": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
-			"datastore_type": {
+			"engine_type": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
-			"datastore_version": {
+			"engine_version": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"free_backup_size": {
 				Type:     schema.TypeInt,
@@ -76,10 +79,12 @@ func ResourceRelationalDatabase() *schema.Resource {
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"subnet_id": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"package_id": {
 				Type:     schema.TypeString,
@@ -128,6 +133,7 @@ func ResourceRelationalDatabase() *schema.Resource {
 			"username": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"vcpus": {
 				Type:     schema.TypeInt,
@@ -280,8 +286,8 @@ func generateCreateDatabaseRequest(d *schema.ResourceData) vdb.CreateDbInstanceR
 		BackupTime:       d.Get("backup_time").(string),
 		ConfigId:         d.Get("config_id").(string),
 		Databases:        nil,
-		DatastoreType:    d.Get("datastore_type").(string),
-		DatastoreVersion: d.Get("datastore_version").(string),
+		DatastoreType:    d.Get("engine_type").(string),
+		DatastoreVersion: d.Get("engine_version").(string),
 		Name:             d.Get("name").(string),
 		NetIds:           []string{d.Get("subnet_id").(string)},
 		PackageId:        d.Get("package_id").(string),
@@ -397,8 +403,8 @@ func resourceDatabaseRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("backup_auto", dbResp.Data.BackupAuto)
 	d.Set("backup_duration", dbResp.Data.BackupDuration)
 	d.Set("backup_time", dbResp.Data.BackupTime)
-	d.Set("datastore_type", dbResp.Data.DatastoreType)
-	d.Set("datastore_version", dbResp.Data.DatastoreVersion)
+	d.Set("engine_type", dbResp.Data.DatastoreType)
+	d.Set("engine_version", dbResp.Data.DatastoreVersion)
 	d.Set("free_backup_size", dbResp.Data.FreeBackupSize)
 	d.Set("ip", dbResp.Data.Ip)
 	d.Set("name", dbResp.Data.Name)

@@ -348,8 +348,7 @@ func resourceBackupDeleteStateRefreshFunc(cli *client.Client, backupId string) r
 		log.Printf("-------------------------------------\n")
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
-		backup := dbResp.Data
-		return backup, backup.Status, nil
+		return vdbv2.BackupInfo{Status: "ACTIVE"}, "ACTIVE", nil
 	}
 }
 
