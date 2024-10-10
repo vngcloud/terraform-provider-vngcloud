@@ -64,6 +64,7 @@ func NewConfiguration(BasePath string, HTTPClient *http.Client) *Configuration {
 		HTTPClient:    HTTPClient,
 		UserAgent:     "terraform",
 	}
+	cfg.DefaultHeader["user-type"] = "IAM_USER"
 	return cfg
 }
 

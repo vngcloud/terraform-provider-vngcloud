@@ -70,6 +70,7 @@ func (a *MemoryStoreBackupStorageAPIApiService) CreateMemoryStoreBackUpStorage(c
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["user-type"] = "IAM_USER"
 	if localVarOptionals != nil && localVarOptionals.UserType.IsSet() {
 		localVarHeaderParams["user-type"] = parameterToString(localVarOptionals.UserType.Value(), "")
 	}

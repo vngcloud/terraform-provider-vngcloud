@@ -15,11 +15,11 @@ import (
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vdb"
 )
 
-func ResourceRelationalBackup() *schema.Resource {
+func ResourceMemStoreBackup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceRelationalBackupCreate,
-		Read:   resourceRelationalBackupRead,
-		Delete: resourceRelationalBackupDelete,
+		Create: resourceMemStoreBackupCreate,
+		Read:   resourceMemStoreBackupRead,
+		Delete: resourceMemStoreBackupDelete,
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 				d.SetId(d.Id())
@@ -51,23 +51,13 @@ func ResourceRelationalBackup() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"parent_id": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-			"parent_name": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 			"created": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
 			"backup_type": {
 				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Computed: true,
 			},
 			"status": {
 				Type:     schema.TypeString,
@@ -136,12 +126,12 @@ func ResourceRelationalBackup() *schema.Resource {
 	}
 }
 
-func resourceRelationalBackupRead(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreBackupRead(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG] Backup read")
 
 	cli := m.(*client.Client)
 
-	dbResp, httpResponse, err := cli.Vdbv2Client.RelationalBackupAPIApi.GetDetailBackupById1(context.TODO(), d.Id())
+	dbResp, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupAPIApi.GetDetailBackupById(context.TODO(), d.Id())
 	if err != nil {
 		return err
 	}
@@ -185,16 +175,16 @@ func resourceRelationalBackupRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceRelationalBackupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreBackupCreate(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG] Backup create")
 
 	cli := m.(*client.Client)
 
-	createRequest := generateRelationalCreateBackupRequest(d)
+	createRequest := generateMemStoreCreateBackupRequest(d)
 	reqBody, _ := json.Marshal(createRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	createDbResult, httpResponse, err := cli.Vdbv2Client.RelationalBackupAPIApi.CreateBackups1(context.TODO(), string(reqBody))
+	createDbResult, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupAPIApi.CreateBackups(context.TODO(), string(reqBody))
 	if err != nil {
 		return err
 	}
@@ -209,7 +199,7 @@ func resourceRelationalBackupCreate(d *schema.ResourceData, m interface{}) error
 	stateConf := &resource.StateChangeConf{
 		Pending:    []string{"NEW", "BUILDING", "SAVING"},
 		Target:     []string{"COMPLETED"},
-		Refresh:    resourceRelationalBackupStateRefreshFunc(cli, createDbResult.Data.BackupId),
+		Refresh:    resourceMemStoreBackupStateRefreshFunc(cli, createDbResult.Data.BackupId),
 		Timeout:    30 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 10 * time.Second,
@@ -222,33 +212,32 @@ func resourceRelationalBackupCreate(d *schema.ResourceData, m interface{}) error
 
 	d.SetId(idStr)
 
-	return resourceRelationalBackupRead(d, m)
+	return resourceMemStoreBackupRead(d, m)
 }
 
-func generateRelationalCreateBackupRequest(d *schema.ResourceData) vdb.BackupRequest {
+func generateMemStoreCreateBackupRequest(d *schema.ResourceData) vdb.BackupRequest {
 	createRequest := vdb.BackupRequest{
 		DbInstanceId: d.Get("instance_id").(string),
 		Name:         d.Get("name").(string),
 		Description:  d.Get("description").(string),
-		BackupType:   d.Get("backup_type").(string),
-		ParentId:     d.Get("parent_id").(string),
+		BackupType:   "FULL",
 	}
 
 	return createRequest
 }
 
-func resourceRelationalBackupStateRefreshFunc(cli *client.Client, id string) resource.StateRefreshFunc {
+func resourceMemStoreBackupStateRefreshFunc(cli *client.Client, id string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		log.Println("[DEBUG] State refresh")
 
-		dbResp, _, _ := cli.Vdbv2Client.RelationalBackupAPIApi.GetDetailBackupById1(context.TODO(), id)
-		log.Println("[DEBUG] Database status: " + dbResp.Data.Status)
+		dbResp, _, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.GetDetailBackupById(context.TODO(), id)
+		log.Println("[DEBUG] Backup status: " + dbResp.Data.Status)
 
 		return dbResp.Data.Id, dbResp.Data.Status, nil
 	}
 }
 
-func resourceRelationalBackupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreBackupDelete(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG] Backup delete")
 
 	cli := m.(*client.Client)
@@ -260,7 +249,7 @@ func resourceRelationalBackupDelete(d *schema.ResourceData, m interface{}) error
 	reqBody, _ := json.Marshal(deleteRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalBackupAPIApi.DeleteBackups1(context.TODO(), string(reqBody), backupId)
+	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupAPIApi.DeleteBackups(context.TODO(), string(reqBody))
 
 	if err != nil {
 		return err
@@ -279,7 +268,7 @@ func resourceRelationalBackupDelete(d *schema.ResourceData, m interface{}) error
 	stateConf := &resource.StateChangeConf{
 		Pending:    []string{"ACTIVE"},
 		Target:     []string{"DELETED"},
-		Refresh:    resourceRelationalBackupDeleteStateRefreshFunc(cli, d.Id()),
+		Refresh:    resourceMemStoreBackupDeleteStateRefreshFunc(cli, d.Id()),
 		Timeout:    10 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 10 * time.Second,
@@ -293,22 +282,22 @@ func resourceRelationalBackupDelete(d *schema.ResourceData, m interface{}) error
 	return nil
 }
 
-func generateRelationalRestoreBackupRequest(d *schema.ResourceData) RestoreBackupRequest {
+func generateMemStoreRestoreBackupRequest(d *schema.ResourceData) RestoreBackupRequest {
 	config := RestoreBackupConfig{
-		BackupAuto:       d.Get("backup_auto").(bool),
-		BackupDuration:   d.Get("backup_duration").(int),
-		BackupID:         d.Get("backup_id").(string),
-		BackupTime:       d.Get("backup_time").(string),
-		ConfigID:         d.Get("config_id").(string),
-		DatastoreType:    d.Get("engine_type").(string),
-		DatastoreVersion: d.Get("engine_version").(string),
-		Name:             d.Get("name").(string),
-		NetIds:           []string{d.Get("subnet_id").(string)},
-		PackageID:        d.Get("package_id").(string),
-		IsPoc:            d.Get("is_poc").(bool),
-		PublicAccess:     d.Get("public_access").(bool),
-		VolumeSize:       d.Get("volume_size").(int),
-		VolumeType:       d.Get("volume_type").(string),
+		BackupAuto:           d.Get("backup_auto").(bool),
+		BackupDuration:       d.Get("backup_duration").(int),
+		BackupID:             d.Get("backup_id").(string),
+		BackupTime:           d.Get("backup_time").(string),
+		ConfigID:             d.Get("config_id").(string),
+		DatastoreType:        d.Get("engine_type").(string),
+		DatastoreVersion:     d.Get("engine_version").(string),
+		Name:                 d.Get("name").(string),
+		NetIds:               []string{d.Get("subnet_id").(string)},
+		PackageID:            d.Get("package_id").(string),
+		IsPoc:                d.Get("is_poc").(bool),
+		PublicAccess:         d.Get("public_access").(bool),
+		RedisPassword:        d.Get("redis_password").(string),
+		RedisPasswordEnabled: d.Get("redis_password_enabled").(bool),
 	}
 
 	instance := RestoreBackupInstance{
@@ -326,9 +315,9 @@ func generateRelationalRestoreBackupRequest(d *schema.ResourceData) RestoreBacku
 	return restoreBackupRequest
 }
 
-func resourceRelationalBackupDeleteStateRefreshFunc(cli *client.Client, backupId string) resource.StateRefreshFunc {
+func resourceMemStoreBackupDeleteStateRefreshFunc(cli *client.Client, backupId string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalBackupAPIApi.GetDetailBackupById1(context.TODO(), backupId)
+		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.GetDetailBackupById(context.TODO(), backupId)
 		if httpResponse.StatusCode != http.StatusOK {
 			if httpResponse.StatusCode == http.StatusNotFound {
 				return vdbv2.BackupInfo{Status: "DELETED"}, "DELETED", nil
@@ -346,38 +335,4 @@ func resourceRelationalBackupDeleteStateRefreshFunc(cli *client.Client, backupId
 		log.Printf("-------------------------------------\n")
 		return vdbv2.BackupInfo{Status: "ACTIVE"}, "ACTIVE", nil
 	}
-}
-
-type BackupDeleteRequest []struct {
-	BackupID string `json:"backupId"`
-}
-
-type RestoreBackupConfig struct {
-	BackupID             string   `json:"backupId,omitempty"`
-	Name                 string   `json:"name,omitempty"`
-	VolumeSize           int      `json:"volumeSize,omitempty"`
-	DatastoreType        string   `json:"datastoreType,omitempty"`
-	DatastoreVersion     string   `json:"datastoreVersion,omitempty"`
-	NetIds               []string `json:"netIds,omitempty"`
-	ConfigID             string   `json:"configId,omitempty"`
-	PublicAccess         bool     `json:"publicAccess,omitempty"`
-	BackupAuto           bool     `json:"backupAuto,omitempty"`
-	VolumeType           string   `json:"volumeType,omitempty"`
-	PackageID            string   `json:"packageId,omitempty"`
-	BackupDuration       int      `json:"backupDuration,omitempty"`
-	BackupTime           string   `json:"backupTime,omitempty"`
-	RedisPassword        string   `json:"redisPassword,omitempty"`
-	RedisPasswordEnabled bool     `json:"redisPasswordEnabled,omitempty"`
-	IsPoc                bool     `json:"poc,omitempty"`
-}
-
-type RestoreBackupInstance struct {
-	InstancesID string              `json:"instancesId,omitempty"`
-	Config      RestoreBackupConfig `json:"config,omitempty"`
-}
-
-type RestoreBackupRequest struct {
-	ResourceType      string                  `json:"resourceType,omitempty"`
-	Action            string                  `json:"action,omitempty"`
-	DatabaseInstances []RestoreBackupInstance `json:"databaseInstances,omitempty"`
 }

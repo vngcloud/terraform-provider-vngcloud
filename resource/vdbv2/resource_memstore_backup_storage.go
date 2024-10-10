@@ -10,12 +10,12 @@ import (
 	"time"
 )
 
-func ResourceRelationalBackupStorage() *schema.Resource {
+func ResourceMemStoreBackupStorage() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceRelationalBackupStorageCreate,
-		Read:   resourceRelationalBackupStorageRead,
-		Update: resourceRelationalBackupStorageUpdate,
-		Delete: resourceRelationalBackupStorageDelete,
+		Create: resourceMemStoreBackupStorageCreate,
+		Read:   resourceMemStoreBackupStorageRead,
+		Update: resourceMemStoreBackupStorageUpdate,
+		Delete: resourceMemStoreBackupStorageDelete,
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 				d.SetId(d.Id())
@@ -48,12 +48,12 @@ func ResourceRelationalBackupStorage() *schema.Resource {
 	}
 }
 
-func resourceRelationalBackupStorageRead(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreBackupStorageRead(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG] Backup storage read")
 
 	cli := m.(*client.Client)
 
-	backupStorageResult, httpResponse, err := cli.Vdbv2Client.RelationalBackupStorageAPIApi.GetListBackupStorage1(context.TODO(), nil)
+	backupStorageResult, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupStorageAPIApi.GetListBackupStorage(context.TODO(), nil)
 	if err != nil {
 		return err
 	}
@@ -80,16 +80,16 @@ func resourceRelationalBackupStorageRead(d *schema.ResourceData, m interface{}) 
 	return nil
 }
 
-func resourceRelationalBackupStorageCreate(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreBackupStorageCreate(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG] Backup storage create")
 
 	cli := m.(*client.Client)
 
-	createBackupStorageRequest := generateRelationalCreateBackupStorageRequest(d)
+	createBackupStorageRequest := generateMemStoreCreateBackupStorageRequest(d)
 	reqBody, _ := json.Marshal(createBackupStorageRequest)
 	log.Println("[DEBUG] Request body " + string(reqBody))
 
-	createBackupStorageResult, httpResponse, err := cli.Vdbv2Client.RelationalBackupStorageAPIApi.CreateRelationalBackUpStorage(context.TODO(), string(reqBody), nil)
+	createBackupStorageResult, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupStorageAPIApi.CreateMemoryStoreBackUpStorage(context.TODO(), string(reqBody), nil)
 	if err != nil {
 		return err
 	}
@@ -106,7 +106,7 @@ func resourceRelationalBackupStorageCreate(d *schema.ResourceData, m interface{}
 	return nil
 }
 
-func generateRelationalCreateBackupStorageRequest(d *schema.ResourceData) CreateBackupStorageRequest {
+func generateMemStoreCreateBackupStorageRequest(d *schema.ResourceData) CreateBackupStorageRequest {
 	createRequest := CreateBackupStorageRequest{
 		BackupPackageID: d.Get("backup_storage_package_id").(string),
 		IsPoc:           d.Get("is_poc").(bool),
@@ -114,11 +114,11 @@ func generateRelationalCreateBackupStorageRequest(d *schema.ResourceData) Create
 	return createRequest
 }
 
-func resourceRelationalBackupStorageUpdate(d *schema.ResourceData, m interface{}) error {
-	return resourceRelationalBackupStorageResizeQuota(d, m)
+func resourceMemStoreBackupStorageUpdate(d *schema.ResourceData, m interface{}) error {
+	return resourceMemStoreBackupStorageResizeQuota(d, m)
 }
 
-func resourceRelationalBackupStorageResizeQuota(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreBackupStorageResizeQuota(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG] Backup storage resize quota")
 
 	cli := m.(*client.Client)
@@ -140,7 +140,7 @@ func resourceRelationalBackupStorageResizeQuota(d *schema.ResourceData, m interf
 	reqBody, _ := json.Marshal(resizeQuotaRequest)
 	log.Println("[DEBUG] Resize quota request body " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalBackupStorageAPIApi.ResizeBackupStorage1(context.TODO(), string(reqBody), nil)
+	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupStorageAPIApi.ResizeBackupStorage(context.TODO(), string(reqBody), nil)
 	if err != nil {
 		return err
 	}
@@ -155,7 +155,7 @@ func resourceRelationalBackupStorageResizeQuota(d *schema.ResourceData, m interf
 	return nil
 }
 
-func resourceRelationalBackupStorageDelete(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreBackupStorageDelete(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG] Backup storage delete")
 
 	cli := m.(*client.Client)
@@ -173,7 +173,7 @@ func resourceRelationalBackupStorageDelete(d *schema.ResourceData, m interface{}
 	reqBody, _ := json.Marshal(deleteBackupStorageRequest)
 	log.Println("[DEBUG] Delete request body " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalBackupStorageAPIApi.DeleteBackupStorage1(context.TODO(), string(reqBody))
+	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupStorageAPIApi.DeleteBackupStorage(context.TODO(), string(reqBody))
 	if err != nil {
 		return err
 	}
@@ -187,26 +187,4 @@ func resourceRelationalBackupStorageDelete(d *schema.ResourceData, m interface{}
 
 	d.SetId("")
 	return nil
-}
-
-type BackupStorageConfig struct {
-	BackupPackageID string `json:"backupPackageId,omitempty"`
-	IsPoc           bool   `json:"poc,omitempty"`
-	EngineGroup     int    `json:"engineGroup,omitempty"`
-}
-
-type BackupStorageInstance struct {
-	InstancesID string              `json:"instancesId,omitempty"`
-	Config      BackupStorageConfig `json:"config,omitempty"`
-}
-
-type BackupStorageRequest struct {
-	ResourceType      string                  `json:"resourceType,omitempty"`
-	Action            string                  `json:"action,omitempty"`
-	DatabaseInstances []BackupStorageInstance `json:"databaseInstances,omitempty"`
-}
-
-type CreateBackupStorageRequest struct {
-	BackupPackageID string `json:"backupPackageId,omitempty"`
-	IsPoc           bool   `json:"poc,omitempty"`
 }

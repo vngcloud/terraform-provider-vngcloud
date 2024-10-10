@@ -8,7 +8,6 @@ import (
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vdbv2"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -16,11 +15,11 @@ import (
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vdb"
 )
 
-func ResourceRelationalConfigurationGroup() *schema.Resource {
+func ResourceMemStoreConfigurationGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceRelationalConfigurationGroupCreate,
-		Read:   resourceRelationalConfigurationGroupRead,
-		Delete: resourceRelationalConfigurationGroupDelete,
+		Create: resourceMemStoreConfigurationGroupCreate,
+		Read:   resourceMemStoreConfigurationGroupRead,
+		Delete: resourceMemStoreConfigurationGroupDelete,
 
 		Schema: map[string]*schema.Schema{
 			"datastore_type": {
@@ -82,7 +81,7 @@ func ResourceRelationalConfigurationGroup() *schema.Resource {
 	}
 }
 
-func resourceRelationalConfigurationGroupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreConfigurationGroupCreate(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG]  Configuration group create")
 
 	cli := m.(*client.Client)
@@ -91,12 +90,12 @@ func resourceRelationalConfigurationGroupCreate(d *schema.ResourceData, m interf
 		DatastoreVersion: d.Get("datastore_version").(string),
 		Description:      d.Get("description").(string),
 		Name:             d.Get("name").(string),
-		EngineGroup:      1,
+		EngineGroup:      2,
 	}
 
 	body, _ := json.Marshal(createRequest)
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.CreateConfig1(context.TODO(), string(body))
+	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.CreateConfig(context.TODO(), string(body))
 
 	if err != nil {
 		return err
@@ -113,22 +112,22 @@ func resourceRelationalConfigurationGroupCreate(d *schema.ResourceData, m interf
 
 	_, ok := d.Get("values").([]interface{})
 	if ok {
-		err := resourceRelationalConfigurationGroupUpdate(d, m)
+		err := resourceMemStoreConfigurationGroupUpdate(d, m)
 		if err != nil {
 			return err
 		}
 		time.Sleep(10 * time.Second)
 	}
-	return resourceRelationalConfigurationGroupRead(d, m)
+	return resourceMemStoreConfigurationGroupRead(d, m)
 }
 
-func resourceRelationalConfigurationGroupRead(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreConfigurationGroupRead(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG]  Configuration group read")
 
 	cli := m.(*client.Client)
 	configID := d.Id()
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.GetConfigsById1(context.TODO(), configID)
+	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.GetConfigsById(context.TODO(), configID)
 	if err != nil {
 		return err
 	}
@@ -157,19 +156,7 @@ func resourceRelationalConfigurationGroupRead(d *schema.ResourceData, m interfac
 	return nil
 }
 
-func parseInstances(instances *[]vdbv2.TinyDbInstanceInfo) interface{} {
-	res := make([]interface{}, len(*instances))
-	for i, instance := range *instances {
-		cur := make(map[string]interface{})
-
-		cur["id"] = instance.Id
-		cur["name"] = instance.Name
-		res[i] = cur
-	}
-	return res
-}
-
-func resourceRelationalConfigurationGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreConfigurationGroupDelete(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG]  Configuration group delete")
 
 	cli := m.(*client.Client)
@@ -182,7 +169,7 @@ func resourceRelationalConfigurationGroupDelete(d *schema.ResourceData, m interf
 	request[0] = deleteReq
 	body, _ := json.Marshal(request)
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.DeleteConfigs1(context.TODO(), string(body))
+	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.DeleteConfigs(context.TODO(), string(body))
 	if err != nil {
 		return err
 	}
@@ -205,7 +192,7 @@ func resourceRelationalConfigurationGroupDelete(d *schema.ResourceData, m interf
 	stateConf := &resource.StateChangeConf{
 		Pending:    []string{"ACTIVE"},
 		Target:     []string{"DELETED"},
-		Refresh:    resourceRelationalConfigGroupDeleteStateRefreshFunc(cli, d.Id()),
+		Refresh:    resourceMemStoreConfigGroupDeleteStateRefreshFunc(cli, d.Id()),
 		Timeout:    10 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 10 * time.Second,
@@ -219,7 +206,7 @@ func resourceRelationalConfigurationGroupDelete(d *schema.ResourceData, m interf
 	return nil
 }
 
-func resourceRelationalConfigurationGroupUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreConfigurationGroupUpdate(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
 
 	//valuesInput, ok := d.Get("values").([]interface{})
@@ -242,7 +229,7 @@ func resourceRelationalConfigurationGroupUpdate(d *schema.ResourceData, m interf
 
 	body, _ := json.Marshal(updateRequest)
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.UpdateConfig1(context.TODO(), string(body))
+	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.UpdateConfig(context.TODO(), string(body))
 
 	if err != nil {
 		return err
@@ -275,25 +262,9 @@ func resourceRelationalConfigurationGroupUpdate(d *schema.ResourceData, m interf
 //	return values
 //}
 
-func getValues(input map[string]interface{}) map[string]interface{} {
-	values := make(map[string]interface{}, len(input))
-
-	for k, v := range input {
-		if intValue, err := strconv.Atoi(v.(string)); err == nil {
-			values[k] = intValue
-		} else if boolValue, err := strconv.ParseBool(v.(string)); err == nil {
-			values[k] = boolValue
-		} else {
-			values[k] = v.(string)
-		}
-	}
-
-	return values
-}
-
-func resourceRelationalConfigGroupDeleteStateRefreshFunc(cli *client.Client, configId string) resource.StateRefreshFunc {
+func resourceMemStoreConfigGroupDeleteStateRefreshFunc(cli *client.Client, configId string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.GetConfigsById1(context.TODO(), configId)
+		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.GetConfigsById(context.TODO(), configId)
 		if httpResponse.StatusCode != http.StatusOK {
 			if httpResponse.StatusCode == http.StatusNotFound {
 				return vdbv2.ItemConfigInfo{Status: "DELETED"}, "DELETED", nil

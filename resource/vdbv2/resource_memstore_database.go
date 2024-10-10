@@ -13,12 +13,12 @@ import (
 	"net/http"
 )
 
-func ResourceRelationalDatabase() *schema.Resource {
+func ResourceMemStoreDatabase() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceRelationalDatabaseCreate,
-		Read:   resourceRelationalDatabaseRead,
-		Update: resourceRelationalDatabaseUpdate,
-		Delete: resourceRelationalDatabaseDelete,
+		Create: resourceMemStoreDatabaseCreate,
+		Read:   resourceMemStoreDatabaseRead,
+		Update: resourceMemStoreDatabaseUpdate,
+		Delete: resourceMemStoreDatabaseDelete,
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 				d.SetId(d.Id())
@@ -49,11 +49,6 @@ func ResourceRelationalDatabase() *schema.Resource {
 			"config_name": {
 				Type:     schema.TypeString,
 				Computed: true,
-			},
-			"db_name": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
 			},
 			"engine_type": {
 				Type:     schema.TypeString,
@@ -90,10 +85,6 @@ func ResourceRelationalDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"password": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
 			"port": {
 				Type:     schema.TypeInt,
 				Computed: true,
@@ -106,14 +97,14 @@ func ResourceRelationalDatabase() *schema.Resource {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
-			//"redis_password": {
-			//	Type:     schema.TypeString,
-			//	Required: true,
-			//},
-			//"redis_password_enabled": {
-			//	Type:     schema.TypeBool,
-			//	Required: true,
-			//},
+			"redis_password": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"redis_password_enabled": {
+				Type:     schema.TypeBool,
+				Required: true,
+			},
 			"replica_source_id": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -130,22 +121,17 @@ func ResourceRelationalDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"username": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
 			"cpu": {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
 			"volume_size": {
 				Type:     schema.TypeInt,
-				Required: true,
+				Computed: true,
 			},
 			"volume_type": {
 				Type:     schema.TypeString,
-				Required: true,
+				Computed: true,
 			},
 			"volume_type_zone_id": {
 				Type:     schema.TypeString,
@@ -181,11 +167,11 @@ func ResourceRelationalDatabase() *schema.Resource {
 	}
 }
 
-func resourceRelationalDatabaseStateRefreshFunc(cli *client.Client, id string) resource.StateRefreshFunc {
+func resourceMemStoreDatabaseStateRefreshFunc(cli *client.Client, id string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		log.Println("[DEBUG]  State refresh")
 
-		dbResp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetDatabaseInstancesById1(context.TODO(), id)
+		dbResp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById(context.TODO(), id)
 		if err != nil {
 			return nil, "", fmt.Errorf("error when refreshing database state: %s", err)
 		}
@@ -202,19 +188,18 @@ func resourceRelationalDatabaseStateRefreshFunc(cli *client.Client, id string) r
 	}
 }
 
-func resourceRelationalDatabaseCreate(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreDatabaseCreate(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG]  Database create")
 
 	cli := m.(*client.Client)
 
 	var instanceId string
 	if d.Get("backup_id").(string) == "" {
-		createRequest := generateRelationalCreateDatabaseRequest(d)
+		createRequest := generateMemStoreCreateDatabaseRequest(d)
 		reqBody, _ := json.Marshal(createRequest)
 		log.Println("[DEBUG]  Body: " + string(reqBody))
-
 		if d.Get("replica_source_id").(string) == "" {
-			createDbResult, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.CreateRelationalDatabaseInstance(context.TODO(), string(reqBody), nil)
+			createDbResult, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.CreateMemoryStoreDatabaseInstance(context.TODO(), string(reqBody), nil)
 			if err != nil {
 				return fmt.Errorf("error when creating database: %s", err)
 			}
@@ -226,7 +211,7 @@ func resourceRelationalDatabaseCreate(d *schema.ResourceData, m interface{}) err
 			log.Println("[DEBUG]  Create db result, id: " + createDbResult.Data[0].ResourceId)
 			instanceId = createDbResult.Data[0].ResourceId
 		} else {
-			createDbResult, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.CreateRelationalDatabaseInstanceReplica(context.TODO(), string(reqBody), d.Get("replica_source_id").(string), nil)
+			createDbResult, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.CreateDatabaseInstanceReplica(context.TODO(), string(reqBody), d.Get("replica_source_id").(string), nil)
 			if err != nil {
 				return fmt.Errorf("error when creating database replica: %s", err)
 			}
@@ -239,11 +224,11 @@ func resourceRelationalDatabaseCreate(d *schema.ResourceData, m interface{}) err
 			instanceId = createDbResult.Data[0].ResourceId
 		}
 	} else {
-		restoreRequest := generateRelationalRestoreBackupRequest(d)
+		restoreRequest := generateMemStoreRestoreBackupRequest(d)
 		reqBody, _ := json.Marshal(restoreRequest)
 		log.Println("[DEBUG]  Body: " + string(reqBody))
 
-		createDbResult, httpResponse, err := cli.Vdbv2Client.RelationalBackupAPIApi.RestoreBackup1(context.TODO(), string(reqBody), d.Get("backup_id").(string), nil)
+		createDbResult, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupAPIApi.RestoreBackup(context.TODO(), string(reqBody), d.Get("backup_id").(string), nil)
 		if err != nil {
 			return fmt.Errorf("error when creating database: %s", err)
 		}
@@ -259,7 +244,7 @@ func resourceRelationalDatabaseCreate(d *schema.ResourceData, m interface{}) err
 	stateConf := &resource.StateChangeConf{
 		Pending:    databaseCreatePending,
 		Target:     databaseCreateTarget,
-		Refresh:    resourceRelationalDatabaseStateRefreshFunc(cli, instanceId),
+		Refresh:    resourceMemStoreDatabaseStateRefreshFunc(cli, instanceId),
 		Timeout:    databaseCreateTimeout,
 		Delay:      databaseCreateDelay,
 		MinTimeout: databaseCreateMinTimeout,
@@ -278,13 +263,13 @@ func resourceRelationalDatabaseCreate(d *schema.ResourceData, m interface{}) err
 	allowedIP := d.Get("allowed_ip_prefix").([]interface{})
 	log.Printf("[DEBUG] allowed ip prefix: %v\n", allowedIP)
 
-	err = resourceRelationalDatabaseRead(d, m)
+	err = resourceMemStoreDatabaseRead(d, m)
 	if err != nil {
 		return fmt.Errorf("error when getting database info after create: %s", err)
 	}
 
 	if allowedIP != nil && len(allowedIP) > 0 {
-		err := secgroupRulesRelationalUpdate(d, m, allowedIP)
+		err := secgroupRulesMemStoreUpdate(d, m, allowedIP)
 		if err != nil {
 			return err
 		}
@@ -293,50 +278,40 @@ func resourceRelationalDatabaseCreate(d *schema.ResourceData, m interface{}) err
 	return nil
 }
 
-func generateRelationalCreateDatabaseRequest(d *schema.ResourceData) vdb.CreateDbInstanceRequest {
+func generateMemStoreCreateDatabaseRequest(d *schema.ResourceData) vdb.CreateDbInstanceRequest {
 	createRequest := vdb.CreateDbInstanceRequest{
-		BackupAuto:       d.Get("backup_auto").(bool),
-		BackupDuration:   int32(d.Get("backup_duration").(int)),
-		BackupTime:       d.Get("backup_time").(string),
-		ConfigId:         d.Get("config_id").(string),
-		Databases:        nil,
-		DatastoreType:    d.Get("engine_type").(string),
-		DatastoreVersion: d.Get("engine_version").(string),
-		Name:             d.Get("name").(string),
-		NetIds:           []string{d.Get("subnet_id").(string)},
-		PackageId:        d.Get("package_id").(string),
-		Poc:              d.Get("is_poc").(bool),
-		PublicAccess:     d.Get("public_access").(bool),
-		ReplicaSourceId:  d.Get("replica_source_id").(string),
-		User:             nil,
-		VolumeSize:       int32(d.Get("volume_size").(int)),
-		VolumeType:       d.Get("volume_type").(string),
+		BackupAuto:           d.Get("backup_auto").(bool),
+		BackupDuration:       int32(d.Get("backup_duration").(int)),
+		BackupTime:           d.Get("backup_time").(string),
+		ConfigId:             d.Get("config_id").(string),
+		DatastoreType:        d.Get("engine_type").(string),
+		DatastoreVersion:     d.Get("engine_version").(string),
+		Name:                 d.Get("name").(string),
+		NetIds:               []string{d.Get("subnet_id").(string)},
+		PackageId:            d.Get("package_id").(string),
+		Poc:                  d.Get("is_poc").(bool),
+		PublicAccess:         d.Get("public_access").(bool),
+		ReplicaSourceId:      d.Get("replica_source_id").(string),
+		RedisPasswordEnabled: false,
+		RedisPassword:        "",
 	}
 
 	if d.Get("replica_source_id").(string) == "" {
-		createRequest.User = &vdb.UserRequest{
-			Databases: []vdb.Database{{Name: d.Get("db_name").(string)}},
-			Name:      d.Get("username").(string),
-			Password:  d.Get("password").(string),
-		}
-
-		createRequest.Databases = []vdb.DatabaseRequest{{
-			CharacterSet: "utf8",
-			Collate:      "utf8_general_ci",
-			Name:         d.Get("db_name").(string),
-		}}
+		createRequest.RedisPasswordEnabled = d.Get("redis_password_enabled").(bool)
+		createRequest.RedisPassword = d.Get("redis_password").(string)
 	}
 
 	return createRequest
 }
 
-func secgroupRulesRelationalUpdate(d *schema.ResourceData, m interface{}, allowedIP []interface{}) error {
+func secgroupRulesMemStoreUpdate(d *schema.ResourceData, m interface{}, allowedIP []interface{}) error {
 	if len(allowedIP) > 0 {
 		cli := m.(*client.Client)
 
 		instanceID := d.Id()
 		rules := createSecurityGroupRules(&allowedIP, d.Get("port").(int))
-		_, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.UpdateSecurityRules(context.TODO(), rules, instanceID)
+		reqBody, _ := json.Marshal(rules)
+		_, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateSecurityRules(context.TODO(), string(reqBody), instanceID)
 
 		if err != nil {
 			return err
@@ -349,24 +324,14 @@ func secgroupRulesRelationalUpdate(d *schema.ResourceData, m interface{}, allowe
 		}
 	}
 
-	return secgroupRulesRelationalRead(d, m)
+	return secgroupRulesMemStoreRead(d, m)
 }
 
-func createSecurityGroupRules(allowedIP *[]interface{}, port int) []vdbv2.SecurityGroupRuleEntity {
-	rules := make([]vdbv2.SecurityGroupRuleEntity, len(*allowedIP))
-	for i, rule := range *allowedIP {
-		rules[i].RemoteIpPrefix = rule.(string)
-		rules[i].PortRangeMin = int32(port)
-		rules[i].PortRangeMax = int32(port)
-	}
-	return rules
-}
-
-func secgroupRulesRelationalRead(d *schema.ResourceData, m interface{}) error {
+func secgroupRulesMemStoreRead(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
 
 	instanceID := d.Id()
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetSecurityRules(context.TODO(), instanceID)
+	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetSecurityRules1(context.TODO(), instanceID)
 
 	if err != nil {
 		return err
@@ -393,12 +358,12 @@ func secgroupRulesRelationalRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceRelationalDatabaseRead(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreDatabaseRead(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG] Database read")
 
 	cli := m.(*client.Client)
 
-	dbResp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetDatabaseInstancesById1(context.TODO(), d.Id())
+	dbResp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById(context.TODO(), d.Id())
 	if err != nil {
 		return fmt.Errorf("error when getting database info: %s", err)
 	}
@@ -427,8 +392,6 @@ func resourceRelationalDatabaseRead(d *schema.ResourceData, m interface{}) error
 	d.Set("port", dbResp.Data.Port)
 	d.Set("public_access", dbResp.Data.PublicAccess)
 	d.Set("ram", dbResp.Data.Ram)
-	//d.Set("redis_password_enabled", dbResp.Data.RedisPasswordEnabled)
-	//d.Set("replica_source_id", dbResp.Data.ReplicaSourceId)
 	d.Set("replicas", dbResp.Data.Replicas)
 	d.Set("status", dbResp.Data.Status)
 	d.Set("cpu", dbResp.Data.Vcpus)
@@ -443,98 +406,46 @@ func resourceRelationalDatabaseRead(d *schema.ResourceData, m interface{}) error
 		d.Set("config_name", dbResp.Data.Configuration.Name)
 	}
 
-	return secgroupRulesRelationalRead(d, m)
+	return secgroupRulesMemStoreRead(d, m)
 }
 
-func resourceRelationalDatabaseUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreDatabaseUpdate(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG] Database update")
 	if d.HasChange("allowed_ip_prefix") {
-		return secgroupRulesRelationalUpdate(d, m, d.Get("allowed_ip_prefix").([]interface{}))
+		return secgroupRulesMemStoreUpdate(d, m, d.Get("allowed_ip_prefix").([]interface{}))
 	}
 
 	if d.HasChange("action") {
 		switch d.Get("action").(string) {
 		case "start":
-			return resourceRelationalDatabaseStart(d, m)
+			return resourceMemStoreDatabaseStart(d, m)
 		case "stop":
-			return resourceRelationalDatabaseStop(d, m)
+			return resourceMemStoreDatabaseStop(d, m)
 		case "reboot":
-			return resourceRelationalDatabaseReboot(d, m)
+			return resourceMemStoreDatabaseReboot(d, m)
 		}
 	}
 
 	if d.HasChange("config_id") {
-		return resourceRelationalUpdateConfigGroup(d, m)
+		return resourceMemStoreUpdateConfigGroup(d, m)
 	}
 
-	if d.HasChange("password") || d.HasChange("public_access") || d.HasChange("backup_auto") || (d.Get("backup_auto").(bool) == true && (d.HasChange("backup_duration") || d.HasChange("backup_time"))) {
-		return resourceRelationalUpdateSetting(d, m)
+	if d.HasChange("redis_password_enabled") || (d.Get("redis_password_enabled").(bool) == true && d.HasChange("redis_password")) || d.HasChange("public_access") || d.HasChange("backup_auto") || (d.Get("backup_auto").(bool) == true && (d.HasChange("backup_duration") || d.HasChange("backup_time"))) {
+		return resourceMemStoreUpdateSetting(d, m)
 	}
 
 	if d.HasChange("replica_source_id") && d.Get("replica_source_id").(string) == "" {
-		return resourceRelationalDatabasePromote(d, m)
-	}
-
-	if d.HasChange("volume_size") || d.HasChange("volume_type") {
-		return resourceRelationalResizeVolume(d, m)
+		return resourceMemStoreDatabasePromote(d, m)
 	}
 
 	if d.HasChange("package_id") {
-		return resourceRelationalResizeFlavor(d, m)
+		return resourceMemStoreResizeFlavor(d, m)
 	}
 
 	return nil
 }
 
-func resourceRelationalResizeVolume(d *schema.ResourceData, m interface{}) error {
-	log.Println("[DEBUG] Database update")
-
-	cli := m.(*client.Client)
-
-	updateRequest := generateResizeVolumeDatabaseRequest(d)
-	reqBody, _ := json.Marshal(updateRequest)
-	log.Println("[DEBUG] Body: " + string(reqBody))
-
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.ResizeStorage(context.TODO(), string(reqBody), d.Id(), nil)
-
-	if err != nil {
-		return err
-	}
-
-	if CheckErrorResponse(httpResponse) {
-		responseBody := GetResponseBody(httpResponse)
-		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
-		return errorResponse
-	}
-
-	respJSON, _ := json.Marshal(resp)
-	log.Printf("-------------------------------------\n")
-	log.Printf("%s\n", string(respJSON))
-	log.Printf("-------------------------------------\n")
-
-	stateConf := &resource.StateChangeConf{
-		Pending:    databaseResizePending,
-		Target:     databaseResizeTarget,
-		Refresh:    resourceRelationalDatabaseStateRefreshFunc(cli, d.Id()),
-		Timeout:    databaseResizeTimeout,
-		Delay:      databaseResizeDelay,
-		MinTimeout: databaseResizeMinTimeout,
-	}
-
-	id, err := stateConf.WaitForState()
-	if err != nil {
-		return fmt.Errorf("error when waiting for database to be resized: %s", err)
-	}
-	idStr := id.(string)
-
-	log.Println("[DEBUG]  Wait for state done, id: " + idStr)
-
-	d.Set("package_id", updateRequest.DatabaseInstances[0].Config.PackageID)
-
-	return nil
-}
-
-func resourceRelationalUpdateConfigGroup(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreUpdateConfigGroup(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG] Database update")
 
 	cli := m.(*client.Client)
@@ -543,7 +454,7 @@ func resourceRelationalUpdateConfigGroup(d *schema.ResourceData, m interface{}) 
 	reqBody, _ := json.Marshal(updateRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.UpdateDatabaseConfigGroup1(context.TODO(), string(reqBody), d.Id())
+	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateDatabaseConfigGroup(context.TODO(), string(reqBody), d.Id())
 
 	if err != nil {
 		return err
@@ -563,7 +474,7 @@ func resourceRelationalUpdateConfigGroup(d *schema.ResourceData, m interface{}) 
 	stateConf := &resource.StateChangeConf{
 		Pending:    databaseResizePending,
 		Target:     databaseResizeTarget,
-		Refresh:    resourceRelationalDatabaseStateRefreshFunc(cli, d.Id()),
+		Refresh:    resourceMemStoreDatabaseStateRefreshFunc(cli, d.Id()),
 		Timeout:    databaseResizeTimeout,
 		Delay:      databaseResizeDelay,
 		MinTimeout: databaseResizeMinTimeout,
@@ -577,19 +488,26 @@ func resourceRelationalUpdateConfigGroup(d *schema.ResourceData, m interface{}) 
 
 	log.Println("[DEBUG]  Wait for state done, id: " + idStr)
 
-	return resourceRelationalDatabaseRead(d, m)
+	return resourceMemStoreDatabaseRead(d, m)
 }
 
-func resourceRelationalUpdateSetting(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreUpdateSetting(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG] Database update")
 
 	cli := m.(*client.Client)
 
 	updateRequest := generateUpdateSettingRequest(d)
+
+	if d.HasChange("redis_password_enabled") || (d.Get("redis_password_enabled").(bool) == true && d.HasChange("redis_password")) {
+		updateRequest.EditRedisPassword = true
+		updateRequest.RedisPasswordEnabled = d.Get("redis_password_enabled").(bool)
+		updateRequest.RedisPassword = d.Get("redis_password").(string)
+	}
+
 	reqBody, _ := json.Marshal(updateRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.UpdateDatabaseSetting1(context.TODO(), string(reqBody), d.Id())
+	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateDatabaseSetting(context.TODO(), string(reqBody), d.Id())
 
 	if err != nil {
 		return err
@@ -609,7 +527,7 @@ func resourceRelationalUpdateSetting(d *schema.ResourceData, m interface{}) erro
 	stateConf := &resource.StateChangeConf{
 		Pending:    databaseResizePending,
 		Target:     databaseResizeTarget,
-		Refresh:    resourceRelationalDatabaseStateRefreshFunc(cli, d.Id()),
+		Refresh:    resourceMemStoreDatabaseStateRefreshFunc(cli, d.Id()),
 		Timeout:    databaseResizeTimeout,
 		Delay:      databaseResizeDelay,
 		MinTimeout: databaseResizeMinTimeout,
@@ -623,10 +541,10 @@ func resourceRelationalUpdateSetting(d *schema.ResourceData, m interface{}) erro
 
 	log.Println("[DEBUG]  Wait for state done, id: " + idStr)
 
-	return resourceRelationalDatabaseRead(d, m)
+	return resourceMemStoreDatabaseRead(d, m)
 }
 
-func resourceRelationalResizeFlavor(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreResizeFlavor(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG] Database update")
 
 	cli := m.(*client.Client)
@@ -635,7 +553,7 @@ func resourceRelationalResizeFlavor(d *schema.ResourceData, m interface{}) error
 	reqBody, _ := json.Marshal(updateRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.ResizeInstance1(context.TODO(), string(reqBody), d.Id(), nil)
+	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.ResizeInstance(context.TODO(), string(reqBody), d.Id(), nil)
 
 	if err != nil {
 		return err
@@ -655,7 +573,7 @@ func resourceRelationalResizeFlavor(d *schema.ResourceData, m interface{}) error
 	stateConf := &resource.StateChangeConf{
 		Pending:    databaseResizePending,
 		Target:     databaseResizeTarget,
-		Refresh:    resourceRelationalDatabaseStateRefreshFunc(cli, d.Id()),
+		Refresh:    resourceMemStoreDatabaseStateRefreshFunc(cli, d.Id()),
 		Timeout:    databaseResizeTimeout,
 		Delay:      databaseResizeDelay,
 		MinTimeout: databaseResizeMinTimeout,
@@ -675,7 +593,7 @@ func resourceRelationalResizeFlavor(d *schema.ResourceData, m interface{}) error
 	return nil
 }
 
-func resourceRelationalDatabaseDelete(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreDatabaseDelete(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG] Database delete")
 
 	cli := m.(*client.Client)
@@ -684,7 +602,7 @@ func resourceRelationalDatabaseDelete(d *schema.ResourceData, m interface{}) err
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.DeleteDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
+	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.DeleteDatabaseInstances(context.TODO(), string(reqBody), d.Id())
 	if err != nil {
 		return fmt.Errorf("error when deleting database: %s", err)
 	}
@@ -697,7 +615,7 @@ func resourceRelationalDatabaseDelete(d *schema.ResourceData, m interface{}) err
 	stateConf := &resource.StateChangeConf{
 		Pending:    databaseDeletePending,
 		Target:     databaseDeleteTarget,
-		Refresh:    resourceRelationalDatabaseDeleteStateRefreshFunc(cli, d.Id()),
+		Refresh:    resourceMemStoreDatabaseDeleteStateRefreshFunc(cli, d.Id()),
 		Timeout:    databaseDeleteTimeout,
 		Delay:      databaseDeleteDelay,
 		MinTimeout: databaseDeleteMinTimeout,
@@ -714,9 +632,9 @@ func resourceRelationalDatabaseDelete(d *schema.ResourceData, m interface{}) err
 	return nil
 }
 
-func resourceRelationalDatabaseDeleteStateRefreshFunc(cli *client.Client, id string) resource.StateRefreshFunc {
+func resourceMemStoreDatabaseDeleteStateRefreshFunc(cli *client.Client, id string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetDatabaseInstancesById1(context.TODO(), id)
+		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById(context.TODO(), id)
 		if httpResponse.StatusCode != http.StatusOK {
 			if httpResponse.StatusCode == http.StatusNotFound {
 				return vdbv2.DbInstanceInfo{Status: "DELETED"}, "DELETED", nil
@@ -736,7 +654,7 @@ func resourceRelationalDatabaseDeleteStateRefreshFunc(cli *client.Client, id str
 	}
 }
 
-func resourceRelationalDatabaseStart(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreDatabaseStart(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG]  Database start")
 
 	cli := m.(*client.Client)
@@ -745,7 +663,7 @@ func resourceRelationalDatabaseStart(d *schema.ResourceData, m interface{}) erro
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.StartDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
+	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.StartDatabaseInstances(context.TODO(), string(reqBody), d.Id())
 	if err != nil {
 		return fmt.Errorf("error when starting database: %s", err)
 	}
@@ -758,7 +676,7 @@ func resourceRelationalDatabaseStart(d *schema.ResourceData, m interface{}) erro
 	stateConf := &resource.StateChangeConf{
 		Pending:    databaseStartPending,
 		Target:     databaseStartTarget,
-		Refresh:    resourceRelationalDatabaseStateRefreshFunc(cli, d.Id()),
+		Refresh:    resourceMemStoreDatabaseStateRefreshFunc(cli, d.Id()),
 		Timeout:    databaseStartTimeout,
 		Delay:      databaseStartDelay,
 		MinTimeout: databaseStartMinTimeout,
@@ -769,10 +687,10 @@ func resourceRelationalDatabaseStart(d *schema.ResourceData, m interface{}) erro
 		return fmt.Errorf("error when waiting for database to be started: %s", err)
 	}
 
-	return resourceRelationalDatabaseRead(d, m)
+	return resourceMemStoreDatabaseRead(d, m)
 }
 
-func resourceRelationalDatabaseStop(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreDatabaseStop(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG]  Database stop")
 
 	cli := m.(*client.Client)
@@ -781,7 +699,7 @@ func resourceRelationalDatabaseStop(d *schema.ResourceData, m interface{}) error
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.StopDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
+	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.StopDatabaseInstances(context.TODO(), string(reqBody), d.Id())
 	if err != nil {
 		return fmt.Errorf("error when stopping database: %s", err)
 	}
@@ -794,7 +712,7 @@ func resourceRelationalDatabaseStop(d *schema.ResourceData, m interface{}) error
 	stateConf := &resource.StateChangeConf{
 		Pending:    databaseStopPending,
 		Target:     databaseStopTarget,
-		Refresh:    resourceRelationalDatabaseStateRefreshFunc(cli, d.Id()),
+		Refresh:    resourceMemStoreDatabaseStateRefreshFunc(cli, d.Id()),
 		Timeout:    databaseStopTimeout,
 		Delay:      databaseStopDelay,
 		MinTimeout: databaseStopMinTimeout,
@@ -805,10 +723,10 @@ func resourceRelationalDatabaseStop(d *schema.ResourceData, m interface{}) error
 		return fmt.Errorf("error when waiting for database to be stopped: %s", err)
 	}
 
-	return resourceRelationalDatabaseRead(d, m)
+	return resourceMemStoreDatabaseRead(d, m)
 }
 
-func resourceRelationalDatabaseReboot(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreDatabaseReboot(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG]  Database reboot")
 
 	cli := m.(*client.Client)
@@ -817,7 +735,7 @@ func resourceRelationalDatabaseReboot(d *schema.ResourceData, m interface{}) err
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.RestartDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
+	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.RestartDatabaseInstances(context.TODO(), string(reqBody), d.Id())
 	if err != nil {
 		return fmt.Errorf("error when rebooting database: %s", err)
 	}
@@ -830,7 +748,7 @@ func resourceRelationalDatabaseReboot(d *schema.ResourceData, m interface{}) err
 	stateConf := &resource.StateChangeConf{
 		Pending:    databaseRebootPending,
 		Target:     databaseRebootTarget,
-		Refresh:    resourceRelationalDatabaseStateRefreshFunc(cli, d.Id()),
+		Refresh:    resourceMemStoreDatabaseStateRefreshFunc(cli, d.Id()),
 		Timeout:    databaseRebootTimeout,
 		Delay:      databaseRebootDelay,
 		MinTimeout: databaseRebootMinTimeout,
@@ -841,10 +759,10 @@ func resourceRelationalDatabaseReboot(d *schema.ResourceData, m interface{}) err
 		return fmt.Errorf("error when waiting for database to be rebooted: %s", err)
 	}
 
-	return resourceRelationalDatabaseRead(d, m)
+	return resourceMemStoreDatabaseRead(d, m)
 }
 
-func resourceRelationalDatabasePromote(d *schema.ResourceData, m interface{}) error {
+func resourceMemStoreDatabasePromote(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG]  Database promote")
 
 	cli := m.(*client.Client)
@@ -853,7 +771,7 @@ func resourceRelationalDatabasePromote(d *schema.ResourceData, m interface{}) er
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.DetachReplica1(context.TODO(), string(reqBody), d.Id())
+	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.DetachReplica(context.TODO(), string(reqBody), d.Id())
 	if err != nil {
 		return fmt.Errorf("error when promoting database: %s", err)
 	}
@@ -864,7 +782,7 @@ func resourceRelationalDatabasePromote(d *schema.ResourceData, m interface{}) er
 	}
 
 	err = resource.Retry(databasePromoteTimeout, func() *resource.RetryError {
-		dbResp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetDatabaseInstancesById1(context.TODO(), d.Id())
+		dbResp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById(context.TODO(), d.Id())
 		if err != nil {
 			return resource.NonRetryableError(fmt.Errorf("error when refreshing database state: %s", err))
 		}
@@ -889,133 +807,5 @@ func resourceRelationalDatabasePromote(d *schema.ResourceData, m interface{}) er
 		return fmt.Errorf("error when waiting for database to be promoted: %s", err)
 	}
 
-	return resourceRelationalDatabaseRead(d, m)
-}
-
-func generateResizeVolumeDatabaseRequest(d *schema.ResourceData) ResizeRequest {
-	config := ResizeConfig{
-		IsPoc:      d.Get("is_poc").(bool),
-		VolumeSize: d.Get("volume_size").(int),
-		VolumeType: d.Get("volume_type").(string),
-	}
-
-	instance := ResizeInstance{
-		InstancesID: d.Id(),
-		Config:      config,
-	}
-	instances := make([]ResizeInstance, 1)
-	instances[0] = instance
-	resizeVolumeRequest := ResizeRequest{
-		ResourceType:      "dbaas",
-		Action:            "resize",
-		DatabaseInstances: instances,
-	}
-
-	return resizeVolumeRequest
-}
-
-func generateResizeFlavorDatabaseRequest(d *schema.ResourceData) ResizeRequest {
-	config := ResizeConfig{
-		IsPoc:     d.Get("is_poc").(bool),
-		PackageID: d.Get("package_id").(string),
-	}
-
-	instance := ResizeInstance{
-		InstancesID: d.Id(),
-		Config:      config,
-	}
-	instances := make([]ResizeInstance, 1)
-	instances[0] = instance
-	resizeFlavorRequest := ResizeRequest{
-		ResourceType:      "dbaas",
-		Action:            "resize",
-		DatabaseInstances: instances,
-	}
-
-	return resizeFlavorRequest
-}
-
-func generateUpdateConfigGroupRequest(d *schema.ResourceData) UpdateDBRequest {
-	request := UpdateDBRequest{
-		DbInstanceID: d.Id(),
-		ConfigID:     d.Get("config_id").(string),
-	}
-
-	return request
-}
-
-func generateUpdateSettingRequest(d *schema.ResourceData) UpdateDBRequest {
-	request := UpdateDBRequest{
-		DbInstanceID:   d.Id(),
-		Password:       d.Get("password").(string),
-		PublicAccess:   d.Get("public_access").(bool),
-		BackupAuto:     d.Get("backup_auto").(bool),
-		BackupDuration: d.Get("backup_duration").(int),
-		BackupTime:     d.Get("backup_time").(string),
-
-		RedisPassword:        "",
-		RedisPasswordEnabled: false,
-		EditRedisPassword:    false,
-	}
-
-	return request
-}
-
-func generateActionRequest(d *schema.ResourceData, action string) ActionRequest {
-	instance := Instance{
-		InstancesID: d.Id(),
-	}
-	instances := make([]Instance, 1)
-	instances[0] = instance
-	actionRequest := ActionRequest{
-		ResourceType:      "dbaas",
-		Action:            action,
-		DatabaseInstances: instances,
-	}
-
-	return actionRequest
-}
-
-type ResizeConfig struct {
-	VolumeType string `json:"volumeType,omitempty"`
-	VolumeSize int    `json:"volumeSize,omitempty"`
-	PackageID  string `json:"packageId,omitempty"`
-	IsPoc      bool   `json:"poc,omitempty"`
-}
-
-type ResizeInstance struct {
-	InstancesID string       `json:"instancesId,omitempty"`
-	Config      ResizeConfig `json:"config,omitempty"`
-}
-
-type ResizeRequest struct {
-	ResourceType      string           `json:"resourceType,omitempty"`
-	Action            string           `json:"action,omitempty"`
-	DatabaseInstances []ResizeInstance `json:"databaseInstances,omitempty"`
-}
-
-type UpdateDBRequest struct {
-	DbInstanceID string `json:"dbInstanceId,omitempty"`
-
-	ConfigID string `json:"configId,omitempty"`
-
-	Password       string `json:"password,omitempty"`
-	PublicAccess   bool   `json:"publicAccess,omitempty"`
-	BackupAuto     bool   `json:"backupAuto,omitempty"`
-	BackupDuration int    `json:"backupDuration,omitempty"`
-	BackupTime     string `json:"backupTime,omitempty"`
-
-	RedisPassword        string `json:"redisPassword,omitempty"`
-	RedisPasswordEnabled bool   `json:"redisPasswordEnabled,omitempty"`
-	EditRedisPassword    bool   `json:"editRedisPassword,omitempty"`
-}
-
-type Instance struct {
-	InstancesID string `json:"instancesId,omitempty"`
-}
-
-type ActionRequest struct {
-	ResourceType      string     `json:"resType,omitempty"`
-	Action            string     `json:"action,omitempty"`
-	DatabaseInstances []Instance `json:"databaseInstances,omitempty"`
+	return resourceMemStoreDatabaseRead(d, m)
 }
