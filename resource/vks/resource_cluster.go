@@ -764,6 +764,8 @@ func resourceClusterStateUpgradeV1(ctx context.Context, rawState map[string]inte
 	if resp.NetworkType == "CILIUM_NATIVE_ROUTING" {
 		rawState["secondary_subnets"] = resp.SecondarySubnets
 		rawState["node_netmask_size"] = resp.NodeNetmaskSize
+	} else {
+		rawState["node_netmask_size"] = 25
 	}
 	return rawState, nil
 }
