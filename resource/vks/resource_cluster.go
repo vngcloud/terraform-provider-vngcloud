@@ -268,11 +268,11 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 		clusterNodeGroup := clusterNodeGroups[len(clusterNodeGroups)-i-1]
 		// Set the value for a specific field
 		upgradeConfig := nodeGroup["upgrade_config"].([]interface{})
+		clusterNodeGroupDetail, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterId, clusterNodeGroup.Id, nil)
+		if httpResponse.StatusCode != http.StatusOK {
+			return fmt.Errorf("Error : %s", GetResponseBody(httpResponse))
+		}
 		if len(upgradeConfig) == 0 {
-			clusterNodeGroupDetail, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterId, clusterNodeGroup.Id, nil)
-			if httpResponse.StatusCode != http.StatusOK {
-				return fmt.Errorf("Error : %s", GetResponseBody(httpResponse))
-			}
 			upgradeConfig := []interface{}{
 				map[string]interface{}{
 					"strategy":        clusterNodeGroupDetail.UpgradeConfig.Strategy,
@@ -283,6 +283,7 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 			nodeGroup["upgrade_config"] = upgradeConfig
 			nodeGroup["node_group_id"] = clusterNodeGroupDetail.Id
 		}
+		nodeGroup["subnet_id"] = clusterNodeGroupDetail.SubnetId
 		if nodeGroup["num_nodes"] != nil && int32(nodeGroup["num_nodes"].(int)) != -1 {
 			log.Printf("num_nodes !=nil\n")
 		} else {
