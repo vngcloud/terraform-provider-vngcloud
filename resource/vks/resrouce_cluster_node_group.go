@@ -445,7 +445,10 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error {
 
-	createNodeGroupRequest := getCreateNodeGroupRequest(d)
+	createNodeGroupRequest, errorNodeGroup := getCreateNodeGroupRequest(d)
+	if errorNodeGroup != nil {
+		return errorNodeGroup
+	}
 	cli := m.(*client.Client)
 	clusterId := d.Get("cluster_id").(string)
 
@@ -495,28 +498,32 @@ func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error
 	return resourceClusterNodeGroupRead(d, m)
 }
 
-func getSecondarySubnets(input []interface{}) []string {
+func getSecondarySubnets(input []interface{}) ([]string, error) {
 
 	secondarySubnets := make([]string, len(input))
 
 	for i, v := range input {
 		str, ok := v.(string)
 		if !ok {
-			return []string{}
+			return nil, fmt.Errorf("secondary_subnets is required when cluster network type is set to CILIUM_NATIVE_ROUTING")
 		}
 		secondarySubnets[i] = str
 	}
 
-	return secondarySubnets
+	return secondarySubnets, nil
 }
 
-func getCreateNodeGroupRequest(d *schema.ResourceData) vks.CreateNodeGroupDto {
+func getCreateNodeGroupRequest(d *schema.ResourceData) (vks.CreateNodeGroupDto, error) {
 	taintsInput, ok := d.Get("taint").([]interface{})
 	var tains []vks.NodeGroupTaintDto
 	if ok {
 		tains = getTaints(taintsInput)
 	} else {
 		tains = nil
+	}
+	secondarySubnets, errSecondarySubnets := getSecondarySubnets(d.Get("secondary_subnets").([]interface{}))
+	if errSecondarySubnets != nil {
+		return vks.CreateNodeGroupDto{}, errSecondarySubnets
 	}
 	return vks.CreateNodeGroupDto{
 		Name:                    d.Get("name").(string),
@@ -533,9 +540,9 @@ func getCreateNodeGroupRequest(d *schema.ResourceData) vks.CreateNodeGroupDto {
 		UpgradeConfig:           getUpgradeConfig(d.Get("upgrade_config").([]interface{})),
 		AutoScaleConfig:         getAutoScaleConfig(d.Get("auto_scale_config").([]interface{})),
 		EnabledEncryptionVolume: d.Get("enabled_encryption_volume").(bool),
-		SecondarySubnets:        getSecondarySubnets(d.Get("secondary_subnets").([]interface{})),
+		SecondarySubnets:        secondarySubnets,
 		SubnetId:                d.Get("subnet_id").(string),
-	}
+	}, nil
 }
 
 func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error {

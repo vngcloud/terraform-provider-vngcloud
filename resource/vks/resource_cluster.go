@@ -182,6 +182,10 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 	if errNodeGroup != nil {
 		return errNodeGroup
 	}
+	secondarySubnets, errSecondarySubnets := getSecondarySubnets(d.Get("secondary_subnets").([]interface{}))
+	if errSecondarySubnets != nil {
+		return errSecondarySubnets
+	}
 	createClusterRequest := vks.CreateClusterComboDto{
 		Name:                       d.Get("name").(string),
 		Description:                d.Get("description").(string),
@@ -194,7 +198,7 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 		Cidr:                       d.Get("cidr").(string),
 		EnabledLoadBalancerPlugin:  d.Get("enabled_load_balancer_plugin").(bool),
 		EnabledBlockStoreCsiPlugin: d.Get("enabled_block_store_csi_plugin").(bool),
-		SecondarySubnets:           getSecondarySubnets(d.Get("secondary_subnets").([]interface{})),
+		SecondarySubnets:           secondarySubnets,
 		NodeNetmaskSize:            int32(d.Get("node_netmask_size").(int)),
 		NodeGroups:                 createNodeGroupRequests,
 	}
@@ -314,7 +318,10 @@ func expandNodeGroupForCreating(node_group []interface{}, networkType string) ([
 		if networkType == "CILIUM_NATIVE_ROUTING" && (nodeGroup["secondary_subnets"] == nil || len(nodeGroup["secondary_subnets"].([]interface{})) == 0) {
 			return nil, fmt.Errorf("secondary_subnets is required when cluster network type is set to CILIUM_NATIVE_ROUTING")
 		}
-		createNodeGroupRequest := getCreateNodeGroupRequestForCluster(nodeGroup)
+		createNodeGroupRequest, errNodeGroup := getCreateNodeGroupRequestForCluster(nodeGroup)
+		if errNodeGroup != nil {
+			return nil, errNodeGroup
+		}
 		createNodeGroupRequests[i] = createNodeGroupRequest
 	}
 	return createNodeGroupRequests, nil
@@ -631,7 +638,7 @@ func resourceNodeGroupForClusterStateRefreshFunc(cli *client.Client, clusterID s
 	}
 }
 
-func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) vks.CreateNodeGroupDto {
+func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) (vks.CreateNodeGroupDto, error) {
 	taintsInput, ok := nodeGroup["taint"].([]interface{})
 	var tains []vks.NodeGroupTaintDto
 	if ok {
@@ -639,21 +646,28 @@ func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) vks.C
 	} else {
 		tains = nil
 	}
-	return vks.CreateNodeGroupDto{
-		Name:               nodeGroup["name"].(string),
-		NumNodes:           int32(nodeGroup["num_nodes"].(int)),
-		ImageId:            nodeGroup["image_id"].(string),
-		FlavorId:           nodeGroup["flavor_id"].(string),
-		DiskSize:           int32(nodeGroup["disk_size"].(int)),
-		DiskType:           nodeGroup["disk_type"].(string),
-		EnablePrivateNodes: nodeGroup["enable_private_nodes"].(bool),
-		SshKeyId:           nodeGroup["ssh_key_id"].(string),
-		Labels:             getLabels(nodeGroup["labels"].(map[string]interface{})),
-		Taints:             tains,
-		SecurityGroups:     getSecurityGroups(nodeGroup["security_groups"].([]interface{})),
-		UpgradeConfig:      getUpgradeConfig(nodeGroup["upgrade_config"].([]interface{})),
-		AutoScaleConfig:    getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{})),
+	secondarySubnets, errSecondarySubnets := getSecondarySubnets(nodeGroup["secondary_subnets"].([]interface{}))
+	if errSecondarySubnets != nil {
+		return vks.CreateNodeGroupDto{}, errSecondarySubnets
 	}
+	return vks.CreateNodeGroupDto{
+		Name:                    nodeGroup["name"].(string),
+		NumNodes:                int32(nodeGroup["num_nodes"].(int)),
+		ImageId:                 nodeGroup["image_id"].(string),
+		FlavorId:                nodeGroup["flavor_id"].(string),
+		DiskSize:                int32(nodeGroup["disk_size"].(int)),
+		DiskType:                nodeGroup["disk_type"].(string),
+		EnablePrivateNodes:      nodeGroup["enable_private_nodes"].(bool),
+		SshKeyId:                nodeGroup["ssh_key_id"].(string),
+		Labels:                  getLabels(nodeGroup["labels"].(map[string]interface{})),
+		Taints:                  tains,
+		SecurityGroups:          getSecurityGroups(nodeGroup["security_groups"].([]interface{})),
+		UpgradeConfig:           getUpgradeConfig(nodeGroup["upgrade_config"].([]interface{})),
+		AutoScaleConfig:         getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{})),
+		EnabledEncryptionVolume: nodeGroup["enabled_encryption_volume"].(bool),
+		SecondarySubnets:        secondarySubnets,
+		SubnetId:                nodeGroup["subnet_id"].(string),
+	}, nil
 }
 
 func resourceContainerClusterResourceV1() *schema.Resource {
