@@ -7,6 +7,7 @@ import (
 	"github.com/antihax/optional"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vks"
 	"log"
@@ -17,13 +18,18 @@ import (
 
 func ResourceCluster() *schema.Resource {
 	return &schema.Resource{
-		SchemaVersion: 1,
+		SchemaVersion: 2,
 		//MigrateState:  resourceClusterMigrateState,
 		StateUpgraders: []schema.StateUpgrader{
 			{
 				Type:    resourceContainerClusterResourceV1().CoreConfigSchema().ImpliedType(),
 				Upgrade: resourceClusterStateUpgradeV0,
 				Version: 0,
+			},
+			{
+				Type:    resourceContainerClusterResourceV2().CoreConfigSchema().ImpliedType(),
+				Upgrade: resourceClusterStateUpgradeV1,
+				Version: 1,
 			},
 		},
 
@@ -123,6 +129,21 @@ func ResourceCluster() *schema.Resource {
 				ForceNew: true,
 				Default:  true,
 			},
+			"secondary_subnets": {
+				Type:     schema.TypeList,
+				Optional: true,
+				ForceNew: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"node_netmask_size": {
+				Type:         schema.TypeInt,
+				Optional:     true,
+				ForceNew:     true,
+				Default:      25,
+				ValidateFunc: validation.IntBetween(17, 26),
+			},
 			"node_group": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -157,7 +178,14 @@ func resourceClusterStateRefreshFunc(cli *client.Client, clusterID string) resou
 	}
 }
 func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
-	createNodeGroupRequests := expandNodeGroupForCreating(d.Get("node_group").([]interface{}))
+	createNodeGroupRequests, errNodeGroup := expandNodeGroupForCreating(d.Get("node_group").([]interface{}), d.Get("network_type").(string))
+	if errNodeGroup != nil {
+		return errNodeGroup
+	}
+	secondarySubnets, errSecondarySubnets := getSecondarySubnets(d.Get("secondary_subnets").([]interface{}))
+	if errSecondarySubnets != nil {
+		return errSecondarySubnets
+	}
 	createClusterRequest := vks.CreateClusterComboDto{
 		Name:                       d.Get("name").(string),
 		Description:                d.Get("description").(string),
@@ -170,6 +198,8 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 		Cidr:                       d.Get("cidr").(string),
 		EnabledLoadBalancerPlugin:  d.Get("enabled_load_balancer_plugin").(bool),
 		EnabledBlockStoreCsiPlugin: d.Get("enabled_block_store_csi_plugin").(bool),
+		SecondarySubnets:           secondarySubnets,
+		NodeNetmaskSize:            int32(d.Get("node_netmask_size").(int)),
 		NodeGroups:                 createNodeGroupRequests,
 	}
 	cli := m.(*client.Client)
@@ -238,11 +268,11 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 		clusterNodeGroup := clusterNodeGroups[len(clusterNodeGroups)-i-1]
 		// Set the value for a specific field
 		upgradeConfig := nodeGroup["upgrade_config"].([]interface{})
+		clusterNodeGroupDetail, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterId, clusterNodeGroup.Id, nil)
+		if httpResponse.StatusCode != http.StatusOK {
+			return fmt.Errorf("Error : %s", GetResponseBody(httpResponse))
+		}
 		if len(upgradeConfig) == 0 {
-			clusterNodeGroupDetail, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterId, clusterNodeGroup.Id, nil)
-			if httpResponse.StatusCode != http.StatusOK {
-				return fmt.Errorf("Error : %s", GetResponseBody(httpResponse))
-			}
 			upgradeConfig := []interface{}{
 				map[string]interface{}{
 					"strategy":        clusterNodeGroupDetail.UpgradeConfig.Strategy,
@@ -253,6 +283,7 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 			nodeGroup["upgrade_config"] = upgradeConfig
 			nodeGroup["node_group_id"] = clusterNodeGroupDetail.Id
 		}
+		nodeGroup["subnet_id"] = clusterNodeGroupDetail.SubnetId
 		if nodeGroup["num_nodes"] != nil && int32(nodeGroup["num_nodes"].(int)) != -1 {
 			log.Printf("num_nodes !=nil\n")
 		} else {
@@ -269,16 +300,15 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 	return nil
 }
 
-func expandNodeGroupForCreating(node_group []interface{}) []vks.CreateNodeGroupDto {
+func expandNodeGroupForCreating(node_group []interface{}, networkType string) ([]vks.CreateNodeGroupDto, error) {
 	if len(node_group) == 0 {
 		log.Printf("node_group 0\n")
-		return []vks.CreateNodeGroupDto{}
+		return []vks.CreateNodeGroupDto{}, nil
 	} else if node_group[0] == nil {
 		log.Printf("node_group nil\n")
-		return []vks.CreateNodeGroupDto{}
+		return []vks.CreateNodeGroupDto{}, nil
 	}
 	nodeGroupsJson, _ := json.Marshal(node_group)
-	log.Printf("aaaaa-------------------------------------\n")
 	log.Printf("%s\n", string(nodeGroupsJson))
 	createNodeGroupRequests := make([]vks.CreateNodeGroupDto, len(node_group))
 	for i, ng := range node_group {
@@ -286,10 +316,16 @@ func expandNodeGroupForCreating(node_group []interface{}) []vks.CreateNodeGroupD
 		if !ok {
 			log.Fatalf("Element at index %d is not a map", i)
 		}
-		createNodeGroupRequest := getCreateNodeGroupRequestForCluster(nodeGroup)
+		if networkType == "CILIUM_NATIVE_ROUTING" && (nodeGroup["secondary_subnets"] == nil || len(nodeGroup["secondary_subnets"].([]interface{})) == 0) {
+			return nil, fmt.Errorf("secondary_subnets is required when cluster network type is set to CILIUM_NATIVE_ROUTING")
+		}
+		createNodeGroupRequest, errNodeGroup := getCreateNodeGroupRequestForCluster(nodeGroup)
+		if errNodeGroup != nil {
+			return nil, errNodeGroup
+		}
 		createNodeGroupRequests[i] = createNodeGroupRequest
 	}
-	return createNodeGroupRequests
+	return createNodeGroupRequests, nil
 }
 
 func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
@@ -323,7 +359,14 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 	if !CheckListStringEqual(whiteListNodeCIDR, whiteListCIDRCluster) {
 		d.Set("white_list_node_cidr", whiteListCIDRCluster)
 	}
-	d.Set("cidr", cluster.Cidr)
+	if resp.NetworkType == "CILIUM_NATIVE_ROUTING" {
+		if !checkSecondarySubnetsSame(d, resp.SecondarySubnets) {
+			d.Set("secondary_subnets", resp.SecondarySubnets)
+			d.Set("node_netmask_size", resp.NodeNetmaskSize)
+		}
+	} else {
+		d.Set("cidr", cluster.Cidr)
+	}
 	d.Set("vpc_id", cluster.VpcId)
 	d.Set("subnet_id", cluster.SubnetId)
 	d.Set("network_type", cluster.NetworkType)
@@ -435,6 +478,14 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 			num := int32(nodeGroup["num_nodes"].(int))
 			numNodes = &num
 		}
+		taintsInput, ok := d.Get("taint").([]interface{})
+		var tains []vks.NodeGroupTaintDto
+		if ok {
+			tains = getTaints(taintsInput)
+		} else {
+			tains = nil
+		}
+		labels := getLabels(d.Get("labels").(map[string]interface{}))
 		imageId := nodeGroup["image_id"].(string)
 		updateNodeGroupRequest := vks.UpdateNodeGroupDto{
 			AutoScaleConfig: autoScaleConfig,
@@ -442,6 +493,8 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 			UpgradeConfig:   &upgradeConfig,
 			SecurityGroups:  securityGroups,
 			ImageId:         imageId,
+			Taints:          tains,
+			Labels:          labels,
 		}
 		requestPutOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdPutOpts{
 			Body: optional.NewInterface(updateNodeGroupRequest),
@@ -586,7 +639,7 @@ func resourceNodeGroupForClusterStateRefreshFunc(cli *client.Client, clusterID s
 	}
 }
 
-func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) vks.CreateNodeGroupDto {
+func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) (vks.CreateNodeGroupDto, error) {
 	taintsInput, ok := nodeGroup["taint"].([]interface{})
 	var tains []vks.NodeGroupTaintDto
 	if ok {
@@ -594,21 +647,28 @@ func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) vks.C
 	} else {
 		tains = nil
 	}
-	return vks.CreateNodeGroupDto{
-		Name:               nodeGroup["name"].(string),
-		NumNodes:           int32(nodeGroup["num_nodes"].(int)),
-		ImageId:            nodeGroup["image_id"].(string),
-		FlavorId:           nodeGroup["flavor_id"].(string),
-		DiskSize:           int32(nodeGroup["disk_size"].(int)),
-		DiskType:           nodeGroup["disk_type"].(string),
-		EnablePrivateNodes: nodeGroup["enable_private_nodes"].(bool),
-		SshKeyId:           nodeGroup["ssh_key_id"].(string),
-		Labels:             getLabels(nodeGroup["labels"].(map[string]interface{})),
-		Taints:             tains,
-		SecurityGroups:     getSecurityGroups(nodeGroup["security_groups"].([]interface{})),
-		UpgradeConfig:      getUpgradeConfig(nodeGroup["upgrade_config"].([]interface{})),
-		AutoScaleConfig:    getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{})),
+	secondarySubnets, errSecondarySubnets := getSecondarySubnets(nodeGroup["secondary_subnets"].([]interface{}))
+	if errSecondarySubnets != nil {
+		return vks.CreateNodeGroupDto{}, errSecondarySubnets
 	}
+	return vks.CreateNodeGroupDto{
+		Name:                    nodeGroup["name"].(string),
+		NumNodes:                int32(nodeGroup["num_nodes"].(int)),
+		ImageId:                 nodeGroup["image_id"].(string),
+		FlavorId:                nodeGroup["flavor_id"].(string),
+		DiskSize:                int32(nodeGroup["disk_size"].(int)),
+		DiskType:                nodeGroup["disk_type"].(string),
+		EnablePrivateNodes:      nodeGroup["enable_private_nodes"].(bool),
+		SshKeyId:                nodeGroup["ssh_key_id"].(string),
+		Labels:                  getLabels(nodeGroup["labels"].(map[string]interface{})),
+		Taints:                  tains,
+		SecurityGroups:          getSecurityGroups(nodeGroup["security_groups"].([]interface{})),
+		UpgradeConfig:           getUpgradeConfig(nodeGroup["upgrade_config"].([]interface{})),
+		AutoScaleConfig:         getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{})),
+		EnabledEncryptionVolume: nodeGroup["enabled_encryption_volume"].(bool),
+		SecondarySubnets:        secondarySubnets,
+		SubnetId:                nodeGroup["subnet_id"].(string),
+	}, nil
 }
 
 func resourceContainerClusterResourceV1() *schema.Resource {
@@ -702,4 +762,146 @@ func resourceContainerClusterResourceV1() *schema.Resource {
 			},
 		},
 	}
+}
+
+func resourceClusterStateUpgradeV1(ctx context.Context, rawState map[string]interface{}, meta interface{}) (map[string]interface{}, error) {
+	log.Printf("resourceClusterStateUpgradeV0\n")
+	cli := meta.(*client.Client)
+	id, ok := rawState["id"].(string)
+	if !ok {
+		return nil, fmt.Errorf("id is missing or not a string")
+	}
+	resp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdGet(context.TODO(), id, nil)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return rawState, errorResponse
+	}
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
+	if resp.NetworkType == "CILIUM_NATIVE_ROUTING" {
+		rawState["secondary_subnets"] = resp.SecondarySubnets
+		rawState["node_netmask_size"] = resp.NodeNetmaskSize
+	} else {
+		rawState["node_netmask_size"] = 25
+	}
+	return rawState, nil
+}
+
+func resourceContainerClusterResourceV2() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"name": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"config": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"description": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"version": {
+				Type:     schema.TypeString,
+				Optional: true,
+				DefaultFunc: func() (interface{}, error) {
+					return fetchByKey("k8s_version")
+				},
+			},
+			"white_list_node_cidr": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"enable_private_cluster": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				DefaultFunc: func() (interface{}, error) {
+					return false, nil
+				},
+			},
+			"network_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "CALICO",
+				ForceNew: true,
+			},
+			"vpc_id": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"subnet_id": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"cidr": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"enabled_load_balancer_plugin": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				Default:  true,
+			},
+			"enabled_block_store_csi_plugin": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				Default:  true,
+			},
+			"node_group": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
+				Elem: &schema.Resource{
+					Schema: MergeSchemas(
+						schemaNodeGroup,
+						map[string]*schema.Schema{
+							"node_group_id": {
+								Type:     schema.TypeString,
+								Computed: true,
+							},
+						}),
+				},
+			},
+			"enable_service_endpoint": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				DefaultFunc: func() (interface{}, error) {
+					return true, nil
+				},
+			},
+		},
+	}
+}
+
+func checkSecondarySubnetsSame(d *schema.ResourceData, secondarySubnetResponse []string) bool {
+	secondarySubnetsRequest, ok := d.GetOk("secondary_subnets")
+	var secondarySubnets []string
+	if ok {
+		for _, s := range secondarySubnetsRequest.([]interface{}) {
+			secondarySubnets = append(secondarySubnets, s.(string))
+		}
+	}
+	var secondarySubnetsCluster []string
+	for _, secondarySubnet := range secondarySubnetResponse {
+		secondarySubnetsCluster = append(secondarySubnetsCluster, secondarySubnet)
+	}
+	return CheckListStringEqual(secondarySubnets, secondarySubnetsCluster)
 }

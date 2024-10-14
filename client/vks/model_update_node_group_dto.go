@@ -14,4 +14,6 @@ type UpdateNodeGroupDto struct {
 	UpgradeConfig   *NodeGroupUpgradeConfigDto   `json:"upgradeConfig"`
 	SecurityGroups  []string                     `json:"securityGroups"`
 	ImageId         string                       `json:"imageId"`
+	Labels          map[string]string            `json:"labels,omitempty"`
+	Taints          []NodeGroupTaintDto          `json:"taints,omitempty"`
 }

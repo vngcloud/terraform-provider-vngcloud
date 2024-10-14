@@ -18,15 +18,15 @@ import (
 
 func ResourceClusterNodeGroup() *schema.Resource {
 	return &schema.Resource{
-		SchemaVersion: 0,
+		SchemaVersion: 1,
 		//MigrateState:  resourceClusterNodeGroupMigrateState,
-		//StateUpgraders: []schema.StateUpgrader{
-		//	{
-		//		Type:    resourceContainerClusterResourceV1().CoreConfigSchema().ImpliedType(),
-		//		Upgrade: ResourceContainerClusterUpgradeV1,
-		//		Version: 1,
-		//	},
-		//},
+		StateUpgraders: []schema.StateUpgrader{
+			{
+				Type:    resourceContainerClusterNodeGroupResourceV1().CoreConfigSchema().ImpliedType(),
+				Upgrade: resourceClusterNodeGroupStateUpgradeV0,
+				Version: 0,
+			},
+		},
 
 		Create: resourceClusterNodeGroupCreate,
 		Read:   resourceClusterNodeGroupRead,
@@ -184,14 +184,12 @@ var schemaNodeGroup = map[string]*schema.Schema{
 	"labels": {
 		Type:        schema.TypeMap,
 		Optional:    true,
-		ForceNew:    true,
 		Elem:        &schema.Schema{Type: schema.TypeString},
 		Description: `The map of Kubernetes labels (key/value pairs) to be applied to each node. These will added in addition to any default label(s) that Kubernetes may apply to the node.`,
 	},
 	"taint": {
 		Type:        schema.TypeList,
 		Optional:    true,
-		ForceNew:    true,
 		Description: `List of Kubernetes taints to be applied to each node.`,
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
@@ -214,6 +212,28 @@ var schemaNodeGroup = map[string]*schema.Schema{
 				},
 			},
 		},
+	},
+	"secondary_subnets": {
+		Type:     schema.TypeList,
+		Optional: true,
+		ForceNew: true,
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
+	},
+	"enabled_encryption_volume": {
+		Type:     schema.TypeBool,
+		Optional: true,
+		ForceNew: true,
+		DefaultFunc: func() (interface{}, error) {
+			return false, nil
+		},
+	},
+	"subnet_id": {
+		Type:     schema.TypeString,
+		Optional: true,
+		Computed: true,
+		ForceNew: true,
 	},
 }
 
@@ -349,12 +369,27 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 	if !checkSecurityGroupsSame(d, resp) {
 		d.Set("security_groups", resp.SecurityGroups)
 	}
+	respCluster, httpResponseCluster, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdGet(context.TODO(), clusterID, nil)
+	if CheckErrorResponse(httpResponseCluster) {
+		responseBodyCluster := GetResponseBody(httpResponseCluster)
+		errorResponseCluster := fmt.Errorf("request cluster fail with errMsg : %s", responseBodyCluster)
+		return errorResponseCluster
+	}
+	respJSONCluster, _ := json.Marshal(respCluster)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSONCluster))
+	log.Printf("-------------------------------------\n")
+	if respCluster.NetworkType == "CILIUM_NATIVE_ROUTING" && !checkSecondarySubnetsSame(d, resp.SecondarySubnets) {
+		d.Set("secondary_subnets", resp.SecondarySubnets)
+	}
 	d.Set("disk_size", resp.DiskSize)
 	d.Set("disk_type", resp.DiskType)
 	d.Set("enable_private_nodes", resp.EnablePrivateNodes)
 	d.Set("flavor_id", resp.FlavorId)
 	d.Set("name", resp.Name)
 	d.Set("ssh_key_id", resp.SshKeyId)
+	d.Set("enabled_encryption_volume", resp.EnabledEncryptionVolume)
+	d.Set("subnet_id", resp.SubnetId)
 	return nil
 }
 
@@ -410,8 +445,28 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error {
 
-	createNodeGroupRequest := getCreateNodeGroupRequest(d)
+	createNodeGroupRequest, errorNodeGroup := getCreateNodeGroupRequest(d)
+	if errorNodeGroup != nil {
+		return errorNodeGroup
+	}
 	cli := m.(*client.Client)
+	clusterId := d.Get("cluster_id").(string)
+
+	respCluster, httpResponseCluster, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdGet(context.TODO(), clusterId, nil)
+	if CheckErrorResponse(httpResponseCluster) {
+		responseBodyCluster := GetResponseBody(httpResponseCluster)
+		errResponseCluster := fmt.Errorf("request get cluster fail with errMsg: %s", responseBodyCluster)
+		return errResponseCluster
+	}
+	respJSONCluster, _ := json.Marshal(respCluster)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSONCluster))
+	log.Printf("-------------------------------------\n")
+
+	if respCluster.NetworkType == "CILIUM_NATIVE_ROUTING" && (d.Get("secondary_subnets") == nil || len(d.Get("secondary_subnets").([]interface{})) == 0) {
+		return fmt.Errorf("secondary_subnets is required when cluster network type is set to CILIUM_NATIVE_ROUTING")
+	}
+
 	request := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsPostOpts{
 		Body: optional.NewInterface(createNodeGroupRequest),
 	}
@@ -443,7 +498,22 @@ func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error
 	return resourceClusterNodeGroupRead(d, m)
 }
 
-func getCreateNodeGroupRequest(d *schema.ResourceData) vks.CreateNodeGroupDto {
+func getSecondarySubnets(input []interface{}) ([]string, error) {
+
+	secondarySubnets := make([]string, len(input))
+
+	for i, v := range input {
+		str, ok := v.(string)
+		if !ok {
+			return nil, fmt.Errorf("secondary_subnets is required when cluster network type is set to CILIUM_NATIVE_ROUTING")
+		}
+		secondarySubnets[i] = str
+	}
+
+	return secondarySubnets, nil
+}
+
+func getCreateNodeGroupRequest(d *schema.ResourceData) (vks.CreateNodeGroupDto, error) {
 	taintsInput, ok := d.Get("taint").([]interface{})
 	var tains []vks.NodeGroupTaintDto
 	if ok {
@@ -451,25 +521,32 @@ func getCreateNodeGroupRequest(d *schema.ResourceData) vks.CreateNodeGroupDto {
 	} else {
 		tains = nil
 	}
-	return vks.CreateNodeGroupDto{
-		Name:               d.Get("name").(string),
-		NumNodes:           int32(d.Get("num_nodes").(int)),
-		ImageId:            d.Get("image_id").(string),
-		FlavorId:           d.Get("flavor_id").(string),
-		DiskSize:           int32(d.Get("disk_size").(int)),
-		DiskType:           d.Get("disk_type").(string),
-		EnablePrivateNodes: d.Get("enable_private_nodes").(bool),
-		SshKeyId:           d.Get("ssh_key_id").(string),
-		Labels:             getLabels(d.Get("labels").(map[string]interface{})),
-		Taints:             tains,
-		SecurityGroups:     getSecurityGroups(d.Get("security_groups").([]interface{})),
-		UpgradeConfig:      getUpgradeConfig(d.Get("upgrade_config").([]interface{})),
-		AutoScaleConfig:    getAutoScaleConfig(d.Get("auto_scale_config").([]interface{})),
+	secondarySubnets, errSecondarySubnets := getSecondarySubnets(d.Get("secondary_subnets").([]interface{}))
+	if errSecondarySubnets != nil {
+		return vks.CreateNodeGroupDto{}, errSecondarySubnets
 	}
+	return vks.CreateNodeGroupDto{
+		Name:                    d.Get("name").(string),
+		NumNodes:                int32(d.Get("num_nodes").(int)),
+		ImageId:                 d.Get("image_id").(string),
+		FlavorId:                d.Get("flavor_id").(string),
+		DiskSize:                int32(d.Get("disk_size").(int)),
+		DiskType:                d.Get("disk_type").(string),
+		EnablePrivateNodes:      d.Get("enable_private_nodes").(bool),
+		SshKeyId:                d.Get("ssh_key_id").(string),
+		Labels:                  getLabels(d.Get("labels").(map[string]interface{})),
+		Taints:                  tains,
+		SecurityGroups:          getSecurityGroups(d.Get("security_groups").([]interface{})),
+		UpgradeConfig:           getUpgradeConfig(d.Get("upgrade_config").([]interface{})),
+		AutoScaleConfig:         getAutoScaleConfig(d.Get("auto_scale_config").([]interface{})),
+		EnabledEncryptionVolume: d.Get("enabled_encryption_volume").(bool),
+		SecondarySubnets:        secondarySubnets,
+		SubnetId:                d.Get("subnet_id").(string),
+	}, nil
 }
 
 func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error {
-	hasChangeSecurityGroups := false
+	hasChangeOtherField := false
 	cli := m.(*client.Client)
 	clusterId := d.Get("cluster_id").(string)
 	clusterNodeGroupId := d.Id()
@@ -483,10 +560,22 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 		if checkSecurityGroupsSame(d, resp) {
 			return resourceClusterRead(d, m)
 		} else {
-			hasChangeSecurityGroups = true
+			hasChangeOtherField = true
 		}
 	}
-	if hasChangeSecurityGroups || d.HasChange("auto_scale_config") || d.HasChange("num_nodes") || d.HasChange("upgrade_config") || d.HasChange("image_id") {
+	var tains []vks.NodeGroupTaintDto
+	var labels map[string]string
+	if d.HasChange("taint") || d.HasChange("security_groups") || d.HasChange("labels") {
+		hasChangeOtherField = true
+		taintsInput, ok := d.Get("taint").([]interface{})
+		if ok {
+			tains = getTaints(taintsInput)
+		} else {
+			tains = nil
+		}
+		labels = getLabels(d.Get("labels").(map[string]interface{}))
+	}
+	if hasChangeOtherField || d.HasChange("auto_scale_config") || d.HasChange("num_nodes") || d.HasChange("upgrade_config") || d.HasChange("image_id") {
 		securityGroupsRequest := d.Get("security_groups").([]interface{})
 		var securityGroups []string
 		for _, s := range securityGroupsRequest {
@@ -509,6 +598,8 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 			UpgradeConfig:   &upgradeConfig,
 			SecurityGroups:  securityGroups,
 			ImageId:         imageId,
+			Labels:          labels,
+			Taints:          tains,
 		}
 		requestPutOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdPutOpts{
 			Body: optional.NewInterface(updateNodeGroupRequest),
@@ -607,4 +698,199 @@ func checkSecurityGroupsSame(d *schema.ResourceData, clusterNodeGroup vks.NodeGr
 		securityGroupsCluster = append(securityGroupsCluster, securityGroup)
 	}
 	return CheckListStringEqual(securityGroups, securityGroupsCluster)
+}
+
+func resourceContainerClusterNodeGroupResourceV1() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"cluster_id": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"name": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"num_nodes": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  1,
+			},
+			"auto_scale_config": {
+				Type:     schema.TypeList,
+				MaxItems: 1,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"min_size": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Default:  1,
+						},
+						"max_size": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Default:  10,
+						},
+					},
+				},
+			},
+			"upgrade_config": {
+				Type:     schema.TypeList,
+				MaxItems: 1,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"strategy": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "SURGE",
+						},
+						"max_surge": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Default:  1,
+						},
+						"max_unavailable": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Default:  0,
+						},
+					},
+				},
+				DefaultFunc: func() (interface{}, error) {
+					return []interface{}{
+						map[string]interface{}{
+							"strategy":        "SURGE",
+							"max_surge":       1,
+							"max_unavailable": 0,
+						},
+					}, nil
+				},
+			},
+			"image_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				DefaultFunc: func() (interface{}, error) {
+					return fetchByKey("image_id")
+				},
+			},
+			"flavor_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				DefaultFunc: func() (interface{}, error) {
+					return fetchByKey("flavor_id")
+				},
+			},
+			"disk_size": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				ForceNew: true,
+				DefaultFunc: func() (interface{}, error) {
+					return 20, nil
+				},
+			},
+			"disk_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				DefaultFunc: func() (interface{}, error) {
+					return fetchByKey("volume_type_id")
+				},
+			},
+			"enable_private_nodes": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				DefaultFunc: func() (interface{}, error) {
+					return false, nil
+				},
+			},
+			"security_groups": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"ssh_key_id": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"labels": {
+				Type:        schema.TypeMap,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: `The map of Kubernetes labels (key/value pairs) to be applied to each node. These will added in addition to any default label(s) that Kubernetes may apply to the node.`,
+			},
+			"taint": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Description: `List of Kubernetes taints to be applied to each node.`,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"key": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: `Key for taint.`,
+						},
+						"value": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: `Value for taint.`,
+						},
+						"effect": {
+							Type:         schema.TypeString,
+							Optional:     true,
+							Default:      "NoSchedule",
+							ValidateFunc: validation.StringInSlice([]string{"NoSchedule", "PreferNoSchedule", "NoExecute"}, false),
+							Description:  `Effect for taint.`,
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func resourceClusterNodeGroupStateUpgradeV0(ctx context.Context, rawState map[string]interface{}, meta interface{}) (map[string]interface{}, error) {
+	log.Printf("resourceClusterNodeGroupStateUpgradeV0\n")
+	cli := meta.(*client.Client)
+	id, ok := rawState["id"].(string)
+	clusterId, _ := rawState["cluster_id"].(string)
+	if !ok {
+		return nil, fmt.Errorf("id is missing or not a string")
+	}
+
+	resp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdGet(context.TODO(), clusterId, nil)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request cluster fail with errMsg : %s", responseBody)
+		return rawState, errorResponse
+	}
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
+	if resp.NetworkType == "CILIUM_NATIVE_ROUTING" {
+		nodeGroupResponse, httpNodeGroupResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterId, id, nil)
+
+		if CheckErrorResponse(httpNodeGroupResponse) {
+			responseBodyNodeGroup := GetResponseBody(httpNodeGroupResponse)
+			errorResponseNodeGroup := fmt.Errorf("request cluster node group fail with errMsg : %s", responseBodyNodeGroup)
+			return rawState, errorResponseNodeGroup
+		}
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+		rawState["secondary_subnets"] = nodeGroupResponse.SecondarySubnets
+	}
+
+	return rawState, nil
 }

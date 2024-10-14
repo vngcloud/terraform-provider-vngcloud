@@ -21,4 +21,6 @@ type CreateClusterComboDto struct {
 	EnabledLoadBalancerPlugin  bool                 `json:"enabledLoadBalancerPlugin"`
 	EnabledBlockStoreCsiPlugin bool                 `json:"enabledBlockStoreCsiPlugin"`
 	NodeGroups                 []CreateNodeGroupDto `json:"nodeGroups"`
+	SecondarySubnets           []string             `json:"secondarySubnets"`
+	NodeNetmaskSize            int32                `json:"nodeNetmaskSize"`
 }
