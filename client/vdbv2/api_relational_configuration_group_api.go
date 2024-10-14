@@ -40,7 +40,7 @@ func (a *RelationalConfigurationGroupAPIApiService) CreateConfig1(ctx context.Co
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/configurations/create"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/configurations/create"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -126,7 +126,7 @@ func (a *RelationalConfigurationGroupAPIApiService) DeleteConfigs1(ctx context.C
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/configurations/delete"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/configurations/delete"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -213,7 +213,7 @@ func (a *RelationalConfigurationGroupAPIApiService) GetConfigParams1(ctx context
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/configurations/params"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/configurations/params"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -299,7 +299,7 @@ func (a *RelationalConfigurationGroupAPIApiService) GetConfigsById1(ctx context.
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/configurations/id"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/configurations/id"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -392,7 +392,7 @@ func (a *RelationalConfigurationGroupAPIApiService) GetListConfigs1(ctx context.
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/configurations"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/configurations"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -482,7 +482,7 @@ func (a *RelationalConfigurationGroupAPIApiService) UpdateConfig1(ctx context.Co
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/configurations/update"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/configurations/update"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

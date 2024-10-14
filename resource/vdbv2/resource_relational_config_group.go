@@ -21,6 +21,7 @@ func ResourceRelationalConfigurationGroup() *schema.Resource {
 		Create: resourceRelationalConfigurationGroupCreate,
 		Read:   resourceRelationalConfigurationGroupRead,
 		Delete: resourceRelationalConfigurationGroupDelete,
+		Update: resourceRelationalConfigurationGroupUpdate,
 
 		Schema: map[string]*schema.Schema{
 			"datastore_type": {

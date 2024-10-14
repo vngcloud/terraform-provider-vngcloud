@@ -64,6 +64,7 @@ func (a *MemoryStoreBackupAPIApiService) CreateBackups(ctx context.Context, body
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
@@ -150,6 +151,7 @@ func (a *MemoryStoreBackupAPIApiService) DeleteBackups(ctx context.Context, body
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
@@ -237,6 +239,7 @@ func (a *MemoryStoreBackupAPIApiService) GetDetailBackupById(ctx context.Context
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -320,6 +323,7 @@ func (a *MemoryStoreBackupAPIApiService) GetFreeBackupUsage(ctx context.Context)
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -418,6 +422,7 @@ func (a *MemoryStoreBackupAPIApiService) GetListBackups(ctx context.Context, loc
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -514,6 +519,7 @@ func (a *MemoryStoreBackupAPIApiService) RestoreBackup(ctx context.Context, body
 	if localVarOptionals != nil && localVarOptionals.UserType.IsSet() {
 		localVarHeaderParams["user-type"] = parameterToString(localVarOptionals.UserType.Value(), "")
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)

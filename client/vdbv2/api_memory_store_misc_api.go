@@ -61,6 +61,7 @@ func (a *MemoryStoreMiscAPIApiService) GetAllDatastore(ctx context.Context) (Wra
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -144,6 +145,7 @@ func (a *MemoryStoreMiscAPIApiService) GetAllInstanceFamily(ctx context.Context)
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -227,6 +229,7 @@ func (a *MemoryStoreMiscAPIApiService) GetDBInstanceConfig(ctx context.Context) 
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -310,6 +313,7 @@ func (a *MemoryStoreMiscAPIApiService) GetEngine(ctx context.Context) (WrapConte
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -394,6 +398,7 @@ func (a *MemoryStoreMiscAPIApiService) GetFlavorCodes(ctx context.Context, porta
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	localVarHeaderParams["portal-user-id"] = parameterToString(portalUserId, "")
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -483,6 +488,7 @@ func (a *MemoryStoreMiscAPIApiService) GetFlavors(ctx context.Context, type_ str
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	localVarHeaderParams["portal-user-id"] = parameterToString(portalUserId, "")
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -567,6 +573,7 @@ func (a *MemoryStoreMiscAPIApiService) GetListNetwork(ctx context.Context) (Wrap
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -651,6 +658,7 @@ func (a *MemoryStoreMiscAPIApiService) GetVolumeTypes(ctx context.Context, porta
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	localVarHeaderParams["portal-user-id"] = parameterToString(portalUserId, "")
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -735,6 +743,7 @@ func (a *MemoryStoreMiscAPIApiService) ListDatabaseInstanceStatus(ctx context.Co
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -818,6 +827,7 @@ func (a *MemoryStoreMiscAPIApiService) ListNetwork(ctx context.Context) (WrapCon
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err

@@ -47,7 +47,7 @@ func (a *RelationalBackupStorageAPIApiService) CreateRelationalBackUpStorage(ctx
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/payment/backup-storages"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/payment/backup-storages"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -138,7 +138,7 @@ func (a *RelationalBackupStorageAPIApiService) DeleteBackupStorage1(ctx context.
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/backup-storages/actions/deletions"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/backup-storages/actions/deletions"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -230,7 +230,7 @@ func (a *RelationalBackupStorageAPIApiService) GetListBackupStorage1(ctx context
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/backup-storages/information"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/backup-storages/information"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -316,7 +316,7 @@ func (a *RelationalBackupStorageAPIApiService) GetListQuotaPackage1(ctx context.
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/backup-storages"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/backup-storages"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -407,7 +407,7 @@ func (a *RelationalBackupStorageAPIApiService) RenewBackupStorage1(ctx context.C
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/backup-storages/actions/renew"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/backup-storages/actions/renew"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -503,7 +503,7 @@ func (a *RelationalBackupStorageAPIApiService) ResizeBackupStorage1(ctx context.
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/backup-storages/actions/resize"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/backup-storages/actions/resize"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

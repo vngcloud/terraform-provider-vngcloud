@@ -76,6 +76,7 @@ func (a *MemoryStoreDatabaseAPIApiService) CreateDatabaseInstanceReplica(ctx con
 	if localVarOptionals != nil && localVarOptionals.UserType.IsSet() {
 		localVarHeaderParams["user-type"] = parameterToString(localVarOptionals.UserType.Value(), "")
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
@@ -172,6 +173,7 @@ func (a *MemoryStoreDatabaseAPIApiService) CreateMemoryStoreDatabaseInstance(ctx
 	if localVarOptionals != nil && localVarOptionals.UserType.IsSet() {
 		localVarHeaderParams["user-type"] = parameterToString(localVarOptionals.UserType.Value(), "")
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
@@ -260,6 +262,7 @@ func (a *MemoryStoreDatabaseAPIApiService) DeleteDatabaseInstances(ctx context.C
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
@@ -348,6 +351,7 @@ func (a *MemoryStoreDatabaseAPIApiService) DetachReplica(ctx context.Context, bo
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
@@ -446,6 +450,7 @@ func (a *MemoryStoreDatabaseAPIApiService) ExchangePocResource(ctx context.Conte
 	if localVarOptionals != nil && localVarOptionals.UserType.IsSet() {
 		localVarHeaderParams["user-type"] = parameterToString(localVarOptionals.UserType.Value(), "")
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
@@ -533,6 +538,7 @@ func (a *MemoryStoreDatabaseAPIApiService) GetDatabaseInstancesById(ctx context.
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -622,6 +628,7 @@ func (a *MemoryStoreDatabaseAPIApiService) GetDatabaseInstancesByUser(ctx contex
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -722,6 +729,7 @@ func (a *MemoryStoreDatabaseAPIApiService) GetHistoryDB(ctx context.Context, dbI
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -807,6 +815,7 @@ func (a *MemoryStoreDatabaseAPIApiService) GetListBackupsByInstanceId(ctx contex
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -892,6 +901,7 @@ func (a *MemoryStoreDatabaseAPIApiService) GetListReplicas(ctx context.Context, 
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -977,6 +987,7 @@ func (a *MemoryStoreDatabaseAPIApiService) GetSecurityRules1(ctx context.Context
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -1073,6 +1084,7 @@ func (a *MemoryStoreDatabaseAPIApiService) RenewResource(ctx context.Context, bo
 	if localVarOptionals != nil && localVarOptionals.UserType.IsSet() {
 		localVarHeaderParams["user-type"] = parameterToString(localVarOptionals.UserType.Value(), "")
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
@@ -1171,6 +1183,7 @@ func (a *MemoryStoreDatabaseAPIApiService) ResizeInstance(ctx context.Context, b
 	if localVarOptionals != nil && localVarOptionals.UserType.IsSet() {
 		localVarHeaderParams["user-type"] = parameterToString(localVarOptionals.UserType.Value(), "")
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
@@ -1259,6 +1272,7 @@ func (a *MemoryStoreDatabaseAPIApiService) RestartDatabaseInstances(ctx context.
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
@@ -1347,6 +1361,7 @@ func (a *MemoryStoreDatabaseAPIApiService) StartDatabaseInstances(ctx context.Co
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
@@ -1435,6 +1450,7 @@ func (a *MemoryStoreDatabaseAPIApiService) StopDatabaseInstances(ctx context.Con
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
@@ -1523,6 +1539,7 @@ func (a *MemoryStoreDatabaseAPIApiService) UpdateDatabaseConfigGroup(ctx context
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
@@ -1611,6 +1628,7 @@ func (a *MemoryStoreDatabaseAPIApiService) UpdateDatabaseSetting(ctx context.Con
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
@@ -1699,6 +1717,7 @@ func (a *MemoryStoreDatabaseAPIApiService) UpdateSecurityRules(ctx context.Conte
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
+	localVarHeaderParams["X-Service-Path"] = "vdb-memory"
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)

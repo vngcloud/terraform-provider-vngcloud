@@ -48,7 +48,7 @@ func (a *RelationalDatabaseAPIApiService) CreateRelationalDatabaseInstance(ctx c
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/payment/database-instances"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/payment/database-instances"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -146,7 +146,7 @@ func (a *RelationalDatabaseAPIApiService) CreateRelationalDatabaseInstanceReplic
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{id}/create-replicas"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{id}/create-replicas"
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", fmt.Sprintf("%v", id), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -237,7 +237,7 @@ func (a *RelationalDatabaseAPIApiService) DeleteDatabaseInstances1(ctx context.C
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{instanceId}/delete"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{instanceId}/delete"
 	localVarPath = strings.Replace(localVarPath, "{"+"instanceId"+"}", fmt.Sprintf("%v", instanceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -325,7 +325,7 @@ func (a *RelationalDatabaseAPIApiService) DetachReplica1(ctx context.Context, bo
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{instanceId}/detach-replica"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{instanceId}/detach-replica"
 	localVarPath = strings.Replace(localVarPath, "{"+"instanceId"+"}", fmt.Sprintf("%v", instanceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -419,7 +419,7 @@ func (a *RelationalDatabaseAPIApiService) ExchangePocResource1(ctx context.Conte
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/exchange-poc"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/exchange-poc"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -507,7 +507,7 @@ func (a *RelationalDatabaseAPIApiService) GetAllDatastore1(ctx context.Context) 
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/datastore"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/datastore"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -590,7 +590,7 @@ func (a *RelationalDatabaseAPIApiService) GetAllInstanceFamily1(ctx context.Cont
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/families"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/families"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -673,7 +673,7 @@ func (a *RelationalDatabaseAPIApiService) GetDBInstanceConfig1(ctx context.Conte
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/configuration"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/configuration"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -757,7 +757,7 @@ func (a *RelationalDatabaseAPIApiService) GetDatabaseInstancesById1(ctx context.
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/id/{dbInstanceId}"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/id/{dbInstanceId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"dbInstanceId"+"}", fmt.Sprintf("%v", dbInstanceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -844,7 +844,7 @@ func (a *RelationalDatabaseAPIApiService) GetDatabaseInstancesByUser1(ctx contex
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -930,7 +930,7 @@ func (a *RelationalDatabaseAPIApiService) GetEngine1(ctx context.Context) (WrapC
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/engine"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/engine"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1014,7 +1014,7 @@ func (a *RelationalDatabaseAPIApiService) GetFlavorCodes1(ctx context.Context, p
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/flavor_zones/codes"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/flavor_zones/codes"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1101,7 +1101,7 @@ func (a *RelationalDatabaseAPIApiService) GetFlavors1(ctx context.Context, type_
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/flavors"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/flavors"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1197,7 +1197,7 @@ func (a *RelationalDatabaseAPIApiService) GetHistoryDB1(ctx context.Context, ins
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{instanceId}/histories"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{instanceId}/histories"
 	localVarPath = strings.Replace(localVarPath, "{"+"instanceId"+"}", fmt.Sprintf("%v", instanceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1287,7 +1287,7 @@ func (a *RelationalDatabaseAPIApiService) GetListNetwork1(ctx context.Context) (
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/networks"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/networks"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1371,7 +1371,7 @@ func (a *RelationalDatabaseAPIApiService) GetListReplicas1(ctx context.Context, 
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{replicaSourceId}/replicas"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{replicaSourceId}/replicas"
 	localVarPath = strings.Replace(localVarPath, "{"+"replicaSourceId"+"}", fmt.Sprintf("%v", replicaSourceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1457,7 +1457,7 @@ func (a *RelationalDatabaseAPIApiService) UpdateSecurityRules(ctx context.Contex
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{instanceId}/secrules"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{instanceId}/secrules"
 	localVarPath = strings.Replace(localVarPath, "{"+"instanceId"+"}", fmt.Sprintf("%v", instanceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1544,7 +1544,7 @@ func (a *RelationalDatabaseAPIApiService) GetSecurityRules(ctx context.Context, 
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{instanceId}/secrules"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{instanceId}/secrules"
 	localVarPath = strings.Replace(localVarPath, "{"+"instanceId"+"}", fmt.Sprintf("%v", instanceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1629,7 +1629,7 @@ func (a *RelationalDatabaseAPIApiService) GetVolumeTypes2(ctx context.Context, p
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/volume/types"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/volume/types"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1713,7 +1713,7 @@ func (a *RelationalDatabaseAPIApiService) ListNetwork1(ctx context.Context) (Wra
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/networks/subnets"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/networks/subnets"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1805,7 +1805,7 @@ func (a *RelationalDatabaseAPIApiService) RenewResource1(ctx context.Context, bo
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{resourceId}/renew-resource"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{resourceId}/renew-resource"
 	localVarPath = strings.Replace(localVarPath, "{"+"resourceId"+"}", fmt.Sprintf("%v", resourceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1903,7 +1903,7 @@ func (a *RelationalDatabaseAPIApiService) ResizeInstance1(ctx context.Context, b
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{instanceId}/resize-instance"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{instanceId}/resize-instance"
 	localVarPath = strings.Replace(localVarPath, "{"+"instanceId"+"}", fmt.Sprintf("%v", instanceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -2002,7 +2002,7 @@ func (a *RelationalDatabaseAPIApiService) ResizeStorage(ctx context.Context, bod
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{instanceId}/resize-storage"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{instanceId}/resize-storage"
 	localVarPath = strings.Replace(localVarPath, "{"+"instanceId"+"}", fmt.Sprintf("%v", instanceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -2094,7 +2094,7 @@ func (a *RelationalDatabaseAPIApiService) RestartDatabaseInstances1(ctx context.
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{instanceId}/reboot"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{instanceId}/reboot"
 	localVarPath = strings.Replace(localVarPath, "{"+"instanceId"+"}", fmt.Sprintf("%v", instanceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -2182,7 +2182,7 @@ func (a *RelationalDatabaseAPIApiService) StartDatabaseInstances1(ctx context.Co
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{instanceId}/start"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{instanceId}/start"
 	localVarPath = strings.Replace(localVarPath, "{"+"instanceId"+"}", fmt.Sprintf("%v", instanceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -2270,7 +2270,7 @@ func (a *RelationalDatabaseAPIApiService) StopDatabaseInstances1(ctx context.Con
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{instanceId}/shutdown"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{instanceId}/shutdown"
 	localVarPath = strings.Replace(localVarPath, "{"+"instanceId"+"}", fmt.Sprintf("%v", instanceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -2358,7 +2358,7 @@ func (a *RelationalDatabaseAPIApiService) UpdateDatabaseConfigGroup1(ctx context
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{instanceId}/update/config-group"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{instanceId}/update/config-group"
 	localVarPath = strings.Replace(localVarPath, "{"+"instanceId"+"}", fmt.Sprintf("%v", instanceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -2446,7 +2446,7 @@ func (a *RelationalDatabaseAPIApiService) UpdateDatabaseSetting1(ctx context.Con
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/database-instances/{instanceId}/update/setting"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/database-instances/{instanceId}/update/setting"
 	localVarPath = strings.Replace(localVarPath, "{"+"instanceId"+"}", fmt.Sprintf("%v", instanceId), -1)
 
 	localVarHeaderParams := make(map[string]string)

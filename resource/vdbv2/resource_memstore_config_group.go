@@ -20,6 +20,7 @@ func ResourceMemStoreConfigurationGroup() *schema.Resource {
 		Create: resourceMemStoreConfigurationGroupCreate,
 		Read:   resourceMemStoreConfigurationGroupRead,
 		Delete: resourceMemStoreConfigurationGroupDelete,
+		Update: resourceRelationalConfigurationGroupUpdate,
 
 		Schema: map[string]*schema.Schema{
 			"datastore_type": {

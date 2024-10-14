@@ -41,7 +41,7 @@ func (a *RelationalBackupAPIApiService) CreateBackups1(ctx context.Context, body
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/backups/create"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/backups/create"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -128,7 +128,7 @@ func (a *RelationalBackupAPIApiService) DeleteBackups1(ctx context.Context, body
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/backups/{backupId}/delete"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/backups/{backupId}/delete"
 	localVarPath = strings.Replace(localVarPath, "{"+"backupId"+"}", fmt.Sprintf("%v", backupId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -215,7 +215,7 @@ func (a *RelationalBackupAPIApiService) GetDetailBackupById1(ctx context.Context
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/backups/detail/{backupId}"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/backups/detail/{backupId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"backupId"+"}", fmt.Sprintf("%v", backupId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -299,7 +299,7 @@ func (a *RelationalBackupAPIApiService) GetFreeBackupUsage1(ctx context.Context)
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/backups/free-backup"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/backups/free-backup"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -391,7 +391,7 @@ func (a *RelationalBackupAPIApiService) GetListBackups1(ctx context.Context, loc
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/backups"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/backups"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -481,7 +481,7 @@ func (a *RelationalBackupAPIApiService) GetListBackupsByInstanceId1(ctx context.
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/backups/insId/{instanceId}"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/backups/insId/{instanceId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"instanceId"+"}", fmt.Sprintf("%v", instanceId), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -574,7 +574,7 @@ func (a *RelationalBackupAPIApiService) RestoreBackup1(ctx context.Context, body
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/v1/backups/{id}/restore"
+	localVarPath := a.client.cfg.BasePath + "/vdb-relational/v1/backups/{id}/restore"
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", fmt.Sprintf("%v", id), -1)
 
 	localVarHeaderParams := make(map[string]string)
