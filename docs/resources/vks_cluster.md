@@ -72,6 +72,62 @@ resource "vngcloud_vks_cluster" "primary" {
 * `enabled_block_store_csi_plugin`(Optional) Automatically deploys and manages the BlockStore Persistent Disk CSI Driver via Kubernetes YAML. The default value is "true".
 
 ---
+### **Some important notes when using VKS with Terraform:**
+
+When using **Terraform** to create a **Cluster** and **Node Group** on the VKS system, if you modify any of the following fields, the system will automatically delete the existing Node Group/Cluster and recreate a new one with the corresponding new parameters. The deletion process will occur before the creation of the new Node Group/Cluster.
+
+* For the resource `vngcloud_vks_cluster`, the fields that, when modified, will cause the system to delete and recreate the Cluster include:
+  * `name`&#x20;
+  * `description`&#x20;
+  * `enable_private_cluster`&#x20;
+  * `network_type`&#x20;
+  * `vpc_id`&#x20;
+  * `subnet_id`&#x20;
+  * `cidr`&#x20;
+  * `enabled_load_balancer_plugin`&#x20;
+  * `enabled_block_store_csi_plugin`&#x20;
+  * `node_group`&#x20;
+  * `secondary_subnets`&#x20;
+  * `node_netmask_size`
+* For the resource `vngcloud_vks_cluster_node_group`, the fields that, when modified, will cause the system to delete and recreate the Node Group include:
+  * `cluster_id`&#x20;
+  * `name`&#x20;
+  * `flavor_id`&#x20;
+  * `disk_size`&#x20;
+  * `disk_type`&#x20;
+  * `enable_private_nodes`&#x20;
+  * `ssh_key_id`&#x20;
+  * `secondary_subnets`&#x20;
+  * `enabled_encryption_volume`&#x20;
+  * `subnet_id`
+
+To specify that the system should create a new cluster/node group before deleting the old one, you can add the parameter `lifecycle { create_before_destroy = true }`to your main.tf file. Specifically:
+
+* For the resource `vngcloud_vks_cluster`
+
+```
+resource "vngcloud_vks_cluster" "example" {
+  # ...
+ 
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+```
+
+* For the resource `vngcloud_vks_cluster_node_group`
+
+```
+resource "vngcloud_vks_cluster_node_group" "example" {
+  # ...
+ 
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+```
+
+---
 
 ### Example Usage 1 - Create a Cluster with Network type CALICO OVERLAY and a Node Group with AutoScale Mode
 
