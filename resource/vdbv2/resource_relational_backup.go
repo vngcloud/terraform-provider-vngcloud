@@ -32,12 +32,6 @@ func ResourceRelationalBackup() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"description": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "",
-				ForceNew: true,
-			},
 			"instance_id": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -158,7 +152,6 @@ func resourceRelationalBackupRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.Set("name", dbResp.Data.Name)
-	d.Set("description", dbResp.Data.Description)
 	d.Set("instance_id", dbResp.Data.DbInstanceId)
 	d.Set("instance_name", dbResp.Data.InstanceName)
 	d.Set("type", dbResp.Data.Type_)
@@ -229,7 +222,7 @@ func generateRelationalCreateBackupRequest(d *schema.ResourceData) vdb.BackupReq
 	createRequest := vdb.BackupRequest{
 		DbInstanceId: d.Get("instance_id").(string),
 		Name:         d.Get("name").(string),
-		Description:  d.Get("description").(string),
+		Description:  "Created by terraform",
 		BackupType:   d.Get("backup_type").(string),
 		ParentId:     d.Get("parent_id").(string),
 	}

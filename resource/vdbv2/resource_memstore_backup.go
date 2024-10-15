@@ -32,12 +32,6 @@ func ResourceMemStoreBackup() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"description": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "",
-				ForceNew: true,
-			},
 			"instance_id": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -148,7 +142,6 @@ func resourceMemStoreBackupRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.Set("name", dbResp.Data.Name)
-	d.Set("description", dbResp.Data.Description)
 	d.Set("instance_id", dbResp.Data.DbInstanceId)
 	d.Set("instance_name", dbResp.Data.InstanceName)
 	d.Set("type", dbResp.Data.Type_)
@@ -219,7 +212,7 @@ func generateMemStoreCreateBackupRequest(d *schema.ResourceData) vdb.BackupReque
 	createRequest := vdb.BackupRequest{
 		DbInstanceId: d.Get("instance_id").(string),
 		Name:         d.Get("name").(string),
-		Description:  d.Get("description").(string),
+		Description:  "Created by Terraform",
 		BackupType:   "FULL",
 	}
 

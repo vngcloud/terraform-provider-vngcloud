@@ -23,12 +23,12 @@ func ResourceMemStoreConfigurationGroup() *schema.Resource {
 		Update: resourceMemStoreConfigurationGroupUpdate,
 
 		Schema: map[string]*schema.Schema{
-			"datastore_type": {
+			"engine_type": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"datastore_version": {
+			"engine_version": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -87,8 +87,8 @@ func resourceMemStoreConfigurationGroupCreate(d *schema.ResourceData, m interfac
 
 	cli := m.(*client.Client)
 	createRequest := vdb.ConfigurationRequest{
-		DatastoreType:    d.Get("datastore_type").(string),
-		DatastoreVersion: d.Get("datastore_version").(string),
+		DatastoreType:    d.Get("engine_type").(string),
+		DatastoreVersion: d.Get("engine_version").(string),
 		Description:      d.Get("description").(string),
 		Name:             d.Get("name").(string),
 		EngineGroup:      2,
@@ -142,8 +142,8 @@ func resourceMemStoreConfigurationGroupRead(d *schema.ResourceData, m interface{
 		return nil
 	}
 
-	d.Set("datastore_type", resp.Data.DatastoreName)
-	d.Set("datastore_version", resp.Data.DatastoreVersionName)
+	d.Set("engine_type", resp.Data.DatastoreName)
+	d.Set("engine_version", resp.Data.DatastoreVersionName)
 	d.Set("description", resp.Data.Description)
 	d.Set("name", resp.Data.Name)
 	d.Set("created", resp.Data.Created)
@@ -225,8 +225,8 @@ func resourceMemStoreConfigurationGroupUpdate(d *schema.ResourceData, m interfac
 
 	updateRequest := vdb.ConfigurationRequest{
 		Id:               d.Id(),
-		DatastoreType:    d.Get("datastore_type").(string),
-		DatastoreVersion: d.Get("datastore_version").(string),
+		DatastoreType:    d.Get("engine_type").(string),
+		DatastoreVersion: d.Get("engine_version").(string),
 		Description:      d.Get("description").(string),
 		Name:             d.Get("name").(string),
 		Values:           values,
