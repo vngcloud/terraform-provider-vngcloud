@@ -13,7 +13,7 @@ resource "vngcloud_vdb_relational_config_group" "mysql_8_config" {
 resource "vngcloud_vdb_memstore_config_group" "redis_4_config" {
   engine_type = var.memmory_engine_type
   engine_version = var.memory_engine_version
-  name = "nhontt-tf-config"
+  name = "tf-redis4"
   values = {
     "activedefrag" = "true"
   }
@@ -46,8 +46,8 @@ resource "vngcloud_vdb_memstore_backup_storage" "mem_bk_storage" {
 
 # Relational Database
 data "vngcloud_vdb_database_package" "db_new_s_general_1x2" {
-  engine_type = var.relational_entine_type
-  engine_version = var.relational_entine_version
+  engine_type = var.relational_engine_type
+  engine_version = var.relational_engine_version
   name = "db.new.s-general-1x2"
 }
 data "vngcloud_vdb_database_volume_type" "Gen2_NVMe2_IOPS3000" {
@@ -60,8 +60,8 @@ resource "vngcloud_vdb_relational_database" "mysql_8_db" {
   backup_time = "00:00"
   config_id = vngcloud_vdb_relational_config_group.mysql_8_config.id
   db_name = var.db_name
-  engine_type = var.relational_entine_type
-  engine_version = var.relational_entine_version
+  engine_type = var.relational_engine_type
+  engine_version = var.relational_engine_version
   name = "tf-db-instance"
   subnet_id = var.subnet_id
   package_id = data.vngcloud_vdb_database_package.db_new_s_general_1x2.id
@@ -78,7 +78,7 @@ resource "vngcloud_vdb_relational_database" "mysql_8_db" {
 
 # Relational Backup
 locals {
-  mysql_8_db_id = "db-c9e07465-1678-4911-8e00-241cfd21f99a"
+  mysql_8_db_id = vngcloud_vdb_relational_database.mysql_8_db.id
   redis_4_db_id = vngcloud_vdb_memstore_database.redis_4_db.id
 }
 resource "vngcloud_vdb_relational_backup" "mysql_8_backup" {

@@ -67,11 +67,11 @@ func ResourceRelationalBackup() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"datastore_type": {
+			"engine_type": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"datastore_version": {
+			"engine_version": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -122,10 +122,6 @@ func ResourceRelationalBackup() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"backup_duration": {
-				Type:     schema.TypeInt,
-				Computed: true,
-			},
 		},
 	}
 }
@@ -160,8 +156,8 @@ func resourceRelationalBackupRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("created", dbResp.Data.Created)
 	d.Set("backup_type", dbResp.Data.BackupType)
 	d.Set("status", dbResp.Data.Status)
-	d.Set("datastore_type", dbResp.Data.DatastoreType)
-	d.Set("datastore_version", dbResp.Data.DatastoreVersion)
+	d.Set("engine_type", dbResp.Data.DatastoreType)
+	d.Set("engine_version", dbResp.Data.DatastoreVersion)
 	d.Set("storage_type", dbResp.Data.StorageType)
 	d.Set("storage_size", dbResp.Data.StorageSize)
 	d.Set("ram", dbResp.Data.Ram)
@@ -173,7 +169,6 @@ func resourceRelationalBackupRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("net_name", dbResp.Data.NetName)
 	d.Set("size", dbResp.Data.Size)
 	d.Set("backup_tier", dbResp.Data.BackupTier)
-	d.Set("backup_duration", dbResp.Data.BackupDuration)
 
 	return nil
 }

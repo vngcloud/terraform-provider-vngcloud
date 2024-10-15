@@ -9,7 +9,7 @@ variable "client_secret" {
 
 variable "relational_engine_type" {
   type = string
-  default = "MySQL8"
+  default = "MySQL"
 }
 
 variable "relational_engine_version" {

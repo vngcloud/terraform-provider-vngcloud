@@ -106,14 +106,6 @@ func ResourceRelationalDatabase() *schema.Resource {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
-			//"redis_password": {
-			//	Type:     schema.TypeString,
-			//	Required: true,
-			//},
-			//"redis_password_enabled": {
-			//	Type:     schema.TypeBool,
-			//	Required: true,
-			//},
 			"replica_source_id": {
 				Type:     schema.TypeString,
 				Optional: true,
