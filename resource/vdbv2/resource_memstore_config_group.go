@@ -20,7 +20,7 @@ func ResourceMemStoreConfigurationGroup() *schema.Resource {
 		Create: resourceMemStoreConfigurationGroupCreate,
 		Read:   resourceMemStoreConfigurationGroupRead,
 		Delete: resourceMemStoreConfigurationGroupDelete,
-		Update: resourceRelationalConfigurationGroupUpdate,
+		Update: resourceMemStoreConfigurationGroupUpdate,
 
 		Schema: map[string]*schema.Schema{
 			"datastore_type": {
@@ -111,14 +111,12 @@ func resourceMemStoreConfigurationGroupCreate(d *schema.ResourceData, m interfac
 	time.Sleep(10 * time.Second)
 	d.SetId(resp.Data.Id)
 
-	_, ok := d.Get("values").([]interface{})
-	if ok {
-		err := resourceMemStoreConfigurationGroupUpdate(d, m)
-		if err != nil {
-			return err
-		}
-		time.Sleep(10 * time.Second)
+	err = resourceMemStoreConfigurationGroupUpdate(d, m)
+	if err != nil {
+		return err
 	}
+	time.Sleep(10 * time.Second)
+
 	return resourceMemStoreConfigurationGroupRead(d, m)
 }
 
@@ -218,13 +216,20 @@ func resourceMemStoreConfigurationGroupUpdate(d *schema.ResourceData, m interfac
 	//	values = nil
 	//}
 
+	values := getValues(d.Get("values").(map[string]interface{}))
+
+	if len(values) == 0 {
+		log.Println("Values empty to be updated")
+		return nil
+	}
+
 	updateRequest := vdb.ConfigurationRequest{
 		Id:               d.Id(),
 		DatastoreType:    d.Get("datastore_type").(string),
 		DatastoreVersion: d.Get("datastore_version").(string),
 		Description:      d.Get("description").(string),
 		Name:             d.Get("name").(string),
-		Values:           getValues(d.Get("values").(map[string]interface{})),
+		Values:           values,
 		EngineGroup:      1,
 	}
 

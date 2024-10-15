@@ -112,14 +112,12 @@ func resourceRelationalConfigurationGroupCreate(d *schema.ResourceData, m interf
 	time.Sleep(10 * time.Second)
 	d.SetId(resp.Data.Id)
 
-	_, ok := d.Get("values").([]interface{})
-	if ok {
-		err := resourceRelationalConfigurationGroupUpdate(d, m)
-		if err != nil {
-			return err
-		}
-		time.Sleep(10 * time.Second)
+	err = resourceRelationalConfigurationGroupUpdate(d, m)
+	if err != nil {
+		return err
 	}
+	time.Sleep(10 * time.Second)
+
 	return resourceRelationalConfigurationGroupRead(d, m)
 }
 
@@ -231,13 +229,20 @@ func resourceRelationalConfigurationGroupUpdate(d *schema.ResourceData, m interf
 	//	values = nil
 	//}
 
+	values := getValues(d.Get("values").(map[string]interface{}))
+
+	if len(values) == 0 {
+		log.Println("Values empty to be updated")
+		return nil
+	}
+
 	updateRequest := vdb.ConfigurationRequest{
 		Id:               d.Id(),
 		DatastoreType:    d.Get("datastore_type").(string),
 		DatastoreVersion: d.Get("datastore_version").(string),
 		Description:      d.Get("description").(string),
 		Name:             d.Get("name").(string),
-		Values:           getValues(d.Get("values").(map[string]interface{})),
+		Values:           values,
 		EngineGroup:      1,
 	}
 

@@ -103,13 +103,14 @@ func resourceRelationalBackupStorageCreate(d *schema.ResourceData, m interface{}
 	time.Sleep(10 * time.Second)
 
 	d.SetId(idStr)
-	return nil
+	return resourceRelationalBackupStorageRead(d, m)
 }
 
 func generateRelationalCreateBackupStorageRequest(d *schema.ResourceData) CreateBackupStorageRequest {
 	createRequest := CreateBackupStorageRequest{
 		BackupPackageID: d.Get("backup_storage_package_id").(string),
 		IsPoc:           d.Get("is_poc").(bool),
+		Period:          1,
 	}
 	return createRequest
 }
@@ -165,7 +166,7 @@ func resourceRelationalBackupStorageDelete(d *schema.ResourceData, m interface{}
 	}
 	instances := make([]BackupStorageInstance, 1)
 	instances[0] = instance
-	deleteBackupStorageRequest := BackupStorageRequest{
+	deleteBackupStorageRequest := BackupStorageNoPaymentRequest{
 		ResourceType:      "dbaas-backup-storage",
 		Action:            "delete",
 		DatabaseInstances: instances,
@@ -206,7 +207,14 @@ type BackupStorageRequest struct {
 	DatabaseInstances []BackupStorageInstance `json:"databaseInstances,omitempty"`
 }
 
+type BackupStorageNoPaymentRequest struct {
+	ResourceType      string                  `json:"resType,omitempty"`
+	Action            string                  `json:"action,omitempty"`
+	DatabaseInstances []BackupStorageInstance `json:"databaseInstances,omitempty"`
+}
+
 type CreateBackupStorageRequest struct {
 	BackupPackageID string `json:"backupPackageId,omitempty"`
 	IsPoc           bool   `json:"poc,omitempty"`
+	Period          int    `json:"period,omitempty"`
 }

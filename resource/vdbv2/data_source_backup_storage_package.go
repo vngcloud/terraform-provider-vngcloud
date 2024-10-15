@@ -59,7 +59,12 @@ func dataSourceBackupStoragePackageRead(d *schema.ResourceData, m interface{}) e
 		if listPackageResp.Data[0].Packages[i].PackageName == d.Get("name") {
 			idStr := strconv.Itoa(int(listPackageResp.Data[0].Packages[i].PackageId))
 			d.SetId(idStr)
-			d.Set("quota", listPackageResp.Data[0].Packages[i].PackageQuota)
+			quota := 0
+			if quota, err = strconv.Atoi(listPackageResp.Data[0].Packages[i].PackageQuota); err != nil {
+				log.Println("[DEBUG] Invalid quota input of " + idStr)
+				return err
+			}
+			d.Set("quota", quota)
 			d.Set("description", listPackageResp.Data[0].Packages[i].Description)
 		}
 	}

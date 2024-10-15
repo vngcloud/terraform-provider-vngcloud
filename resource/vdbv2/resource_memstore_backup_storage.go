@@ -103,13 +103,14 @@ func resourceMemStoreBackupStorageCreate(d *schema.ResourceData, m interface{}) 
 	time.Sleep(10 * time.Second)
 
 	d.SetId(idStr)
-	return nil
+	return resourceMemStoreBackupStorageRead(d, m)
 }
 
 func generateMemStoreCreateBackupStorageRequest(d *schema.ResourceData) CreateBackupStorageRequest {
 	createRequest := CreateBackupStorageRequest{
 		BackupPackageID: d.Get("backup_storage_package_id").(string),
 		IsPoc:           d.Get("is_poc").(bool),
+		Period:          1,
 	}
 	return createRequest
 }
@@ -165,7 +166,7 @@ func resourceMemStoreBackupStorageDelete(d *schema.ResourceData, m interface{}) 
 	}
 	instances := make([]BackupStorageInstance, 1)
 	instances[0] = instance
-	deleteBackupStorageRequest := BackupStorageRequest{
+	deleteBackupStorageRequest := BackupStorageNoPaymentRequest{
 		ResourceType:      "dbaas-backup-storage",
 		Action:            "delete",
 		DatabaseInstances: instances,
