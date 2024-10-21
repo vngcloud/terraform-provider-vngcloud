@@ -9,17 +9,20 @@
 package vks
 
 type CreateNodeGroupDto struct {
-	Name               string                       `json:"name"`
-	NumNodes           int32                        `json:"numNodes"`
-	AutoScaleConfig    *NodeGroupAutoScaleConfigDto `json:"autoScaleConfig,omitempty"`
-	UpgradeConfig      NodeGroupUpgradeConfigDto    `json:"upgradeConfig,omitempty"`
-	ImageId            string                       `json:"imageId"`
-	FlavorId           string                       `json:"flavorId"`
-	DiskSize           int32                        `json:"diskSize"`
-	DiskType           string                       `json:"diskType"`
-	EnablePrivateNodes bool                         `json:"enablePrivateNodes"`
-	SecurityGroups     []string                     `json:"securityGroups"`
-	SshKeyId           string                       `json:"sshKeyId"`
-	Labels             map[string]string            `json:"labels,omitempty"`
-	Taints             []NodeGroupTaintDto          `json:"taints,omitempty"`
+	Name                    string                       `json:"name"`
+	NumNodes                int32                        `json:"numNodes"`
+	AutoScaleConfig         *NodeGroupAutoScaleConfigDto `json:"autoScaleConfig,omitempty"`
+	UpgradeConfig           NodeGroupUpgradeConfigDto    `json:"upgradeConfig,omitempty"`
+	ImageId                 string                       `json:"imageId"`
+	FlavorId                string                       `json:"flavorId"`
+	DiskSize                int32                        `json:"diskSize"`
+	DiskType                string                       `json:"diskType"`
+	EnablePrivateNodes      bool                         `json:"enablePrivateNodes"`
+	SecurityGroups          []string                     `json:"securityGroups"`
+	SshKeyId                string                       `json:"sshKeyId"`
+	Labels                  map[string]string            `json:"labels,omitempty"`
+	Taints                  []NodeGroupTaintDto          `json:"taints,omitempty"`
+	SecondarySubnets        []string                     `json:"secondarySubnets"`
+	SubnetId                string                       `json:"subnetId,omitempty"`
+	EnabledEncryptionVolume bool                         `json:"enabledEncryptionVolume"`
 }
