@@ -40,7 +40,7 @@ resource "vngcloud_vdb_relational_database" "mysql_8_db" {
 The following arguments are supported:
 
 - **action** (String, Required):
-    - The action to perform. This field is required.
+    - The action to perform (start, stop, reboot) The initial value when creating the resource should be 'start'. This field is required.
 
 - **backup_auto** (Bool, Required):
     - Indicates if daily automatic backups are enabled. This field is required.
