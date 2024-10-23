@@ -21,19 +21,19 @@ var (
 	databaseResizeDelay      = 10 * time.Second
 	databaseResizeMinTimeout = 10 * time.Second
 
-	databaseStartPending    = []string{"BUILDING", "BACKUP", "SHUTDOWN"}
+	databaseStartPending    = []string{"BUILDING", "BACKUP", "SHUTDOWN", "starting"}
 	databaseStartTarget     = []string{"ACTIVE"}
 	databaseStartTimeout    = 20 * time.Minute
 	databaseStartDelay      = 10 * time.Second
 	databaseStartMinTimeout = 10 * time.Second
 
-	databaseStopPending    = []string{"BUILDING", "BACKUP", "ACTIVE"}
+	databaseStopPending    = []string{"BUILDING", "BACKUP", "ACTIVE", "stopping"}
 	databaseStopTarget     = []string{"SHUTDOWN"}
 	databaseStopTimeout    = 20 * time.Minute
 	databaseStopDelay      = 10 * time.Second
 	databaseStopMinTimeout = 10 * time.Second
 
-	databaseRebootPending    = []string{"BUILDING", "BACKUP", "REBOOT"}
+	databaseRebootPending    = []string{"BUILDING", "BACKUP", "REBOOT", "rebooting"}
 	databaseRebootTarget     = []string{"ACTIVE"}
 	databaseRebootTimeout    = 10 * time.Minute
 	databaseRebootDelay      = 10 * time.Second
