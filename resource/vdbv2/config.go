@@ -6,7 +6,7 @@ var (
 	databaseCreatePending    = []string{"BUILDING", "BUILD"}
 	databaseCreateTarget     = []string{"ACTIVE"}
 	databaseCreateTimeout    = 30 * time.Minute
-	databaseCreateDelay      = 10 * time.Second
+	databaseCreateDelay      = 30 * time.Second
 	databaseCreateMinTimeout = 10 * time.Second
 
 	databaseDeletePending    = []string{"DELETING", "BACKUP", "deleting", "ACTIVE"}
