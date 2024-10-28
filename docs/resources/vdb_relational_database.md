@@ -90,8 +90,8 @@ The following arguments are supported:
 - **allowed_ip_prefix** (List, Optional):
     - A list of allowed IP prefixes. This field is optional.
 
-- **replica_source_id** (String, Optional, ForceNew):
-    - The ID of the source instance for replication. This field is optional and cannot be changed after creation.
+- **replica_source_id** (String, Optional):
+    - The ID of the source instance for replication. Set this field to empty to promote slave db to standalone. This field is optional and cannot be changed after creation.
 
 - **backup_id** (String, Optional, ForceNew):
     - The ID of the backup for restoration. This field is optional and cannot be changed after creation.

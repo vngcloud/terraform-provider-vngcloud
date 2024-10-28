@@ -108,7 +108,6 @@ func ResourceMemStoreDatabase() *schema.Resource {
 			"replica_source_id": {
 				Type:     schema.TypeString,
 				Optional: true,
-				ForceNew: true,
 			},
 			"replicas": {
 				Type:     schema.TypeList,
