@@ -9,6 +9,7 @@
 package vdbv2
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -76,7 +77,7 @@ func (a *KafkaConfigurationGroupAPIApiService) CreateConfigGroup(ctx context.Con
 	}
 
 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -164,7 +165,7 @@ func (a *KafkaConfigurationGroupAPIApiService) CreateConfigGroupVersion(ctx cont
 	}
 
 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -249,7 +250,7 @@ func (a *KafkaConfigurationGroupAPIApiService) DeleteConfigGroup(ctx context.Con
 	}
 
 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -334,7 +335,7 @@ func (a *KafkaConfigurationGroupAPIApiService) GetConfigGroupById(ctx context.Co
 	}
 
 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -421,7 +422,7 @@ func (a *KafkaConfigurationGroupAPIApiService) GetConfigGroupVersionById(ctx con
 	}
 
 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -504,7 +505,7 @@ func (a *KafkaConfigurationGroupAPIApiService) ListConfigGroup(ctx context.Conte
 	}
 
 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}

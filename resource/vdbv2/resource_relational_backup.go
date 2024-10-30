@@ -131,10 +131,10 @@ func resourceRelationalBackupRead(d *schema.ResourceData, m interface{}) error {
 
 	cli := m.(*client.Client)
 
-	dbResp, httpResponse, err := cli.Vdbv2Client.RelationalBackupAPIApi.GetDetailBackupById1(context.TODO(), d.Id())
-	if err != nil {
-		return err
-	}
+	dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalBackupAPIApi.GetDetailBackupById1(context.TODO(), d.Id())
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -182,10 +182,10 @@ func resourceRelationalBackupCreate(d *schema.ResourceData, m interface{}) error
 	reqBody, _ := json.Marshal(createRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	createDbResult, httpResponse, err := cli.Vdbv2Client.RelationalBackupAPIApi.CreateBackups1(context.TODO(), string(reqBody))
-	if err != nil {
-		return err
-	}
+	createDbResult, httpResponse, _ := cli.Vdbv2Client.RelationalBackupAPIApi.CreateBackups1(context.TODO(), string(reqBody))
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -229,7 +229,11 @@ func resourceRelationalBackupStateRefreshFunc(cli *client.Client, id string) res
 	return func() (interface{}, string, error) {
 		log.Println("[DEBUG] State refresh")
 
-		dbResp, _, _ := cli.Vdbv2Client.RelationalBackupAPIApi.GetDetailBackupById1(context.TODO(), id)
+		dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalBackupAPIApi.GetDetailBackupById1(context.TODO(), id)
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			return nil, "", fmt.Errorf("error when refreshing backup state: %s", responseBody)
+		}
 		log.Println("[DEBUG] Database status: " + dbResp.Data.Status)
 
 		return dbResp.Data.Id, dbResp.Data.Status, nil
@@ -248,11 +252,11 @@ func resourceRelationalBackupDelete(d *schema.ResourceData, m interface{}) error
 	reqBody, _ := json.Marshal(deleteRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalBackupAPIApi.DeleteBackups1(context.TODO(), string(reqBody), backupId)
+	resp, httpResponse, _ := cli.Vdbv2Client.RelationalBackupAPIApi.DeleteBackups1(context.TODO(), string(reqBody), backupId)
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -272,7 +276,7 @@ func resourceRelationalBackupDelete(d *schema.ResourceData, m interface{}) error
 		Delay:      10 * time.Second,
 		MinTimeout: 10 * time.Second,
 	}
-	_, err = stateConf.WaitForState()
+	_, err := stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error waiting for delete backup (%s) : %s", d.Id(), err)
 	}

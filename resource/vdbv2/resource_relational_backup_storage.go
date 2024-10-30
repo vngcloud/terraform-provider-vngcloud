@@ -53,10 +53,10 @@ func resourceRelationalBackupStorageRead(d *schema.ResourceData, m interface{}) 
 
 	cli := m.(*client.Client)
 
-	backupStorageResult, httpResponse, err := cli.Vdbv2Client.RelationalBackupStorageAPIApi.GetListBackupStorage1(context.TODO(), nil)
-	if err != nil {
-		return err
-	}
+	backupStorageResult, httpResponse, _ := cli.Vdbv2Client.RelationalBackupStorageAPIApi.GetListBackupStorage1(context.TODO(), nil)
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -89,10 +89,10 @@ func resourceRelationalBackupStorageCreate(d *schema.ResourceData, m interface{}
 	reqBody, _ := json.Marshal(createBackupStorageRequest)
 	log.Println("[DEBUG] Request body " + string(reqBody))
 
-	createBackupStorageResult, httpResponse, err := cli.Vdbv2Client.RelationalBackupStorageAPIApi.CreateRelationalBackUpStorage(context.TODO(), string(reqBody), nil)
-	if err != nil {
-		return err
-	}
+	createBackupStorageResult, httpResponse, _ := cli.Vdbv2Client.RelationalBackupStorageAPIApi.CreateRelationalBackUpStorage(context.TODO(), string(reqBody), nil)
+	//if err != nil {
+	//	return err
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -141,10 +141,10 @@ func resourceRelationalBackupStorageResizeQuota(d *schema.ResourceData, m interf
 	reqBody, _ := json.Marshal(resizeQuotaRequest)
 	log.Println("[DEBUG] Resize quota request body " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalBackupStorageAPIApi.ResizeBackupStorage1(context.TODO(), string(reqBody), nil)
-	if err != nil {
-		return err
-	}
+	_, httpResponse, _ := cli.Vdbv2Client.RelationalBackupStorageAPIApi.ResizeBackupStorage1(context.TODO(), string(reqBody), nil)
+	//if err != nil {
+	//	return err
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -174,10 +174,10 @@ func resourceRelationalBackupStorageDelete(d *schema.ResourceData, m interface{}
 	reqBody, _ := json.Marshal(deleteBackupStorageRequest)
 	log.Println("[DEBUG] Delete request body " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalBackupStorageAPIApi.DeleteBackupStorage1(context.TODO(), string(reqBody))
-	if err != nil {
-		return err
-	}
+	_, httpResponse, _ := cli.Vdbv2Client.RelationalBackupStorageAPIApi.DeleteBackupStorage1(context.TODO(), string(reqBody))
+	//if err != nil {
+	//	return err
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)

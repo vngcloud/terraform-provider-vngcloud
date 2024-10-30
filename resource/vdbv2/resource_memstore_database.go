@@ -170,10 +170,10 @@ func resourceMemStoreDatabaseStateRefreshFunc(cli *client.Client, id string) res
 	return func() (interface{}, string, error) {
 		log.Println("[DEBUG]  State refresh")
 
-		dbResp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById(context.TODO(), id)
-		if err != nil {
-			return nil, "", fmt.Errorf("error when refreshing database state: %s", err)
-		}
+		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById(context.TODO(), id)
+		//if err != nil {
+		//	return nil, "", fmt.Errorf("error when refreshing database state: %s", err)
+		//}
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
 			return nil, "", fmt.Errorf("error when refreshing database state: %s", responseBody)
@@ -198,10 +198,10 @@ func resourceMemStoreDatabaseCreate(d *schema.ResourceData, m interface{}) error
 		reqBody, _ := json.Marshal(createRequest)
 		log.Println("[DEBUG]  Body: " + string(reqBody))
 		if d.Get("replica_source_id").(string) == "" {
-			createDbResult, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.CreateMemoryStoreDatabaseInstance(context.TODO(), string(reqBody), nil)
-			if err != nil {
-				return fmt.Errorf("error when creating database: %s", err)
-			}
+			createDbResult, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.CreateMemoryStoreDatabaseInstance(context.TODO(), string(reqBody), nil)
+			//if err != nil {
+			//	return fmt.Errorf("error when creating database: %s", err)
+			//}
 			if CheckErrorResponse(httpResponse) {
 				responseBody := GetResponseBody(httpResponse)
 				errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -210,10 +210,10 @@ func resourceMemStoreDatabaseCreate(d *schema.ResourceData, m interface{}) error
 			log.Println("[DEBUG]  Create db result, id: " + createDbResult.Data[0].ResourceId)
 			instanceId = createDbResult.Data[0].ResourceId
 		} else {
-			createDbResult, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.CreateDatabaseInstanceReplica(context.TODO(), string(reqBody), d.Get("replica_source_id").(string), nil)
-			if err != nil {
-				return fmt.Errorf("error when creating database replica: %s", err)
-			}
+			createDbResult, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.CreateDatabaseInstanceReplica(context.TODO(), string(reqBody), d.Get("replica_source_id").(string), nil)
+			//if err != nil {
+			//	return fmt.Errorf("error when creating database replica: %s", err)
+			//}
 			if CheckErrorResponse(httpResponse) {
 				responseBody := GetResponseBody(httpResponse)
 				errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -227,10 +227,10 @@ func resourceMemStoreDatabaseCreate(d *schema.ResourceData, m interface{}) error
 		reqBody, _ := json.Marshal(restoreRequest)
 		log.Println("[DEBUG]  Body: " + string(reqBody))
 
-		createDbResult, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupAPIApi.RestoreBackup(context.TODO(), string(reqBody), d.Get("backup_id").(string), nil)
-		if err != nil {
-			return fmt.Errorf("error when creating database: %s", err)
-		}
+		createDbResult, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.RestoreBackup(context.TODO(), string(reqBody), d.Get("backup_id").(string), nil)
+		//if err != nil {
+		//	return fmt.Errorf("error when creating database: %s", err)
+		//}
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
 			errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -310,11 +310,11 @@ func secgroupRulesMemStoreUpdate(d *schema.ResourceData, m interface{}, allowedI
 		instanceID := d.Id()
 		rules := createSecurityGroupRules(&allowedIP, d.Get("port").(int))
 		reqBody, _ := json.Marshal(rules)
-		_, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateSecurityRules(context.TODO(), string(reqBody), instanceID)
+		_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateSecurityRules(context.TODO(), string(reqBody), instanceID)
 
-		if err != nil {
-			return err
-		}
+		//if err != nil {
+		//	return err
+		//}
 
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
@@ -330,11 +330,11 @@ func secgroupRulesMemStoreRead(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
 
 	instanceID := d.Id()
-	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetSecurityRules1(context.TODO(), instanceID)
+	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetSecurityRules1(context.TODO(), instanceID)
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -362,10 +362,10 @@ func resourceMemStoreDatabaseRead(d *schema.ResourceData, m interface{}) error {
 
 	cli := m.(*client.Client)
 
-	dbResp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById(context.TODO(), d.Id())
-	if err != nil {
-		return fmt.Errorf("error when getting database info: %s", err)
-	}
+	dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById(context.TODO(), d.Id())
+	//if err != nil {
+	//	return fmt.Errorf("error when getting database info: %s", err)
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -453,11 +453,11 @@ func resourceMemStoreUpdateConfigGroup(d *schema.ResourceData, m interface{}) er
 	reqBody, _ := json.Marshal(updateRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateDatabaseConfigGroup(context.TODO(), string(reqBody), d.Id())
+	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateDatabaseConfigGroup(context.TODO(), string(reqBody), d.Id())
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -506,11 +506,11 @@ func resourceMemStoreUpdateSetting(d *schema.ResourceData, m interface{}) error 
 	reqBody, _ := json.Marshal(updateRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateDatabaseSetting(context.TODO(), string(reqBody), d.Id())
+	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateDatabaseSetting(context.TODO(), string(reqBody), d.Id())
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -552,11 +552,11 @@ func resourceMemStoreResizeFlavor(d *schema.ResourceData, m interface{}) error {
 	reqBody, _ := json.Marshal(updateRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.ResizeInstance(context.TODO(), string(reqBody), d.Id(), nil)
+	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.ResizeInstance(context.TODO(), string(reqBody), d.Id(), nil)
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -601,10 +601,10 @@ func resourceMemStoreDatabaseDelete(d *schema.ResourceData, m interface{}) error
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.DeleteDatabaseInstances(context.TODO(), string(reqBody), d.Id())
-	if err != nil {
-		return fmt.Errorf("error when deleting database: %s", err)
-	}
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.DeleteDatabaseInstances(context.TODO(), string(reqBody), d.Id())
+	//if err != nil {
+	//	return fmt.Errorf("error when deleting database: %s", err)
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -620,7 +620,7 @@ func resourceMemStoreDatabaseDelete(d *schema.ResourceData, m interface{}) error
 		MinTimeout: databaseDeleteMinTimeout,
 	}
 
-	_, err = stateConf.WaitForState()
+	_, err := stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error when waiting for database to be deleted: %s", err)
 	}
@@ -662,10 +662,10 @@ func resourceMemStoreDatabaseStart(d *schema.ResourceData, m interface{}) error 
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.StartDatabaseInstances(context.TODO(), string(reqBody), d.Id())
-	if err != nil {
-		return fmt.Errorf("error when starting database: %s", err)
-	}
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.StartDatabaseInstances(context.TODO(), string(reqBody), d.Id())
+	//if err != nil {
+	//	return fmt.Errorf("error when starting database: %s", err)
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -681,7 +681,7 @@ func resourceMemStoreDatabaseStart(d *schema.ResourceData, m interface{}) error 
 		MinTimeout: databaseStartMinTimeout,
 	}
 
-	_, err = stateConf.WaitForState()
+	_, err := stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error when waiting for database to be started: %s", err)
 	}
@@ -698,10 +698,10 @@ func resourceMemStoreDatabaseStop(d *schema.ResourceData, m interface{}) error {
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.StopDatabaseInstances(context.TODO(), string(reqBody), d.Id())
-	if err != nil {
-		return fmt.Errorf("error when stopping database: %s", err)
-	}
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.StopDatabaseInstances(context.TODO(), string(reqBody), d.Id())
+	//if err != nil {
+	//	return fmt.Errorf("error when stopping database: %s", err)
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -717,7 +717,7 @@ func resourceMemStoreDatabaseStop(d *schema.ResourceData, m interface{}) error {
 		MinTimeout: databaseStopMinTimeout,
 	}
 
-	_, err = stateConf.WaitForState()
+	_, err := stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error when waiting for database to be stopped: %s", err)
 	}
@@ -734,10 +734,10 @@ func resourceMemStoreDatabaseReboot(d *schema.ResourceData, m interface{}) error
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.RestartDatabaseInstances(context.TODO(), string(reqBody), d.Id())
-	if err != nil {
-		return fmt.Errorf("error when rebooting database: %s", err)
-	}
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.RestartDatabaseInstances(context.TODO(), string(reqBody), d.Id())
+	//if err != nil {
+	//	return fmt.Errorf("error when rebooting database: %s", err)
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -753,7 +753,7 @@ func resourceMemStoreDatabaseReboot(d *schema.ResourceData, m interface{}) error
 		MinTimeout: databaseRebootMinTimeout,
 	}
 
-	_, err = stateConf.WaitForState()
+	_, err := stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error when waiting for database to be rebooted: %s", err)
 	}
@@ -770,17 +770,17 @@ func resourceMemStoreDatabasePromote(d *schema.ResourceData, m interface{}) erro
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.DetachReplica(context.TODO(), string(reqBody), d.Id())
-	if err != nil {
-		return fmt.Errorf("error when promoting database: %s", err)
-	}
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.DetachReplica(context.TODO(), string(reqBody), d.Id())
+	//if err != nil {
+	//	return fmt.Errorf("error when promoting database: %s", err)
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		return errorResponse
 	}
 
-	err = resource.Retry(databasePromoteTimeout, func() *resource.RetryError {
+	err := resource.Retry(databasePromoteTimeout, func() *resource.RetryError {
 		dbResp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById(context.TODO(), d.Id())
 		if err != nil {
 			return resource.NonRetryableError(fmt.Errorf("error when refreshing database state: %s", err))

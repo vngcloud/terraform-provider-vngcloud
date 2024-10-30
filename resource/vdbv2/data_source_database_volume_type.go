@@ -39,10 +39,10 @@ func dataSourceVolumeTypeRead(d *schema.ResourceData, m interface{}) error {
 
 	cli := m.(*client.Client)
 
-	listVolumeTypeResp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetVolumeTypes2(context.TODO(), 0)
-	if err != nil {
-		return err
-	}
+	listVolumeTypeResp, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetVolumeTypes2(context.TODO(), 0)
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)

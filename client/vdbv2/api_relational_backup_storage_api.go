@@ -9,6 +9,7 @@
 package vdbv2
 
 import (
+	"bytes"
 	"context"
 	"github.com/antihax/optional"
 	"io/ioutil"
@@ -88,7 +89,7 @@ func (a *RelationalBackupStorageAPIApiService) CreateRelationalBackUpStorage(ctx
 	}
 
 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -174,7 +175,7 @@ func (a *RelationalBackupStorageAPIApiService) DeleteBackupStorage1(ctx context.
 	}
 
 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -267,7 +268,7 @@ func (a *RelationalBackupStorageAPIApiService) GetListBackupStorage1(ctx context
 	}
 
 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -350,7 +351,7 @@ func (a *RelationalBackupStorageAPIApiService) GetListQuotaPackage1(ctx context.
 	}
 
 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -446,7 +447,7 @@ func (a *RelationalBackupStorageAPIApiService) RenewBackupStorage1(ctx context.C
 	}
 
 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}
@@ -544,7 +545,7 @@ func (a *RelationalBackupStorageAPIApiService) ResizeBackupStorage1(ctx context.
 	}
 
 	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
+	localVarHttpResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHttpResponse, err
 	}

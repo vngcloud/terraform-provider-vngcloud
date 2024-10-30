@@ -50,10 +50,10 @@ func dataSourcePackageRead(d *schema.ResourceData, m interface{}) error {
 
 	type_ := d.Get("engine_type").(string)
 	version := d.Get("engine_version").(string)
-	listPackageResp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetFlavors1(context.TODO(), type_, version, 0)
-	if err != nil {
-		return err
-	}
+	listPackageResp, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetFlavors1(context.TODO(), type_, version, 0)
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)

@@ -121,10 +121,10 @@ func resourceMemStoreBackupRead(d *schema.ResourceData, m interface{}) error {
 
 	cli := m.(*client.Client)
 
-	dbResp, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupAPIApi.GetDetailBackupById(context.TODO(), d.Id())
-	if err != nil {
-		return err
-	}
+	dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.GetDetailBackupById(context.TODO(), d.Id())
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -172,10 +172,10 @@ func resourceMemStoreBackupCreate(d *schema.ResourceData, m interface{}) error {
 	reqBody, _ := json.Marshal(createRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	createDbResult, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupAPIApi.CreateBackups(context.TODO(), string(reqBody))
-	if err != nil {
-		return err
-	}
+	createDbResult, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.CreateBackups(context.TODO(), string(reqBody))
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -237,11 +237,11 @@ func resourceMemStoreBackupDelete(d *schema.ResourceData, m interface{}) error {
 	reqBody, _ := json.Marshal(deleteRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupAPIApi.DeleteBackups(context.TODO(), string(reqBody))
+	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.DeleteBackups(context.TODO(), string(reqBody))
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -261,7 +261,7 @@ func resourceMemStoreBackupDelete(d *schema.ResourceData, m interface{}) error {
 		Delay:      10 * time.Second,
 		MinTimeout: 10 * time.Second,
 	}
-	_, err = stateConf.WaitForState()
+	_, err := stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error waiting for delete backup (%s) : %s", d.Id(), err)
 	}

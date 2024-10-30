@@ -53,45 +53,45 @@ data "vngcloud_vdb_database_package" "db_new_s_general_1x2" {
 data "vngcloud_vdb_database_volume_type" "Gen2_NVMe2_IOPS3000" {
   type = "Gen2-NVMe2-IOPS3000"
 }
-resource "vngcloud_vdb_relational_database" "mysql_8_db" {
-  action = "start"
-  backup_auto = true
-  backup_duration = 2
-  backup_time = "00:00"
-  config_id = vngcloud_vdb_relational_config_group.mysql_8_config.id
-  db_name = var.db_name
-  engine_type = var.relational_engine_type
-  engine_version = var.relational_engine_version
-  name = "tf-db-instance"
-  subnet_id = var.subnet_id
-  package_id = data.vngcloud_vdb_database_package.db_new_s_general_1x2.id
-  password = var.password
-  public_access = false
-  username = var.user_name
-  volume_size = 20
-  volume_type = data.vngcloud_vdb_database_volume_type.Gen2_NVMe2_IOPS3000.id
-  allowed_ip_prefix = ["10.10.0.0/24"]
-}
+# resource "vngcloud_vdb_relational_database" "mysql_8_db" {
+#   action = "start"
+#   backup_auto = true
+#   backup_duration = 2
+#   backup_time = "00:00"
+#   config_id = vngcloud_vdb_relational_config_group.mysql_8_config.id
+#   db_name = var.db_name
+#   engine_type = var.relational_engine_type
+#   engine_version = var.relational_engine_version
+#   name = "tf-db-instance"
+#   subnet_id = var.subnet_id
+#   package_id = data.vngcloud_vdb_database_package.db_new_s_general_1x2.id
+#   password = var.password
+#   public_access = false
+#   username = var.user_name
+#   volume_size = 20
+#   volume_type = data.vngcloud_vdb_database_volume_type.Gen2_NVMe2_IOPS3000.id
+#   allowed_ip_prefix = ["10.10.0.0/24"]
+# }
 
 
 
 
 # Relational Backup
 locals {
-  mysql_8_db_id = vngcloud_vdb_relational_database.mysql_8_db.id
+  mysql_8_db_id = "db-9ecfaeca-5cdc-4ee0-a783-8cd5c494ddc3"
   redis_4_db_id = vngcloud_vdb_memstore_database.redis_4_db.id
 }
-resource "vngcloud_vdb_relational_backup" "mysql_8_backup" {
-  name = "tf-backup1"
-  instance_id = local.mysql_8_db_id
-  backup_type = "FULL"
-}
-resource "vngcloud_vdb_relational_backup" "mysql_8_backup_incre" {
-  name = "tf-backup2"
-  instance_id = local.mysql_8_db_id
-  backup_type = "INCREMENTAL"
-  parent_id = vngcloud_vdb_relational_backup.mysql_8_backup.id
-}
+# resource "vngcloud_vdb_relational_backup" "mysql_8_backup" {
+#   name = "tf-backup1"
+#   instance_id = local.mysql_8_db_id
+#   backup_type = "FULL"
+# }
+# resource "vngcloud_vdb_relational_backup" "mysql_8_backup_incre" {
+#   name = "tf-backup2"
+#   instance_id = local.mysql_8_db_id
+#   backup_type = "INCREMENTAL"
+#   parent_id = vngcloud_vdb_relational_backup.mysql_8_backup.id
+# }
 
 
 # Memory store Database
@@ -124,4 +124,25 @@ resource "vngcloud_vdb_memstore_database" "redis_4_db" {
 resource "vngcloud_vdb_memstore_backup" "redis_4_backup" {
   name = "tf-redis-backup"
   instance_id = local.redis_4_db_id
+}
+
+
+resource "vngcloud_vdb_relational_database" "mysql_8_db_2" {
+  action = "start"
+  backup_auto = true
+  backup_duration = 2
+  backup_time = "00:00"
+  config_id = vngcloud_vdb_relational_config_group.mysql_8_config.id
+  db_name = var.db_name
+  engine_type = var.relational_engine_type
+  engine_version = var.relational_engine_version
+  name = "tf-db-instance"
+  subnet_id = var.subnet_id
+  package_id = "abcd"
+  password = var.password
+  public_access = false
+  username = var.user_name
+  volume_size = 20
+  volume_type = data.vngcloud_vdb_database_volume_type.Gen2_NVMe2_IOPS3000.id
+  allowed_ip_prefix = ["10.10.0.0/24"]
 }

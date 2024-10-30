@@ -53,10 +53,10 @@ func resourceMemStoreBackupStorageRead(d *schema.ResourceData, m interface{}) er
 
 	cli := m.(*client.Client)
 
-	backupStorageResult, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupStorageAPIApi.GetListBackupStorage(context.TODO(), nil)
-	if err != nil {
-		return err
-	}
+	backupStorageResult, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupStorageAPIApi.GetListBackupStorage(context.TODO(), nil)
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -89,10 +89,10 @@ func resourceMemStoreBackupStorageCreate(d *schema.ResourceData, m interface{}) 
 	reqBody, _ := json.Marshal(createBackupStorageRequest)
 	log.Println("[DEBUG] Request body " + string(reqBody))
 
-	createBackupStorageResult, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupStorageAPIApi.CreateMemoryStoreBackUpStorage(context.TODO(), string(reqBody), nil)
-	if err != nil {
-		return err
-	}
+	createBackupStorageResult, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupStorageAPIApi.CreateMemoryStoreBackUpStorage(context.TODO(), string(reqBody), nil)
+	//if err != nil {
+	//	return err
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -141,10 +141,10 @@ func resourceMemStoreBackupStorageResizeQuota(d *schema.ResourceData, m interfac
 	reqBody, _ := json.Marshal(resizeQuotaRequest)
 	log.Println("[DEBUG] Resize quota request body " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupStorageAPIApi.ResizeBackupStorage(context.TODO(), string(reqBody), nil)
-	if err != nil {
-		return err
-	}
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupStorageAPIApi.ResizeBackupStorage(context.TODO(), string(reqBody), nil)
+	//if err != nil {
+	//	return err
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -174,10 +174,10 @@ func resourceMemStoreBackupStorageDelete(d *schema.ResourceData, m interface{}) 
 	reqBody, _ := json.Marshal(deleteBackupStorageRequest)
 	log.Println("[DEBUG] Delete request body " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreBackupStorageAPIApi.DeleteBackupStorage(context.TODO(), string(reqBody))
-	if err != nil {
-		return err
-	}
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupStorageAPIApi.DeleteBackupStorage(context.TODO(), string(reqBody))
+	//if err != nil {
+	//	return err
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)

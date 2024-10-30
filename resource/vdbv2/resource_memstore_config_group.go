@@ -96,11 +96,11 @@ func resourceMemStoreConfigurationGroupCreate(d *schema.ResourceData, m interfac
 
 	body, _ := json.Marshal(createRequest)
 
-	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.CreateConfig(context.TODO(), string(body))
+	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.CreateConfig(context.TODO(), string(body))
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -111,7 +111,7 @@ func resourceMemStoreConfigurationGroupCreate(d *schema.ResourceData, m interfac
 	time.Sleep(10 * time.Second)
 	d.SetId(resp.Data.Id)
 
-	err = resourceMemStoreConfigurationGroupUpdate(d, m)
+	err := resourceMemStoreConfigurationGroupUpdate(d, m)
 	if err != nil {
 		return err
 	}
@@ -126,10 +126,10 @@ func resourceMemStoreConfigurationGroupRead(d *schema.ResourceData, m interface{
 	cli := m.(*client.Client)
 	configID := d.Id()
 
-	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.GetConfigsById(context.TODO(), configID)
-	if err != nil {
-		return err
-	}
+	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.GetConfigsById(context.TODO(), configID)
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -168,10 +168,10 @@ func resourceMemStoreConfigurationGroupDelete(d *schema.ResourceData, m interfac
 	request[0] = deleteReq
 	body, _ := json.Marshal(request)
 
-	resp, httpResponse, err := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.DeleteConfigs(context.TODO(), string(body))
-	if err != nil {
-		return err
-	}
+	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.DeleteConfigs(context.TODO(), string(body))
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -196,7 +196,7 @@ func resourceMemStoreConfigurationGroupDelete(d *schema.ResourceData, m interfac
 		Delay:      10 * time.Second,
 		MinTimeout: 10 * time.Second,
 	}
-	_, err = stateConf.WaitForState()
+	_, err := stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error waiting for delete config group (%s) : %s", d.Id(), err)
 	}
@@ -235,11 +235,11 @@ func resourceMemStoreConfigurationGroupUpdate(d *schema.ResourceData, m interfac
 
 	body, _ := json.Marshal(updateRequest)
 
-	_, httpResponse, err := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.UpdateConfig(context.TODO(), string(body))
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.UpdateConfig(context.TODO(), string(body))
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)

@@ -176,10 +176,10 @@ func resourceRelationalDatabaseStateRefreshFunc(cli *client.Client, id string) r
 	return func() (interface{}, string, error) {
 		log.Println("[DEBUG]  State refresh")
 
-		dbResp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetDatabaseInstancesById1(context.TODO(), id)
-		if err != nil {
-			return nil, "", fmt.Errorf("error when refreshing database state: %s", err)
-		}
+		dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetDatabaseInstancesById1(context.TODO(), id)
+		//if err != nil {
+		//	return nil, "", fmt.Errorf("error when refreshing database state: %s", err)
+		//}
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
 			return nil, "", fmt.Errorf("error when refreshing database state: %s", responseBody)
@@ -205,10 +205,10 @@ func resourceRelationalDatabaseCreate(d *schema.ResourceData, m interface{}) err
 		log.Println("[DEBUG]  Body: " + string(reqBody))
 
 		if d.Get("replica_source_id").(string) == "" {
-			createDbResult, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.CreateRelationalDatabaseInstance(context.TODO(), string(reqBody), nil)
-			if err != nil {
-				return fmt.Errorf("error when creating database: %s", err)
-			}
+			createDbResult, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.CreateRelationalDatabaseInstance(context.TODO(), string(reqBody), nil)
+			//if err != nil {
+			//	return fmt.Errorf("error when creating database: %s", err)
+			//}
 			if CheckErrorResponse(httpResponse) {
 				responseBody := GetResponseBody(httpResponse)
 				errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -217,10 +217,10 @@ func resourceRelationalDatabaseCreate(d *schema.ResourceData, m interface{}) err
 			log.Println("[DEBUG]  Create db result, id: " + createDbResult.Data[0].ResourceId)
 			instanceId = createDbResult.Data[0].ResourceId
 		} else {
-			createDbResult, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.CreateRelationalDatabaseInstanceReplica(context.TODO(), string(reqBody), d.Get("replica_source_id").(string), nil)
-			if err != nil {
-				return fmt.Errorf("error when creating database replica: %s", err)
-			}
+			createDbResult, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.CreateRelationalDatabaseInstanceReplica(context.TODO(), string(reqBody), d.Get("replica_source_id").(string), nil)
+			//if err != nil {
+			//	return fmt.Errorf("error when creating database replica: %s", err)
+			//}
 			if CheckErrorResponse(httpResponse) {
 				responseBody := GetResponseBody(httpResponse)
 				errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -234,10 +234,10 @@ func resourceRelationalDatabaseCreate(d *schema.ResourceData, m interface{}) err
 		reqBody, _ := json.Marshal(restoreRequest)
 		log.Println("[DEBUG]  Body: " + string(reqBody))
 
-		createDbResult, httpResponse, err := cli.Vdbv2Client.RelationalBackupAPIApi.RestoreBackup1(context.TODO(), string(reqBody), d.Get("backup_id").(string), nil)
-		if err != nil {
-			return fmt.Errorf("error when creating database: %s", err)
-		}
+		createDbResult, httpResponse, _ := cli.Vdbv2Client.RelationalBackupAPIApi.RestoreBackup1(context.TODO(), string(reqBody), d.Get("backup_id").(string), nil)
+		//if err != nil {
+		//	return fmt.Errorf("error when creating database: %s", err)
+		//}
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
 			errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -327,11 +327,11 @@ func secgroupRulesRelationalUpdate(d *schema.ResourceData, m interface{}, allowe
 
 		instanceID := d.Id()
 		rules := createSecurityGroupRules(&allowedIP, d.Get("port").(int))
-		_, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.UpdateSecurityRules(context.TODO(), rules, instanceID)
+		_, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.UpdateSecurityRules(context.TODO(), rules, instanceID)
 
-		if err != nil {
-			return err
-		}
+		//if err != nil {
+		//	return err
+		//}
 
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
@@ -357,11 +357,11 @@ func secgroupRulesRelationalRead(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
 
 	instanceID := d.Id()
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetSecurityRules(context.TODO(), instanceID)
+	resp, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetSecurityRules(context.TODO(), instanceID)
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -389,10 +389,10 @@ func resourceRelationalDatabaseRead(d *schema.ResourceData, m interface{}) error
 
 	cli := m.(*client.Client)
 
-	dbResp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetDatabaseInstancesById1(context.TODO(), d.Id())
-	if err != nil {
-		return fmt.Errorf("error when getting database info: %s", err)
-	}
+	dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetDatabaseInstancesById1(context.TODO(), d.Id())
+	//if err != nil {
+	//	return fmt.Errorf("error when getting database info: %s", err)
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -486,11 +486,11 @@ func resourceRelationalResizeVolume(d *schema.ResourceData, m interface{}) error
 	reqBody, _ := json.Marshal(updateRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.ResizeStorage(context.TODO(), string(reqBody), d.Id(), nil)
+	resp, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.ResizeStorage(context.TODO(), string(reqBody), d.Id(), nil)
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -534,11 +534,11 @@ func resourceRelationalUpdateConfigGroup(d *schema.ResourceData, m interface{}) 
 	reqBody, _ := json.Marshal(updateRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.UpdateDatabaseConfigGroup1(context.TODO(), string(reqBody), d.Id())
+	resp, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.UpdateDatabaseConfigGroup1(context.TODO(), string(reqBody), d.Id())
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -580,11 +580,11 @@ func resourceRelationalUpdateSetting(d *schema.ResourceData, m interface{}) erro
 	reqBody, _ := json.Marshal(updateRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.UpdateDatabaseSetting1(context.TODO(), string(reqBody), d.Id())
+	resp, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.UpdateDatabaseSetting1(context.TODO(), string(reqBody), d.Id())
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -626,11 +626,11 @@ func resourceRelationalResizeFlavor(d *schema.ResourceData, m interface{}) error
 	reqBody, _ := json.Marshal(updateRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.ResizeInstance1(context.TODO(), string(reqBody), d.Id(), nil)
+	resp, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.ResizeInstance1(context.TODO(), string(reqBody), d.Id(), nil)
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -675,10 +675,10 @@ func resourceRelationalDatabaseDelete(d *schema.ResourceData, m interface{}) err
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.DeleteDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
-	if err != nil {
-		return fmt.Errorf("error when deleting database: %s", err)
-	}
+	_, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.DeleteDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
+	//if err != nil {
+	//	return fmt.Errorf("error when deleting database: %s", err)
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -694,7 +694,7 @@ func resourceRelationalDatabaseDelete(d *schema.ResourceData, m interface{}) err
 		MinTimeout: databaseDeleteMinTimeout,
 	}
 
-	_, err = stateConf.WaitForState()
+	_, err := stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error when waiting for database to be deleted: %s", err)
 	}
@@ -736,10 +736,10 @@ func resourceRelationalDatabaseStart(d *schema.ResourceData, m interface{}) erro
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.StartDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
-	if err != nil {
-		return fmt.Errorf("error when starting database: %s", err)
-	}
+	_, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.StartDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
+	//if err != nil {
+	//	return fmt.Errorf("error when starting database: %s", err)
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -755,7 +755,7 @@ func resourceRelationalDatabaseStart(d *schema.ResourceData, m interface{}) erro
 		MinTimeout: databaseStartMinTimeout,
 	}
 
-	_, err = stateConf.WaitForState()
+	_, err := stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error when waiting for database to be started: %s", err)
 	}
@@ -772,10 +772,10 @@ func resourceRelationalDatabaseStop(d *schema.ResourceData, m interface{}) error
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.StopDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
-	if err != nil {
-		return fmt.Errorf("error when stopping database: %s", err)
-	}
+	_, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.StopDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
+	//if err != nil {
+	//	return fmt.Errorf("error when stopping database: %s", err)
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -791,7 +791,7 @@ func resourceRelationalDatabaseStop(d *schema.ResourceData, m interface{}) error
 		MinTimeout: databaseStopMinTimeout,
 	}
 
-	_, err = stateConf.WaitForState()
+	_, err := stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error when waiting for database to be stopped: %s", err)
 	}
@@ -808,10 +808,10 @@ func resourceRelationalDatabaseReboot(d *schema.ResourceData, m interface{}) err
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.RestartDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
-	if err != nil {
-		return fmt.Errorf("error when rebooting database: %s", err)
-	}
+	_, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.RestartDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
+	//if err != nil {
+	//	return fmt.Errorf("error when rebooting database: %s", err)
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
@@ -827,7 +827,7 @@ func resourceRelationalDatabaseReboot(d *schema.ResourceData, m interface{}) err
 		MinTimeout: databaseRebootMinTimeout,
 	}
 
-	_, err = stateConf.WaitForState()
+	_, err := stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error when waiting for database to be rebooted: %s", err)
 	}
@@ -844,17 +844,17 @@ func resourceRelationalDatabasePromote(d *schema.ResourceData, m interface{}) er
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.DetachReplica1(context.TODO(), string(reqBody), d.Id())
-	if err != nil {
-		return fmt.Errorf("error when promoting database: %s", err)
-	}
+	_, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.DetachReplica1(context.TODO(), string(reqBody), d.Id())
+	//if err != nil {
+	//	return fmt.Errorf("error when promoting database: %s", err)
+	//}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		return errorResponse
 	}
 
-	err = resource.Retry(databasePromoteTimeout, func() *resource.RetryError {
+	err := resource.Retry(databasePromoteTimeout, func() *resource.RetryError {
 		dbResp, httpResponse, err := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetDatabaseInstancesById1(context.TODO(), d.Id())
 		if err != nil {
 			return resource.NonRetryableError(fmt.Errorf("error when refreshing database state: %s", err))

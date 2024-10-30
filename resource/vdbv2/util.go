@@ -14,7 +14,10 @@ func CheckErrorResponse(httpResponse *http.Response) bool {
 }
 
 func GetResponseBody(httpResponse *http.Response) string {
-	localVarBody, _ := io.ReadAll(httpResponse.Body)
+	localVarBody, err := io.ReadAll(httpResponse.Body)
+	if err != nil {
+		return fmt.Sprint("Error parse response body: ", err)
+	}
 	responseMessage := string(localVarBody)
 	if httpResponse.StatusCode == 403 {
 		responseMessage = "You don't have permission to do this action"

@@ -36,10 +36,10 @@ func dataSourceBackupStoragePackageRead(d *schema.ResourceData, m interface{}) e
 
 	cli := m.(*client.Client)
 
-	listPackageResp, httpResponse, err := cli.Vdbv2Client.RelationalBackupStorageAPIApi.GetListQuotaPackage1(context.TODO())
-	if err != nil {
-		return err
-	}
+	listPackageResp, httpResponse, _ := cli.Vdbv2Client.RelationalBackupStorageAPIApi.GetListQuotaPackage1(context.TODO())
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -60,6 +60,7 @@ func dataSourceBackupStoragePackageRead(d *schema.ResourceData, m interface{}) e
 			idStr := strconv.Itoa(int(listPackageResp.Data[0].Packages[i].PackageId))
 			d.SetId(idStr)
 			quota := 0
+			var err error
 			if quota, err = strconv.Atoi(listPackageResp.Data[0].Packages[i].PackageQuota); err != nil {
 				log.Println("[DEBUG] Invalid quota input of " + idStr)
 				return err

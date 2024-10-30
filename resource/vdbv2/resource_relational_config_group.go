@@ -97,11 +97,11 @@ func resourceRelationalConfigurationGroupCreate(d *schema.ResourceData, m interf
 
 	body, _ := json.Marshal(createRequest)
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.CreateConfig1(context.TODO(), string(body))
+	resp, httpResponse, _ := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.CreateConfig1(context.TODO(), string(body))
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -112,7 +112,7 @@ func resourceRelationalConfigurationGroupCreate(d *schema.ResourceData, m interf
 	time.Sleep(10 * time.Second)
 	d.SetId(resp.Data.Id)
 
-	err = resourceRelationalConfigurationGroupUpdate(d, m)
+	err := resourceRelationalConfigurationGroupUpdate(d, m)
 	if err != nil {
 		return err
 	}
@@ -127,10 +127,10 @@ func resourceRelationalConfigurationGroupRead(d *schema.ResourceData, m interfac
 	cli := m.(*client.Client)
 	configID := d.Id()
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.GetConfigsById1(context.TODO(), configID)
-	if err != nil {
-		return err
-	}
+	resp, httpResponse, _ := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.GetConfigsById1(context.TODO(), configID)
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -181,10 +181,10 @@ func resourceRelationalConfigurationGroupDelete(d *schema.ResourceData, m interf
 	request[0] = deleteReq
 	body, _ := json.Marshal(request)
 
-	resp, httpResponse, err := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.DeleteConfigs1(context.TODO(), string(body))
-	if err != nil {
-		return err
-	}
+	resp, httpResponse, _ := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.DeleteConfigs1(context.TODO(), string(body))
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -209,7 +209,7 @@ func resourceRelationalConfigurationGroupDelete(d *schema.ResourceData, m interf
 		Delay:      10 * time.Second,
 		MinTimeout: 10 * time.Second,
 	}
-	_, err = stateConf.WaitForState()
+	_, err := stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error waiting for delete config group (%s) : %s", d.Id(), err)
 	}
@@ -248,11 +248,11 @@ func resourceRelationalConfigurationGroupUpdate(d *schema.ResourceData, m interf
 
 	body, _ := json.Marshal(updateRequest)
 
-	_, httpResponse, err := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.UpdateConfig1(context.TODO(), string(body))
+	_, httpResponse, _ := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.UpdateConfig1(context.TODO(), string(body))
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//	return err
+	//}
 
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
