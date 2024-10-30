@@ -391,6 +391,8 @@ func resourceMemStoreDatabaseRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("port", dbResp.Data.Port)
 	d.Set("public_access", dbResp.Data.PublicAccess)
 	d.Set("ram", dbResp.Data.Ram)
+	d.Set("redis_password_enabled", dbResp.Data.RedisPasswordEnabled)
+	d.Set("replica_source_id", dbResp.Data.ReplicaSourceId)
 	d.Set("replicas", dbResp.Data.Replicas)
 	d.Set("status", dbResp.Data.Status)
 	d.Set("cpu", dbResp.Data.Vcpus)
@@ -498,9 +500,16 @@ func resourceMemStoreUpdateSetting(d *schema.ResourceData, m interface{}) error 
 	updateRequest := generateUpdateSettingRequest(d)
 
 	if d.HasChange("redis_password_enabled") || (d.Get("redis_password_enabled").(bool) == true && d.HasChange("redis_password")) {
-		updateRequest.EditRedisPassword = true
-		updateRequest.RedisPasswordEnabled = d.Get("redis_password_enabled").(bool)
+		redisPasswordEnabled := d.Get("redis_password_enabled").(bool)
+		trueVal := true
+		updateRequest.EditRedisPassword = &trueVal
+		updateRequest.RedisPasswordEnabled = &redisPasswordEnabled
 		updateRequest.RedisPassword = d.Get("redis_password").(string)
+	}
+
+	if d.HasChange("public_access") {
+		publicAccess := d.Get("public_access").(bool)
+		updateRequest.PublicAccess = &publicAccess
 	}
 
 	reqBody, _ := json.Marshal(updateRequest)

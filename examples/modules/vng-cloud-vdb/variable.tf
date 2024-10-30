@@ -40,12 +40,17 @@ variable "user_name" {
 
 variable "password" {
   type = string
-  default = "abcd1234"
+  default = "abcd1234efg"
 }
 
 variable "redis_password" {
   type = string
   default = "abcd1234abcd1234"
+}
+
+variable "redis_password2" {
+  type = string
+  default = "abcd1234abcd5678"
 }
 
 variable "subnet_id" {

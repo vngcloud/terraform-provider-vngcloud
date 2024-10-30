@@ -419,7 +419,7 @@ func resourceRelationalDatabaseRead(d *schema.ResourceData, m interface{}) error
 	d.Set("public_access", dbResp.Data.PublicAccess)
 	d.Set("ram", dbResp.Data.Ram)
 	//d.Set("redis_password_enabled", dbResp.Data.RedisPasswordEnabled)
-	//d.Set("replica_source_id", dbResp.Data.ReplicaSourceId)
+	d.Set("replica_source_id", dbResp.Data.ReplicaSourceId)
 	d.Set("replicas", dbResp.Data.Replicas)
 	d.Set("status", dbResp.Data.Status)
 	d.Set("cpu", dbResp.Data.Vcpus)
@@ -577,6 +577,15 @@ func resourceRelationalUpdateSetting(d *schema.ResourceData, m interface{}) erro
 	cli := m.(*client.Client)
 
 	updateRequest := generateUpdateSettingRequest(d)
+
+	if d.HasChange("password") {
+		updateRequest.Password = d.Get("password").(string)
+	}
+	if d.HasChange("public_access") {
+		publicAccess := d.Get("public_access").(bool)
+		updateRequest.PublicAccess = &publicAccess
+	}
+
 	reqBody, _ := json.Marshal(updateRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
@@ -936,17 +945,17 @@ func generateUpdateConfigGroupRequest(d *schema.ResourceData) UpdateDBRequest {
 }
 
 func generateUpdateSettingRequest(d *schema.ResourceData) UpdateDBRequest {
+	publicAccess := d.Get("public_access").(bool)
+	backupAuto := d.Get("backup_auto").(bool)
 	request := UpdateDBRequest{
 		DbInstanceID:   d.Id(),
-		Password:       d.Get("password").(string),
-		PublicAccess:   d.Get("public_access").(bool),
-		BackupAuto:     d.Get("backup_auto").(bool),
+		Password:       "",
+		PublicAccess:   &publicAccess,
+		BackupAuto:     &backupAuto,
 		BackupDuration: d.Get("backup_duration").(int),
 		BackupTime:     d.Get("backup_time").(string),
 
-		RedisPassword:        "",
-		RedisPasswordEnabled: false,
-		EditRedisPassword:    false,
+		RedisPassword: "",
 	}
 
 	return request
@@ -991,14 +1000,14 @@ type UpdateDBRequest struct {
 	ConfigID string `json:"configId,omitempty"`
 
 	Password       string `json:"password,omitempty"`
-	PublicAccess   bool   `json:"publicAccess,omitempty"`
-	BackupAuto     bool   `json:"backupAuto,omitempty"`
+	PublicAccess   *bool  `json:"publicAccess,omitempty"`
+	BackupAuto     *bool  `json:"backupAuto,omitempty"`
 	BackupDuration int    `json:"backupDuration,omitempty"`
 	BackupTime     string `json:"backupTime,omitempty"`
 
 	RedisPassword        string `json:"redisPassword,omitempty"`
-	RedisPasswordEnabled bool   `json:"redisPasswordEnabled,omitempty"`
-	EditRedisPassword    bool   `json:"editRedisPassword,omitempty"`
+	RedisPasswordEnabled *bool  `json:"redisPasswordEnabled,omitempty"`
+	EditRedisPassword    *bool  `json:"editRedisPassword,omitempty"`
 }
 
 type Instance struct {

@@ -46,10 +46,10 @@ The following arguments are supported:
     - Indicates if daily automatic backups are enabled. This field is required.
 
 - **backup_duration** (Int, Required):
-    - The retention of the backup (in days). This field is required.
+    - The retention of the backup (in days). This field can be set to 0 if `backup_auto` is `false`. This field is required.
 
 - **backup_time** (String, Required):
-    - The time when the backup should occur. This field is required.
+    - The time when the backup should occur. This field can be set to empty if `backup_auto` is `false`. This field is required.
 
 - **config_id** (String, Optional):
     - The ID of the configuration. This field is optional.
