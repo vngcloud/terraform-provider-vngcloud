@@ -36,11 +36,11 @@ func ResourceMemStoreDatabase() *schema.Resource {
 			},
 			"backup_duration": {
 				Type:     schema.TypeInt,
-				Required: true,
+				Optional: true,
 			},
 			"backup_time": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"config_id": {
 				Type:     schema.TypeString,

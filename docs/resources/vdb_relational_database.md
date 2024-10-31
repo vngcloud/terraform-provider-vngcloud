@@ -46,10 +46,10 @@ The following arguments are supported:
     - Indicates if daily automatic backups are enabled. This field is required.
 
 - **backup_duration** (Int, Required):
-    - The retention of the backup (in days). This field can be set to 0 if `backup_auto` is `false`. This field is required.
+    - The retention of the backup (in days). This field must be set to 0 if `backup_auto` is `true`. Min 2, Max 14.
 
 - **backup_time** (String, Required):
-    - The time when the backup should occur. This field can be set to empty if `backup_auto` is `false`. This field is required.
+    - The time when the backup should occur. This field must be set to empty if `backup_auto` is `true`. Example value is '00:00'.
 
 - **config_id** (String, Optional):
     - The ID of the configuration. This field is optional.
@@ -91,7 +91,7 @@ The following arguments are supported:
     - A list of allowed IP prefixes. This field is optional.
 
 - **replica_source_id** (String, Optional):
-    - The ID of the source instance for replication. Set this field to empty to promote slave db to standalone. This field is optional and cannot be changed after creation.
+    - The ID of the source instance for replication. Set this field to empty to promote slave db to standalone. This field is optional.
 
 - **backup_id** (String, Optional, ForceNew):
     - The ID of the backup for restoration. This field is optional and cannot be changed after creation.
