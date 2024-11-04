@@ -46,7 +46,7 @@ The following arguments are supported:
     - The retention of the backup (in days). This field must be set if `backup_auto` is `true`. Min 2, Max 14.
 
 - **backup_time** (String, Optional):
-    - The time when the backup should occur. This field must be set to empty if `backup_auto` is `true`. Example value is '00:00'.
+    - The time when the backup should occur. This field must be set if `backup_auto` is `true`. Example value is '00:00'.
 
 - **config_id** (String, Optional):
     - The ID of the configuration. This field is optional.

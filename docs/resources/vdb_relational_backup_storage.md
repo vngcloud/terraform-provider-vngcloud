@@ -26,9 +26,6 @@ The following arguments are supported:
 - **backup_storage_package_id** (String, Required):
     - The ID of the backup storage package. This is required to identify the storage package.
 
-- **is_poc** (Bool, Optional, ForceNew):
-    - Is Poc Resource. This is an optional field and cannot be changed after creation.
-
 ## Attributes Reference
 
 In addition to all arguments above, the following attributes are exported:

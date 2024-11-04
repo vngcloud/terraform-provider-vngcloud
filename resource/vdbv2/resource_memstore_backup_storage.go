@@ -39,11 +39,6 @@ func ResourceMemStoreBackupStorage() *schema.Resource {
 				Type:     schema.TypeFloat,
 				Computed: true,
 			},
-			"is_poc": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				ForceNew: true,
-			},
 		},
 	}
 }
@@ -109,7 +104,6 @@ func resourceMemStoreBackupStorageCreate(d *schema.ResourceData, m interface{}) 
 func generateMemStoreCreateBackupStorageRequest(d *schema.ResourceData) CreateBackupStorageRequest {
 	createRequest := CreateBackupStorageRequest{
 		BackupPackageID: d.Get("backup_storage_package_id").(string),
-		IsPoc:           d.Get("is_poc").(bool),
 		Period:          1,
 	}
 	return createRequest
@@ -128,7 +122,6 @@ func resourceMemStoreBackupStorageResizeQuota(d *schema.ResourceData, m interfac
 		InstancesID: d.Id(),
 		Config: BackupStorageConfig{
 			BackupPackageID: d.Get("backup_storage_package_id").(string),
-			IsPoc:           d.Get("is_poc").(bool),
 		},
 	}
 	instances := make([]BackupStorageInstance, 1)
