@@ -304,23 +304,25 @@ func generateMemStoreCreateDatabaseRequest(d *schema.ResourceData) vdb.CreateDbI
 }
 
 func secgroupRulesMemStoreUpdate(d *schema.ResourceData, m interface{}, allowedIP []interface{}) error {
+
+	cli := m.(*client.Client)
+
+	instanceID := d.Id()
+	rules := []vdbv2.SecurityGroupRuleEntity{}
 	if len(allowedIP) > 0 {
-		cli := m.(*client.Client)
+		rules = createSecurityGroupRules(&allowedIP, d.Get("port").(int))
+	}
+	reqBody, _ := json.Marshal(rules)
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateSecurityRules(context.TODO(), string(reqBody), instanceID)
 
-		instanceID := d.Id()
-		rules := createSecurityGroupRules(&allowedIP, d.Get("port").(int))
-		reqBody, _ := json.Marshal(rules)
-		_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateSecurityRules(context.TODO(), string(reqBody), instanceID)
+	//if err != nil {
+	//	return err
+	//}
 
-		//if err != nil {
-		//	return err
-		//}
-
-		if CheckErrorResponse(httpResponse) {
-			responseBody := GetResponseBody(httpResponse)
-			errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
-			return errorResponse
-		}
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return errorResponse
 	}
 
 	return secgroupRulesMemStoreRead(d, m)
