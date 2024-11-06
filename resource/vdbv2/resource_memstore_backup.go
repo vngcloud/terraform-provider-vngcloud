@@ -218,7 +218,14 @@ func resourceMemStoreBackupStateRefreshFunc(cli *client.Client, id string) resou
 	return func() (interface{}, string, error) {
 		log.Println("[DEBUG] State refresh")
 
-		dbResp, _, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.GetDetailBackupById(context.TODO(), id)
+		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.GetDetailBackupById(context.TODO(), id)
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			return nil, "", fmt.Errorf("error when refreshing backup state: %s", responseBody)
+		}
+		if dbResp.Data == nil {
+			return nil, "", fmt.Errorf("error when refreshing backup state: data is empty")
+		}
 		log.Println("[DEBUG] Backup status: " + dbResp.Data.Status)
 
 		return dbResp.Data.Id, dbResp.Data.Status, nil

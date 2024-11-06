@@ -234,6 +234,9 @@ func resourceRelationalBackupStateRefreshFunc(cli *client.Client, id string) res
 			responseBody := GetResponseBody(httpResponse)
 			return nil, "", fmt.Errorf("error when refreshing backup state: %s", responseBody)
 		}
+		if dbResp.Data == nil {
+			return nil, "", fmt.Errorf("error when refreshing backup state: data is empty")
+		}
 		log.Println("[DEBUG] Database status: " + dbResp.Data.Status)
 
 		return dbResp.Data.Id, dbResp.Data.Status, nil
