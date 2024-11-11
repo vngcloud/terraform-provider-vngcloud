@@ -76,7 +76,7 @@ The following arguments are supported:
     - Indicates if the database is publicly accessible. This field is required.
 
 - **allowed_ip_prefix** (List, Optional):
-    - A list of allowed IP prefixes. This field is optional.
+  - A list of allowed IP prefixes. If this field is not set, vDB Portal will still create a security group rule with the IP prefix '0.0.0.0/0' by default. This field is optional.
 
 - **replica_source_id** (String, Optional):
     - The ID of the source instance for replication. Set this field to empty to promote slave db to standalone. This field is optional.
