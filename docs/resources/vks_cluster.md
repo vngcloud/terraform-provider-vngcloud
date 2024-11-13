@@ -34,8 +34,7 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
 }
 ```
 
-**Important Note**: We are recommend you to create and manage node groups as separate resources, like in this example. This allows you to add or remove node groups without needing to recreate the entire cluster.
-If you define node groups directly within the vngcloud_vks_cluster resource, you cannot remove them without recreating the cluster itself.
+**Important Note**: We suggest managing node groups as independent resources, as shown in this example. This approach enables you to add or remove node groups without having to rebuild the entire cluster. If you embed node groups directly within the vngcloud_vks_cluster resource, you will need to recreate the cluster to remove them.
 
 ## Example Usage - with the default node group
 
@@ -51,21 +50,111 @@ resource "vngcloud_vks_cluster" "primary" {
   }
 }
 ```
----
+
 ## Argument Reference
 
 * `name` - (Required) The name of the cluster. Only letters (a-z, 0-9, '-') are allowed. Your input data length must be between 5 and 20.
-* `config` - (Computed) The configuration of the Cluster. You don't need input to this field anything when you create a Cluster.
+* `config` - (Computed) This field represents the Cluster's configuration. You don't need to provide any input for this field when creating a Cluster.
 * `description` - (Optional) Description of the cluster. Only letters (a-z, A-Z, 0-9, '@', '.' , '_' , '-' , ' '). Your input data length must be between 0 and 255.
-* `version` - (Optional) The version you want to use for you Cluster. You can see all of the Kubernetes's version in [here](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/tham-khao-them/phien-ban-ho-tro-kubernetes).
-* `white_list_node_cidr` - (Optional) The IP Address range can connect to the control plane. The feature only works on Private Node Group mode.
+* `version` - (Optional) Specifies the version you wish to use for your Cluster. You can view all available Kubernetes versions [here](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/tham-khao-them/phien-ban-ho-tro-kubernetes). The default value is "1.29.1".
+* `white_list_node_cidr` - (Optional) Specifies the IP address range that can connect to the control plane. This feature is only functional in Private Node Group mode.
 * `enable_private_cluster` (Optional) - Enables the private cluster feature,
-  creating a private endpoint on the cluster. The VKS public clusters refer to a type of Kubernetes cluster configuration where the Kubernetes API server endpoint is publicly accessible over the internet. In an VKS public cluster, the API server endpoint is not restricted to private access within a VPC (Virtual Private Cloud) and can be accessed over the public internet. The VKS private clusters are configured to have private access to the Kubernetes API server endpoint. This means that the API server endpoint is only accessible from within a specific Virtual Private Cloud (VPC) and is not exposed to the public internet. Private clusters provide enhanced security by restricting access to the Kubernetes API to resources within the VPC. At this time, the default value of this field is false and we only offer Public Cluster mode.
+  creating a private endpoint on the cluster. The VKS public clusters refer to a type of Kubernetes cluster configuration where the Kubernetes API server endpoint is publicly accessible over the internet. In an VKS public cluster, the API server endpoint is not restricted to private access within a VPC (Virtual Private Cloud) and can be accessed over the public internet. The VKS private clusters are configured to have private access to the Kubernetes API server endpoint. This means that the API server endpoint is only accessible from within a specific Virtual Private Cloud (VPC) and is not exposed to the public internet. Private clusters provide enhanced security by restricting access to the Kubernetes API to resources within the VPC. At this time, the default value of this field is false and we only offer Public Cluster mode. The default value is "false".
 * `enable_service_endpoint` (Optional) - Enables the service endpoint feature.
-* `network_type` - (Optional) The type of network for the cluster. Defaults to "CALICO".
-* `vpc_id` (Required) The VPC ID for the cluster. You need create a VPC on vServer and put the VPC's ID on this field.
-* `subnet_id` (Required) The subnet ID for the cluster. You need create a Subnet on vServer and put the Subnet's ID on this field.
-* `cidr` (Required) The CIDR block for the cluster. You can enter CIDR as private IP and can select from the following options (10.0.0.0 - 10.255.0.0 / 172.16.0.0 - 172.24.0.0 / 192.168.0.0).
-* `enabled_block_store_csi_plugin` (Optional) Automatically deploy and manage the BlockStore Persistent Disk CSI Driver via Kubernetes YAML.
-* `enabled_load_balancer_plugin` (Optional) Allow attaching load balancers (network and application) via the Kubernetes YAML.
+* `network_type` - (Optional) The type of network for the cluster. The default value is "CALICO".
+* `vpc_id` (Required) The VPC ID for the cluster. You need to create a VPC on vServer and enter the VPC's ID in this field.
+* `subnet_id` (Required) The subnet ID for the cluster. You need to create a Subnet on vServer and enter the Subnet's ID in this field.
+* `cidr` (Required) Specifies the CIDR block for the cluster. You can enter a private IP CIDR from the following options: 10.0.0.0 - 10.255.0.0, 172.16.0.0 - 172.24.0.0, or 192.168.0.0. The default value is "172.16.0.0/16".
+* `enabled_load_balancer_plugin` (Optional) Enables the attachment of load balancers (both network and application) via Kubernetes YAML. The default value is "true".
+* `enabled_block_store_csi_plugin`(Optional) Automatically deploys and manages the BlockStore Persistent Disk CSI Driver via Kubernetes YAML. The default value is "true".
 
+---
+### Example Usage - Create a Cluster and a Node Group without AutoScale Mode
+
+```hcl
+resource "vngcloud_vks_cluster" "primary" {
+  name      = "cluster-demo"
+  description = "Cluster create via terraform"
+  version = "v1.29.1"
+  cidr      = "172.16.0.0/16"
+  enable_private_cluster = false
+  network_type = "CALICO"
+  vpc_id    = "net-70ef12d4-d619-43fc-88f0-1c1511683123"
+  subnet_id = "sub-0725ef54-a32e-404c-96f2-34745239c123"
+  enabled_load_balancer_plugin = true
+  enabled_block_store_csi_plugin = true
+}
+
+resource "vngcloud_vks_cluster_node_group" "primary" {
+  cluster_id = vngcloud_vks_cluster.primary.id
+  name = "nodegroup1"
+  num_nodes = 3
+  upgrade_config {
+    strategy = "SURGE"
+    max_surge = 1
+	  max_unavailable = 0
+  }
+  image_id = "img-108b3a77-ab58-4000-9b3e-190d0b4b07fc"
+  flavor_id = "flav-9e88cfb4-ec31-4ad4-8ba5-243459f6d123"
+  disk_size = 50
+  disk_type = "vtype-61c3fc5b-f4e9-45b4-8957-8aa7b6029018"
+  enable_private_nodes = false
+  ssh_key_id= "ssh-f923c53c-cba7-4131-9f86-175d04ae2123"
+  security_groups = ["secg-faf05344-fbd6-4f10-80a2-cda08d15ba5e"]
+  labels = {
+    "test" = "terraform"
+  }
+  taint {
+    key    = "key1"
+    value  = "value1"
+    effect = "PreferNoSchedule"
+  }
+}
+```
+
+### Example Usage - Create a Cluster and a Node Group with AutoScale Mode
+
+```hcl
+resource "vngcloud_vks_cluster" "primary" {
+  name      = "cluster-demo"
+  description = "Cluster create via terraform"
+  version = "v1.29.1"
+  cidr      = "172.16.0.0/16"
+  enable_private_cluster = false
+  network_type = "CALICO"
+  vpc_id    = "net-70ef12d4-d619-43fc-88f0-1c1511683123"
+  subnet_id = "sub-0725ef54-a32e-404c-96f2-34745239c123"
+  enabled_load_balancer_plugin = true
+  enabled_block_store_csi_plugin = true
+}
+
+resource "vngcloud_vks_cluster_node_group" "primary" {
+  cluster_id = vngcloud_vks_cluster.primary.id
+  name = "nodegroup1"
+  num_nodes = 3
+  auto_scale_config {
+    min_size = 0
+    max_size = 5
+  }
+  upgrade_config {
+    strategy = "SURGE"
+    max_surge = 1
+	  max_unavailable = 0
+  }
+  image_id = "img-108b3a77-ab58-4000-9b3e-190d0b4b07fc"
+  flavor_id = "flav-9e88cfb4-ec31-4ad4-8ba5-243459f6d123"
+  disk_size = 50
+  disk_type = "vtype-61c3fc5b-f4e9-45b4-8957-8aa7b6029018"
+  enable_private_nodes = false
+  ssh_key_id= "ssh-f923c53c-cba7-4131-9f86-175d04ae2123"
+  security_groups = ["secg-faf05344-fbd6-4f10-80a2-cda08d15ba5e"]
+  labels = {
+    "test" = "terraform"
+  }
+  taint {
+    key    = "key1"
+    value  = "value1"
+    effect = "PreferNoSchedule"
+  }
+}
+```
