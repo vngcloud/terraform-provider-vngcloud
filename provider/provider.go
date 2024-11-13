@@ -1,10 +1,9 @@
 package provider
 
 import (
+	"github.com/vngcloud/terraform-provider-vngcloud/resource/vdbv2"
 	"github.com/vngcloud/terraform-provider-vngcloud/resource/vks"
 	"log"
-
-	"github.com/vngcloud/terraform-provider-vngcloud/resource/vdb"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
@@ -25,12 +24,10 @@ func Provider() *schema.Provider {
 			"vngcloud_vserver_server_group_policy": vserver.DataSourceServerGroupPolicy(),
 			"vngcloud_vserver_k8s_version":         vserver.DataSourceK8sVersion(),
 			"vngcloud_vserver_k8s_network_type":    vserver.DataSourceK8sNetworkType(),
-			"vngcloud_vdb_network":                 vdb.DataSourceNetwork(),
-			"vngcloud_vdb_package":                 vdb.DataSourcePackage(),
-			"vngcloud_vdb_subnet":                  vdb.DataSourceSubnet(),
-			"vngcloud_vdb_volume_type":             vdb.DataSourceVolumeType(),
-			"vngcloud_vdb_backup_storage_package":  vdb.DataSourceBackupStoragePackage(),
 			"vngcloud_vlb_lb_packages":             vloadbalancing.DataSourceLBPackages(),
+			"vngcloud_vdb_backup_storage_package":  vdbv2.DataSourceBackupStoragePackage(),
+			"vngcloud_vdb_database_package":        vdbv2.DataSourceDatabasePackage(),
+			"vngcloud_vdb_database_volume_type":    vdbv2.DataSourceDatabaseVolumeType(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"vngcloud_vserver_volume":                            vserver.ResourceVolume(),
@@ -50,10 +47,14 @@ func Provider() *schema.Provider {
 			"vngcloud_vlb_listener":                              vloadbalancing.ResourceListener(),
 			"vngcloud_vlb_l7policy":                              vloadbalancing.ResourceListenerL7Policy(),
 			"vngcloud_vlb_certificate":                           vloadbalancing.ResourceCA(),
-			"vngcloud_vdb_database":                              vdb.ResourceDatabase(),
-			"vngcloud_vdb_backup":                                vdb.ResourceBackup(),
-			"vngcloud_vdb_configuration_group":                   vdb.ResourceConfigurationGroup(),
-			"vngcloud_vdb_backup_storage":                        vdb.ResourceBackupStorage(),
+			"vngcloud_vdb_relational_database":                   vdbv2.ResourceRelationalDatabase(),
+			"vngcloud_vdb_relational_backup":                     vdbv2.ResourceRelationalBackup(),
+			"vngcloud_vdb_relational_config_group":               vdbv2.ResourceRelationalConfigurationGroup(),
+			"vngcloud_vdb_relational_backup_storage":             vdbv2.ResourceRelationalBackupStorage(),
+			"vngcloud_vdb_memstore_database":                     vdbv2.ResourceMemStoreDatabase(),
+			"vngcloud_vdb_memstore_backup":                       vdbv2.ResourceMemStoreBackup(),
+			"vngcloud_vdb_memstore_config_group":                 vdbv2.ResourceMemStoreConfigurationGroup(),
+			"vngcloud_vdb_memstore_backup_storage":               vdbv2.ResourceMemStoreBackupStorage(),
 			"vngcloud_vserver_k8s":                               vserver.ResourceK8s(),
 			"vngcloud_vserver_cluster_node_group":                vserver.ResourceClusterNodeGroup(),
 			"vngcloud_vserver_attach_lb_to_cluster":              vserver.ResourceAttachLb(),
@@ -101,6 +102,12 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("VKS_BASE_URL", ""),
 				Description: "endpoint to connection with provider resource",
 			},
+			"vdb_base_url": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("VDB_BASE_URL", ""),
+				Description: "endpoint to connection with provider resource",
+			},
 		},
 		ConfigureFunc: providerConfigure,
 	}
@@ -130,5 +137,11 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	if hasVksBaseUrl {
 		vksBaseURL = d.Get("vks_base_url").(string)
 	}
-	return client.NewClientV2(vserverBaseURL, vlbBaseURL, vksBaseURL, clientID, clientSecret, tokenURL)
+
+	vdbBaseURL := "https://vdb-gateway.vngcloud.vn"
+	_, hasVdbBaseUrl := d.GetOk("vdb_base_url")
+	if hasVdbBaseUrl {
+		vdbBaseURL = d.Get("vdb_base_url").(string)
+	}
+	return client.NewClientV2(vserverBaseURL, vlbBaseURL, vksBaseURL, vdbBaseURL, clientID, clientSecret, tokenURL)
 }

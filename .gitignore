@@ -19,7 +19,9 @@ terraform
 .terraform.lock.hcl
 terraform.tfstate
 k8s-create-cluster.sh
+/provider.tf
 /main.tf
+/variable.tf
 terraform.tfstate.backup
 /example terraform/main_dev.tf
 ### Go Patch ###
