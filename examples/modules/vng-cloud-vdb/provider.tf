@@ -13,5 +13,5 @@ provider "vngcloud" {
   client_secret    = var.client_secret
   vserver_base_url = "https://hcm-3.api.vngcloud.vn/vserver/vserver-gateway"
   vlb_base_url = "https://hcm-3.api.vngcloud.vn/vserver/vlb-gateway"
-  vdb_base_url = "https://stg-vdb-gateway.vngcloud.tech"
+  vdb_base_url = "https://vdb-gateway.vngcloud.vn"
 }
