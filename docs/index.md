@@ -25,6 +25,7 @@ provider "vngcloud" {
   client_secret    = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   vserver_base_url = "https://hcm-3.api.vngcloud.vn/vserver/vserver-gateway"
   vlb_base_url     = "https://hcm-3.api.vngcloud.vn/vserver/vlb-gateway"
+  vdb_base_url     = "https://vdb-gateway.vngcloud.vn"
 }
 ```
 ## Argument Reference
@@ -40,3 +41,5 @@ The following arguments are supported:
 * `vserver_base_url` - (Optional) This is endpoint to interactive with VNG Cloud's resource. Alternatively, this can also be specified using environment variables ordered by precedence: `VSERVER_BASE_URL`. Suggested value is [https://hcm-3.api.vngcloud.vn/vserver/vserver-gateway](https://hcm-3.api.vngcloud.vn/vserver/vserver-gateway)
 
 * `vlb_base_url` - (Optional) This is endpoint to interactive with VNG Cloud's resource. Alternatively, this can also be specified using environment variables ordered by precedence: `VLB_BASE_URL`. Suggested value is [https://hcm-3.api.vngcloud.vn/vserver/vlb-gateway](https://hcm-3.api.vngcloud.vn/vserver/vlb-gateway)
+
+* `vdb_base_url` - (Optional) This is endpoint to interactive with VNG Cloud's resource. Alternatively, this can also be specified using environment variables ordered by precedence: `VDB_BASE_URL`. Suggested value is [https://vdb-gateway.vngcloud.vn](https://vdb-gateway.vngcloud.vn)
