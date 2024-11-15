@@ -23,13 +23,15 @@ func ResourceSubnet() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 				idParts := strings.Split(d.Id(), ":")
-				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
-					return nil, fmt.Errorf("Unexpected format of ID (%q), expected ProjectID:SubnetID", d.Id())
+				if len(idParts) != 3 || idParts[0] == "" || idParts[1] == "" || idParts[2] == "" {
+					return nil, fmt.Errorf("Unexpected format of ID (%q), expected ProjectID:NetworkID:SubnetID", d.Id())
 				}
 				projectID := idParts[0]
-				subnetID := idParts[1]
+				networkID := idParts[1]
+				subnetID := idParts[2]
 				d.SetId(subnetID)
 				d.Set("project_id", projectID)
+				d.Set("network_id", networkID)
 				return []*schema.ResourceData{d}, nil
 			},
 		},
