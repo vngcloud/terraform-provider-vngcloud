@@ -189,11 +189,14 @@ func resourceMemStoreBackupCreate(d *schema.ResourceData, m interface{}) error {
 		Target:     []string{"COMPLETED"},
 		Refresh:    resourceMemStoreBackupStateRefreshFunc(cli, createDbResult.Data.BackupId),
 		Timeout:    30 * time.Minute,
-		Delay:      10 * time.Second,
+		Delay:      30 * time.Second,
 		MinTimeout: 10 * time.Second,
 	}
 
-	id, _ := stateConf.WaitForStateContext(context.TODO())
+	id, err := stateConf.WaitForStateContext(context.TODO())
+	if err != nil {
+		return fmt.Errorf("error when waiting for backup to be created: %s", err)
+	}
 	idStr := id.(string)
 
 	log.Println("[DEBUG] Wait for state done, id: " + idStr)
