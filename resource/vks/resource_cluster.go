@@ -18,7 +18,7 @@ import (
 
 func ResourceCluster() *schema.Resource {
 	return &schema.Resource{
-		SchemaVersion: 2,
+		SchemaVersion: 3,
 		//MigrateState:  resourceClusterMigrateState,
 		StateUpgraders: []schema.StateUpgrader{
 			{
@@ -30,6 +30,11 @@ func ResourceCluster() *schema.Resource {
 				Type:    resourceContainerClusterResourceV2().CoreConfigSchema().ImpliedType(),
 				Upgrade: resourceClusterStateUpgradeV1,
 				Version: 1,
+			},
+			{
+				Type:    resourceContainerClusterResourceV3().CoreConfigSchema().ImpliedType(),
+				Upgrade: resourceClusterStateUpgradeV2,
+				Version: 2,
 			},
 		},
 
@@ -120,13 +125,11 @@ func ResourceCluster() *schema.Resource {
 			"enabled_load_balancer_plugin": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				ForceNew: true,
 				Default:  true,
 			},
 			"enabled_block_store_csi_plugin": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				ForceNew: true,
 				Default:  true,
 			},
 			"secondary_subnets": {
@@ -160,6 +163,23 @@ func ResourceCluster() *schema.Resource {
 						}),
 				},
 			},
+			"auto_upgrade_config": {
+				Type:     schema.TypeList,
+				MaxItems: 1,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"weekdays": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"time": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -186,6 +206,10 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 	if errSecondarySubnets != nil {
 		return errSecondarySubnets
 	}
+	autoUpgradeConfig, errorUpgradeConfig := getAuToUpgradeConfig(d.Get("auto_upgrade_config").([]interface{}))
+	if errorUpgradeConfig != nil {
+		return errorUpgradeConfig
+	}
 	createClusterRequest := vks.CreateClusterComboDto{
 		Name:                       d.Get("name").(string),
 		Description:                d.Get("description").(string),
@@ -201,6 +225,7 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 		SecondarySubnets:           secondarySubnets,
 		NodeNetmaskSize:            int32(d.Get("node_netmask_size").(int)),
 		NodeGroups:                 createNodeGroupRequests,
+		AutoUpgradeConfig:          autoUpgradeConfig,
 	}
 	cli := m.(*client.Client)
 	request := vks.V1ClusterControllerApiV1ClustersPostOpts{
@@ -374,6 +399,17 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("enabled_load_balancer_plugin", cluster.EnabledLoadBalancerPlugin)
 	d.Set("enabled_block_store_csi_plugin", cluster.EnabledBlockStoreCsiPlugin)
 	d.Set("enable_private_cluster", cluster.EnablePrivateCluster)
+	if resp.AutoUpgradeConfig != nil {
+		autoUpgradeConfig := []interface{}{
+			map[string]interface{}{
+				"weekdays": resp.AutoUpgradeConfig.Weekdays,
+				"time":     resp.AutoUpgradeConfig.Time,
+			},
+		}
+		d.Set("auto_upgrade_config", autoUpgradeConfig)
+	} else {
+		d.Set("auto_upgrade_config", nil)
+	}
 	log.Printf("GetConfig\n")
 	configResp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdKubeconfigGet(context.TODO(), clusterID, nil)
 	log.Printf("-------------------------------------\n")
@@ -390,8 +426,15 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceClusterUpdate(d *schema.ResourceData, m interface{}) error {
-	if d.HasChange("white_list_node_cidr") || d.HasChange("version") {
-		err := changeWhiteListNodeOrVersion(d, m)
+	if d.HasChange("auto_upgrade_config") {
+		err := updateAutoUpgradeConfig(d, m)
+		if err != nil {
+			return err
+		}
+	}
+	if d.HasChange("white_list_node_cidr") || d.HasChange("version") ||
+		d.HasChange("enabled_load_balancer_plugin") || d.HasChange("enabled_block_store_csi_plugin") {
+		err := updateCluster(d, m)
 		if err != nil {
 			return err
 		}
@@ -405,7 +448,39 @@ func resourceClusterUpdate(d *schema.ResourceData, m interface{}) error {
 	return resourceClusterRead(d, m)
 }
 
-func changeWhiteListNodeOrVersion(d *schema.ResourceData, m interface{}) error {
+func updateAutoUpgradeConfig(d *schema.ResourceData, m interface{}) error {
+	autoUpgradeConfig, errorUpgradeConfig := getAuToUpgradeConfig(d.Get("auto_upgrade_config").([]interface{}))
+	if errorUpgradeConfig != nil {
+		return errorUpgradeConfig
+	}
+	cli := m.(*client.Client)
+	if autoUpgradeConfig != nil {
+		request := vks.V1ClusterControllerApiV1ClustersClusterIdPutAutoUpgradeConfigOpts{
+			Body: optional.NewInterface(autoUpgradeConfig),
+		}
+		_, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdPutAutoUpgradeConfig(context.TODO(), d.Id(), &request)
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+			oldAutoUpgradeConfig, _ := d.GetChange("auto_upgrade_config")
+			d.Set("auto_upgrade_config", oldAutoUpgradeConfig)
+			return errorResponse
+		}
+	} else {
+		request := vks.V1ClusterControllerApiV1ClustersClusterIdDeleteAutoUpgradeConfigOpts{}
+		_, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdDeleteAutoUpgradeConfig(context.TODO(), d.Id(), &request)
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+			oldAutoUpgradeConfig, _ := d.GetChange("auto_upgrade_config")
+			d.Set("auto_upgrade_config", oldAutoUpgradeConfig)
+			return errorResponse
+		}
+	}
+	return resourceClusterRead(d, m)
+}
+
+func updateCluster(d *schema.ResourceData, m interface{}) error {
 	whiteListCIDRsInterface := d.Get("white_list_node_cidr").([]interface{})
 	var whiteListCIDR []string
 	for _, s := range whiteListCIDRsInterface {
@@ -415,8 +490,10 @@ func changeWhiteListNodeOrVersion(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf(`The argument "white_list_node_cidr" must not be empty.`)
 	}
 	updateCluster := vks.UpdateClusterDto{
-		Version:            d.Get("version").(string),
-		WhitelistNodeCIDRs: whiteListCIDR,
+		Version:                    d.Get("version").(string),
+		WhitelistNodeCIDRs:         whiteListCIDR,
+		EnabledLoadBalancerPlugin:  d.Get("enabled_load_balancer_plugin").(bool),
+		EnabledBlockStoreCsiPlugin: d.Get("enabled_block_store_csi_plugin").(bool),
 	}
 	cli := m.(*client.Client)
 	request := vks.V1ClusterControllerApiV1ClustersClusterIdPutOpts{
@@ -428,8 +505,12 @@ func changeWhiteListNodeOrVersion(d *schema.ResourceData, m interface{}) error {
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		oldVersion, _ := d.GetChange("version")
 		oldWhiteListNodeCIDR, _ := d.GetChange("white_list_node_cidr")
+		oldEnabledLoadBalancerPlugin, _ := d.GetChange("enabled_load_balancer_plugin")
+		oldEnabledBlockStoreCsiPlugin, _ := d.GetChange("enabled_block_store_csi_plugin")
 		d.Set("version", oldVersion)
 		d.Set("white_list_node_cidr", oldWhiteListNodeCIDR)
+		d.Set("enabled_load_balancer_plugin", oldEnabledLoadBalancerPlugin)
+		d.Set("enabled_block_store_csi_plugin", oldEnabledBlockStoreCsiPlugin)
 		return errorResponse
 	}
 	respJSON, _ := json.Marshal(resp)
@@ -571,6 +652,20 @@ func resourceClusterDeleteStateRefreshFunc(cli *client.Client, clusterId string)
 		log.Printf("-------------------------------------\n")
 		return resp, resp.Status, nil
 	}
+}
+
+func getAuToUpgradeConfig(input []interface{}) (*vks.AutoUpgradeConfigDto, error) {
+	if len(input) == 0 {
+		return nil, nil
+	}
+	autoUpgradeConfig, ok := input[0].(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("Both 'time' and 'weekdays' fields are required and cannot be empty.")
+	}
+	return &vks.AutoUpgradeConfigDto{
+		Weekdays: autoUpgradeConfig["weekdays"].(string),
+		Time:     autoUpgradeConfig["time"].(string),
+	}, nil
 }
 
 //func resourceClusterMigrateState(
@@ -904,4 +999,147 @@ func checkSecondarySubnetsSame(d *schema.ResourceData, secondarySubnetResponse [
 		secondarySubnetsCluster = append(secondarySubnetsCluster, secondarySubnet)
 	}
 	return CheckListStringEqual(secondarySubnets, secondarySubnetsCluster)
+}
+
+func resourceClusterStateUpgradeV2(ctx context.Context, rawState map[string]interface{}, meta interface{}) (map[string]interface{}, error) {
+	log.Printf("resourceClusterStateUpgradeV2\n")
+	cli := meta.(*client.Client)
+	id, ok := rawState["id"].(string)
+	if !ok {
+		return nil, fmt.Errorf("id is missing or not a string")
+	}
+	resp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdGet(context.TODO(), id, nil)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		return rawState, errorResponse
+	}
+	respJSON, _ := json.Marshal(resp)
+	log.Printf("-------------------------------------\n")
+	log.Printf("%s\n", string(respJSON))
+	log.Printf("-------------------------------------\n")
+	if resp.AutoUpgradeConfig != nil {
+		autoUpgradeConfig := map[string]interface{}{
+			"weekdays": resp.AutoUpgradeConfig.Weekdays,
+			"time":     resp.AutoUpgradeConfig.Time,
+		}
+		rawState["auto_upgrade_config"] = []interface{}{autoUpgradeConfig}
+	}
+	return rawState, nil
+}
+
+func resourceContainerClusterResourceV3() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"name": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"config": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"description": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"version": {
+				Type:     schema.TypeString,
+				Optional: true,
+				DefaultFunc: func() (interface{}, error) {
+					return fetchByKey("k8s_version")
+				},
+			},
+			"white_list_node_cidr": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"enable_private_cluster": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				DefaultFunc: func() (interface{}, error) {
+					return false, nil
+				},
+			},
+			"network_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "CALICO",
+				ForceNew: true,
+			},
+			"vpc_id": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"subnet_id": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"cidr": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"enabled_load_balancer_plugin": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  true,
+			},
+			"enabled_block_store_csi_plugin": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  true,
+			},
+			"node_group": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
+				Elem: &schema.Resource{
+					Schema: MergeSchemas(
+						schemaNodeGroup,
+						map[string]*schema.Schema{
+							"node_group_id": {
+								Type:     schema.TypeString,
+								Computed: true,
+							},
+						}),
+				},
+			},
+			"enable_service_endpoint": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				DefaultFunc: func() (interface{}, error) {
+					return true, nil
+				},
+			},
+			"auto_upgrade_config": {
+				Type:     schema.TypeList,
+				MaxItems: 1,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"weekdays": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"time": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},
+		},
+	}
 }
