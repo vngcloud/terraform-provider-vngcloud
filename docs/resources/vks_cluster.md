@@ -69,7 +69,9 @@ resource "vngcloud_vks_cluster" "primary" {
 * `node_netmask_size` - (Optional) Specifies the node CIDR mask size used in Cilium's VPC Native Routing mode. The default value is 25. You can enter a number from the following options: 24, 25, 26.
 * `enabled_load_balancer_plugin` - (Optional) Enables/ Disable the attachment of load balancers (both network and application) via Kubernetes YAML. The default value is "true".
 * `enabled_block_store_csi_plugin` - (Optional) Enable/ Disable Automatically deploys and manages the BlockStore Persistent Disk CSI Driver via Kubernetes YAML. The default value is "true".
-* `auto_upgrade_config` - (Optional) To configure the `auto_upgrade_config` feature for automated maintenance on your cluster, you can use the following attributes: `weekdays` - A list of days of the week when maintenance should occur, e.g., sat,sun (Saturday and Sunday) and `time` - The specific time of the day to start maintenance, in 24-hour format, e.g., 21:00 (9 PM).
+* `auto_upgrade_config` - (Optional) To configure the `auto_upgrade_config` feature for automated maintenance on your cluster, you can use the following attributes: 
+  * `weekdays` - A list of days of the week when maintenance should occur, e.g., sat,sun (Saturday and Sunday).
+  * `time` - The specific time of the day to start maintenance, in 24-hour format, e.g., 21:00 (9 PM).
 ---
 ### **Some important notes when using VKS with Terraform:**
 
