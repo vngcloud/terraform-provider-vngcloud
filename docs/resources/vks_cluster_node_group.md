@@ -158,8 +158,8 @@ resource "vngcloud_vks_cluster" "primary" {
   enabled_load_balancer_plugin = true
   enabled_block_store_csi_plugin = true
   auto_upgrade_config {
-    weekdays: "mon,tue,wed,thu,fri"
-    time: "22:00"
+    weekdays = "mon,tue,wed,thu,fri"
+    time = "22:00"
   }
 }
 
@@ -210,8 +210,8 @@ resource "vngcloud_vks_cluster" "primary" {
   enabled_load_balancer_plugin = true
   enabled_block_store_csi_plugin = true
   auto_upgrade_config {
-    weekdays: "thu"
-    time: "09:00"
+    weekdays = "thu"
+    time = "09:00"
   }
 }
 
@@ -263,8 +263,8 @@ resource "vngcloud_vks_cluster" "primary" {
   enabled_load_balancer_plugin = true
   enabled_block_store_csi_plugin = true
   auto_upgrade_config {
-    weekdays: "mon,tue,wed,thu,fri,sat,sun"
-    time: "23:00"
+    weekdays = "mon,tue,wed,thu,fri,sat,sun"
+    time = "23:00"
   }
 }
 
