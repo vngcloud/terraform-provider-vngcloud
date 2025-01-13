@@ -11,10 +11,10 @@ Manages a VNGCloud Kubernetes Engine (VKS) cluster.
 To get more information about VKS clusters, see:
 
 * How-to guides
-  * [VKS overview](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/vks-la-gi)
-  * [Getting Start with VKS](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/bat-dau-voi-vks)
+    * [VKS overview](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/vks-la-gi)
+    * [Getting Start with VKS](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/bat-dau-voi-vks)
 * Terraform guidance
-  * [Using VKS with Terraform](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/su-dung-vks-voi-terraform)
+    * [Using VKS with Terraform](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/su-dung-vks-voi-terraform)
 
 ---
 ## Example Usage - with a separately managed node group (recommended)
@@ -69,36 +69,36 @@ resource "vngcloud_vks_cluster" "primary" {
 * `node_netmask_size` - (Optional) Specifies the node CIDR mask size used in Cilium's VPC Native Routing mode. The default value is 25. You can enter a number from the following options: 24, 25, 26.
 * `enabled_load_balancer_plugin` - (Optional) Enables/ Disable the attachment of load balancers (both network and application) via Kubernetes YAML. The default value is "true".
 * `enabled_block_store_csi_plugin` - (Optional) Enable/ Disable Automatically deploys and manages the BlockStore Persistent Disk CSI Driver via Kubernetes YAML. The default value is "true".
-* `auto_upgrade_config` - (Optional) To configure the `auto_upgrade_config` feature for automated maintenance on your cluster, you can use the following attributes: 
-  * `weekdays` - A list of days of the week when maintenance should occur, e.g., sat,sun (Saturday and Sunday).
-  * `time` - The specific time of the day to start maintenance, in 24-hour format, e.g., 21:00 (9 PM).
+* `auto_upgrade_config` - (Optional) To configure the `auto_upgrade_config` feature for automated maintenance on your cluster, you can use the following attributes:
+    * `weekdays` - A list of days of the week when maintenance should occur, e.g., sat,sun (Saturday and Sunday).
+    * `time` - The specific time of the day to start maintenance, in 24-hour format, e.g., 21:00 (9 PM).
 ---
 ### **Some important notes when using VKS with Terraform:**
 
 When using **Terraform** to create a **Cluster** and **Node Group** on the VKS system, if you modify any of the following fields, the system will automatically delete the existing Node Group/Cluster and recreate a new one with the corresponding new parameters. The deletion process will occur before the creation of the new Node Group/Cluster.
 
 * For the resource `vngcloud_vks_cluster`, the fields that, when modified, will cause the system to delete and recreate the Cluster include:
-  * `name`&#x20;
-  * `description`&#x20;
-  * `enable_private_cluster`&#x20;
-  * `network_type`&#x20;
-  * `vpc_id`&#x20;
-  * `subnet_id`&#x20;
-  * `cidr`&#x20;
-  * `node_group`&#x20;
-  * `secondary_subnets`&#x20;
-  * `node_netmask_size`
+    * `name`&#x20;
+    * `description`&#x20;
+    * `enable_private_cluster`&#x20;
+    * `network_type`&#x20;
+    * `vpc_id`&#x20;
+    * `subnet_id`&#x20;
+    * `cidr`&#x20;
+    * `node_group`&#x20;
+    * `secondary_subnets`&#x20;
+    * `node_netmask_size`
 * For the resource `vngcloud_vks_cluster_node_group`, the fields that, when modified, will cause the system to delete and recreate the Node Group include:
-  * `cluster_id`&#x20;
-  * `name`&#x20;
-  * `flavor_id`&#x20;
-  * `disk_size`&#x20;
-  * `disk_type`&#x20;
-  * `enable_private_nodes`&#x20;
-  * `ssh_key_id`&#x20;
-  * `secondary_subnets`&#x20;
-  * `enabled_encryption_volume`&#x20;
-  * `subnet_id`
+    * `cluster_id`&#x20;
+    * `name`&#x20;
+    * `flavor_id`&#x20;
+    * `disk_size`&#x20;
+    * `disk_type`&#x20;
+    * `enable_private_nodes`&#x20;
+    * `ssh_key_id`&#x20;
+    * `secondary_subnets`&#x20;
+    * `enabled_encryption_volume`&#x20;
+    * `subnet_id`
 
 To specify that the system should create a new cluster/node group before deleting the old one, you can add the parameter `lifecycle { create_before_destroy = true }`to your main.tf file. Specifically:
 
