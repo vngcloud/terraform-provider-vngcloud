@@ -9,18 +9,19 @@
 package vks
 
 type CreateClusterComboDto struct {
-	Name                       string               `json:"name"`
-	Description                string               `json:"description,omitempty"`
-	Version                    string               `json:"version"`
-	EnablePrivateCluster       bool                 `json:"enablePrivateCluster"`
-	EnabledServiceEndpoint     bool                 `json:"enabledServiceEndpoint"`
-	NetworkType                string               `json:"networkType"`
-	VpcId                      string               `json:"vpcId"`
-	SubnetId                   string               `json:"subnetId"`
-	Cidr                       string               `json:"cidr"`
-	EnabledLoadBalancerPlugin  bool                 `json:"enabledLoadBalancerPlugin"`
-	EnabledBlockStoreCsiPlugin bool                 `json:"enabledBlockStoreCsiPlugin"`
-	NodeGroups                 []CreateNodeGroupDto `json:"nodeGroups"`
-	SecondarySubnets           []string             `json:"secondarySubnets"`
-	NodeNetmaskSize            int32                `json:"nodeNetmaskSize"`
+	Name                       string                `json:"name"`
+	Description                string                `json:"description,omitempty"`
+	Version                    string                `json:"version"`
+	EnablePrivateCluster       bool                  `json:"enablePrivateCluster"`
+	EnabledServiceEndpoint     bool                  `json:"enabledServiceEndpoint"`
+	NetworkType                string                `json:"networkType"`
+	VpcId                      string                `json:"vpcId"`
+	SubnetId                   string                `json:"subnetId"`
+	Cidr                       string                `json:"cidr"`
+	EnabledLoadBalancerPlugin  bool                  `json:"enabledLoadBalancerPlugin"`
+	EnabledBlockStoreCsiPlugin bool                  `json:"enabledBlockStoreCsiPlugin"`
+	NodeGroups                 []CreateNodeGroupDto  `json:"nodeGroups"`
+	SecondarySubnets           []string              `json:"secondarySubnets"`
+	NodeNetmaskSize            int32                 `json:"nodeNetmaskSize"`
+	AutoUpgradeConfig          *AutoUpgradeConfigDto `json:"autoUpgradeConfig"`
 }

@@ -9,6 +9,8 @@
 package vks
 
 type UpdateClusterDto struct {
-	Version            string   `json:"version"`
-	WhitelistNodeCIDRs []string `json:"whitelistNodeCIDRs"`
+	Version                    string   `json:"version"`
+	WhitelistNodeCIDRs         []string `json:"whitelistNodeCIDRs"`
+	EnabledLoadBalancerPlugin  bool     `json:"enabledLoadBalancerPlugin"`
+	EnabledBlockStoreCsiPlugin bool     `json:"enabledBlockStoreCsiPlugin"`
 }
