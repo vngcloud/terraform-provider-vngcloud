@@ -72,6 +72,12 @@ func ResourceVolume() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"zone_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -98,6 +104,7 @@ func resourceVolumeCreate(d *schema.ResourceData, m interface{}) error {
 		VolumeTypeId:   d.Get("volume_type_id").(string),
 		MultiAttach:    d.Get("multi_attach").(bool),
 		IsPoc:          d.Get("is_poc").(bool),
+		ZoneId:         d.Get("zone_id").(string),
 	}
 	cli := m.(*client.Client)
 	resp, httpResponse, err := cli.VserverClient.VolumeRestControllerApi.CreateVolumeUsingPOST1(context.TODO(), a, projectID)
@@ -147,6 +154,7 @@ func resourceVolumeRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("volume_type_id", volume.VolumeTypeId)
 	d.Set("bootable", volume.Bootable)
 	d.Set("multi_attach", volume.MultiAttach)
+	d.Set("zone_id", resp.Data.Zone.Uuid)
 	return nil
 }
 

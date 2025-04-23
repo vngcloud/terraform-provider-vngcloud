@@ -26,4 +26,5 @@ type NetworkInterfaceElastic struct {
 	Uuid        string    `json:"uuid,omitempty"`
 	VpcId       string    `json:"vpcId,omitempty"`
 	VpcName     string    `json:"vpcName,omitempty"`
+	Zone        *Zone     `json:"zone,omitempty"`
 }

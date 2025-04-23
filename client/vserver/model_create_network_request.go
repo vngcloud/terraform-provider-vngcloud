@@ -15,4 +15,6 @@ type CreateNetworkRequest struct {
 	Cidr string `json:"cidr"`
 	// Name of the Network
 	Name string `json:"name"`
+	// Zone id
+	ZoneId string `json:"zoneId,omitempty"`
 }

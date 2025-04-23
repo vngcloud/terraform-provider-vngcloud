@@ -18,6 +18,7 @@ resource "vngcloud_vserver_subnet" "subnet" {
     name = "example-subnet"
     cidr = "10.76.1.0/24"
     network_id = "net-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    zone_id = "HCM03-1A"
 }
 ```
 
@@ -32,6 +33,7 @@ resource "vngcloud_vserver_subnet" "subnet" {
 - **project_id** (String, Required) ID of Project
 - **interface_acl_policy_uuid** (String, Optional) ID of Interface ACL Policy.
 - **route_table_uuid** (String, Optional) ID of route table. 
+- **zone_id** (String, Optional) ID of Zone. If not specified, the default zone will be used
 
 ## Attributes Reference
 

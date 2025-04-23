@@ -169,6 +169,12 @@ func ResourceServer() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"zone_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -233,6 +239,7 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 		UserDataBase64Encoded:  d.Get("user_data_base64_encode").(bool),
 		HostGroupId:            d.Get("host_group_id").(string),
 		IsPoc:                  d.Get("is_poc").(bool),
+		ZoneId:                 d.Get("zone_id").(string),
 	}
 	cli := m.(*client.Client)
 	resp, httpResponse, err := cli.VserverClient.ServerRestControllerApi.CreateServerUsingPOST1(context.TODO(), server, projectID)
@@ -285,6 +292,7 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("server_group_id", server.ServerGroupId)
 	d.Set("root_disk_id", server.BootVolumeId)
 	d.Set("os_licence", server.Licence)
+	d.Set("zone_id", server.ZoneId)
 	_, ok := d.GetOk("host_group_id")
 	if ok {
 		d.Set("host_group_id", server.HostGroupId)
