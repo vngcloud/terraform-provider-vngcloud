@@ -14,4 +14,6 @@ type CreateSubnetRequest struct {
 	Cidr string `json:"cidr"`
 	// Name of the Subnet
 	Name string `json:"name"`
+	// Zone id
+	ZoneId string `json:"zoneId,omitempty"`
 }

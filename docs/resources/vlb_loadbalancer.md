@@ -23,6 +23,7 @@ resource "vngcloud_vlb_load_balancer" "example"{
   scheme     = "Internet"
   subnet_id  = "sub-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   type       = "Layer 7"
+  zone_id    = "HCM03-1A"
 }
 ```
 
@@ -37,6 +38,7 @@ The following arguments are supported:
 * `scheme` - (String, Required) The scheme of the load balancer. It can be `Internet` or `Internal`.
 * `subnet_id` - (String, Required) The ID of the subnet to create the load balancer in.
 * `type` -(String, Required) The type of the load balancer. It can be `Layer 4` or `Layer 7`.
+* `zone_id` (String, Optional) ID of Zone. If not specified, the default zone will be used
 
 
 ## Attributes Reference

@@ -16,6 +16,7 @@ description: |-
 resource "vngcloud_vserver_network_interface" "network_interface" {
     project_id = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     name = "example-network"
+    zone_id = "HCM03-1A"
 }
 ```
 
@@ -25,6 +26,7 @@ The following arguments are supported:
 
 - **name** (String, Required) Name of Network Interface.
 - **project_id** (String, Required) ID of project.
+- **zone_id** (String, Optional) ID of Zone. If not specified, the default zone will be used
 
 ## Attributes Reference
 

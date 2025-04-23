@@ -11,6 +11,7 @@ package vloadbalancing
 
 import (
 	"github.com/vngcloud/terraform-provider-vngcloud/client/utils"
+	"github.com/vngcloud/terraform-provider-vngcloud/client/vserver"
 )
 
 type LoadBalancerDto struct {
@@ -27,4 +28,5 @@ type LoadBalancerDto struct {
 	ProgressStatus     string                `json:"progressStatus"`
 	Type               string                `json:"type"`
 	Uuid               string                `json:"uuid"`
+	Zone               *vserver.Zone         `json:"zone"`
 }

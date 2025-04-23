@@ -64,6 +64,12 @@ func ResourceSubnet() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"zone_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -85,8 +91,9 @@ func resourceSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	networkID := d.Get("network_id").(string)
 	subnet := vserver.CreateSubnetRequest{
-		Name: d.Get("name").(string),
-		Cidr: d.Get("cidr").(string),
+		Name:   d.Get("name").(string),
+		Cidr:   d.Get("cidr").(string),
+		ZoneId: d.Get("zone_id").(string),
 	}
 	cli := m.(*client.Client)
 	resp, httpResponse, err := cli.VserverClient.SubnetRestControllerApi.CreateSubnetUsingPOST1(context.TODO(), subnet, networkID, projectID)
@@ -133,6 +140,7 @@ func resourceSubnetRead(d *schema.ResourceData, m interface{}) error {
 	subnet := resp
 	d.Set("name", subnet.Name)
 	d.Set("cidr", subnet.Cidr)
+	d.Set("zone_id", subnet.Zone.Uuid)
 	return nil
 }
 

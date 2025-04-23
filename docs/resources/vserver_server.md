@@ -26,6 +26,7 @@ resource "vngcloud_vserver_server" "server"{
     ssh_key = "ssh-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     security_group = ["secg-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"]
     subnet_id = "sub-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    zone_id = "HCM03-1A"
 }
 ```
 
@@ -57,6 +58,7 @@ The following arguments are supported:
 - **user_data** (String, Optional) User data to provide when launching the server.
 - **user_data_base64_encode** (Boolean, Optional) Can be used instead of user_data to pass base64-encoded binary data directly. Use this instead of user_data whenever the value is not a valid UTF-8 string.
 - **is_poc** (Boolean, Optional) Is Poc Resource.
+- **zone_id** (String, Optional) ID of Zone. If not specified, the default zone will be used
   
 ## Attributes Reference
 
