@@ -60,4 +60,6 @@ type CreateServerRequest struct {
 	HostGroupId string `json:"hostGroupId,omitempty"`
 	// is POC
 	IsPoc bool `json:"isPoc,omitempty"`
+	// Zone id
+	ZoneId string `json:"zoneId,omitempty"`
 }

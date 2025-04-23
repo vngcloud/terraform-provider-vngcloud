@@ -13,4 +13,6 @@ package vserver
 type CreateNetworkInterfaceRequest struct {
 	// Name of network interface
 	Name string `json:"name"`
+	// Zone Id of network interface
+	ZoneId string `json:"zoneId,omitempty"`
 }

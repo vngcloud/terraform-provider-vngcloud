@@ -24,4 +24,6 @@ type CreateLoadBalancerRequestV2 struct {
 	SubnetId string `json:"subnetId"`
 	// Type of the load balancer. It may be Layer 4 or Layer 7
 	Type_ string `json:"type"`
+	// Zone ID of the load balancer.
+	ZoneId string `json:"zoneId,omitempty"`
 }

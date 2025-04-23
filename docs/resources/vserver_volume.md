@@ -20,6 +20,7 @@ resource "vngcloud_vserver_volume" "volume" {
     volume_type_id = "vtype-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     project_id = "pro-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     multi_attach = false
+    zone_id = "HCM03-1A"
 }
 ```
 
@@ -34,6 +35,7 @@ The following arguments are supported:
 - **encryption_type** (String, Optional) Type encryption of volume.
 - **multi_attach** (Boolean, Optional) Specifies whether to enable Volume Multi-Attach.
 - **is_poc** (Boolean, Optional) Is Poc Resource.
+- **zone_id** (String, Optional) ID of Zone. If not specified, the default zone will be used
 
 ## Attributes Reference
 

@@ -20,4 +20,5 @@ type NetworkDto struct {
 	ElasticIps  []ElasticOfNetworkDto `json:"elasticIps,omitempty"`
 	Id          string                `json:"id,omitempty"`
 	Status      string                `json:"status,omitempty"`
+	Zone        *Zone                 `json:"zone,omitempty"`
 }

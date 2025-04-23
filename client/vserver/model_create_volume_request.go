@@ -25,4 +25,6 @@ type CreateVolumeRequest struct {
 	VolumeTypeId string `json:"volumeTypeId"`
 	// is POC
 	IsPoc bool `json:"isPoc,omitempty"`
+	// Id of zone
+	ZoneId string `json:"zoneId,omitempty"`
 }

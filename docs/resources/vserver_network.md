@@ -17,6 +17,7 @@ resource "vngcloud_vserver_network" "network" {
     project_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     name = "example-network"
     cidr = "10.76.0.0/16"
+    zone_id = "HCM03-1A"
 }
 ```
 
@@ -31,6 +32,7 @@ The following arguments are supported:
 - **name** (String, Required) Name of Network.
 - **project_id** (String, Required) ID of project.
 - **route_table_default_id** (String, Optional) ID of default route table.
+- **zone_id** (String, Optional) ID of Zone. If not specified, the default zone will be used
 
 ## Attributes Reference
 
