@@ -30,4 +30,5 @@ type Server struct {
 	Status             string                      `json:"status,omitempty"`
 	Uuid               string                      `json:"uuid,omitempty"`
 	HostGroupId        string                      `json:"hostGroupId,omitempty"`
+	ZoneId             string                      `json:"zoneId,omitempty"`
 }

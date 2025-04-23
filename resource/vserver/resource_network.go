@@ -55,6 +55,12 @@ func ResourceNetwork() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"zone_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -75,8 +81,9 @@ func resourceNetworkStateRefreshFunc(cli *client.Client, networkID string, proje
 func resourceNetworkCreate(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	network := vserver.CreateNetworkRequest{
-		Name: d.Get("name").(string),
-		Cidr: d.Get("cidr").(string),
+		Name:   d.Get("name").(string),
+		Cidr:   d.Get("cidr").(string),
+		ZoneId: d.Get("zone_id").(string),
 	}
 	cli := m.(*client.Client)
 	resp, httpResponse, err := cli.VserverClient.NetworkRestControllerApi.CreateNetworkUsingPOST1(context.TODO(), network, projectID)
@@ -122,6 +129,9 @@ func resourceNetworkRead(d *schema.ResourceData, m interface{}) error {
 	network := resp
 	d.Set("name", network.DisplayName)
 	d.Set("cidr", network.Cidr)
+	if _, ok := d.GetOk("zone_id"); !ok {
+		d.Set("zone_id", network.Zone.Uuid)
+	}
 	return nil
 }
 

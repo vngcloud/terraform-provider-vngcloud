@@ -4,15 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vloadbalancing"
-	"log"
-	"net/http"
-	"strings"
-	"time"
 )
 
 const (
@@ -85,6 +86,12 @@ func resourceLoadBalancerInstance() *schema.Resource {
 			"private_subnet_cidr": {
 				Type:     schema.TypeString,
 				Computed: true,
+			},
+			"zone_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+				ForceNew: true,
 			},
 		},
 	}
@@ -161,6 +168,7 @@ func createLBResource(ctx context.Context, d *schema.ResourceData, cli *client.C
 		Scheme:    d.Get("scheme").(string),
 		SubnetId:  d.Get("subnet_id").(string),
 		Type_:     d.Get("type").(string),
+		ZoneId:    d.Get("zone_id").(string),
 	}
 
 	loadbalancer, httpResponse, err := cli.VlbClient.LoadBalancerRestControllerV2Api.CreateLoadBalancerUsingPOST(ctx, req, projectId)
@@ -229,6 +237,7 @@ func resourceLoadBalancerRead(ctx context.Context, d *schema.ResourceData, m int
 	d.Set("address", resp.Data.Address)
 	d.Set("private_subnet_cidr", resp.Data.PrivateSubnetCidr)
 	d.Set("status", resp.Data.Status)
+	d.Set("zone_id", resp.Data.Zone.Uuid)
 	log.Printf("Read load balancer successfully")
 	return nil
 }

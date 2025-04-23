@@ -24,4 +24,5 @@ type SubnetDto struct {
 	Status                 string    `json:"status,omitempty"`
 	UpdatedAt              time.Time `json:"updatedAt,omitempty"`
 	Uuid                   string    `json:"uuid,omitempty"`
+	Zone                   *Zone     `json:"zone,omitempty"`
 }

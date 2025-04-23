@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vserver"
-	"log"
-	"strings"
 )
 
 func ResourceNetworkInterface() *schema.Resource {
@@ -52,6 +53,12 @@ func ResourceNetworkInterface() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"zone_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+				ForceNew: true,
+			},
 		},
 	}
 }
@@ -59,7 +66,8 @@ func ResourceNetworkInterface() *schema.Resource {
 func resourceNetworkInterfaceCreate(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	createNetworkInterface := vserver.CreateNetworkInterfaceRequest{
-		Name: d.Get("name").(string),
+		Name:   d.Get("name").(string),
+		ZoneId: d.Get("zone_id").(string),
 	}
 	cli := m.(*client.Client)
 	resp, httpResponse, err := cli.VserverClient.NetworkInterfaceRestControllerApi.CreateNetworkInterfaceElasticUsingPOST(context.TODO(), createNetworkInterface, projectID)
@@ -118,6 +126,7 @@ func resourceNetworkInterfaceRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("vpc_name", networkInterfaceElastic.VpcName)
 	d.Set("ip", networkInterfaceElastic.Ip)
 	d.Set("server_name", networkInterfaceElastic.ServerName)
+	d.Set("zone_id", networkInterfaceElastic.Zone.Uuid)
 	return nil
 }
 

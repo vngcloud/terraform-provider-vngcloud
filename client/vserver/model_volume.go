@@ -30,4 +30,5 @@ type Volume struct {
 	Uuid               string    `json:"uuid,omitempty"`
 	VolumeTypeId       string    `json:"volumeTypeId,omitempty"`
 	VolumeTypeZoneName string    `json:"volumeTypeZoneName,omitempty"`
+	Zone               *Zone     `json:"zone,omitempty"`
 }
