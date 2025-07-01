@@ -480,3 +480,7 @@ func (e GenericSwaggerError) Body() []byte {
 func (e GenericSwaggerError) Model() interface{} {
 	return e.model
 }
+
+func (c *APIClient) Config() *Configuration {
+	return c.cfg
+}

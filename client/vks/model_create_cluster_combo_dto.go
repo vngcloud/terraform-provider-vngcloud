@@ -24,4 +24,5 @@ type CreateClusterComboDto struct {
 	SecondarySubnets           []string              `json:"secondarySubnets"`
 	NodeNetmaskSize            int32                 `json:"nodeNetmaskSize"`
 	AutoUpgradeConfig          *AutoUpgradeConfigDto `json:"autoUpgradeConfig"`
+	ReleaseChannel             string                `json:"releaseChannel,omitempty"`
 }

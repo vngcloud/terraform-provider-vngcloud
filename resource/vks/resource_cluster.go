@@ -4,16 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+	"reflect"
+	"time"
+
 	"github.com/antihax/optional"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vks"
-	"log"
-	"net/http"
-	"reflect"
-	"time"
 )
 
 func ResourceCluster() *schema.Resource {
@@ -73,9 +74,10 @@ func ResourceCluster() *schema.Resource {
 			"version": {
 				Type:     schema.TypeString,
 				Optional: true,
-				DefaultFunc: func() (interface{}, error) {
-					return fetchByKey("k8s_version")
-				},
+				// DefaultFunc: func() (interface{}, error) {
+				// 	return fetchByKey("k8s_version")
+				// },
+				Computed: true,
 			},
 			"white_list_node_cidr": {
 				Type:     schema.TypeList,
@@ -150,7 +152,7 @@ func ResourceCluster() *schema.Resource {
 			"node_group": {
 				Type:     schema.TypeList,
 				Optional: true,
-				Computed: true,
+				// Computed: true,
 				ForceNew: true,
 				Elem: &schema.Resource{
 					Schema: MergeSchemas(
@@ -180,6 +182,12 @@ func ResourceCluster() *schema.Resource {
 					},
 				},
 			},
+			"release_channel": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -198,7 +206,24 @@ func resourceClusterStateRefreshFunc(cli *client.Client, clusterID string) resou
 	}
 }
 func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
-	createNodeGroupRequests, errNodeGroup := expandNodeGroupForCreating(d.Get("node_group").([]interface{}), d.Get("network_type").(string))
+	cli := m.(*client.Client)
+
+	_, hasVersion := d.GetOk("version")
+	versionKey := ""
+
+	if cli.VksClient.Config().BasePath == "https://vks-han-1.api.vngcloud.vn" {
+		versionKey = "han01_k8s_version"
+	} else {
+		versionKey = "k8s_version"
+	}
+
+	if !hasVersion {
+		res, _ := fetchByKey(versionKey)
+		imageId := res.(string)
+		d.Set("version", imageId)
+	}
+
+	createNodeGroupRequests, errNodeGroup := expandNodeGroupForCreating(d.Get("node_group").([]interface{}), d, m)
 	if errNodeGroup != nil {
 		return errNodeGroup
 	}
@@ -226,8 +251,9 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 		NodeNetmaskSize:            int32(d.Get("node_netmask_size").(int)),
 		NodeGroups:                 createNodeGroupRequests,
 		AutoUpgradeConfig:          autoUpgradeConfig,
+		ReleaseChannel:             d.Get("release_channel").(string),
 	}
-	cli := m.(*client.Client)
+
 	request := vks.V1ClusterControllerApiV1ClustersPostOpts{
 		Body: optional.NewInterface(createClusterRequest),
 	}
@@ -306,8 +332,8 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 				},
 			}
 			nodeGroup["upgrade_config"] = upgradeConfig
-			nodeGroup["node_group_id"] = clusterNodeGroupDetail.Id
 		}
+		nodeGroup["node_group_id"] = clusterNodeGroupDetail.Id
 		nodeGroup["subnet_id"] = clusterNodeGroupDetail.SubnetId
 		if nodeGroup["num_nodes"] != nil && int32(nodeGroup["num_nodes"].(int)) != -1 {
 			log.Printf("num_nodes !=nil\n")
@@ -325,7 +351,7 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 	return nil
 }
 
-func expandNodeGroupForCreating(node_group []interface{}, networkType string) ([]vks.CreateNodeGroupDto, error) {
+func expandNodeGroupForCreating(node_group []interface{}, d *schema.ResourceData, m interface{}) ([]vks.CreateNodeGroupDto, error) {
 	if len(node_group) == 0 {
 		log.Printf("node_group 0\n")
 		return []vks.CreateNodeGroupDto{}, nil
@@ -341,9 +367,17 @@ func expandNodeGroupForCreating(node_group []interface{}, networkType string) ([
 		if !ok {
 			log.Fatalf("Element at index %d is not a map", i)
 		}
+		networkType := d.Get("network_type").(string)
 		if networkType == "CILIUM_NATIVE_ROUTING" && (nodeGroup["secondary_subnets"] == nil || len(nodeGroup["secondary_subnets"].([]interface{})) == 0) {
 			return nil, fmt.Errorf("secondary_subnets is required when cluster network type is set to CILIUM_NATIVE_ROUTING")
 		}
+
+		if nodeGroup["subnet_id"] == nil || nodeGroup["subnet_id"] == "" {
+			nodeGroup["subnet_id"] = d.Get("subnet_id").(string)
+		}
+
+		setDefaultValueByZoneForNodeGroup(nodeGroup, m, d.Get("vpc_id").(string))
+
 		createNodeGroupRequest, errNodeGroup := getCreateNodeGroupRequestForCluster(nodeGroup)
 		if errNodeGroup != nil {
 			return nil, errNodeGroup
@@ -351,6 +385,66 @@ func expandNodeGroupForCreating(node_group []interface{}, networkType string) ([
 		createNodeGroupRequests[i] = createNodeGroupRequest
 	}
 	return createNodeGroupRequests, nil
+}
+
+func setDefaultValueByZoneForNodeGroup(nodeGroup map[string]interface{}, m interface{}, vpcId string) error {
+	cli := m.(*client.Client)
+
+	imageId := nodeGroup["image_id"]
+	flavorId := nodeGroup["flavor_id"]
+	diskType := nodeGroup["disk_type"]
+
+	if imageId == nil || imageId.(string) == "" || flavorId == nil || flavorId.(string) == "" || diskType == nil || diskType.(string) == "" {
+		workspaceRes, httpResponse, _ := cli.VksClient.V1WorkspaceControllerApi.V1WorkspaceGet(context.TODO(), nil)
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
+			return errResponse
+		}
+
+		subnetId := nodeGroup["subnet_id"].(string)
+		subnetRes, httpResponse, _ := cli.VserverClient.SubnetRestControllerApi.GetSubnetByIdUsingGET(context.TODO(), vpcId, workspaceRes.ProjectId, subnetId)
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
+			return errResponse
+		}
+		imageIdKey := ""
+		flavorIdKey := ""
+		diskTypeKey := ""
+		if cli.VksClient.Config().BasePath == "https://vks-han-1.api.vngcloud.vn" {
+			imageIdKey = "han01_image_id"
+			flavorIdKey = "han01_1a_flavor_id"
+			diskTypeKey = "han01_1a_volume_type_id"
+		} else {
+			imageIdKey = "image_id"
+			if subnetRes.Zone.Uuid == "HCM03-1A" {
+				flavorIdKey = "flavor_id"
+				diskTypeKey = "volume_type_id"
+			} else if subnetRes.Zone.Uuid == "HCM03-1B" {
+				flavorIdKey = "hcm03_1b_flavor_id"
+				diskTypeKey = "hcm03_1b_volume_type_id"
+			} else {
+				flavorIdKey = "hcm03_1c_flavor_id"
+				diskTypeKey = "hcm03_1c_volume_type_id"
+			}
+		}
+
+		if imageId == nil || imageId.(string) == "" {
+			res, _ := fetchByKey(imageIdKey)
+			nodeGroup["image_id"] = res.(string)
+		}
+		if flavorId == nil || flavorId.(string) == "" {
+			res, _ := fetchByKey(flavorIdKey)
+			nodeGroup["flavor_id"] = res.(string)
+		}
+		if diskType == nil || diskType.(string) == "" {
+			res, _ := fetchByKey(diskTypeKey)
+			nodeGroup["disk_type"] = res.(string)
+		}
+	}
+
+	return nil
 }
 
 func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
@@ -399,6 +493,7 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("enabled_load_balancer_plugin", cluster.EnabledLoadBalancerPlugin)
 	d.Set("enabled_block_store_csi_plugin", cluster.EnabledBlockStoreCsiPlugin)
 	d.Set("enable_private_cluster", cluster.EnablePrivateCluster)
+	d.Set("release_channel", cluster.ReleaseChannel)
 	if resp.AutoUpgradeConfig != nil {
 		autoUpgradeConfig := []interface{}{
 			map[string]interface{}{
@@ -422,6 +517,8 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("SetConfig\n")
 		d.Set("config", configResp)
 	}
+
+	updateNodeGroupData(cli, d, clusterID)
 	return nil
 }
 
@@ -559,14 +656,14 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 			num := int32(nodeGroup["num_nodes"].(int))
 			numNodes = &num
 		}
-		taintsInput, ok := d.Get("taint").([]interface{})
+		taintsInput, ok := nodeGroup["taint"].([]interface{})
 		var tains []vks.NodeGroupTaintDto
 		if ok {
 			tains = getTaints(taintsInput)
 		} else {
 			tains = nil
 		}
-		labels := getLabels(d.Get("labels").(map[string]interface{}))
+		labels := getLabels(nodeGroup["labels"].(map[string]interface{}))
 		imageId := nodeGroup["image_id"].(string)
 		updateNodeGroupRequest := vks.UpdateNodeGroupDto{
 			AutoScaleConfig: autoScaleConfig,

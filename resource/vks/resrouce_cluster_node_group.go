@@ -4,16 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/antihax/optional"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vks"
-	"log"
-	"net/http"
-	"strings"
-	"time"
 )
 
 func ResourceClusterNodeGroup() *schema.Resource {
@@ -133,17 +134,19 @@ var schemaNodeGroup = map[string]*schema.Schema{
 	"image_id": {
 		Type:     schema.TypeString,
 		Optional: true,
-		DefaultFunc: func() (interface{}, error) {
-			return fetchByKey("image_id")
-		},
+		Computed: true,
+		// DefaultFunc: func() (interface{}, error) {
+		// 	return fetchByKey("image_id")
+		// },
 	},
 	"flavor_id": {
 		Type:     schema.TypeString,
 		Optional: true,
 		ForceNew: true,
-		DefaultFunc: func() (interface{}, error) {
-			return fetchByKey("flavor_id")
-		},
+		Computed: true,
+		// DefaultFunc: func() (interface{}, error) {
+		// 	return fetchByKey("flavor_id")
+		// },
 	},
 	"disk_size": {
 		Type:     schema.TypeInt,
@@ -157,9 +160,10 @@ var schemaNodeGroup = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
 		ForceNew: true,
-		DefaultFunc: func() (interface{}, error) {
-			return fetchByKey("volume_type_id")
-		},
+		Computed: true,
+		// DefaultFunc: func() (interface{}, error) {
+		// 	return fetchByKey("volume_type_id")
+		// },
 	},
 	"enable_private_nodes": {
 		Type:     schema.TypeBool,
@@ -389,7 +393,11 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("name", resp.Name)
 	d.Set("ssh_key_id", resp.SshKeyId)
 	d.Set("enabled_encryption_volume", resp.EnabledEncryptionVolume)
-	d.Set("subnet_id", resp.SubnetId)
+	// d.Set("subnet_id", resp.SubnetId)
+	_, hasSubnetId := d.GetOk("subnet_id")
+	if !hasSubnetId {
+		d.Set("subnet_id", resp.SubnetId)
+	}
 	return nil
 }
 
@@ -445,10 +453,6 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error {
 
-	createNodeGroupRequest, errorNodeGroup := getCreateNodeGroupRequest(d)
-	if errorNodeGroup != nil {
-		return errorNodeGroup
-	}
 	cli := m.(*client.Client)
 	clusterId := d.Get("cluster_id").(string)
 
@@ -463,8 +467,20 @@ func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error
 	log.Printf("%s\n", string(respJSONCluster))
 	log.Printf("-------------------------------------\n")
 
+	_, hasSubnetId := d.GetOk("subnet_id")
+	if !hasSubnetId {
+		d.Set("subnet_id", respCluster.SubnetId)
+	}
+
 	if respCluster.NetworkType == "CILIUM_NATIVE_ROUTING" && (d.Get("secondary_subnets") == nil || len(d.Get("secondary_subnets").([]interface{})) == 0) {
 		return fmt.Errorf("secondary_subnets is required when cluster network type is set to CILIUM_NATIVE_ROUTING")
+	}
+
+	setDefaultValueByZone(d, m, respCluster.VpcId)
+
+	createNodeGroupRequest, errorNodeGroup := getCreateNodeGroupRequest(d)
+	if errorNodeGroup != nil {
+		return errorNodeGroup
 	}
 
 	request := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsPostOpts{
@@ -496,6 +512,68 @@ func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error
 	}
 	d.SetId(resp.Id)
 	return resourceClusterNodeGroupRead(d, m)
+}
+
+func setDefaultValueByZone(d *schema.ResourceData, m interface{}, vpcId string) error {
+	cli := m.(*client.Client)
+
+	_, hasImageId := d.GetOk("image_id")
+	_, hasFlavorId := d.GetOk("flavor_id")
+	_, hasDiskType := d.GetOk("disk_type")
+
+	if !hasImageId || !hasFlavorId || !hasDiskType {
+		workspaceRes, httpResponse, _ := cli.VksClient.V1WorkspaceControllerApi.V1WorkspaceGet(context.TODO(), nil)
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
+			return errResponse
+		}
+
+		subnetId := d.Get("subnet_id").(string)
+		subnetRes, httpResponse, _ := cli.VserverClient.SubnetRestControllerApi.GetSubnetByIdUsingGET(context.TODO(), vpcId, workspaceRes.ProjectId, subnetId)
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
+			return errResponse
+		}
+		imageIdKey := ""
+		flavorIdKey := ""
+		diskTypeKey := ""
+		if cli.VksClient.Config().BasePath == "https://vks-han-1.api.vngcloud.vn" {
+			imageIdKey = "han01_image_id"
+			flavorIdKey = "han01_1a_flavor_id"
+			diskTypeKey = "han01_1a_volume_type_id"
+		} else {
+			imageIdKey = "image_id"
+			if subnetRes.Zone.Uuid == "HCM03-1A" {
+				flavorIdKey = "flavor_id"
+				diskTypeKey = "volume_type_id"
+			} else if subnetRes.Zone.Uuid == "HCM03-1B" {
+				flavorIdKey = "hcm03_1b_flavor_id"
+				diskTypeKey = "hcm03_1b_volume_type_id"
+			} else {
+				flavorIdKey = "hcm03_1c_flavor_id"
+				diskTypeKey = "hcm03_1c_volume_type_id"
+			}
+		}
+		if !hasImageId {
+			res, _ := fetchByKey(imageIdKey)
+			imageId := res.(string)
+			d.Set("image_id", imageId)
+		}
+		if !hasFlavorId {
+			res, _ := fetchByKey(flavorIdKey)
+			flavorId := res.(string)
+			d.Set("flavor_id", flavorId)
+		}
+		if !hasDiskType {
+			res, _ := fetchByKey(diskTypeKey)
+			volumeTypeId := res.(string)
+			d.Set("disk_type", volumeTypeId)
+		}
+	}
+
+	return nil
 }
 
 func getSecondarySubnets(input []interface{}) ([]string, error) {

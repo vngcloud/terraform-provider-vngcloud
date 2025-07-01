@@ -3,10 +3,11 @@ package vks
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"io"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func CheckErrorResponse(httpResponse *http.Response) bool {

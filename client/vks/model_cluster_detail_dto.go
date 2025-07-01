@@ -29,4 +29,5 @@ type ClusterDetailDto struct {
 	SecondarySubnets           []string              `json:"secondarySubnets,omitempty"`
 	NodeNetmaskSize            int32                 `json:"nodeNetmaskSize"`
 	AutoUpgradeConfig          *AutoUpgradeConfigDto `json:"autoUpgradeConfig"`
+	ReleaseChannel             string                `json:"releaseChannel,omitempty"`
 }
