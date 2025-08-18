@@ -4,14 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vngcloud/terraform-provider-vngcloud/client"
-	"github.com/vngcloud/terraform-provider-vngcloud/client/vserver"
 	"log"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/vngcloud/terraform-provider-vngcloud/client"
+	"github.com/vngcloud/terraform-provider-vngcloud/client/vserver"
 )
 
 func ResourceSecgroupRule() *schema.Resource {
@@ -157,7 +158,7 @@ func resourceSecgroupRuleDelete(d *schema.ResourceData, m interface{}) error {
 	cli.VserverClient.SecgroupRuleRestControllerApi.DeleteSecgroupRuleUsingDELETE1(context.TODO(), projectID, SecgroupRuleId, SecurityGroupId)
 	return resource.Retry(3*time.Minute, func() *resource.RetryError {
 		_, httpResponse, _ := cli.VserverClient.SecgroupRuleRestControllerApi.GetSecgroupRuleUsingGET1(context.TODO(), projectID, SecgroupRuleId, SecurityGroupId)
-		if httpResponse.StatusCode != http.StatusNotFound {
+		if httpResponse != nil && httpResponse.StatusCode == http.StatusNotFound {
 			d.SetId("")
 			return nil
 		}
