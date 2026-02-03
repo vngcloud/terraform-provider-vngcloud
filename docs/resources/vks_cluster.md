@@ -68,4 +68,5 @@ resource "vngcloud_vks_cluster" "primary" {
 * `cidr` (Required) The CIDR block for the cluster. You can enter CIDR as private IP and can select from the following options (10.0.0.0 - 10.255.0.0 / 172.16.0.0 - 172.24.0.0 / 192.168.0.0).
 * `enabled_block_store_csi_plugin` (Optional) Automatically deploy and manage the BlockStore Persistent Disk CSI Driver via Kubernetes YAML.
 * `enabled_load_balancer_plugin` (Optional) Allow attaching load balancers (network and application) via the Kubernetes YAML.
+* `poc` (Optional) Allow creating POC cluster.
 
