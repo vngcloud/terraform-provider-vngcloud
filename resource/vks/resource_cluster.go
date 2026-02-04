@@ -188,6 +188,11 @@ func ResourceCluster() *schema.Resource {
 				ForceNew: true,
 				Computed: true,
 			},
+			"poc": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -257,6 +262,12 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 	request := vks.V1ClusterControllerApiV1ClustersPostOpts{
 		Body: optional.NewInterface(createClusterRequest),
 	}
+
+	_, hasPoc := d.GetOk("poc")
+	if hasPoc && d.Get("poc").(bool) {
+		request.Poc = optional.NewBool(true)
+	}
+
 	resp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersPost(context.TODO(), &request)
 
 	if CheckErrorResponse(httpResponse) {
@@ -517,6 +528,7 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("SetConfig\n")
 		d.Set("config", configResp)
 	}
+	d.Set("poc", cluster.Poc)
 
 	updateNodeGroupData(cli, d, clusterID)
 	return nil
@@ -541,6 +553,28 @@ func resourceClusterUpdate(d *schema.ResourceData, m interface{}) error {
 		if err != nil {
 			return err
 		}
+	}
+	if d.HasChange("poc") {
+		if d.Get("poc").(bool) {
+			return fmt.Errorf("Cannot change poc from false to true")
+		}
+		err := stopPoc(d, m)
+		if err != nil {
+			return err
+		}
+	}
+	return resourceClusterRead(d, m)
+}
+
+func stopPoc(d *schema.ResourceData, m interface{}) error {
+	cli := m.(*client.Client)
+	httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdStopPocPost(context.TODO(), d.Id())
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		oldPoc, _ := d.GetChange("poc")
+		d.Set("poc", oldPoc)
+		return errorResponse
 	}
 	return resourceClusterRead(d, m)
 }

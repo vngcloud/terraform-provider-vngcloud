@@ -30,4 +30,5 @@ type ClusterDetailDto struct {
 	NodeNetmaskSize            int32                 `json:"nodeNetmaskSize"`
 	AutoUpgradeConfig          *AutoUpgradeConfigDto `json:"autoUpgradeConfig"`
 	ReleaseChannel             string                `json:"releaseChannel,omitempty"`
+	Poc                        bool                  `json:"poc,omitempty"`
 }
