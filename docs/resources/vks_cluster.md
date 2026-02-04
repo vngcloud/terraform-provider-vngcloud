@@ -72,6 +72,7 @@ resource "vngcloud_vks_cluster" "primary" {
 * `auto_upgrade_config` - (Optional) To configure the `auto_upgrade_config` feature for automated maintenance on your cluster, you can use the following attributes:
     * `weekdays` - A list of days of the week when maintenance should occur, e.g., sat,sun (Saturday and Sunday).
     * `time` - The specific time of the day to start maintenance, in 24-hour format, e.g., 21:00 (9 PM).
+* `poc` - (Optional) Allows the creation of POC cluster.
 ---
 ### **Some important notes when using VKS with Terraform:**
 
