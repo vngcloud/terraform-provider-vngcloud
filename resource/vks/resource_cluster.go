@@ -351,6 +351,25 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 		} else {
 			nodeGroup["num_nodes"] = clusterNodeGroup.NumNodes
 		}
+
+		// Import labels
+		if clusterNodeGroupDetail.Labels != nil {
+			nodeGroup["labels"] = clusterNodeGroupDetail.Labels
+		}
+
+		// Import taints
+		if clusterNodeGroupDetail.Taints != nil && len(clusterNodeGroupDetail.Taints) > 0 {
+			taints := make([]interface{}, len(clusterNodeGroupDetail.Taints))
+			for j, taint := range clusterNodeGroupDetail.Taints {
+				taints[j] = map[string]interface{}{
+					"key":    taint.Key,
+					"value":  taint.Value,
+					"effect": taint.Effect,
+				}
+			}
+			nodeGroup["taint"] = taints
+		}
+
 		updatedNodeGroups[i] = nodeGroup
 	}
 

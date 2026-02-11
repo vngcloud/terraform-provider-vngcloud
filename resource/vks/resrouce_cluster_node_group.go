@@ -188,12 +188,14 @@ var schemaNodeGroup = map[string]*schema.Schema{
 	"labels": {
 		Type:        schema.TypeMap,
 		Optional:    true,
+		Computed:    true,
 		Elem:        &schema.Schema{Type: schema.TypeString},
 		Description: `The map of Kubernetes labels (key/value pairs) to be applied to each node. These will added in addition to any default label(s) that Kubernetes may apply to the node.`,
 	},
 	"taint": {
 		Type:        schema.TypeList,
 		Optional:    true,
+		Computed:    true,
 		Description: `List of Kubernetes taints to be applied to each node.`,
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
@@ -398,6 +400,25 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 	if !hasSubnetId {
 		d.Set("subnet_id", resp.SubnetId)
 	}
+
+	// Import labels
+	if resp.Labels != nil {
+		d.Set("labels", resp.Labels)
+	}
+
+	// Import taints
+	if resp.Taints != nil && len(resp.Taints) > 0 {
+		taints := make([]interface{}, len(resp.Taints))
+		for i, taint := range resp.Taints {
+			taints[i] = map[string]interface{}{
+				"key":    taint.Key,
+				"value":  taint.Value,
+				"effect": taint.Effect,
+			}
+		}
+		d.Set("taint", taints)
+	}
+
 	return nil
 }
 
