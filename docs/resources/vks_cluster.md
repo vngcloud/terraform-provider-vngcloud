@@ -24,7 +24,9 @@ resource "vngcloud_vks_cluster" "primary" {
   name      = "my-vks-cluster"
   cidr      = "172.16.0.0/16"
   vpc_id    = "net-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
+  az_strategy = "SINGLE" # or "MULTI"
   subnet_id = "sub-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
+  # list_subnet_ids = ["subnet-xxxxxxx", "subnet-yyyyyyy"] # required if az_strategy = "MULTI"
 }
 
 resource "vngcloud_vks_cluster_node_group" "primary" {
@@ -44,6 +46,7 @@ resource "vngcloud_vks_cluster" "primary" {
   name      = "my-vks-cluster"
   cidr      = "172.16.0.0/16"
   vpc_id    = "net-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
+  az_strategy = "SINGLE"
   subnet_id = "sub-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
   node_group {
     name= "my-vks-node-group"
@@ -64,9 +67,10 @@ resource "vngcloud_vks_cluster" "primary" {
 * `enable_service_endpoint` (Optional) - Enables the service endpoint feature.
 * `network_type` - (Optional) The type of network for the cluster. Defaults to "CALICO".
 * `vpc_id` (Required) The VPC ID for the cluster. You need create a VPC on vServer and put the VPC's ID on this field.
-* `subnet_id` (Required) The subnet ID for the cluster. You need create a Subnet on vServer and put the Subnet's ID on this field.
+* `az_strategy` (Optional) Availability zone strategy: `"SINGLE"` or `"MULTI"`. Default is `"SINGLE"`.
+* `subnet_id` (Optional) The subnet ID for the cluster. You need create a Subnet on vServer and put the Subnet's ID on this field. **Required if `az_strategy` is `"SINGLE"`**.
+* `list_subnet_ids` (Optional) List of subnet IDs, **required if `az_strategy` is `"MULTI"`**.
 * `cidr` (Required) The CIDR block for the cluster. You can enter CIDR as private IP and can select from the following options (10.0.0.0 - 10.255.0.0 / 172.16.0.0 - 172.24.0.0 / 192.168.0.0).
 * `enabled_block_store_csi_plugin` (Optional) Automatically deploy and manage the BlockStore Persistent Disk CSI Driver via Kubernetes YAML.
 * `enabled_load_balancer_plugin` (Optional) Allow attaching load balancers (network and application) via the Kubernetes YAML.
 * `poc` (Optional) Allow creating POC cluster.
-
