@@ -116,7 +116,7 @@ func ResourceCluster() *schema.Resource {
 			},
 			"subnet_id": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 				ForceNew: true,
 			},
 			"cidr": {
@@ -193,6 +193,23 @@ func ResourceCluster() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"az_strategy": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "SINGLE",
+				ValidateFunc: validation.StringInSlice([]string{"SINGLE", "MULTI"}, false),
+				ForceNew: true,
+				Description:  "Availability zone strategy: SINGLE or MULTI. Default is SINGLE.",
+			},
+			"list_subnet_ids": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				ForceNew: true,
+				Description: "List of subnet IDs, required if az_strategy is MULTI.",
+			},
 		},
 	}
 }
@@ -240,6 +257,12 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 	if errorUpgradeConfig != nil {
 		return errorUpgradeConfig
 	}
+
+	listSubnetIds, errListSubnetIds := getListSubnetIds(d.Get("list_subnet_ids").([]interface{}))
+	if errListSubnetIds != nil {
+		return errListSubnetIds
+	}
+
 	createClusterRequest := vks.CreateClusterComboDto{
 		Name:                       d.Get("name").(string),
 		Description:                d.Get("description").(string),
@@ -257,6 +280,8 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 		NodeGroups:                 createNodeGroupRequests,
 		AutoUpgradeConfig:          autoUpgradeConfig,
 		ReleaseChannel:             d.Get("release_channel").(string),
+		AzStrategy:                 d.Get("az_strategy").(string),
+		ListSubnetIds:              listSubnetIds,
 	}
 
 	request := vks.V1ClusterControllerApiV1ClustersPostOpts{
@@ -548,6 +573,8 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("config", configResp)
 	}
 	d.Set("poc", cluster.Poc)
+	d.Set("az_strategy", cluster.AzStrategy)
+	d.Set("list_subnet_ids", cluster.ListSubnetIds)
 
 	updateNodeGroupData(cli, d, clusterID)
 	return nil
@@ -816,6 +843,22 @@ func getAuToUpgradeConfig(input []interface{}) (*vks.AutoUpgradeConfigDto, error
 		Weekdays: autoUpgradeConfig["weekdays"].(string),
 		Time:     autoUpgradeConfig["time"].(string),
 	}, nil
+}
+
+
+
+func getListSubnetIds(input []interface{}) ([]string, error) {
+	listSubnetIds := make([]string, len(input))
+
+	for i, v := range input {
+		str, ok := v.(string)
+		if !ok {
+			return nil, fmt.Errorf("Subnet ID at index %d is not a string", i)
+		}
+		listSubnetIds[i] = str
+	}
+
+	return listSubnetIds, nil
 }
 
 //func resourceClusterMigrateState(

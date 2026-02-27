@@ -31,4 +31,6 @@ type ClusterDetailDto struct {
 	AutoUpgradeConfig          *AutoUpgradeConfigDto `json:"autoUpgradeConfig"`
 	ReleaseChannel             string                `json:"releaseChannel,omitempty"`
 	Poc                        bool                  `json:"poc,omitempty"`
+	AzStrategy                 string                `json:"azStrategy,omitempty"`
+	ListSubnetIds              []string              `json:"listSubnetIds,omitempty"`
 }
