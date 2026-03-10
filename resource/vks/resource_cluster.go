@@ -542,7 +542,12 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("cidr", cluster.Cidr)
 	}
 	d.Set("vpc_id", cluster.VpcId)
-	d.Set("subnet_id", cluster.SubnetId)
+	d.Set("az_strategy", cluster.AzStrategy)
+	if cluster.AzStrategy == "MULTI" {
+		d.Set("list_subnet_ids", cluster.ListSubnetIds)
+	} else {
+		d.Set("subnet_id", cluster.SubnetId)
+	}
 	d.Set("network_type", cluster.NetworkType)
 	d.Set("name", cluster.Name)
 	d.Set("enabled_load_balancer_plugin", cluster.EnabledLoadBalancerPlugin)
@@ -573,8 +578,6 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("config", configResp)
 	}
 	d.Set("poc", cluster.Poc)
-	d.Set("az_strategy", cluster.AzStrategy)
-	d.Set("list_subnet_ids", cluster.ListSubnetIds)
 
 	updateNodeGroupData(cli, d, clusterID)
 	return nil
