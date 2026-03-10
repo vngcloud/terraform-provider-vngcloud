@@ -27,7 +27,7 @@ resource "vngcloud_vks_cluster" "primary" {
   az_strategy       = "SINGLE" # or "MULTI"
   vpc_id            = "net-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
   subnet_id         = "sub-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
-  # list_subnet_ids = ["sub-xxxxxxx", "sub-yyyyyyy"] # required if az_strategy = "MULTI"
+  # list_subnet_ids = ["sub-xxxxxxx", "sub-yyyyyyy"] # required if az_strategy = "MULTI" (currently HCM zone only)
 }
 
 resource "vngcloud_vks_cluster_node_group" "primary" {
@@ -67,9 +67,9 @@ resource "vngcloud_vks_cluster" "primary" {
 - `enable_service_endpoint` - (Optional) Enables the creation and use of private service endpoints within your cluster.
 - `network_type` - (Optional) The type of network for the cluster. The default value is `CALICO`. You can choose one in many options including `CALICO`, `CILIUM_OVERLAY`, `CILIUM_NATIVE_ROUTING`.
 - `vpc_id` - (Required) The VPC ID for the cluster. You need to create a VPC on vServer and enter the VPC's ID in this field.
-- `az_strategy` (Optional) Availability zone strategy: `"SINGLE"` or `"MULTI"`. Default is `"SINGLE"`.
+- `az_strategy` (Optional) Availability zone strategy: `"SINGLE"` or `"MULTI"`. Default is `"SINGLE"`. **Currently only available in HCM zone.**
 - `subnet_id` (Optional) The subnet ID for the cluster. You need create a Subnet on vServer and put the Subnet's ID on this field. **Required if `az_strategy` is `"SINGLE"`**.
-- `list_subnet_ids` (Optional) List of subnet IDs, **required if `az_strategy` is `"MULTI"`**.
+- `list_subnet_ids` (Optional) List of subnet IDs, **required if `az_strategy` is `"MULTI"`**. **Currently only available in HCM zone.**
 - `cidr` - (Required) Specifies the CIDR block for the cluster using `CALICO` or `CILIUM_OVERLAY` network. You can enter a private IP CIDR from the following options: 10.0.0.0 - 10.255.0.0, 172.16.0.0 - 172.24.0.0, or 192.168.0.0. The default value is "172.16.0.0/16".
 - `secondary_subnets` - (Optional) Specifies additional subnets to be useds in Cilium's VPC Native Routing mode.
 - `node_netmask_size` - (Optional) Specifies the node CIDR mask size used in Cilium's VPC Native Routing mode. The default value is 25. You can enter a number from the following options: 24, 25, 26.
@@ -193,7 +193,7 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
 }
 ```
 
-### Example Usage 2 - Create a Private cluster using a private endpoint on VNGCloud with AutoScale mode enabled and the network type is CILIUM OVERLAY, az_strategy is MULTI and a maintenance window set for every Thursday at 9 AM.
+### Example Usage 2 - Create a Private cluster using a private endpoint on VNGCloud with AutoScale mode enabled and the network type is CILIUM OVERLAY, az_strategy is MULTI (**currently HCM zone only**) and a maintenance window set for every Thursday at 9 AM.
 
 ```hcl
 resource "vngcloud_vks_cluster" "primary" {
