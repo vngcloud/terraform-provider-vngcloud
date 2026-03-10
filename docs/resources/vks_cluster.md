@@ -1,7 +1,7 @@
 ---
 subcategory: "Kubernetes Service"
 description: |-
-  Creates a Cluster on VNGCloud Kubernetes Service (VKS).
+        Creates a Cluster on VNGCloud Kubernetes Service (VKS).
 ---
 
 # vngcloud_vks_cluster
@@ -21,10 +21,12 @@ To get more information about VKS clusters, see:
 
 ```hcl
 resource "vngcloud_vks_cluster" "primary" {
-  name      = "my-vks-cluster"
-  cidr      = "172.16.0.0/16"
-  vpc_id    = "net-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
-  subnet_id = "sub-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
+  name              = "my-vks-cluster"
+  cidr              = "172.16.0.0/16"
+  az_strategy       = "SINGLE" # or "MULTI"
+  vpc_id            = "net-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
+  subnet_id         = "sub-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
+  # list_subnet_ids = ["sub-xxxxxxx", "sub-yyyyyyy"] # required if az_strategy = "MULTI" (currently HCM zone only)
 }
 
 resource "vngcloud_vks_cluster_node_group" "primary" {
@@ -40,13 +42,14 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
 
 ```hcl
 resource "vngcloud_vks_cluster" "primary" {
-  name      = "my-vks-cluster"
-  cidr      = "172.16.0.0/16"
-  vpc_id    = "net-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
-  subnet_id = "sub-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
+  name          = "my-vks-cluster"
+  cidr          = "172.16.0.0/16"
+  az_strategy   = "SINGLE"
+  vpc_id        = "net-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
+  subnet_id     = "sub-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
   node_group {
-    name= "my-vks-node-group"
-    ssh_key_id= "ssh-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
+    name        = "my-vks-node-group"
+    ssh_key_id  = "ssh-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
   }
 }
 ```
@@ -63,7 +66,9 @@ resource "vngcloud_vks_cluster" "primary" {
 * `enable_service_endpoint` - (Optional) Enables the creation and use of private service endpoints within your cluster.
 * `network_type` - (Optional) The type of network for the cluster. The default value is `CALICO`. You can choose one in many options including `CALICO`, `CILIUM_OVERLAY`, `CILIUM_NATIVE_ROUTING`.
 * `vpc_id` - (Required) The VPC ID for the cluster. You need to create a VPC on vServer and enter the VPC's ID in this field.
-* `subnet_id` -  (Required) The subnet ID for the cluster. You need to create a Subnet on vServer and enter the Subnet's ID in this field.
+* `az_strategy` (Optional) Availability zone strategy: `"SINGLE"` or `"MULTI"`. Default is `"SINGLE"`. **Currently only available in HCM zone.**
+* `subnet_id` - (Optional) The subnet ID for the cluster. You need create a Subnet on vServer and put the Subnet's ID on this field. **Required if `az_strategy` is `"SINGLE"`**.
+* `list_subnet_ids` (Optional) List of subnet IDs, **required if `az_strategy` is `"MULTI"`**. **Currently only available in HCM zone.**
 * `cidr` -  (Required) Specifies the CIDR block for the cluster using `CALICO` or `CILIUM_OVERLAY` network. You can enter a private IP CIDR from the following options: 10.0.0.0 - 10.255.0.0, 172.16.0.0 - 172.24.0.0, or 192.168.0.0. The default value is "172.16.0.0/16".
 * `secondary_subnets` - (Optional) Specifies additional subnets to be useds in Cilium's VPC Native Routing mode.
 * `node_netmask_size` - (Optional) Specifies the node CIDR mask size used in Cilium's VPC Native Routing mode. The default value is 25. You can enter a number from the following options: 24, 25, 26.
@@ -82,13 +87,17 @@ When using **Terraform** to create a **Cluster** and **Node Group** on the VKS s
     * `name`&#x20;
     * `description`&#x20;
     * `enable_private_cluster`&#x20;
+    * `enable_service_endpoint`&#x20;
     * `network_type`&#x20;
     * `vpc_id`&#x20;
+    * `az_strategy`&#x20;
     * `subnet_id`&#x20;
+    * `list_subnet_ids`&#x20;
     * `cidr`&#x20;
     * `node_group`&#x20;
     * `secondary_subnets`&#x20;
-    * `node_netmask_size`
+    * `node_netmask_size`&#x20;
+    * `release_channel`&#x20;
 * For the resource `vngcloud_vks_cluster_node_group`, the fields that, when modified, will cause the system to delete and recreate the Node Group include:
     * `cluster_id`&#x20;
     * `name`&#x20;
@@ -139,6 +148,7 @@ resource "vngcloud_vks_cluster" "primary" {
   enable_private_cluster = false
   network_type = "CALICO"
   vpc_id    = "net-70ef12d4-d619-43fc-88f0-1c1511683123"
+  az_strategy = "SINGLE"
   subnet_id = "sub-0725ef54-a32e-404c-96f2-34745239c123"
   enabled_load_balancer_plugin = true
   enabled_block_store_csi_plugin = true
@@ -179,7 +189,7 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
 }
 ```
 
-### Example Usage 2 - Create a Private cluster using a private endpoint on VNGCloud with AutoScale mode enabled and the network type is CILIUM OVERLAY and a maintenance window set for every Thurday at 9 AM.
+### Example Usage 2 - Create a Private cluster using a private endpoint on VNGCloud with AutoScale mode enabled and the network type is CILIUM OVERLAY, az_strategy is MULTI (**currently HCM zone only**) and a maintenance window set for every Thursday at 9 AM.
 
 ```hcl
 resource "vngcloud_vks_cluster" "primary" {
@@ -191,7 +201,8 @@ resource "vngcloud_vks_cluster" "primary" {
   enable_service_endpoint = true
   network_type = "CILIUM_OVERLAY"
   vpc_id    = "net-70ef12d4-d619-43fc-88f0-1c1511683123"
-  subnet_id = "sub-0725ef54-a32e-404c-96f2-34745239c123"
+  az_strategy = "MULTI"
+  list_subnet_ids = ["sub-xxxxxxxxxx","sub-yyyyyyyyy"]
   enabled_load_balancer_plugin = true
   enabled_block_store_csi_plugin = true
   auto_upgrade_config {
@@ -242,6 +253,7 @@ resource "vngcloud_vks_cluster" "primary" {
   enable_service_endpoint = false
   network_type = "CILIUM_NATIVE_ROUTING"
   vpc_id    = "net-70ef12d4-d619-43fc-88f0-1c1511683123"
+  az_strategy = "SINGLE"
   subnet_id = "sub-0725ef54-a32e-404c-96f2-34745239c123"
   secondary_subnets = ["10.200.27.0/24", "10.200.28.0/24"]
   node_netmask_size = 25

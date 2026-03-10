@@ -16,7 +16,7 @@ type CreateClusterComboDto struct {
 	EnabledServiceEndpoint     bool                  `json:"enabledServiceEndpoint"`
 	NetworkType                string                `json:"networkType"`
 	VpcId                      string                `json:"vpcId"`
-	SubnetId                   string                `json:"subnetId"`
+	SubnetId                   string                `json:"subnetId,omitempty"`
 	Cidr                       string                `json:"cidr"`
 	EnabledLoadBalancerPlugin  bool                  `json:"enabledLoadBalancerPlugin"`
 	EnabledBlockStoreCsiPlugin bool                  `json:"enabledBlockStoreCsiPlugin"`
@@ -25,4 +25,6 @@ type CreateClusterComboDto struct {
 	NodeNetmaskSize            int32                 `json:"nodeNetmaskSize"`
 	AutoUpgradeConfig          *AutoUpgradeConfigDto `json:"autoUpgradeConfig"`
 	ReleaseChannel             string                `json:"releaseChannel,omitempty"`
+	AzStrategy                 string                `json:"azStrategy,omitempty"`
+	ListSubnetIds              []string              `json:"listSubnetIds,omitempty"`
 }
