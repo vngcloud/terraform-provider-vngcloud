@@ -2,7 +2,7 @@ terraform {
   required_providers {
     vngcloud = {
       source  = "vngcloud/vngcloud"
-      version = "1.1.3"
+      version = "1.3.9"
     }
   }
   #  backend "s3" {
@@ -16,6 +16,27 @@ terraform {
   #    access_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   #    secret_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   #  }
+  backend "s3" {
+    bucket   = "tesst-bucket"
+    key      = "terraform.tfstate"
+    region   = "hcm04"  # Required dummy value (ignored by vStorage)
+ 
+    # vStorage specific settings
+    endpoints = {
+      s3 = "https://hcm04.vstorage.vngcloud.vn"
+    }
+    skip_region_validation      = true
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    skip_requesting_account_id  = true
+    use_path_style              = true  # Replaces deprecated force_path_style
+
+    access_key = "xxxxx"
+    secret_key = "xxxxxx"
+
+  }
+
+
 }
 
 provider "vngcloud" {
@@ -28,10 +49,6 @@ provider "vngcloud" {
 
 module "vserver" {
   source = "./modules/vng-cloud-vserver"
-}
-
-module "k8s" {
-  source = "./modules/vng-cloud-k8s"
 }
 
 module "vlb" {
