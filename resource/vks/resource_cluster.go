@@ -542,8 +542,12 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("cidr", cluster.Cidr)
 	}
 	d.Set("vpc_id", cluster.VpcId)
-	d.Set("az_strategy", cluster.AzStrategy)
-	if cluster.AzStrategy == "MULTI" {
+	azStrategy := cluster.AzStrategy
+	if azStrategy == "" {
+		azStrategy = "SINGLE"
+	}
+	d.Set("az_strategy", azStrategy)
+	if azStrategy == "MULTI" {
 		d.Set("list_subnet_ids", cluster.ListSubnetIds)
 	} else {
 		d.Set("subnet_id", cluster.SubnetId)
@@ -1221,6 +1225,11 @@ func resourceClusterStateUpgradeV2(ctx context.Context, rawState map[string]inte
 		}
 		rawState["auto_upgrade_config"] = []interface{}{autoUpgradeConfig}
 	}
+	azStrategy := resp.AzStrategy
+	if azStrategy == "" {
+		azStrategy = "SINGLE"
+	}
+	rawState["az_strategy"] = azStrategy
 	return rawState, nil
 }
 
