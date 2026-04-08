@@ -579,7 +579,11 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 
 	if !CheckErrorResponse(httpResponse) {
 		log.Printf("SetConfig\n")
-		d.Set("config", configResp)
+		kubeConfig := configResp.KubeConfig
+		if kubeConfig == "" {
+			kubeConfig = "Please visit the VKS portal to retrieve Kubeconfig."
+		}
+		d.Set("config", kubeConfig)
 	}
 	d.Set("poc", cluster.Poc)
 
