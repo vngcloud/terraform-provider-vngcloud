@@ -230,13 +230,13 @@ type V1ClusterControllerApiV1ClustersClusterIdKubeconfigGetOpts struct {
 	PortalUserId optional.Int64
 }
 
-func (a *V1ClusterControllerApiService) V1ClustersClusterIdKubeconfigGet(ctx context.Context, clusterId string, localVarOptionals *V1ClusterControllerApiV1ClustersClusterIdKubeconfigGetOpts) (string, *http.Response, error) {
+func (a *V1ClusterControllerApiService) V1ClustersClusterIdKubeconfigGet(ctx context.Context, clusterId string, localVarOptionals *V1ClusterControllerApiV1ClustersClusterIdKubeconfigGetOpts) (KubeconfigDto, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Get")
 		localVarPostBody    interface{}
 		localVarFileName    string
 		localVarFileBytes   []byte
-		localVarReturnValue string
+		localVarReturnValue KubeconfigDto
 	)
 
 	// create path and map variables
@@ -257,7 +257,7 @@ func (a *V1ClusterControllerApiService) V1ClustersClusterIdKubeconfigGet(ctx con
 	}
 
 	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"text/plain"}
+	localVarHttpHeaderAccepts := []string{"application/json"}
 
 	// set Accept header
 	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
@@ -297,7 +297,7 @@ func (a *V1ClusterControllerApiService) V1ClustersClusterIdKubeconfigGet(ctx con
 			error: localVarHttpResponse.Status,
 		}
 		if localVarHttpResponse.StatusCode == 200 {
-			var v string
+			var v KubeconfigDto
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -309,7 +309,7 @@ func (a *V1ClusterControllerApiService) V1ClustersClusterIdKubeconfigGet(ctx con
 		return localVarReturnValue, localVarHttpResponse, newErr
 	}
 
-	return string(localVarBody), localVarHttpResponse, nil
+	return localVarReturnValue, localVarHttpResponse, nil
 }
 
 /*
