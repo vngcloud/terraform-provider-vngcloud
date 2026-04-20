@@ -26,5 +26,6 @@ type CreateClusterComboDto struct {
 	AutoUpgradeConfig          *AutoUpgradeConfigDto `json:"autoUpgradeConfig"`
 	ReleaseChannel             string                `json:"releaseChannel,omitempty"`
 	AzStrategy                 string                `json:"azStrategy,omitempty"`
-	ListSubnetIds              []string              `json:"listSubnetIds,omitempty"`
+	ListSubnetIds              []string                     `json:"listSubnetIds,omitempty"`
+	AutoHealingConfig          *ClusterAutoHealingConfigDto `json:"autoHealingConfig,omitempty"`
 }
