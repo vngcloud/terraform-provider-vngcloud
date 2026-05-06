@@ -413,6 +413,9 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 		}
 		nodeGroup["node_group_id"] = clusterNodeGroupDetail.Id
 		nodeGroup["subnet_id"] = clusterNodeGroupDetail.SubnetId
+		nodeGroup["image_id"] = clusterNodeGroupDetail.ImageId
+		nodeGroup["kubernetes_version"] = clusterNodeGroupDetail.KubernetesVersion
+		nodeGroup["os"] = clusterNodeGroupDetail.ImageOS
 		if nodeGroup["num_nodes"] != nil && int32(nodeGroup["num_nodes"].(int)) != -1 {
 			log.Printf("num_nodes !=nil\n")
 		} else {
@@ -473,7 +476,7 @@ func expandNodeGroupForCreating(node_group []interface{}, d *schema.ResourceData
 			nodeGroup["subnet_id"] = d.Get("subnet_id").(string)
 		}
 
-		setDefaultValueByZoneForNodeGroup(nodeGroup, m, d.Get("vpc_id").(string))
+		setDefaultValueByZoneForNodeGroup(nodeGroup, m, d.Get("vpc_id").(string), d.Get("version").(string))
 
 		createNodeGroupRequest, errNodeGroup := getCreateNodeGroupRequestForCluster(nodeGroup)
 		if errNodeGroup != nil {
@@ -484,37 +487,32 @@ func expandNodeGroupForCreating(node_group []interface{}, d *schema.ResourceData
 	return createNodeGroupRequests, nil
 }
 
-func setDefaultValueByZoneForNodeGroup(nodeGroup map[string]interface{}, m interface{}, vpcId string) error {
+func setDefaultValueByZoneForNodeGroup(nodeGroup map[string]interface{}, m interface{}, vpcId string, clusterVersion string) error {
 	cli := m.(*client.Client)
 
-	imageId := nodeGroup["image_id"]
+	kubernetesVersion := nodeGroup["kubernetes_version"]
 	flavorId := nodeGroup["flavor_id"]
 	diskType := nodeGroup["disk_type"]
 
-	if imageId == nil || imageId.(string) == "" || flavorId == nil || flavorId.(string) == "" || diskType == nil || diskType.(string) == "" {
+	if flavorId == nil || flavorId.(string) == "" || diskType == nil || diskType.(string) == "" {
 		workspaceRes, httpResponse, _ := cli.VksClient.V1WorkspaceControllerApi.V1WorkspaceGet(context.TODO(), nil)
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
-			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
-			return errResponse
+			return fmt.Errorf("request fail with errMsg: %s", responseBody)
 		}
 
 		subnetId := nodeGroup["subnet_id"].(string)
 		subnetRes, httpResponse, _ := cli.VserverClient.SubnetRestControllerApi.GetSubnetByIdUsingGET(context.TODO(), vpcId, workspaceRes.ProjectId, subnetId)
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
-			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
-			return errResponse
+			return fmt.Errorf("request fail with errMsg: %s", responseBody)
 		}
-		imageIdKey := ""
 		flavorIdKey := ""
 		diskTypeKey := ""
 		if cli.VksClient.Config().BasePath == "https://vks-han-1.api.vngcloud.vn" {
-			imageIdKey = "han01_image_id"
 			flavorIdKey = "han01_1a_flavor_id"
 			diskTypeKey = "han01_1a_volume_type_id"
 		} else {
-			imageIdKey = "image_id"
 			if subnetRes.Zone.Uuid == "HCM03-1A" {
 				flavorIdKey = "flavor_id"
 				diskTypeKey = "volume_type_id"
@@ -526,11 +524,6 @@ func setDefaultValueByZoneForNodeGroup(nodeGroup map[string]interface{}, m inter
 				diskTypeKey = "hcm03_1c_volume_type_id"
 			}
 		}
-
-		if imageId == nil || imageId.(string) == "" {
-			res, _ := fetchByKey(imageIdKey)
-			nodeGroup["image_id"] = res.(string)
-		}
 		if flavorId == nil || flavorId.(string) == "" {
 			res, _ := fetchByKey(flavorIdKey)
 			nodeGroup["flavor_id"] = res.(string)
@@ -539,6 +532,10 @@ func setDefaultValueByZoneForNodeGroup(nodeGroup map[string]interface{}, m inter
 			res, _ := fetchByKey(diskTypeKey)
 			nodeGroup["disk_type"] = res.(string)
 		}
+	}
+
+	if kubernetesVersion == nil || kubernetesVersion.(string) == "" {
+		nodeGroup["kubernetes_version"] = clusterVersion
 	}
 
 	return nil
@@ -878,13 +875,11 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 			tains = nil
 		}
 		labels := getLabels(nodeGroup["labels"].(map[string]interface{}))
-		imageId := nodeGroup["image_id"].(string)
 		updateNodeGroupRequest := vks.UpdateNodeGroupDto{
 			AutoScaleConfig: autoScaleConfig,
 			NumNodes:        numNodes,
 			UpgradeConfig:   &upgradeConfig,
 			SecurityGroups:  securityGroups,
-			ImageId:         imageId,
 			Taints:          tains,
 			Labels:          labels,
 		}
@@ -1076,7 +1071,8 @@ func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) (vks.
 	return vks.CreateNodeGroupDto{
 		Name:                    nodeGroup["name"].(string),
 		NumNodes:                int32(nodeGroup["num_nodes"].(int)),
-		ImageId:                 nodeGroup["image_id"].(string),
+		KubernetesVersion:       nodeGroup["kubernetes_version"].(string),
+		Os:                      nodeGroup["os"].(string),
 		FlavorId:                nodeGroup["flavor_id"].(string),
 		DiskSize:                int32(nodeGroup["disk_size"].(int)),
 		DiskType:                nodeGroup["disk_type"].(string),
