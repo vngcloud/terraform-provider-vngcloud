@@ -224,12 +224,18 @@ func ResourceCluster() *schema.Resource {
 						"max_unhealthy": {
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
+							ExactlyOneOf: []string{
+								"auto_healing_config.0.max_unhealthy",
+								"auto_healing_config.0.unhealthy_range",
+							},
 						},
 						"unhealthy_range": {
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
+							ExactlyOneOf: []string{
+								"auto_healing_config.0.max_unhealthy",
+								"auto_healing_config.0.unhealthy_range",
+							},
 						},
 						"timeout_unhealthy": {
 							Type:     schema.TypeInt,
@@ -610,12 +616,21 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 		cfg := resp.AutoHealingConfig
 		healingConfig := map[string]interface{}{
 			"enable_auto_healing": cfg.EnableAutoHealing,
-			"max_unhealthy":       cfg.MaxUnhealthy,
-			"unhealthy_range":     cfg.UnhealthyRange,
+			"max_unhealthy":       "",
+			"unhealthy_range":     "",
 			"timeout_unhealthy":   int(cfg.TimeoutUnhealthy),
 		}
 		if cfg.RemediationTimeout != nil {
 			healingConfig["remediation_timeout"] = int(*cfg.RemediationTimeout)
+		}
+		// API must return exactly one of these fields; if both are present, max_unhealthy takes precedence.
+		if cfg.MaxUnhealthy != "" {
+			healingConfig["max_unhealthy"] = cfg.MaxUnhealthy
+			if cfg.UnhealthyRange != "" {
+				log.Printf("[WARN] resourceClusterRead: auto_healing_config returned both max_unhealthy and unhealthy_range from API; max_unhealthy takes precedence")
+			}
+		} else if cfg.UnhealthyRange != "" {
+			healingConfig["unhealthy_range"] = cfg.UnhealthyRange
 		}
 		d.Set("auto_healing_config", []interface{}{healingConfig})
 	}
@@ -751,15 +766,19 @@ func getAutoHealingConfig(input []interface{}) *vks.ClusterAutoHealingConfigDto 
 	cfg := input[0].(map[string]interface{})
 	dto := &vks.ClusterAutoHealingConfigDto{
 		EnableAutoHealing: cfg["enable_auto_healing"].(bool),
-		MaxUnhealthy:      cfg["max_unhealthy"].(string),
-		UnhealthyRange:    cfg["unhealthy_range"].(string),
 	}
-	if v := cfg["timeout_unhealthy"].(int); v > 0 {
+	if v, ok := cfg["timeout_unhealthy"].(int); ok && v > 0 {
 		dto.TimeoutUnhealthy = int32(v)
 	}
-	if v := cfg["remediation_timeout"].(int); v > 0 {
+	if v, ok := cfg["remediation_timeout"].(int); ok && v > 0 {
 		val := int32(v)
 		dto.RemediationTimeout = &val
+	}
+	// Only set the active field; leave others empty ("") so omitempty excludes them from JSON.
+	if v, ok := cfg["max_unhealthy"].(string); ok && v != "" {
+		dto.MaxUnhealthy = v
+	} else if v, ok := cfg["unhealthy_range"].(string); ok && v != "" {
+		dto.UnhealthyRange = v
 	}
 	return dto
 }
