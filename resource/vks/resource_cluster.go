@@ -740,13 +740,39 @@ func updateAutoUpgradeConfig(d *schema.ResourceData, m interface{}) error {
 }
 
 func updateAutoHealingConfig(d *schema.ResourceData, m interface{}) error {
-	autoHealingConfig := getAutoHealingConfig(d.Get("auto_healing_config").([]interface{}))
-	if autoHealingConfig == nil {
+	autoHealingList := d.Get("auto_healing_config").([]interface{})
+	if len(autoHealingList) == 0 || autoHealingList[0] == nil {
 		return nil
 	}
+	cfg := autoHealingList[0].(map[string]interface{})
+
+	body := map[string]interface{}{
+		"enableAutoHealing": cfg["enable_auto_healing"].(bool),
+	}
+	if v, ok := cfg["timeout_unhealthy"].(int); ok && v > 0 {
+		body["timeoutUnhealthy"] = int32(v)
+	}
+	if v, ok := cfg["max_unhealthy"].(string); ok && v != "" {
+		body["maxUnhealthy"] = v
+	} else if v, ok := cfg["unhealthy_range"].(string); ok && v != "" {
+		body["unhealthyRange"] = v
+	}
+	// Send null to clear; omit to keep server value.
+	// HasChange detects when user explicitly changed from non-zero to 0.
+	if d.HasChange("auto_healing_config.0.remediation_timeout") {
+		_, newVal := d.GetChange("auto_healing_config.0.remediation_timeout")
+		if v := newVal.(int); v == 0 {
+			body["remediationTimeout"] = nil // JSON null → server clears timeout
+		} else {
+			body["remediationTimeout"] = int32(v)
+		}
+	} else if v, ok := cfg["remediation_timeout"].(int); ok && v > 0 {
+		body["remediationTimeout"] = int32(v)
+	}
+
 	cli := m.(*client.Client)
 	request := vks.V1ClusterControllerApiV1ClustersClusterIdPatchAutoHealingConfigOpts{
-		Body: optional.NewInterface(autoHealingConfig),
+		Body: optional.NewInterface(body),
 	}
 	_, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdPatchAutoHealingConfig(context.TODO(), d.Id(), &request)
 	if CheckErrorResponse(httpResponse) {
