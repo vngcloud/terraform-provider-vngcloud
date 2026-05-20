@@ -244,7 +244,6 @@ func ResourceCluster() *schema.Resource {
 						},
 						"remediation_timeout": {
 							Type:     schema.TypeInt,
-							Optional: true,
 							Computed: true,
 						},
 					},
@@ -757,19 +756,6 @@ func updateAutoHealingConfig(d *schema.ResourceData, m interface{}) error {
 	} else if v, ok := cfg["unhealthy_range"].(string); ok && v != "" {
 		body["unhealthyRange"] = v
 	}
-	// Send null to clear; omit to keep server value.
-	// HasChange detects when user explicitly changed from non-zero to 0.
-	if d.HasChange("auto_healing_config.0.remediation_timeout") {
-		_, newVal := d.GetChange("auto_healing_config.0.remediation_timeout")
-		if v := newVal.(int); v == 0 {
-			body["remediationTimeout"] = nil // JSON null → server clears timeout
-		} else {
-			body["remediationTimeout"] = int32(v)
-		}
-	} else if v, ok := cfg["remediation_timeout"].(int); ok && v > 0 {
-		body["remediationTimeout"] = int32(v)
-	}
-
 	cli := m.(*client.Client)
 	request := vks.V1ClusterControllerApiV1ClustersClusterIdPatchAutoHealingConfigOpts{
 		Body: optional.NewInterface(body),
@@ -795,10 +781,6 @@ func getAutoHealingConfig(input []interface{}) *vks.ClusterAutoHealingConfigDto 
 	}
 	if v, ok := cfg["timeout_unhealthy"].(int); ok && v > 0 {
 		dto.TimeoutUnhealthy = int32(v)
-	}
-	if v, ok := cfg["remediation_timeout"].(int); ok && v > 0 {
-		val := int32(v)
-		dto.RemediationTimeout = &val
 	}
 	// Only set the active field; leave others empty ("") so omitempty excludes them from JSON.
 	if v, ok := cfg["max_unhealthy"].(string); ok && v != "" {
