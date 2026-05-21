@@ -210,6 +210,45 @@ func ResourceCluster() *schema.Resource {
 				ForceNew: true,
 				Description: "List of subnet IDs, required if az_strategy is MULTI.",
 			},
+			"auto_healing_config": {
+				Type:     schema.TypeList,
+				MaxItems: 1,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enable_auto_healing": {
+							Type:     schema.TypeBool,
+							Required: true,
+						},
+						"max_unhealthy": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ExactlyOneOf: []string{
+								"auto_healing_config.0.max_unhealthy",
+								"auto_healing_config.0.unhealthy_range",
+							},
+						},
+						"unhealthy_range": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ExactlyOneOf: []string{
+								"auto_healing_config.0.max_unhealthy",
+								"auto_healing_config.0.unhealthy_range",
+							},
+						},
+						"timeout_unhealthy": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"remediation_timeout": {
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -263,6 +302,8 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 		return errListSubnetIds
 	}
 
+	autoHealingConfig := getAutoHealingConfig(d.Get("auto_healing_config").([]interface{}))
+
 	createClusterRequest := vks.CreateClusterComboDto{
 		Name:                       d.Get("name").(string),
 		Description:                d.Get("description").(string),
@@ -279,6 +320,7 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 		NodeNetmaskSize:            int32(d.Get("node_netmask_size").(int)),
 		NodeGroups:                 createNodeGroupRequests,
 		AutoUpgradeConfig:          autoUpgradeConfig,
+		AutoHealingConfig:          autoHealingConfig,
 		ReleaseChannel:             d.Get("release_channel").(string),
 		AzStrategy:                 d.Get("az_strategy").(string),
 		ListSubnetIds:              listSubnetIds,
@@ -569,6 +611,28 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 	} else {
 		d.Set("auto_upgrade_config", nil)
 	}
+	if resp.AutoHealingConfig != nil {
+		cfg := resp.AutoHealingConfig
+		healingConfig := map[string]interface{}{
+			"enable_auto_healing": cfg.EnableAutoHealing,
+			"max_unhealthy":       "",
+			"unhealthy_range":     "",
+			"timeout_unhealthy":   int(cfg.TimeoutUnhealthy),
+		}
+		if cfg.RemediationTimeout != nil {
+			healingConfig["remediation_timeout"] = int(*cfg.RemediationTimeout)
+		}
+		// API must return exactly one of these fields; if both are present, max_unhealthy takes precedence.
+		if cfg.MaxUnhealthy != "" {
+			healingConfig["max_unhealthy"] = cfg.MaxUnhealthy
+			if cfg.UnhealthyRange != "" {
+				log.Printf("[WARN] resourceClusterRead: auto_healing_config returned both max_unhealthy and unhealthy_range from API; max_unhealthy takes precedence")
+			}
+		} else if cfg.UnhealthyRange != "" {
+			healingConfig["unhealthy_range"] = cfg.UnhealthyRange
+		}
+		d.Set("auto_healing_config", []interface{}{healingConfig})
+	}
 	log.Printf("GetConfig\n")
 	configResp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdKubeconfigGet(context.TODO(), clusterID, nil)
 	log.Printf("-------------------------------------\n")
@@ -594,6 +658,12 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 func resourceClusterUpdate(d *schema.ResourceData, m interface{}) error {
 	if d.HasChange("auto_upgrade_config") {
 		err := updateAutoUpgradeConfig(d, m)
+		if err != nil {
+			return err
+		}
+	}
+	if d.HasChange("auto_healing_config") {
+		err := updateAutoHealingConfig(d, m)
 		if err != nil {
 			return err
 		}
@@ -666,6 +736,59 @@ func updateAutoUpgradeConfig(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 	return resourceClusterRead(d, m)
+}
+
+func updateAutoHealingConfig(d *schema.ResourceData, m interface{}) error {
+	autoHealingList := d.Get("auto_healing_config").([]interface{})
+	if len(autoHealingList) == 0 || autoHealingList[0] == nil {
+		return nil
+	}
+	cfg := autoHealingList[0].(map[string]interface{})
+
+	body := map[string]interface{}{
+		"enableAutoHealing": cfg["enable_auto_healing"].(bool),
+	}
+	if v, ok := cfg["timeout_unhealthy"].(int); ok && v > 0 {
+		body["timeoutUnhealthy"] = int32(v)
+	}
+	if v, ok := cfg["max_unhealthy"].(string); ok && v != "" {
+		body["maxUnhealthy"] = v
+	} else if v, ok := cfg["unhealthy_range"].(string); ok && v != "" {
+		body["unhealthyRange"] = v
+	}
+	cli := m.(*client.Client)
+	request := vks.V1ClusterControllerApiV1ClustersClusterIdPatchAutoHealingConfigOpts{
+		Body: optional.NewInterface(body),
+	}
+	_, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdPatchAutoHealingConfig(context.TODO(), d.Id(), &request)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		oldAutoHealingConfig, _ := d.GetChange("auto_healing_config")
+		d.Set("auto_healing_config", oldAutoHealingConfig)
+		return errorResponse
+	}
+	return resourceClusterRead(d, m)
+}
+
+func getAutoHealingConfig(input []interface{}) *vks.ClusterAutoHealingConfigDto {
+	if len(input) == 0 || input[0] == nil {
+		return nil
+	}
+	cfg := input[0].(map[string]interface{})
+	dto := &vks.ClusterAutoHealingConfigDto{
+		EnableAutoHealing: cfg["enable_auto_healing"].(bool),
+	}
+	if v, ok := cfg["timeout_unhealthy"].(int); ok && v > 0 {
+		dto.TimeoutUnhealthy = int32(v)
+	}
+	// Only set the active field; leave others empty ("") so omitempty excludes them from JSON.
+	if v, ok := cfg["max_unhealthy"].(string); ok && v != "" {
+		dto.MaxUnhealthy = v
+	} else if v, ok := cfg["unhealthy_range"].(string); ok && v != "" {
+		dto.UnhealthyRange = v
+	}
+	return dto
 }
 
 func updateCluster(d *schema.ResourceData, m interface{}) error {

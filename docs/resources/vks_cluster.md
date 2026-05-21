@@ -77,6 +77,12 @@ resource "vngcloud_vks_cluster" "primary" {
 * `auto_upgrade_config` - (Optional) To configure the `auto_upgrade_config` feature for automated maintenance on your cluster, you can use the following attributes:
     * `weekdays` - A list of days of the week when maintenance should occur, e.g., sat,sun (Saturday and Sunday).
     * `time` - The specific time of the day to start maintenance, in 24-hour format, e.g., 21:00 (9 PM).
+* `auto_healing_config` - (Optional, Computed) Configures the auto-healing behavior for the cluster. If omitted, the server applies default settings and any previously configured values are preserved. Supports the following attributes:
+    * `enable_auto_healing` - (Required) Whether auto-healing is enabled for the cluster.
+    * `max_unhealthy` - (Optional) Maximum number or percentage of unhealthy nodes allowed before remediation is triggered. Accepts an absolute integer from 1 to 1000 (e.g. `"3"`) or a percentage from 1% to 100% (e.g. `"20%"`). **Mutually exclusive with `unhealthy_range`** — exactly one of the two must be specified; Terraform enforces this at plan time.
+    * `unhealthy_range` - (Optional) Range (inclusive) of unhealthy nodes allowed before remediation is triggered. Format: `"[N-M]"` where N ≤ M, e.g. `"[2-5]"`. **Mutually exclusive with `max_unhealthy`** — exactly one of the two must be specified; Terraform enforces this at plan time.
+    * `timeout_unhealthy` - (Optional, Computed) Time in minutes to wait before considering a node unhealthy. Valid range: 1–180. When set to `0` or omitted, the server retains the existing value.
+    * `remediation_timeout` - (Computed) Read-only. Timeout in minutes for remediation of an unhealthy node, as configured on the server. This field is managed entirely by the server and **cannot be set via Terraform**.
 * `poc` - (Optional) Allows the creation of POC cluster.
 ---
 ### **Some important notes when using VKS with Terraform:**
@@ -98,6 +104,11 @@ When using **Terraform** to create a **Cluster** and **Node Group** on the VKS s
     * `secondary_subnets`&#x20;
     * `node_netmask_size`&#x20;
     * `release_channel`&#x20;
+
+  The following fields are updated **in-place** and do **not** trigger cluster recreation:
+    * `version` — cluster upgrade
+    * `auto_upgrade_config` — maintenance window
+    * `auto_healing_config` — applied via a dedicated PATCH API call; the cluster continues running during the update
 * For the resource `vngcloud_vks_cluster_node_group`, the fields that, when modified, will cause the system to delete and recreate the Node Group include:
     * `cluster_id`&#x20;
     * `name`&#x20;
@@ -242,7 +253,55 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
 }
 ```
 
-### Example Usage 3 - Create a private cluster using a private endpoint on VNGCloud with AutoScale mode enabled and the network type is CILIUM VPC NATIVE ROUTING and a maintenance window set for everyday at 11 PM.
+### Example Usage 3 - Create a cluster with auto-healing enabled (using `max_unhealthy` as a percentage).
+
+```hcl
+resource "vngcloud_vks_cluster" "primary" {
+  name      = "cluster-demo"
+  cidr      = "172.16.0.0/16"
+  vpc_id    = "net-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
+  subnet_id = "sub-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
+
+  auto_healing_config {
+    enable_auto_healing = true
+    max_unhealthy       = "20%"
+    timeout_unhealthy   = 10
+  }
+}
+
+resource "vngcloud_vks_cluster_node_group" "primary" {
+  cluster_id = vngcloud_vks_cluster.primary.id
+  name       = "nodegroup1"
+  num_nodes  = 3
+}
+```
+
+### Example Usage 4 - Create a cluster with auto-healing enabled (using `unhealthy_range`).
+
+```hcl
+resource "vngcloud_vks_cluster" "primary" {
+  name      = "cluster-demo"
+  cidr      = "172.16.0.0/16"
+  vpc_id    = "net-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
+  subnet_id = "sub-xxxxxxxx-xxxx-xxxxx-xxxx-xxxxxxxxxxxx"
+
+  auto_healing_config {
+    enable_auto_healing = true
+    unhealthy_range     = "[2-5]"
+    timeout_unhealthy   = 15
+  }
+}
+
+resource "vngcloud_vks_cluster_node_group" "primary" {
+  cluster_id = vngcloud_vks_cluster.primary.id
+  name       = "nodegroup1"
+  num_nodes  = 5
+}
+```
+
+> **Note:** `max_unhealthy` and `unhealthy_range` are mutually exclusive. Terraform enforces this constraint at plan time — specifying both will produce a validation error.
+
+### Example Usage 5 - Create a private cluster using a private endpoint on VNGCloud with AutoScale mode enabled and the network type is CILIUM VPC NATIVE ROUTING and a maintenance window set for everyday at 11 PM.
 
 ```hcl
 resource "vngcloud_vks_cluster" "primary" {

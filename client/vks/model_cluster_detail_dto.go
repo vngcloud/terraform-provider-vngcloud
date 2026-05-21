@@ -32,5 +32,6 @@ type ClusterDetailDto struct {
 	ReleaseChannel             string                `json:"releaseChannel,omitempty"`
 	Poc                        bool                  `json:"poc,omitempty"`
 	AzStrategy                 string                `json:"azStrategy,omitempty"`
-	ListSubnetIds              []string              `json:"listSubnetIds,omitempty"`
+	ListSubnetIds              []string                     `json:"listSubnetIds,omitempty"`
+	AutoHealingConfig          *ClusterAutoHealingConfigDto `json:"autoHealingConfig,omitempty"`
 }
