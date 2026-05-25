@@ -548,7 +548,6 @@ func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error
 func setDefaultValueByZone(d *schema.ResourceData, m interface{}, vpcId string) error {
 	cli := m.(*client.Client)
 
-	_, hasKubernetesVersion := d.GetOk("kubernetes_version")
 	_, hasFlavorId := d.GetOk("flavor_id")
 	_, hasDiskType := d.GetOk("disk_type")
 
@@ -592,16 +591,6 @@ func setDefaultValueByZone(d *schema.ResourceData, m interface{}, vpcId string) 
 		}
 	}
 
-	if !hasKubernetesVersion {
-		clusterID := d.Get("cluster_id").(string)
-		clusterResp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdGet(context.TODO(), clusterID, nil)
-		if CheckErrorResponse(httpResponse) {
-			responseBody := GetResponseBody(httpResponse)
-			return fmt.Errorf("request fail with errMsg: %s", responseBody)
-		}
-		d.Set("kubernetes_version", clusterResp.Version)
-	}
-
 	return nil
 }
 
@@ -635,7 +624,6 @@ func getCreateNodeGroupRequest(d *schema.ResourceData) (vks.CreateNodeGroupDto, 
 	return vks.CreateNodeGroupDto{
 		Name:                    d.Get("name").(string),
 		NumNodes:                int32(d.Get("num_nodes").(int)),
-		KubernetesVersion:       d.Get("kubernetes_version").(string),
 		Os:                      d.Get("os").(string),
 		FlavorId:                d.Get("flavor_id").(string),
 		DiskSize:                int32(d.Get("disk_size").(int)),

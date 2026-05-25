@@ -13,7 +13,6 @@ type CreateNodeGroupDto struct {
 	NumNodes                int32                        `json:"numNodes"`
 	AutoScaleConfig         *NodeGroupAutoScaleConfigDto `json:"autoScaleConfig,omitempty"`
 	UpgradeConfig           NodeGroupUpgradeConfigDto    `json:"upgradeConfig,omitempty"`
-	KubernetesVersion       string                       `json:"kubernetesVersion"`
 	Os                      string                       `json:"os,omitempty"`
 	FlavorId                string                       `json:"flavorId"`
 	DiskSize                int32                        `json:"diskSize"`

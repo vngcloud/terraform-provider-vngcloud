@@ -476,7 +476,7 @@ func expandNodeGroupForCreating(node_group []interface{}, d *schema.ResourceData
 			nodeGroup["subnet_id"] = d.Get("subnet_id").(string)
 		}
 
-		setDefaultValueByZoneForNodeGroup(nodeGroup, m, d.Get("vpc_id").(string), d.Get("version").(string))
+		setDefaultValueByZoneForNodeGroup(nodeGroup, m, d.Get("vpc_id").(string))
 
 		createNodeGroupRequest, errNodeGroup := getCreateNodeGroupRequestForCluster(nodeGroup)
 		if errNodeGroup != nil {
@@ -487,10 +487,9 @@ func expandNodeGroupForCreating(node_group []interface{}, d *schema.ResourceData
 	return createNodeGroupRequests, nil
 }
 
-func setDefaultValueByZoneForNodeGroup(nodeGroup map[string]interface{}, m interface{}, vpcId string, clusterVersion string) error {
+func setDefaultValueByZoneForNodeGroup(nodeGroup map[string]interface{}, m interface{}, vpcId string) error {
 	cli := m.(*client.Client)
 
-	kubernetesVersion := nodeGroup["kubernetes_version"]
 	flavorId := nodeGroup["flavor_id"]
 	diskType := nodeGroup["disk_type"]
 
@@ -532,10 +531,6 @@ func setDefaultValueByZoneForNodeGroup(nodeGroup map[string]interface{}, m inter
 			res, _ := fetchByKey(diskTypeKey)
 			nodeGroup["disk_type"] = res.(string)
 		}
-	}
-
-	if kubernetesVersion == nil || kubernetesVersion.(string) == "" {
-		nodeGroup["kubernetes_version"] = clusterVersion
 	}
 
 	return nil
@@ -1071,7 +1066,6 @@ func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) (vks.
 	return vks.CreateNodeGroupDto{
 		Name:                    nodeGroup["name"].(string),
 		NumNodes:                int32(nodeGroup["num_nodes"].(int)),
-		KubernetesVersion:       nodeGroup["kubernetes_version"].(string),
 		Os:                      nodeGroup["os"].(string),
 		FlavorId:                nodeGroup["flavor_id"].(string),
 		DiskSize:                int32(nodeGroup["disk_size"].(int)),
