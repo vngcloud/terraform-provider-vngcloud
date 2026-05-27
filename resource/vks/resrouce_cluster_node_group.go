@@ -754,7 +754,7 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 		log.Printf("%s\n", string(respJSON))
 		log.Printf("-------------------------------------\n")
 		stateConf := &resource.StateChangeConf{
-			Pending:    UPDATING,
+			Pending:    UPGRADING,
 			Target:     ACTIVE,
 			Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, clusterId, clusterNodeGroupId),
 			Timeout:    180 * time.Minute,
