@@ -135,6 +135,9 @@ var schemaNodeGroup = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
 		Computed: true,
+		DiffSuppressFunc: func(k, oldVal, newVal string, d *schema.ResourceData) bool {
+			return true
+		},
 	},
 	"kubernetes_version": {
 		Type:     schema.TypeString,
