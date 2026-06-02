@@ -25,4 +25,5 @@ type CreateNodeGroupDto struct {
 	SecondarySubnets        []string                     `json:"secondarySubnets"`
 	SubnetId                string                       `json:"subnetId,omitempty"`
 	EnabledEncryptionVolume bool                         `json:"enabledEncryptionVolume"`
+	Tags                    map[string]string            `json:"tags,omitempty"`
 }

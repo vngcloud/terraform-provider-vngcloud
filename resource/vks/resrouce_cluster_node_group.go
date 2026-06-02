@@ -252,6 +252,13 @@ var schemaNodeGroup = map[string]*schema.Schema{
 		Computed: true,
 		ForceNew: true,
 	},
+	"tags": {
+		Type:        schema.TypeMap,
+		Optional:    true,
+		Computed:    true,
+		Elem:        &schema.Schema{Type: schema.TypeString},
+		Description: `Key-value pairs of cloud tags to apply to all VMs and volumes in the node group.`,
+	},
 }
 
 func getSecurityGroups(input []interface{}) []string {
@@ -430,6 +437,11 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 			}
 		}
 		d.Set("taint", taints)
+	}
+
+	// Import tags
+	if resp.Tags != nil {
+		d.Set("tags", resp.Tags)
 	}
 
 	return nil
@@ -641,39 +653,30 @@ func getCreateNodeGroupRequest(d *schema.ResourceData) (vks.CreateNodeGroupDto, 
 		EnabledEncryptionVolume: d.Get("enabled_encryption_volume").(bool),
 		SecondarySubnets:        secondarySubnets,
 		SubnetId:                d.Get("subnet_id").(string),
+		Tags:                    getLabels(d.Get("tags").(map[string]interface{})),
 	}, nil
 }
 
 func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error {
-	hasChangeOtherField := false
 	cli := m.(*client.Client)
 	clusterId := d.Get("cluster_id").(string)
 	clusterNodeGroupId := d.Id()
+
+	// Block 1: PUT — handles num_nodes, auto_scale_config, upgrade_config, security_groups.
+	// labels and taints are intentionally omitted (zero values); server ignores them per API spec.
+	hasChangeOtherField := false
 	if d.HasChange("security_groups") {
 		resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterId, clusterNodeGroupId, nil)
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
-			errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
-			return errorResponse
+			return fmt.Errorf("request fail with errMsg : %s", responseBody)
 		}
 		if checkSecurityGroupsSame(d, resp) {
 			return resourceClusterRead(d, m)
-		} else {
-			hasChangeOtherField = true
 		}
-	}
-	var tains []vks.NodeGroupTaintDto
-	var labels map[string]string
-	if d.HasChange("taint") || d.HasChange("security_groups") || d.HasChange("labels") {
 		hasChangeOtherField = true
-		taintsInput, ok := d.Get("taint").([]interface{})
-		if ok {
-			tains = getTaints(taintsInput)
-		} else {
-			tains = nil
-		}
-		labels = getLabels(d.Get("labels").(map[string]interface{}))
 	}
+
 	if hasChangeOtherField || d.HasChange("auto_scale_config") || d.HasChange("num_nodes") || d.HasChange("upgrade_config") {
 		securityGroupsRequest := d.Get("security_groups").([]interface{})
 		var securityGroups []string
@@ -695,8 +698,6 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 			NumNodes:        numNodes,
 			UpgradeConfig:   &upgradeConfig,
 			SecurityGroups:  securityGroups,
-			Labels:          labels,
-			Taints:          tains,
 		}
 		requestPutOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdPutOpts{
 			Body: optional.NewInterface(updateNodeGroupRequest),
@@ -712,8 +713,7 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 			d.Set("upgrade_config", upgradeConfig)
 			d.Set("security_groups", securityGroups)
 			responseBody := GetResponseBody(httpResponse)
-			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
-			return errResponse
+			return fmt.Errorf("request fail with errMsg: %s", responseBody)
 		}
 		respJSON, _ := json.Marshal(resp)
 		log.Printf("-------------------------------------\n")
@@ -733,6 +733,53 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 			return fmt.Errorf("error waiting for update cluster node group (%s) %s", resp.Id, err)
 		}
 	}
+
+	// Block 2: PATCH /metadata — handles labels, taints, tags.
+	// Always sends all 3 fields when triggered so portal-side drift is corrected in the same call.
+	if d.HasChange("labels") || d.HasChange("taint") || d.HasChange("tags") {
+		labels := getLabels(d.Get("labels").(map[string]interface{}))
+		taints := getTaints(d.Get("taint").([]interface{}))
+		tags := getLabels(d.Get("tags").(map[string]interface{}))
+
+		patchRequest := vks.PatchNodeGroupMetadataDto{
+			Labels: &labels,
+			Taints: &taints,
+			Tags:   &tags,
+		}
+		patchOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdMetadataPatchOpts{
+			Body: optional.NewInterface(patchRequest),
+		}
+		resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdMetadataPatch(context.TODO(), clusterId, clusterNodeGroupId, &patchOpts)
+		if CheckErrorResponse(httpResponse) {
+			labels, _ := d.GetChange("labels")
+			taint, _ := d.GetChange("taint")
+			tags, _ := d.GetChange("tags")
+			d.Set("labels", labels)
+			d.Set("taint", taint)
+			d.Set("tags", tags)
+			responseBody := GetResponseBody(httpResponse)
+			return fmt.Errorf("request fail with errMsg: %s", responseBody)
+		}
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+
+		stateConf := &resource.StateChangeConf{
+			Pending:    UPDATING,
+			Target:     ACTIVE,
+			Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, clusterId, clusterNodeGroupId),
+			Timeout:    180 * time.Minute,
+			Delay:      10 * time.Second,
+			MinTimeout: 1 * time.Second,
+		}
+		_, err := stateConf.WaitForState()
+		if err != nil {
+			return fmt.Errorf("error waiting for patch cluster node group metadata (%s) %s", clusterNodeGroupId, err)
+		}
+	}
+
+	// Block 3: upgradeVersion — handles kubernetes_version.
 	if d.HasChange("kubernetes_version") {
 		newVersion := d.Get("kubernetes_version").(string)
 		upgradeVersionRequest := vks.UpgradeNodeGroupVersionDto{
@@ -766,6 +813,7 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 			return fmt.Errorf("error waiting for upgrade cluster node group version (%s) %s", clusterNodeGroupId, err)
 		}
 	}
+
 	return resourceClusterNodeGroupRead(d, m)
 }
 
