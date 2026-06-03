@@ -875,67 +875,78 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 			tains = nil
 		}
 		labels := getLabels(nodeGroup["labels"].(map[string]interface{}))
-		updateNodeGroupRequest := vks.UpdateNodeGroupDto{
-			AutoScaleConfig: autoScaleConfig,
-			NumNodes:        numNodes,
-			UpgradeConfig:   &upgradeConfig,
-			SecurityGroups:  securityGroups,
-		}
-		requestPutOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdPutOpts{
-			Body: optional.NewInterface(updateNodeGroupRequest),
-		}
-		resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdPut(context.TODO(), d.Id(), nodeGroup["node_group_id"].(string), &requestPutOpts)
-		if CheckErrorResponse(httpResponse) {
-			d.Set("node_group", oldNodeGroupSch)
-			responseBody := GetResponseBody(httpResponse)
-			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
-			return errResponse
-		}
-		respJSON, _ := json.Marshal(resp)
-		log.Printf("-------------------------------------\n")
-		log.Printf("%s\n", string(respJSON))
-		log.Printf("-------------------------------------\n")
 
-		stateConf := &resource.StateChangeConf{
-			Pending:    UPDATING,
-			Target:     ACTIVE,
-			Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, d.Id(), nodeGroup["node_group_id"].(string)),
-			Timeout:    180 * time.Minute,
-			Delay:      10 * time.Second,
-			MinTimeout: 1 * time.Second,
-		}
-		_, err := stateConf.WaitForState()
-		if err != nil {
-			return fmt.Errorf("error waiting for update cluster node group (%s) %s", resp.Id, err)
-		}
+		putFieldsChanged := !reflect.DeepEqual(nodeGroup["security_groups"], oldNodeGroup["security_groups"]) ||
+			!reflect.DeepEqual(nodeGroup["auto_scale_config"], oldNodeGroup["auto_scale_config"]) ||
+			int32(oldNodeGroup["num_nodes"].(int)) != int32(nodeGroup["num_nodes"].(int)) ||
+			!reflect.DeepEqual(nodeGroup["upgrade_config"], oldNodeGroup["upgrade_config"])
 
-		tags := getLabels(nodeGroup["tags"].(map[string]interface{}))
-		patchRequest := vks.PatchNodeGroupMetadataDto{
-			Labels: &labels,
-			Taints: &tains,
-			Tags:   &tags,
-		}
-		patchOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdMetadataPatchOpts{
-			Body: optional.NewInterface(patchRequest),
-		}
-		_, httpResponse, _ = cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdMetadataPatch(context.TODO(), d.Id(), nodeGroup["node_group_id"].(string), &patchOpts)
-		if CheckErrorResponse(httpResponse) {
-			d.Set("node_group", oldNodeGroupSch)
-			responseBody := GetResponseBody(httpResponse)
-			return fmt.Errorf("request fail with errMsg: %s", responseBody)
+		if putFieldsChanged {
+			updateNodeGroupRequest := vks.UpdateNodeGroupDto{
+				AutoScaleConfig: autoScaleConfig,
+				NumNodes:        numNodes,
+				UpgradeConfig:   &upgradeConfig,
+				SecurityGroups:  securityGroups,
+			}
+			requestPutOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdPutOpts{
+				Body: optional.NewInterface(updateNodeGroupRequest),
+			}
+			resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdPut(context.TODO(), d.Id(), nodeGroup["node_group_id"].(string), &requestPutOpts)
+			if CheckErrorResponse(httpResponse) {
+				d.Set("node_group", oldNodeGroupSch)
+				responseBody := GetResponseBody(httpResponse)
+				return fmt.Errorf("request fail with errMsg: %s", responseBody)
+			}
+			respJSON, _ := json.Marshal(resp)
+			log.Printf("-------------------------------------\n")
+			log.Printf("%s\n", string(respJSON))
+			log.Printf("-------------------------------------\n")
+
+			stateConf := &resource.StateChangeConf{
+				Pending:    UPDATING,
+				Target:     ACTIVE,
+				Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, d.Id(), nodeGroup["node_group_id"].(string)),
+				Timeout:    180 * time.Minute,
+				Delay:      10 * time.Second,
+				MinTimeout: 1 * time.Second,
+			}
+			_, err := stateConf.WaitForState()
+			if err != nil {
+				return fmt.Errorf("error waiting for update cluster node group (%s) %s", resp.Id, err)
+			}
 		}
 
-		stateConf = &resource.StateChangeConf{
-			Pending:    UPDATING,
-			Target:     ACTIVE,
-			Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, d.Id(), nodeGroup["node_group_id"].(string)),
-			Timeout:    180 * time.Minute,
-			Delay:      10 * time.Second,
-			MinTimeout: 1 * time.Second,
-		}
-		_, err = stateConf.WaitForState()
-		if err != nil {
-			return fmt.Errorf("error waiting for update cluster node group metadata (%s) %s", nodeGroup["node_group_id"].(string), err)
+		if !reflect.DeepEqual(nodeGroup["labels"], oldNodeGroup["labels"]) ||
+			!reflect.DeepEqual(nodeGroup["taint"], oldNodeGroup["taint"]) ||
+			!reflect.DeepEqual(nodeGroup["tags"], oldNodeGroup["tags"]) {
+			tags := getLabels(nodeGroup["tags"].(map[string]interface{}))
+			patchRequest := vks.PatchNodeGroupMetadataDto{
+				Labels: &labels,
+				Taints: &tains,
+				Tags:   &tags,
+			}
+			patchOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdMetadataPatchOpts{
+				Body: optional.NewInterface(patchRequest),
+			}
+			_, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdMetadataPatch(context.TODO(), d.Id(), nodeGroup["node_group_id"].(string), &patchOpts)
+			if CheckErrorResponse(httpResponse) {
+				d.Set("node_group", oldNodeGroupSch)
+				responseBody := GetResponseBody(httpResponse)
+				return fmt.Errorf("request fail with errMsg: %s", responseBody)
+			}
+
+			stateConf := &resource.StateChangeConf{
+				Pending:    UPDATING,
+				Target:     ACTIVE,
+				Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, d.Id(), nodeGroup["node_group_id"].(string)),
+				Timeout:    180 * time.Minute,
+				Delay:      10 * time.Second,
+				MinTimeout: 1 * time.Second,
+			}
+			_, err := stateConf.WaitForState()
+			if err != nil {
+				return fmt.Errorf("error waiting for update cluster node group metadata (%s) %s", nodeGroup["node_group_id"].(string), err)
+			}
 		}
 	}
 	return resourceClusterRead(d, m)
