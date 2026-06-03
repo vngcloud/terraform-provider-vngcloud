@@ -440,6 +440,11 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 			nodeGroup["taint"] = taints
 		}
 
+		// Import tags
+		if clusterNodeGroupDetail.Tags != nil {
+			nodeGroup["tags"] = clusterNodeGroupDetail.Tags
+		}
+
 		updatedNodeGroups[i] = nodeGroup
 	}
 
@@ -875,8 +880,6 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 			NumNodes:        numNodes,
 			UpgradeConfig:   &upgradeConfig,
 			SecurityGroups:  securityGroups,
-			Taints:          tains,
-			Labels:          labels,
 		}
 		requestPutOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdPutOpts{
 			Body: optional.NewInterface(updateNodeGroupRequest),
@@ -904,6 +907,35 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 		_, err := stateConf.WaitForState()
 		if err != nil {
 			return fmt.Errorf("error waiting for update cluster node group (%s) %s", resp.Id, err)
+		}
+
+		tags := getLabels(nodeGroup["tags"].(map[string]interface{}))
+		patchRequest := vks.PatchNodeGroupMetadataDto{
+			Labels: &labels,
+			Taints: &tains,
+			Tags:   &tags,
+		}
+		patchOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdMetadataPatchOpts{
+			Body: optional.NewInterface(patchRequest),
+		}
+		_, httpResponse, _ = cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdMetadataPatch(context.TODO(), d.Id(), nodeGroup["node_group_id"].(string), &patchOpts)
+		if CheckErrorResponse(httpResponse) {
+			d.Set("node_group", oldNodeGroupSch)
+			responseBody := GetResponseBody(httpResponse)
+			return fmt.Errorf("request fail with errMsg: %s", responseBody)
+		}
+
+		stateConf = &resource.StateChangeConf{
+			Pending:    UPDATING,
+			Target:     ACTIVE,
+			Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, d.Id(), nodeGroup["node_group_id"].(string)),
+			Timeout:    180 * time.Minute,
+			Delay:      10 * time.Second,
+			MinTimeout: 1 * time.Second,
+		}
+		_, err = stateConf.WaitForState()
+		if err != nil {
+			return fmt.Errorf("error waiting for update cluster node group metadata (%s) %s", nodeGroup["node_group_id"].(string), err)
 		}
 	}
 	return resourceClusterRead(d, m)
@@ -1074,6 +1106,7 @@ func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) (vks.
 		SshKeyId:                nodeGroup["ssh_key_id"].(string),
 		Labels:                  getLabels(nodeGroup["labels"].(map[string]interface{})),
 		Taints:                  tains,
+		Tags:                    getLabels(nodeGroup["tags"].(map[string]interface{})),
 		SecurityGroups:          getSecurityGroups(nodeGroup["security_groups"].([]interface{})),
 		UpgradeConfig:           getUpgradeConfig(nodeGroup["upgrade_config"].([]interface{})),
 		AutoScaleConfig:         getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{})),
