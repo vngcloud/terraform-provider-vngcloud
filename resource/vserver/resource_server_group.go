@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -106,6 +107,10 @@ func resourceServerGroupRead(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
 	resp, httpResponse, _ := cli.VserverClient.ServerGroupRestControllerApi.GetServerGroupUsingGET1(context.TODO(), projectID, serverGroupId)
 	if CheckErrorResponse(httpResponse) {
+		if httpResponse.StatusCode == http.StatusNotFound {
+			d.SetId("")
+			return nil
+		}
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		return errorResponse

@@ -131,6 +131,10 @@ func resourceSecgroupRuleRead(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
 	resp, httpResponse, _ := cli.VserverClient.SecgroupRuleRestControllerApi.GetSecgroupRuleUsingGET1(context.TODO(), projectID, SecgroupRuleID, SecurityGroupId)
 	if CheckErrorResponse(httpResponse) {
+		if httpResponse.StatusCode == http.StatusNotFound {
+			d.SetId("")
+			return nil
+		}
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		return errorResponse

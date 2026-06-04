@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -113,6 +114,10 @@ func resourceNetworkInterfaceRead(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
 	resp, httpResponse, _ := cli.VserverClient.NetworkInterfaceRestControllerApi.GetNetworkInterfaceElasticUsingGET(context.TODO(), networkInterfaceId, projectID)
 	if CheckErrorResponse(httpResponse) {
+		if httpResponse.StatusCode == http.StatusNotFound {
+			d.SetId("")
+			return nil
+		}
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		return errorResponse

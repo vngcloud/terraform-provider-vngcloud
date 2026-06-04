@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 
@@ -18,7 +19,7 @@ func ResourceAttachVolume() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceVolumeAttach,
 		Delete: resourceVolumeDetach,
-		Read:   resourceVolumeRead,
+		Read:   resourceVolumeAttachRead,
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceAttachVolumeImport,
 		},
@@ -99,6 +100,42 @@ func contains(list []string, target string) bool {
 	return false
 }
 
+func resourceVolumeAttachRead(d *schema.ResourceData, m interface{}) error {
+	projectID := d.Get("project_id").(string)
+	volumeID := d.Id()
+	serverID := d.Get("server_id").(string)
+	cli := m.(*client.Client)
+
+	resp, httpResponse, _ := cli.VserverClient.VolumeRestControllerApi.GetVolumeUsingGET2(context.TODO(), projectID, volumeID)
+	if CheckErrorResponse(httpResponse) {
+		if httpResponse.StatusCode == http.StatusNotFound {
+			d.SetId("")
+			return nil
+		}
+		return fmt.Errorf("request fail with errMsg : %s", GetResponseBody(httpResponse))
+	}
+
+	volume := resp.Data
+
+	// Check whether the volume is still attached to the expected server
+	attached := false
+	if volume.MultiAttach {
+		attached = contains(volume.ServerIdList, serverID)
+	} else {
+		attached = volume.ServerId == serverID
+	}
+
+	// Volume has been detached outside Terraform — remove from state so plan will re-attach
+	if !attached {
+		d.SetId("")
+		return nil
+	}
+
+	d.Set("volume_id", volumeID)
+	d.Set("server_id", serverID)
+	return nil
+}
+
 func resourceVolumeAttach(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	volumeID := d.Get("volume_id").(string)
@@ -135,8 +172,15 @@ func resourceVolumeDetach(d *schema.ResourceData, m interface{}) error {
 	projectID := d.Get("project_id").(string)
 	volumeID := d.Get("volume_id").(string)
 	serverID := d.Get("server_id").(string)
-	detachVolume := vserver.DetachVolumeRequest{}
 	cli := m.(*client.Client)
+
+	volResp, httpResponse, _ := cli.VserverClient.VolumeRestControllerApi.GetVolumeUsingGET2(context.TODO(), projectID, volumeID)
+	if CheckErrorResponse(httpResponse) {
+		return fmt.Errorf("request fail getting volume info: %s", GetResponseBody(httpResponse))
+	}
+	multiAttach := volResp.Data.MultiAttach
+
+	detachVolume := vserver.DetachVolumeRequest{}
 	resp, httpResponse, err := cli.VserverClient.VolumeRestControllerApi.DetachVolumeUsingPUT1(context.TODO(), detachVolume, projectID, serverID, volumeID)
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -150,7 +194,7 @@ func resourceVolumeDetach(d *schema.ResourceData, m interface{}) error {
 	stateConf := &resource.StateChangeConf{
 		Pending:    volumeDetaching,
 		Target:     volumeDetached,
-		Refresh:    resourceVolumeStateRefreshFunc(cli, volumeID, projectID),
+		Refresh:    resourceVolumeDetachStateRefreshFunc(cli, volumeID, projectID, serverID, multiAttach),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
@@ -161,4 +205,24 @@ func resourceVolumeDetach(d *schema.ResourceData, m interface{}) error {
 	}
 	d.SetId("")
 	return nil
+}
+
+// resourceVolumeDetachStateRefreshFunc handles multi-attach volumes correctly: for a
+// multi-attach volume, the volume remains IN-USE while other servers are still attached,
+// so we check ServerIdList membership instead of relying solely on the volume status.
+func resourceVolumeDetachStateRefreshFunc(cli *client.Client, volumeID, projectID, serverID string, multiAttach bool) resource.StateRefreshFunc {
+	return func() (interface{}, string, error) {
+		resp, httpResponse, _ := cli.VserverClient.VolumeRestControllerApi.GetVolumeUsingGET2(context.TODO(), projectID, volumeID)
+		if CheckErrorResponse(httpResponse) {
+			return nil, "", fmt.Errorf("Error describing volume: %s", GetResponseBody(httpResponse))
+		}
+		volume := resp.Data
+		if multiAttach && volume.Status != "DETACHING" {
+			if !contains(volume.ServerIdList, serverID) {
+				return volume, "AVAILABLE", nil
+			}
+			return volume, "IN-USE", nil
+		}
+		return volume, volume.Status, nil
+	}
 }

@@ -412,6 +412,10 @@ func resourceK8sRead(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
 	resp, httpResponse, _ := cli.VserverClient.K8SClusterRestControllerApi.GetClusterUsingGET(context.TODO(), clusterId, projectId)
 	if CheckErrorResponse(httpResponse) {
+		if httpResponse.StatusCode == http.StatusNotFound {
+			d.SetId("")
+			return nil
+		}
 		responseBody := GetResponseBody(httpResponse)
 		err := fmt.Errorf("request fail with errMsg: %s", responseBody)
 		return err

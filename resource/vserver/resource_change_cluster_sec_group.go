@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vserver"
-	"log"
 )
 
 func ResourceChangeClusterSecGroup() *schema.Resource {
@@ -153,6 +155,10 @@ func resourceReadSecGroup(d *schema.ResourceData, m interface{}) error {
 	resp, httpResponse, err := cli.VserverClient.K8SClusterRestControllerApi.ListSecGroupUsingGET(context.TODO(), clusterId, projectID, isMaster)
 
 	if CheckErrorResponse(httpResponse) {
+		if httpResponse.StatusCode == http.StatusNotFound {
+			d.SetId("")
+			return nil
+		}
 		responseBody := GetResponseBody(httpResponse)
 		errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
 		return errResponse

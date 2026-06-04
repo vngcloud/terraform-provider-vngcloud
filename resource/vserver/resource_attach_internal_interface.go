@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vserver"
-	"log"
 )
 
 func ResourceAttachInternalInterface() *schema.Resource {
@@ -114,6 +116,10 @@ func resourceInternalInterfaceRead(d *schema.ResourceData, m interface{}) error 
 	resp, httpResponse, _ := cli.VserverClient.ServerRestControllerApi.GetExternalNetworkInterfaceUsingGET(context.TODO(), interfaceNetworkInterfaceId, projectID)
 
 	if CheckErrorResponse(httpResponse) {
+		if httpResponse.StatusCode == http.StatusNotFound {
+			d.SetId("")
+			return nil
+		}
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		return errorResponse

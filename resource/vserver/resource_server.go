@@ -275,6 +275,10 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
 	resp, httpResponse, _ := cli.VserverClient.ServerRestControllerApi.GetServerUsingGET1(context.TODO(), projectID, serverID)
 	if CheckErrorResponse(httpResponse) {
+		if httpResponse.StatusCode == http.StatusNotFound {
+			d.SetId("")
+			return nil
+		}
 		responseBody := GetResponseBody(httpResponse)
 		err := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		return err
@@ -302,6 +306,7 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 		internalInterfaceMap := make(map[string]string)
 		internalInterfaceMap["fixed_ip"] = internalInterface.FixedIp
 		internalInterfaceMap["floating_ip"] = internalInterface.FloatingIp
+		internalInterfaceMap["floating_ip_id"] = internalInterface.FloatingIpId
 		internalInterfaceMap["interface_type"] = internalInterface.InterfaceType
 		internalInterfaceMap["mac"] = internalInterface.Mac
 		internalInterfaceMap["network_uuid"] = internalInterface.NetworkUuid
@@ -315,6 +320,12 @@ func resourceServerRead(d *schema.ResourceData, m interface{}) error {
 		internalInterfaces = append(internalInterfaces, internalInterfaceMap)
 	}
 	d.Set("internal_interfaces", internalInterfaces)
+
+	// Detect attach_floating from actual API state (first internal interface)
+	if len(internalInterfaces) > 0 {
+		d.Set("attach_floating", internalInterfaces[0]["floating_ip_id"] != "")
+	}
+
 	var externalInterfaces []map[string]string
 	for _, externalInterface := range server.ExternalInterfaces {
 		externalInterfaceMap := make(map[string]string)
@@ -407,11 +418,75 @@ func resourceServerUpdate(d *schema.ResourceData, m interface{}) error {
 	if d.HasChange("security_group") {
 		return resourceServerUpdateSecgroup(d, m)
 	}
+	if d.HasChange("attach_floating") {
+		return resourceServerAttachDetachFloating(d, m)
+	}
 	if d.HasChange("root_disk_size") || d.HasChange("root_disk_type_id") {
 		return resourceResizeBootVolume(d, m)
 	}
 	return resourceServerRead(d, m)
 
+}
+
+func resourceServerAttachDetachFloating(d *schema.ResourceData, m interface{}) error {
+	projectID := d.Get("project_id").(string)
+	serverID := d.Id()
+	attachFloating := d.Get("attach_floating").(bool)
+	cli := m.(*client.Client)
+
+	// Get the first internal interface
+	internalInterfaces := d.Get("internal_interfaces").([]interface{})
+	if len(internalInterfaces) == 0 {
+		return fmt.Errorf("no internal interface found on server %s", serverID)
+	}
+	primaryInterface := internalInterfaces[0].(map[string]interface{})
+	networkInterfaceId := primaryInterface["uuid"].(string)
+
+	if attachFloating {
+		// Auto attach: creates a new floating IP and attaches it to the interface in one call
+		log.Printf("[INFO] Auto attaching floating IP to server %s interface %s\n", serverID, networkInterfaceId)
+		attachReq := vserver.AttachDetachWanIpRequest{NetworkInterfaceId: networkInterfaceId}
+		httpResponse, err := cli.VserverClient.ServerRestControllerApi.AutoAttachWanIPUsingPUT(context.TODO(), attachReq, projectID, serverID)
+		if err != nil {
+			return fmt.Errorf("error auto attaching floating IP to server %s: %s", serverID, err)
+		}
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			return fmt.Errorf("request fail auto attaching floating IP with errMsg: %s", responseBody)
+		}
+	} else {
+		// Get floating IP ID from state
+		floatingIpId, _ := primaryInterface["floating_ip_id"].(string)
+		if floatingIpId == "" {
+			return resourceServerRead(d, m)
+		}
+
+		log.Printf("[INFO] Detaching WAN IP %s from server %s\n", floatingIpId, serverID)
+
+		// Detach WAN IP from internal interface
+		detachReq := vserver.AttachDetachWanIpRequest{NetworkInterfaceId: networkInterfaceId}
+		httpResponse, err := cli.VserverClient.ServerRestControllerApi.DetachWanIPUsingPUT(context.TODO(), detachReq, projectID, serverID, floatingIpId)
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			return fmt.Errorf("request fail detaching WAN IP with errMsg: %s", responseBody)
+		}
+		if err != nil {
+			return fmt.Errorf("error detaching WAN IP %s from server %s: %s", floatingIpId, serverID, err)
+		}
+
+		// Delete WAN IP after detach
+		log.Printf("[INFO] Deleting WAN IP %s\n", floatingIpId)
+		httpResponse, err = cli.VserverClient.WanIpRestControllerApi.DeleteWanIpUsingDELETE(context.TODO(), projectID, floatingIpId)
+		if err != nil {
+			return fmt.Errorf("error deleting WAN IP %s: %s", floatingIpId, err)
+		}
+		if CheckErrorResponse(httpResponse) {
+			responseBody := GetResponseBody(httpResponse)
+			return fmt.Errorf("request fail deleting WAN IP with errMsg: %s", responseBody)
+		}
+	}
+
+	return resourceServerRead(d, m)
 }
 
 func resourceServerDelete(d *schema.ResourceData, m interface{}) error {
