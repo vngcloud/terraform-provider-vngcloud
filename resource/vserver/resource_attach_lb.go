@@ -187,6 +187,10 @@ func resourceClusterLbRead(d *schema.ResourceData, m interface{}) error {
 	resp, httpResponse, _ := cli.VserverClient.K8SClusterRestControllerApi.ListClusterPoolByClusterUsingGET(context.TODO(), clusterID, projectID)
 
 	if CheckErrorResponse(httpResponse) {
+		if httpResponse.StatusCode == http.StatusNotFound {
+			d.SetId("")
+			return nil
+		}
 		responseBody := GetResponseBody(httpResponse)
 		err := fmt.Errorf("request fail with errMsg: %s", responseBody)
 		return err

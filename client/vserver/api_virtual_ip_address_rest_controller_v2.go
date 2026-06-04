@@ -719,7 +719,7 @@ VirtualIpAddressRestControllerV2ApiService Delete Address Pair
  * @param addressPairId The Address Pair id
 
 */
-func (a *VirtualIpAddressRestControllerV2ApiService) RemoveAddressPairUsingDELETE(ctx context.Context, addressPairId string, projectId string) (*http.Response, error) {
+func (a *VirtualIpAddressRestControllerV2ApiService) RemoveAddressPairUsingDELETE(ctx context.Context, addressPairId string, projectId string, virtualIpAddressId string) (*http.Response, error) {
 	var (
 		localVarHttpMethod = strings.ToUpper("Delete")
 		localVarPostBody   interface{}
@@ -731,6 +731,7 @@ func (a *VirtualIpAddressRestControllerV2ApiService) RemoveAddressPairUsingDELET
 	localVarPath := a.client.cfg.BasePath + "/v2/{projectId}/virtualIpAddress/{virtualIpAddressId}/addressPairs/{addressPairId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"addressPairId"+"}", fmt.Sprintf("%v", addressPairId), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"projectId"+"}", fmt.Sprintf("%v", projectId), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"virtualIpAddressId"+"}", fmt.Sprintf("%v", virtualIpAddressId), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

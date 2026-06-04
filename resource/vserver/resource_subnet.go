@@ -131,6 +131,10 @@ func resourceSubnetRead(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
 	resp, httpResponse, _ := cli.VserverClient.SubnetRestControllerApi.GetSubnetByIdUsingGET(context.TODO(), networkID, projectID, subnetID)
 	if CheckErrorResponse(httpResponse) {
+		if httpResponse.StatusCode == http.StatusNotFound {
+			d.SetId("")
+			return nil
+		}
 		responseBody := GetResponseBody(httpResponse)
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		return errorResponse

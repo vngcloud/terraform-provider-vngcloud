@@ -145,8 +145,10 @@ func resourceAddressPairInterfaceAttachmentDelete(ctx context.Context, d *schema
 
 	projectId := d.Get("project_id").(string)
 
+	virtualIpAddressId := d.Get("virtual_ip_address_id").(string)
+
 	cli := m.(*client.Client)
-	httpResponse, err := cli.VserverClient.VirtualIpAddressRestControllerV2Api.RemoveAddressPairUsingDELETE(ctx, d.Id(), projectId)
+	httpResponse, err := cli.VserverClient.VirtualIpAddressRestControllerV2Api.RemoveAddressPairUsingDELETE(ctx, d.Id(), projectId, virtualIpAddressId)
 
 	if err != nil {
 		log.Printf("[ERROR] %s\n", err)
