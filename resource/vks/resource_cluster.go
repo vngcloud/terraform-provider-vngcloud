@@ -106,7 +106,7 @@ func ResourceCluster() *schema.Resource {
 			"network_type": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "CALICO",
+				Default:  "TIGERA",
 				ForceNew: true,
 			},
 			"vpc_id": {
@@ -1170,7 +1170,7 @@ func resourceContainerClusterResourceV1() *schema.Resource {
 			"network_type": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "CALICO",
+				Default:  "TIGERA",
 				ForceNew: true,
 			},
 			"vpc_id": {
@@ -1289,7 +1289,7 @@ func resourceContainerClusterResourceV2() *schema.Resource {
 			"network_type": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "CALICO",
+				Default:  "TIGERA",
 				ForceNew: true,
 			},
 			"vpc_id": {
@@ -1437,7 +1437,7 @@ func resourceContainerClusterResourceV3() *schema.Resource {
 			"network_type": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "CALICO",
+				Default:  "TIGERA",
 				ForceNew: true,
 			},
 			"vpc_id": {
