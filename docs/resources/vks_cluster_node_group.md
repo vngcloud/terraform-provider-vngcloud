@@ -61,6 +61,52 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
 }
 ```
 
+## Example Usage - with full configuration
+
+```hcl
+resource "vngcloud_vks_cluster" "primary" {
+  name      = "cluster-demo"
+  cidr      = "172.16.0.0/16"
+  vpc_id    = "net-70ef12d4-d619-43fc-88f0-1c1511683123"
+  subnet_id = "sub-0725ef54-a32e-404c-96f2-34745239c123"
+}
+
+resource "vngcloud_vks_cluster_node_group" "primary" {
+  cluster_id = vngcloud_vks_cluster.primary.id
+  name       = "nodegroup1"
+  num_nodes = 3
+  auto_scale_config {
+    min_size = 0
+    max_size = 5
+  }
+  upgrade_config {
+    strategy        = "SURGE"
+    max_surge       = 1
+    max_unavailable = 0
+  }
+  kubernetes_version = "v1.29.1"
+  os               = "ubuntu"   # optional; changing this forces node group recreation
+  flavor_id  = "flav-9e88cfb4-ec31-4ad4-8ba5-243459f6d123"
+  disk_size  = 50
+  disk_type  = "vtype-61c3fc5b-f4e9-45b4-8957-8aa7b6029018"
+  enable_private_nodes = false
+  ssh_key_id           = "ssh-f923c53c-cba7-4131-9f86-175d04ae2123"
+  security_groups      = ["secg-faf05344-fbd6-4f10-80a2-cda08d15ba5e"]
+  labels = {
+    "env" = "production"
+  }
+  taint {
+    key    = "key1"
+    value  = "value1"
+    effect = "PreferNoSchedule"
+  }
+  tags = {
+    env  = "production"
+    team = "backend"
+  }
+}
+```
+
 ## Argument Reference
 
 * `cluster_id` - (Required) The ID of the Cluster into which you want to create one or more node groups.
@@ -73,7 +119,9 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
     * `strategy` - (Optional) The strategy used for node group updates. The only available strategy is SURGE.
     * `max_surge` - (Optional) The number of additional nodes that can be added to the node pool during an upgrade. Increasing `max_surge` allows more nodes to be upgraded simultaneously. It can be set to 0 or greater. By default, an extra temporary node is created during each node upgrade. To minimize costs (though with a higher risk of disruption), consider setting  `max_surge` to 1 and `max_unavailable` to 0.
     * `max_unvailable` - (Optional) The number of nodes that can be unavailable simultaneously during an upgrade. Increasing `max_unavailable` allows more nodes to be upgraded in parallel. It can be set to 0 or greater. To reduce risk for workloads sensitive to disruptions, this approach involves creating a new node pool while temporarily retaining the old nodes. It offers flexible upgrade pacing through batch requests and straightforward rollbacks but comes with higher costs compared to surge upgrades.
-* `image_id` - (Optional) Specifies the image you want to use for your node group. You can obtain the Image ID from the VKS Portal or from this [link](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/tham-khao-them/danh-sach-system-image-dang-ho-tro) and enter it in this field.
+* `kubernetes_version` - (Optional) The Kubernetes version for the node group. At creation time, the API automatically assigns the cluster's current version — this field does not need to be set when creating. Changing this field after creation triggers a rolling upgrade of the node group nodes via the upgrade-version API — it does **not** recreate the node group.
+* `os` - (Optional) The operating system image for the node group nodes (e.g. `"ubuntu"`). If omitted, the API default is used. **Changing this field forces the node group to be deleted and recreated.**
+* `image_id` - (Computed) The image ID currently used by the node group nodes. This field is set automatically by the provider and cannot be used as an input.
 * `flavor_id` - (Optional) Specifies the flavor you want to use for your node in the node group. You can obtain the Flavor ID from this [link](https://docs.vngcloud.vn/vng-cloud-document/v/vn/vks/tham-khao-them/danh-sach-flavor-dang-ho-tro) and enter it in this field.
 * `subnet_id` (Required) The subnet ID for the node group. You need to create a Subnet on vServer and enter the Subnet's ID in this field. Remember, you subnet that you use for each node group must be in the same VPC.
 * `secondary_subnets` (Optional) Specifies additional subnets to be useds in Cilium's VPC Native Routing mode.
@@ -88,6 +136,7 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
     * `key`- (Required) - The key for the taint. Must be 63 characters or less, using letters (a-z, A-Z), numbers (0-9), hyphens (-), underscores (_), and periods (.). Must start and end with a letter, number, or underscore.
     * `value` - (Required) - The value for the taint. Must be 63 characters or less, using letters (a-z, A-Z), numbers (0-9), hyphens (-), underscores (_), and periods (.). Must start and end with a letter, number, or underscore.
     * `effect` - (Optional) - The effect for the taint. Accepted values are `NoSchedule`, `PreferNoSchedule`, and `NoExecute`.
+* `tags` - (Optional) Key-value pairs of cloud tags to apply to all VMs and volumes in the node group. Tags are synced to underlying infrastructure by the deputy controller. Keys containing hyphens or dots must be quoted in HCL (e.g. `"cost-center" = "infra"`). Setting `tags = {}` removes all tags. If omitted, existing tags on the server are preserved.
 ---
 ### **Some important notes when using VKS with Terraform:**
 
