@@ -64,12 +64,12 @@ resource "vngcloud_vks_cluster" "primary" {
 * `enable_private_cluster` - (Optional) Enables the private cluster feature,
   creating a private endpoint on the cluster. The VKS public clusters refer to a type of Kubernetes cluster configuration where the Kubernetes API server endpoint is publicly accessible over the internet. In an VKS public cluster, the API server endpoint is not restricted to private access within a VPC (Virtual Private Cloud) and can be accessed over the public internet. The VKS private clusters are configured to have private access to the Kubernetes API server endpoint. This means that the API server endpoint is only accessible from within a specific Virtual Private Cloud (VPC) and is not exposed to the public internet. Private clusters provide enhanced security by restricting access to the Kubernetes API to resources within the VPC. At this time, the default value of this field is false and we only offer Public Cluster mode. The default value is "false".
 * `enable_service_endpoint` - (Optional) Enables the creation and use of private service endpoints within your cluster.
-* `network_type` - (Optional) The type of network for the cluster. The default value is `CALICO`. You can choose one in many options including `CALICO`, `CILIUM_OVERLAY`, `CILIUM_NATIVE_ROUTING`.
+* `network_type` - (Optional) The type of network for the cluster. The default value is `TIGERA`. You can choose one in many options including `TIGERA`, `CILIUM_OVERLAY`, `CILIUM_NATIVE_ROUTING`.
 * `vpc_id` - (Required) The VPC ID for the cluster. You need to create a VPC on vServer and enter the VPC's ID in this field.
 * `az_strategy` (Optional) Availability zone strategy: `"SINGLE"` or `"MULTI"`. Default is `"SINGLE"`. **Currently only available in HCM zone.**
 * `subnet_id` - (Optional) The subnet ID for the cluster. You need create a Subnet on vServer and put the Subnet's ID on this field. **Required if `az_strategy` is `"SINGLE"`**.
 * `list_subnet_ids` (Optional) List of subnet IDs, **required if `az_strategy` is `"MULTI"`**. **Currently only available in HCM zone.**
-* `cidr` -  (Required) Specifies the CIDR block for the cluster using `CALICO` or `CILIUM_OVERLAY` network. You can enter a private IP CIDR from the following options: 10.0.0.0 - 10.255.0.0, 172.16.0.0 - 172.24.0.0, or 192.168.0.0. The default value is "172.16.0.0/16".
+* `cidr` -  (Required) Specifies the CIDR block for the cluster using `TIGERA` or `CILIUM_OVERLAY` network. You can enter a private IP CIDR from the following options: 10.0.0.0 - 10.255.0.0, 172.16.0.0 - 172.24.0.0, or 192.168.0.0. The default value is "172.16.0.0/16".
 * `secondary_subnets` - (Optional) Specifies additional subnets to be useds in Cilium's VPC Native Routing mode.
 * `node_netmask_size` - (Optional) Specifies the node CIDR mask size used in Cilium's VPC Native Routing mode. The default value is 25. You can enter a number from the following options: 24, 25, 26.
 * `enabled_load_balancer_plugin` - (Optional) Enables/ Disable the attachment of load balancers (both network and application) via Kubernetes YAML. The default value is "true".
@@ -84,6 +84,24 @@ resource "vngcloud_vks_cluster" "primary" {
     * `timeout_unhealthy` - (Optional, Computed) Time in minutes to wait before considering a node unhealthy. Valid range: 1–180. When set to `0` or omitted, the server retains the existing value.
     * `remediation_timeout` - (Computed) Read-only. Timeout in minutes for remediation of an unhealthy node, as configured on the server. This field is managed entirely by the server and **cannot be set via Terraform**.
 * `poc` - (Optional) Allows the creation of POC cluster.
+* `node_group` - (Optional) List of node groups to create inline with the cluster. Each `node_group` block supports:
+  * `name` - (Required) Name of the node group.
+  * `ssh_key_id` - (Required) The SSH Key ID to use for nodes.
+  * `num_nodes` - (Optional) Desired number of nodes. Default is 1.
+  * `kubernetes_version` - (Optional) Kubernetes version for the node group. At creation time, the API automatically assigns the cluster's current version — this field does not need to be set when creating. Changing this field on an existing inline node group has no effect — use the standalone `vngcloud_vks_cluster_node_group` resource for version upgrades.
+  * `os` - (Optional) Operating system image for nodes (e.g. `"ubuntu-22.04"`). **Changing this forces the entire cluster to be recreated** (since `node_group` is ForceNew on the cluster).
+  * `flavor_id` - (Optional) Node flavor ID.
+  * `disk_size` - (Optional) Data disk size in GB. Default is 20.
+  * `disk_type` - (Optional) Data disk type.
+  * `enable_private_nodes` - (Optional) Whether nodes are private. Default is false.
+  * `security_groups` - (Optional) List of security group IDs.
+  * `auto_scale_config` - (Optional) Autoscaler configuration with `min_size` and `max_size`.
+  * `upgrade_config` - (Optional) Upgrade strategy configuration.
+  * `labels` - (Optional) Kubernetes labels as key/value map.
+  * `taint` - (Optional) List of Kubernetes taints with `key`, `value`, `effect`.
+  * `secondary_subnets` - (Optional) Additional subnets for CILIUM_NATIVE_ROUTING mode.
+  * `subnet_id` - (Optional) Subnet ID for nodes.
+  * `enabled_encryption_volume` - (Optional) Enable volume encryption. Default is false.
 ---
 ### **Some important notes when using VKS with Terraform:**
 
@@ -112,6 +130,7 @@ When using **Terraform** to create a **Cluster** and **Node Group** on the VKS s
 * For the resource `vngcloud_vks_cluster_node_group`, the fields that, when modified, will cause the system to delete and recreate the Node Group include:
     * `cluster_id`&#x20;
     * `name`&#x20;
+    * `os`&#x20;
     * `flavor_id`&#x20;
     * `disk_size`&#x20;
     * `disk_type`&#x20;
@@ -120,6 +139,8 @@ When using **Terraform** to create a **Cluster** and **Node Group** on the VKS s
     * `secondary_subnets`&#x20;
     * `enabled_encryption_volume`&#x20;
     * `subnet_id`
+
+  Modifying `kubernetes_version` does **not** recreate the node group — it triggers a rolling upgrade via the upgrade-version API.
 
 To specify that the system should create a new cluster/node group before deleting the old one, you can add the parameter `lifecycle { create_before_destroy = true }`to your main.tf file. Specifically:
 
@@ -157,7 +178,7 @@ resource "vngcloud_vks_cluster" "primary" {
   version = "1.29.1-vks.1724605200"
   cidr      = "172.16.0.0/16"
   enable_private_cluster = false
-  network_type = "CALICO"
+  network_type = "TIGERA"
   vpc_id    = "net-70ef12d4-d619-43fc-88f0-1c1511683123"
   az_strategy = "SINGLE"
   subnet_id = "sub-0725ef54-a32e-404c-96f2-34745239c123"
@@ -182,7 +203,8 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
     max_surge = 1
     max_unavailable = 0
   }
-  image_id = "img-108b3a77-ab58-4000-9b3e-190d0b4b07fc"
+  kubernetes_version = "v1.29.1"
+  os = "ubuntu"
   flavor_id = "flav-9e88cfb4-ec31-4ad4-8ba5-243459f6d123"
   disk_size = 50
   disk_type = "vtype-61c3fc5b-f4e9-45b4-8957-8aa7b6029018"
@@ -235,7 +257,8 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
     max_surge = 1
     max_unavailable = 0
   }
-  image_id = "img-108b3a77-ab58-4000-9b3e-190d0b4b07fc"
+  kubernetes_version = "v1.29.1"
+  os = "ubuntu"
   flavor_id = "flav-9e88cfb4-ec31-4ad4-8ba5-243459f6d123"
   disk_size = 50
   disk_type = "vtype-61c3fc5b-f4e9-45b4-8957-8aa7b6029018"
@@ -337,7 +360,8 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
     max_surge = 1
     max_unavailable = 0
   }
-  image_id = "img-108b3a77-ab58-4000-9b3e-190d0b4b07fc"
+  kubernetes_version = "v1.29.1"
+  os = "ubuntu"
   flavor_id = "flav-9e88cfb4-ec31-4ad4-8ba5-243459f6d123"
   subnet_id = "sub-cddd7ffa-be05-4698-9b3d-794e1adfcbce"
   secondary_subnets = ["10.200.27.0/24", "10.200.28.0/24"]

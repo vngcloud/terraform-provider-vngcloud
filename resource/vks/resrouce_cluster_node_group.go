@@ -135,9 +135,20 @@ var schemaNodeGroup = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
 		Computed: true,
-		// DefaultFunc: func() (interface{}, error) {
-		// 	return fetchByKey("image_id")
-		// },
+		DiffSuppressFunc: func(k, oldVal, newVal string, d *schema.ResourceData) bool {
+			return true
+		},
+	},
+	"kubernetes_version": {
+		Type:     schema.TypeString,
+		Optional: true,
+		Computed: true,
+	},
+	"os": {
+		Type:     schema.TypeString,
+		Optional: true,
+		Computed: true,
+		ForceNew: true,
 	},
 	"flavor_id": {
 		Type:     schema.TypeString,
@@ -240,6 +251,13 @@ var schemaNodeGroup = map[string]*schema.Schema{
 		Optional: true,
 		Computed: true,
 		ForceNew: true,
+	},
+	"tags": {
+		Type:        schema.TypeMap,
+		Optional:    true,
+		Computed:    true,
+		Elem:        &schema.Schema{Type: schema.TypeString},
+		Description: `Key-value pairs of cloud tags to apply to all VMs and volumes in the node group.`,
 	},
 }
 
@@ -372,6 +390,8 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("auto_scale_config", nil)
 	}
 	d.Set("image_id", resp.ImageId)
+	d.Set("kubernetes_version", resp.KubernetesVersion)
+	d.Set("os", resp.ImageOS)
 	if !checkSecurityGroupsSame(d, resp) {
 		d.Set("security_groups", resp.SecurityGroups)
 	}
@@ -417,6 +437,11 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 			}
 		}
 		d.Set("taint", taints)
+	}
+
+	// Import tags
+	if resp.Tags != nil {
+		d.Set("tags", resp.Tags)
 	}
 
 	return nil
@@ -538,34 +563,28 @@ func resourceClusterNodeGroupCreate(d *schema.ResourceData, m interface{}) error
 func setDefaultValueByZone(d *schema.ResourceData, m interface{}, vpcId string) error {
 	cli := m.(*client.Client)
 
-	_, hasImageId := d.GetOk("image_id")
 	_, hasFlavorId := d.GetOk("flavor_id")
 	_, hasDiskType := d.GetOk("disk_type")
 
-	if !hasImageId || !hasFlavorId || !hasDiskType {
+	if !hasFlavorId || !hasDiskType {
 		workspaceRes, httpResponse, _ := cli.VksClient.V1WorkspaceControllerApi.V1WorkspaceGet(context.TODO(), nil)
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
-			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
-			return errResponse
+			return fmt.Errorf("request fail with errMsg: %s", responseBody)
 		}
 
 		subnetId := d.Get("subnet_id").(string)
 		subnetRes, httpResponse, _ := cli.VserverClient.SubnetRestControllerApi.GetSubnetByIdUsingGET(context.TODO(), vpcId, workspaceRes.ProjectId, subnetId)
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
-			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
-			return errResponse
+			return fmt.Errorf("request fail with errMsg: %s", responseBody)
 		}
-		imageIdKey := ""
 		flavorIdKey := ""
 		diskTypeKey := ""
 		if cli.VksClient.Config().BasePath == "https://vks-han-1.api.vngcloud.vn" {
-			imageIdKey = "han01_image_id"
 			flavorIdKey = "han01_1a_flavor_id"
 			diskTypeKey = "han01_1a_volume_type_id"
 		} else {
-			imageIdKey = "image_id"
 			if subnetRes.Zone.Uuid == "HCM03-1A" {
 				flavorIdKey = "flavor_id"
 				diskTypeKey = "volume_type_id"
@@ -577,20 +596,13 @@ func setDefaultValueByZone(d *schema.ResourceData, m interface{}, vpcId string) 
 				diskTypeKey = "hcm03_1c_volume_type_id"
 			}
 		}
-		if !hasImageId {
-			res, _ := fetchByKey(imageIdKey)
-			imageId := res.(string)
-			d.Set("image_id", imageId)
-		}
 		if !hasFlavorId {
 			res, _ := fetchByKey(flavorIdKey)
-			flavorId := res.(string)
-			d.Set("flavor_id", flavorId)
+			d.Set("flavor_id", res.(string))
 		}
 		if !hasDiskType {
 			res, _ := fetchByKey(diskTypeKey)
-			volumeTypeId := res.(string)
-			d.Set("disk_type", volumeTypeId)
+			d.Set("disk_type", res.(string))
 		}
 	}
 
@@ -627,7 +639,7 @@ func getCreateNodeGroupRequest(d *schema.ResourceData) (vks.CreateNodeGroupDto, 
 	return vks.CreateNodeGroupDto{
 		Name:                    d.Get("name").(string),
 		NumNodes:                int32(d.Get("num_nodes").(int)),
-		ImageId:                 d.Get("image_id").(string),
+		Os:                      d.Get("os").(string),
 		FlavorId:                d.Get("flavor_id").(string),
 		DiskSize:                int32(d.Get("disk_size").(int)),
 		DiskType:                d.Get("disk_type").(string),
@@ -641,40 +653,31 @@ func getCreateNodeGroupRequest(d *schema.ResourceData) (vks.CreateNodeGroupDto, 
 		EnabledEncryptionVolume: d.Get("enabled_encryption_volume").(bool),
 		SecondarySubnets:        secondarySubnets,
 		SubnetId:                d.Get("subnet_id").(string),
+		Tags:                    getLabels(d.Get("tags").(map[string]interface{})),
 	}, nil
 }
 
 func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error {
-	hasChangeOtherField := false
 	cli := m.(*client.Client)
 	clusterId := d.Get("cluster_id").(string)
 	clusterNodeGroupId := d.Id()
+
+	// Block 1: PUT — handles num_nodes, auto_scale_config, upgrade_config, security_groups.
+	// labels and taints are intentionally omitted (zero values); server ignores them per API spec.
+	hasChangeOtherField := false
 	if d.HasChange("security_groups") {
 		resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdGet(context.TODO(), clusterId, clusterNodeGroupId, nil)
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
-			errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
-			return errorResponse
+			return fmt.Errorf("request fail with errMsg : %s", responseBody)
 		}
 		if checkSecurityGroupsSame(d, resp) {
 			return resourceClusterRead(d, m)
-		} else {
-			hasChangeOtherField = true
 		}
-	}
-	var tains []vks.NodeGroupTaintDto
-	var labels map[string]string
-	if d.HasChange("taint") || d.HasChange("security_groups") || d.HasChange("labels") {
 		hasChangeOtherField = true
-		taintsInput, ok := d.Get("taint").([]interface{})
-		if ok {
-			tains = getTaints(taintsInput)
-		} else {
-			tains = nil
-		}
-		labels = getLabels(d.Get("labels").(map[string]interface{}))
 	}
-	if hasChangeOtherField || d.HasChange("auto_scale_config") || d.HasChange("num_nodes") || d.HasChange("upgrade_config") || d.HasChange("image_id") {
+
+	if hasChangeOtherField || d.HasChange("auto_scale_config") || d.HasChange("num_nodes") || d.HasChange("upgrade_config") {
 		securityGroupsRequest := d.Get("security_groups").([]interface{})
 		var securityGroups []string
 		for _, s := range securityGroupsRequest {
@@ -690,15 +693,11 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 			num := int32(d.Get("num_nodes").(int))
 			numNodes = &num
 		}
-		imageId := d.Get("image_id").(string)
 		updateNodeGroupRequest := vks.UpdateNodeGroupDto{
 			AutoScaleConfig: autoScaleConfig,
 			NumNodes:        numNodes,
 			UpgradeConfig:   &upgradeConfig,
 			SecurityGroups:  securityGroups,
-			ImageId:         imageId,
-			Labels:          labels,
-			Taints:          tains,
 		}
 		requestPutOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdPutOpts{
 			Body: optional.NewInterface(updateNodeGroupRequest),
@@ -708,16 +707,13 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 			autoScaleConfig, _ := d.GetChange("auto_scale_config")
 			numNodes, _ := d.GetChange("num_nodes")
 			upgradeConfig, _ := d.GetChange("upgrade_config")
-			imageId, _ := d.GetChange("image_id")
 			securityGroups, _ := d.GetChange("security_groups")
 			d.Set("auto_scale_config", autoScaleConfig)
 			d.Set("num_nodes", numNodes)
 			d.Set("upgrade_config", upgradeConfig)
-			d.Set("image_id", imageId)
 			d.Set("security_groups", securityGroups)
 			responseBody := GetResponseBody(httpResponse)
-			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
-			return errResponse
+			return fmt.Errorf("request fail with errMsg: %s", responseBody)
 		}
 		respJSON, _ := json.Marshal(resp)
 		log.Printf("-------------------------------------\n")
@@ -737,6 +733,87 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 			return fmt.Errorf("error waiting for update cluster node group (%s) %s", resp.Id, err)
 		}
 	}
+
+	// Block 2: PATCH /metadata — handles labels, taints, tags.
+	// Always sends all 3 fields when triggered so portal-side drift is corrected in the same call.
+	if d.HasChange("labels") || d.HasChange("taint") || d.HasChange("tags") {
+		labels := getLabels(d.Get("labels").(map[string]interface{}))
+		taints := getTaints(d.Get("taint").([]interface{}))
+		tags := getLabels(d.Get("tags").(map[string]interface{}))
+
+		patchRequest := vks.PatchNodeGroupMetadataDto{
+			Labels: &labels,
+			Taints: &taints,
+			Tags:   &tags,
+		}
+		patchOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdMetadataPatchOpts{
+			Body: optional.NewInterface(patchRequest),
+		}
+		resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdMetadataPatch(context.TODO(), clusterId, clusterNodeGroupId, &patchOpts)
+		if CheckErrorResponse(httpResponse) {
+			labels, _ := d.GetChange("labels")
+			taint, _ := d.GetChange("taint")
+			tags, _ := d.GetChange("tags")
+			d.Set("labels", labels)
+			d.Set("taint", taint)
+			d.Set("tags", tags)
+			responseBody := GetResponseBody(httpResponse)
+			return fmt.Errorf("request fail with errMsg: %s", responseBody)
+		}
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+
+		stateConf := &resource.StateChangeConf{
+			Pending:    UPDATING,
+			Target:     ACTIVE,
+			Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, clusterId, clusterNodeGroupId),
+			Timeout:    180 * time.Minute,
+			Delay:      10 * time.Second,
+			MinTimeout: 1 * time.Second,
+		}
+		_, err := stateConf.WaitForState()
+		if err != nil {
+			return fmt.Errorf("error waiting for patch cluster node group metadata (%s) %s", clusterNodeGroupId, err)
+		}
+	}
+
+	// Block 3: upgradeVersion — handles kubernetes_version.
+	if d.HasChange("kubernetes_version") {
+		newVersion := d.Get("kubernetes_version").(string)
+		upgradeVersionRequest := vks.UpgradeNodeGroupVersionDto{
+			KubernetesVersion: newVersion,
+		}
+		upgradeVersionOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdUpgradeVersionPostOpts{
+			Body: optional.NewInterface(upgradeVersionRequest),
+		}
+		resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdUpgradeVersionPost(
+			context.TODO(), clusterId, clusterNodeGroupId, &upgradeVersionOpts)
+		if CheckErrorResponse(httpResponse) {
+			oldVersion, _ := d.GetChange("kubernetes_version")
+			d.Set("kubernetes_version", oldVersion)
+			responseBody := GetResponseBody(httpResponse)
+			return fmt.Errorf("request fail with errMsg: %s", responseBody)
+		}
+		respJSON, _ := json.Marshal(resp)
+		log.Printf("-------------------------------------\n")
+		log.Printf("%s\n", string(respJSON))
+		log.Printf("-------------------------------------\n")
+		stateConf := &resource.StateChangeConf{
+			Pending:    UPGRADING,
+			Target:     ACTIVE,
+			Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, clusterId, clusterNodeGroupId),
+			Timeout:    180 * time.Minute,
+			Delay:      10 * time.Second,
+			MinTimeout: 1 * time.Second,
+		}
+		_, err := stateConf.WaitForState()
+		if err != nil {
+			return fmt.Errorf("error waiting for upgrade cluster node group version (%s) %s", clusterNodeGroupId, err)
+		}
+	}
+
 	return resourceClusterNodeGroupRead(d, m)
 }
 

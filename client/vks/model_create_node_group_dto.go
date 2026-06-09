@@ -13,7 +13,7 @@ type CreateNodeGroupDto struct {
 	NumNodes                int32                        `json:"numNodes"`
 	AutoScaleConfig         *NodeGroupAutoScaleConfigDto `json:"autoScaleConfig,omitempty"`
 	UpgradeConfig           NodeGroupUpgradeConfigDto    `json:"upgradeConfig,omitempty"`
-	ImageId                 string                       `json:"imageId"`
+	Os                      string                       `json:"os,omitempty"`
 	FlavorId                string                       `json:"flavorId"`
 	DiskSize                int32                        `json:"diskSize"`
 	DiskType                string                       `json:"diskType"`
@@ -25,4 +25,5 @@ type CreateNodeGroupDto struct {
 	SecondarySubnets        []string                     `json:"secondarySubnets"`
 	SubnetId                string                       `json:"subnetId,omitempty"`
 	EnabledEncryptionVolume bool                         `json:"enabledEncryptionVolume"`
+	Tags                    map[string]string            `json:"tags,omitempty"`
 }

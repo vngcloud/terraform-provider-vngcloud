@@ -15,6 +15,8 @@ type NodeGroupDetailDto struct {
 	Status                  string                       `json:"status,omitempty"`
 	NumNodes                int64                        `json:"numNodes,omitempty"`
 	ImageId                 string                       `json:"imageId,omitempty"`
+	KubernetesVersion       string                       `json:"kubernetesVersion,omitempty"`
+	ImageOS                 string                       `json:"imageOS,omitempty"`
 	CreatedAt               string                       `json:"createdAt,omitempty"`
 	UpdatedAt               string                       `json:"updatedAt,omitempty"`
 	FlavorId                string                       `json:"flavorId,omitempty"`
@@ -30,4 +32,5 @@ type NodeGroupDetailDto struct {
 	SecondarySubnets        []string                     `json:"secondarySubnets,omitempty"`
 	EnabledEncryptionVolume bool                         `json:"enabledEncryptionVolume,omitempty"`
 	SubnetId                string                       `json:"subnetId,omitempty"`
+	Tags                    map[string]string            `json:"tags,omitempty"`
 }

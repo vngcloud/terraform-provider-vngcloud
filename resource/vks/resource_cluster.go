@@ -106,7 +106,7 @@ func ResourceCluster() *schema.Resource {
 			"network_type": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "CALICO",
+				Default:  "TIGERA",
 				ForceNew: true,
 			},
 			"vpc_id": {
@@ -413,6 +413,9 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 		}
 		nodeGroup["node_group_id"] = clusterNodeGroupDetail.Id
 		nodeGroup["subnet_id"] = clusterNodeGroupDetail.SubnetId
+		nodeGroup["image_id"] = clusterNodeGroupDetail.ImageId
+		nodeGroup["kubernetes_version"] = clusterNodeGroupDetail.KubernetesVersion
+		nodeGroup["os"] = clusterNodeGroupDetail.ImageOS
 		if nodeGroup["num_nodes"] != nil && int32(nodeGroup["num_nodes"].(int)) != -1 {
 			log.Printf("num_nodes !=nil\n")
 		} else {
@@ -435,6 +438,11 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 				}
 			}
 			nodeGroup["taint"] = taints
+		}
+
+		// Import tags
+		if clusterNodeGroupDetail.Tags != nil {
+			nodeGroup["tags"] = clusterNodeGroupDetail.Tags
 		}
 
 		updatedNodeGroups[i] = nodeGroup
@@ -487,34 +495,28 @@ func expandNodeGroupForCreating(node_group []interface{}, d *schema.ResourceData
 func setDefaultValueByZoneForNodeGroup(nodeGroup map[string]interface{}, m interface{}, vpcId string) error {
 	cli := m.(*client.Client)
 
-	imageId := nodeGroup["image_id"]
 	flavorId := nodeGroup["flavor_id"]
 	diskType := nodeGroup["disk_type"]
 
-	if imageId == nil || imageId.(string) == "" || flavorId == nil || flavorId.(string) == "" || diskType == nil || diskType.(string) == "" {
+	if flavorId == nil || flavorId.(string) == "" || diskType == nil || diskType.(string) == "" {
 		workspaceRes, httpResponse, _ := cli.VksClient.V1WorkspaceControllerApi.V1WorkspaceGet(context.TODO(), nil)
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
-			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
-			return errResponse
+			return fmt.Errorf("request fail with errMsg: %s", responseBody)
 		}
 
 		subnetId := nodeGroup["subnet_id"].(string)
 		subnetRes, httpResponse, _ := cli.VserverClient.SubnetRestControllerApi.GetSubnetByIdUsingGET(context.TODO(), vpcId, workspaceRes.ProjectId, subnetId)
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
-			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
-			return errResponse
+			return fmt.Errorf("request fail with errMsg: %s", responseBody)
 		}
-		imageIdKey := ""
 		flavorIdKey := ""
 		diskTypeKey := ""
 		if cli.VksClient.Config().BasePath == "https://vks-han-1.api.vngcloud.vn" {
-			imageIdKey = "han01_image_id"
 			flavorIdKey = "han01_1a_flavor_id"
 			diskTypeKey = "han01_1a_volume_type_id"
 		} else {
-			imageIdKey = "image_id"
 			if subnetRes.Zone.Uuid == "HCM03-1A" {
 				flavorIdKey = "flavor_id"
 				diskTypeKey = "volume_type_id"
@@ -525,11 +527,6 @@ func setDefaultValueByZoneForNodeGroup(nodeGroup map[string]interface{}, m inter
 				flavorIdKey = "hcm03_1c_flavor_id"
 				diskTypeKey = "hcm03_1c_volume_type_id"
 			}
-		}
-
-		if imageId == nil || imageId.(string) == "" {
-			res, _ := fetchByKey(imageIdKey)
-			nodeGroup["image_id"] = res.(string)
 		}
 		if flavorId == nil || flavorId.(string) == "" {
 			res, _ := fetchByKey(flavorIdKey)
@@ -878,42 +875,78 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 			tains = nil
 		}
 		labels := getLabels(nodeGroup["labels"].(map[string]interface{}))
-		imageId := nodeGroup["image_id"].(string)
-		updateNodeGroupRequest := vks.UpdateNodeGroupDto{
-			AutoScaleConfig: autoScaleConfig,
-			NumNodes:        numNodes,
-			UpgradeConfig:   &upgradeConfig,
-			SecurityGroups:  securityGroups,
-			ImageId:         imageId,
-			Taints:          tains,
-			Labels:          labels,
-		}
-		requestPutOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdPutOpts{
-			Body: optional.NewInterface(updateNodeGroupRequest),
-		}
-		resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdPut(context.TODO(), d.Id(), nodeGroup["node_group_id"].(string), &requestPutOpts)
-		if CheckErrorResponse(httpResponse) {
-			d.Set("node_group", oldNodeGroupSch)
-			responseBody := GetResponseBody(httpResponse)
-			errResponse := fmt.Errorf("request fail with errMsg: %s", responseBody)
-			return errResponse
-		}
-		respJSON, _ := json.Marshal(resp)
-		log.Printf("-------------------------------------\n")
-		log.Printf("%s\n", string(respJSON))
-		log.Printf("-------------------------------------\n")
 
-		stateConf := &resource.StateChangeConf{
-			Pending:    UPDATING,
-			Target:     ACTIVE,
-			Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, d.Id(), nodeGroup["node_group_id"].(string)),
-			Timeout:    180 * time.Minute,
-			Delay:      10 * time.Second,
-			MinTimeout: 1 * time.Second,
+		putFieldsChanged := !reflect.DeepEqual(nodeGroup["security_groups"], oldNodeGroup["security_groups"]) ||
+			!reflect.DeepEqual(nodeGroup["auto_scale_config"], oldNodeGroup["auto_scale_config"]) ||
+			int32(oldNodeGroup["num_nodes"].(int)) != int32(nodeGroup["num_nodes"].(int)) ||
+			!reflect.DeepEqual(nodeGroup["upgrade_config"], oldNodeGroup["upgrade_config"])
+
+		if putFieldsChanged {
+			updateNodeGroupRequest := vks.UpdateNodeGroupDto{
+				AutoScaleConfig: autoScaleConfig,
+				NumNodes:        numNodes,
+				UpgradeConfig:   &upgradeConfig,
+				SecurityGroups:  securityGroups,
+			}
+			requestPutOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdPutOpts{
+				Body: optional.NewInterface(updateNodeGroupRequest),
+			}
+			resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdPut(context.TODO(), d.Id(), nodeGroup["node_group_id"].(string), &requestPutOpts)
+			if CheckErrorResponse(httpResponse) {
+				d.Set("node_group", oldNodeGroupSch)
+				responseBody := GetResponseBody(httpResponse)
+				return fmt.Errorf("request fail with errMsg: %s", responseBody)
+			}
+			respJSON, _ := json.Marshal(resp)
+			log.Printf("-------------------------------------\n")
+			log.Printf("%s\n", string(respJSON))
+			log.Printf("-------------------------------------\n")
+
+			stateConf := &resource.StateChangeConf{
+				Pending:    UPDATING,
+				Target:     ACTIVE,
+				Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, d.Id(), nodeGroup["node_group_id"].(string)),
+				Timeout:    180 * time.Minute,
+				Delay:      10 * time.Second,
+				MinTimeout: 1 * time.Second,
+			}
+			_, err := stateConf.WaitForState()
+			if err != nil {
+				return fmt.Errorf("error waiting for update cluster node group (%s) %s", resp.Id, err)
+			}
 		}
-		_, err := stateConf.WaitForState()
-		if err != nil {
-			return fmt.Errorf("error waiting for update cluster node group (%s) %s", resp.Id, err)
+
+		if !reflect.DeepEqual(nodeGroup["labels"], oldNodeGroup["labels"]) ||
+			!reflect.DeepEqual(nodeGroup["taint"], oldNodeGroup["taint"]) ||
+			!reflect.DeepEqual(nodeGroup["tags"], oldNodeGroup["tags"]) {
+			tags := getLabels(nodeGroup["tags"].(map[string]interface{}))
+			patchRequest := vks.PatchNodeGroupMetadataDto{
+				Labels: &labels,
+				Taints: &tains,
+				Tags:   &tags,
+			}
+			patchOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdMetadataPatchOpts{
+				Body: optional.NewInterface(patchRequest),
+			}
+			_, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdMetadataPatch(context.TODO(), d.Id(), nodeGroup["node_group_id"].(string), &patchOpts)
+			if CheckErrorResponse(httpResponse) {
+				d.Set("node_group", oldNodeGroupSch)
+				responseBody := GetResponseBody(httpResponse)
+				return fmt.Errorf("request fail with errMsg: %s", responseBody)
+			}
+
+			stateConf := &resource.StateChangeConf{
+				Pending:    UPDATING,
+				Target:     ACTIVE,
+				Refresh:    resourceClusterNodeGroupStateRefreshFunc(cli, d.Id(), nodeGroup["node_group_id"].(string)),
+				Timeout:    180 * time.Minute,
+				Delay:      10 * time.Second,
+				MinTimeout: 1 * time.Second,
+			}
+			_, err := stateConf.WaitForState()
+			if err != nil {
+				return fmt.Errorf("error waiting for update cluster node group metadata (%s) %s", nodeGroup["node_group_id"].(string), err)
+			}
 		}
 	}
 	return resourceClusterRead(d, m)
@@ -1076,7 +1109,7 @@ func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) (vks.
 	return vks.CreateNodeGroupDto{
 		Name:                    nodeGroup["name"].(string),
 		NumNodes:                int32(nodeGroup["num_nodes"].(int)),
-		ImageId:                 nodeGroup["image_id"].(string),
+		Os:                      nodeGroup["os"].(string),
 		FlavorId:                nodeGroup["flavor_id"].(string),
 		DiskSize:                int32(nodeGroup["disk_size"].(int)),
 		DiskType:                nodeGroup["disk_type"].(string),
@@ -1084,6 +1117,7 @@ func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) (vks.
 		SshKeyId:                nodeGroup["ssh_key_id"].(string),
 		Labels:                  getLabels(nodeGroup["labels"].(map[string]interface{})),
 		Taints:                  tains,
+		Tags:                    getLabels(nodeGroup["tags"].(map[string]interface{})),
 		SecurityGroups:          getSecurityGroups(nodeGroup["security_groups"].([]interface{})),
 		UpgradeConfig:           getUpgradeConfig(nodeGroup["upgrade_config"].([]interface{})),
 		AutoScaleConfig:         getAutoScaleConfig(nodeGroup["auto_scale_config"].([]interface{})),
@@ -1136,7 +1170,7 @@ func resourceContainerClusterResourceV1() *schema.Resource {
 			"network_type": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "CALICO",
+				Default:  "TIGERA",
 				ForceNew: true,
 			},
 			"vpc_id": {
@@ -1255,7 +1289,7 @@ func resourceContainerClusterResourceV2() *schema.Resource {
 			"network_type": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "CALICO",
+				Default:  "TIGERA",
 				ForceNew: true,
 			},
 			"vpc_id": {
@@ -1403,7 +1437,7 @@ func resourceContainerClusterResourceV3() *schema.Resource {
 			"network_type": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "CALICO",
+				Default:  "TIGERA",
 				ForceNew: true,
 			},
 			"vpc_id": {
