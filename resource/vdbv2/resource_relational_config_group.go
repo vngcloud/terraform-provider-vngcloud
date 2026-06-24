@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/vngcloud/terraform-provider-vngcloud/client/vdbv2"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/vngcloud/terraform-provider-vngcloud/client/vdbv2"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
@@ -22,7 +23,12 @@ func ResourceRelationalConfigurationGroup() *schema.Resource {
 		Read:   resourceRelationalConfigurationGroupRead,
 		Delete: resourceRelationalConfigurationGroupDelete,
 		Update: resourceRelationalConfigurationGroupUpdate,
-
+		Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+				d.SetId(d.Id())
+				return []*schema.ResourceData{d}, nil
+			},
+		},
 		Schema: map[string]*schema.Schema{
 			"engine_type": {
 				Type:     schema.TypeString,
@@ -97,7 +103,7 @@ func resourceRelationalConfigurationGroupCreate(d *schema.ResourceData, m interf
 
 	body, _ := json.Marshal(createRequest)
 
-	resp, httpResponse, _ := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.CreateConfig1(context.TODO(), string(body))
+	resp, httpResponse, _ := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.CreateConfig(context.TODO(), string(body))
 
 	//if err != nil {
 	//	return err
@@ -127,7 +133,7 @@ func resourceRelationalConfigurationGroupRead(d *schema.ResourceData, m interfac
 	cli := m.(*client.Client)
 	configID := d.Id()
 
-	resp, httpResponse, _ := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.GetConfigsById1(context.TODO(), configID)
+	resp, httpResponse, _ := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.GetConfigsById(context.TODO(), configID)
 	//if err != nil {
 	//	return err
 	//}
@@ -248,7 +254,7 @@ func resourceRelationalConfigurationGroupUpdate(d *schema.ResourceData, m interf
 
 	body, _ := json.Marshal(updateRequest)
 
-	_, httpResponse, _ := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.UpdateConfig1(context.TODO(), string(body))
+	_, httpResponse, _ := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.UpdateConfig(context.TODO(), string(body))
 
 	//if err != nil {
 	//	return err
@@ -299,7 +305,7 @@ func getValues(input map[string]interface{}) map[string]interface{} {
 
 func resourceRelationalConfigGroupDeleteStateRefreshFunc(cli *client.Client, configId string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.GetConfigsById1(context.TODO(), configId)
+		dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalConfigurationGroupAPIApi.GetConfigsById(context.TODO(), configId)
 		if httpResponse.StatusCode != http.StatusOK {
 			if httpResponse.StatusCode == http.StatusNotFound {
 				return vdbv2.ItemConfigInfo{Status: "DELETED"}, "DELETED", nil

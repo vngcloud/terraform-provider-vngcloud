@@ -7,8 +7,10 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/antihax/optional"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
+	"github.com/vngcloud/terraform-provider-vngcloud/client/vdbv2"
 )
 
 func DataSourceDatabasePackage() *schema.Resource {
@@ -26,6 +28,11 @@ func DataSourceDatabasePackage() *schema.Resource {
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
+			},
+			"zone_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"cpu": {
 				Type:     schema.TypeInt,
@@ -50,7 +57,14 @@ func dataSourcePackageRead(d *schema.ResourceData, m interface{}) error {
 
 	type_ := d.Get("engine_type").(string)
 	version := d.Get("engine_version").(string)
-	listPackageResp, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetFlavors1(context.TODO(), type_, version, 0)
+
+	var opts *vdbv2.RelationalDatabaseAPIApiGetFlavorsOpts
+	if zoneID, ok := d.GetOk("zone_id"); ok {
+		opts = &vdbv2.RelationalDatabaseAPIApiGetFlavorsOpts{
+			ZoneId: optional.NewString(zoneID.(string)),
+		}
+	}
+	listPackageResp, httpResponse, _ := cli.Vdbv2Client.RelationalDatabaseAPIApi.GetFlavors(context.TODO(), type_, version, opts)
 	//if err != nil {
 	//	return err
 	//}
@@ -76,6 +90,7 @@ func dataSourcePackageRead(d *schema.ResourceData, m interface{}) error {
 			d.Set("cpu", listPackageResp.Data[i].Vcpus)
 			d.Set("ram", listPackageResp.Data[i].Ram)
 			d.Set("backup_size", listPackageResp.Data[i].BackupSize)
+			d.Set("zone_id", listPackageResp.Data[i].LocateZoneId)
 		}
 	}
 	if d.Id() == "" {

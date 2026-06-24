@@ -1,18 +1,18 @@
 # {{classname}}
 
-All URIs are relative to *https://vdb-gateway.vngcloud.vn*
+All URIs are relative to *https:/vdb-gateway.vngcloud.vn*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CreateBackups**](MemoryStoreBackupAPIApi.md#CreateBackups) | **Post** /vdb-memory/v1/backups/create | 
+[**CreateBackups1**](MemoryStoreBackupAPIApi.md#CreateBackups1) | **Post** /vdb-memory/v1/backups/create | 
 [**DeleteBackups**](MemoryStoreBackupAPIApi.md#DeleteBackups) | **Post** /vdb-memory/v1/backups/delete | 
-[**GetDetailBackupById**](MemoryStoreBackupAPIApi.md#GetDetailBackupById) | **Get** /vdb-memory/v1/backups/{backupId}/detail | 
-[**GetFreeBackupUsage**](MemoryStoreBackupAPIApi.md#GetFreeBackupUsage) | **Get** /vdb-memory/v1/backups/free-backup | 
-[**GetListBackups**](MemoryStoreBackupAPIApi.md#GetListBackups) | **Get** /vdb-memory/v1/backups | 
-[**RestoreBackup**](MemoryStoreBackupAPIApi.md#RestoreBackup) | **Post** /vdb-memory/v1/backups/{backupId}/restore | 
+[**GetDetailBackupById1**](MemoryStoreBackupAPIApi.md#GetDetailBackupById1) | **Get** /vdb-memory/v1/backups/{backupId}/detail | 
+[**GetFreeBackupUsage1**](MemoryStoreBackupAPIApi.md#GetFreeBackupUsage1) | **Get** /vdb-memory/v1/backups/free-backup | 
+[**GetListBackups1**](MemoryStoreBackupAPIApi.md#GetListBackups1) | **Get** /vdb-memory/v1/backups | 
+[**RestoreBackup1**](MemoryStoreBackupAPIApi.md#RestoreBackup1) | **Post** /vdb-memory/v1/backups/{backupId}/restore | 
 
-# **CreateBackups**
-> WrapContentCreateBackupResponse CreateBackups(ctx, body)
+# **CreateBackups1**
+> WrapContentCreateBackupResponse CreateBackups1(ctx, body, portalUserId)
 
 
 ### Required Parameters
@@ -20,7 +20,8 @@ Method | HTTP request | Description
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**CreateBackupRequest**](CreateBackupRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -38,7 +39,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteBackups**
-> WrapContentListDeleteBackupResponse DeleteBackups(ctx, body)
+> WrapContentListDeleteBackupResponse DeleteBackups(ctx, body, portalUserId)
 
 
 ### Required Parameters
@@ -46,7 +47,8 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**[]DeleteBackupRequest**](DeleteBackupRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -63,8 +65,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetDetailBackupById**
-> WrapContentBackupInfo GetDetailBackupById(ctx, backupId)
+# **GetDetailBackupById1**
+> WrapContentBackupInfo GetDetailBackupById1(ctx, portalUserId, backupId)
 
 
 ### Required Parameters
@@ -72,6 +74,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **backupId** | **string**|  | 
 
 ### Return type
@@ -89,12 +92,16 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetFreeBackupUsage**
-> WrapContentFreeBackupStorageInfo GetFreeBackupUsage(ctx, )
+# **GetFreeBackupUsage1**
+> WrapContentFreeBackupStorageInfo GetFreeBackupUsage1(ctx, portalUserId)
 
 
 ### Required Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -111,8 +118,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetListBackups**
-> WrapContentBackupInfoGatewayResponse GetListBackups(ctx, optional)
+# **GetListBackups1**
+> WrapContentBackupInfoGatewayResponse GetListBackups1(ctx, portalUserId, optional)
 
 
 ### Required Parameters
@@ -120,12 +127,14 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
- **optional** | ***MemoryStoreBackupAPIApiGetListBackupsOpts** | optional parameters | nil if no parameters
+  **portalUserId** | **int32**|  | 
+ **optional** | ***MemoryStoreBackupAPIApiGetListBackups1Opts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
-Optional parameters are passed through a pointer to a MemoryStoreBackupAPIApiGetListBackupsOpts struct
+Optional parameters are passed through a pointer to a MemoryStoreBackupAPIApiGetListBackups1Opts struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
+
  **pageNumber** | **optional.Int32**|  | [default to 1]
  **pageSize** | **optional.Int32**|  | [default to 10]
 
@@ -144,8 +153,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **RestoreBackup**
-> WrapContentListOrderResponse RestoreBackup(ctx, body, backupId, optional)
+# **RestoreBackup1**
+> WrapContentListOrderResponse RestoreBackup1(ctx, body, backupId, portalUserId, optional)
 
 
 ### Required Parameters
@@ -153,17 +162,19 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**RestoreMemBackupRequest**](RestoreMemBackupRequest.md)|  | 
   **backupId** | **string**|  | 
- **optional** | ***MemoryStoreBackupAPIApiRestoreBackupOpts** | optional parameters | nil if no parameters
+  **portalUserId** | **int32**|  | 
+ **optional** | ***MemoryStoreBackupAPIApiRestoreBackup1Opts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
-Optional parameters are passed through a pointer to a MemoryStoreBackupAPIApiRestoreBackupOpts struct
+Optional parameters are passed through a pointer to a MemoryStoreBackupAPIApiRestoreBackup1Opts struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **userType** | **optional.**|  | [default to ROOT_USER]
+
+ **userType** | **optional.**| ROOT_USER for Checkout flow or IAM_USER for Auto Payment flow. Available values: ROOT_USER, IAM_USER. Default value: ROOT_USER.  | 
 
 ### Return type
 

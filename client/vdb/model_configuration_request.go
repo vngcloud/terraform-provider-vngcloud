@@ -17,4 +17,5 @@ type ConfigurationRequest struct {
 	Id               string      `json:"id,omitempty"`
 	Name             string      `json:"name,omitempty"`
 	Values           interface{} `json:"values,omitempty"`
+	DeployType       string      `json:"deployType,omitempty"`
 }

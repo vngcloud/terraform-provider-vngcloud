@@ -1,18 +1,17 @@
 # {{classname}}
 
-All URIs are relative to *https://vdb-gateway.vngcloud.vn*
+All URIs are relative to *https:/vdb-gateway.vngcloud.vn*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CreateRelationalBackUpStorage**](RelationalBackupStorageAPIApi.md#CreateRelationalBackUpStorage) | **Post** /v1/payment/backup-storages | 
-[**DeleteBackupStorage1**](RelationalBackupStorageAPIApi.md#DeleteBackupStorage1) | **Post** /v1/backup-storages/actions/deletions | 
-[**GetListBackupStorage1**](RelationalBackupStorageAPIApi.md#GetListBackupStorage1) | **Get** /v1/backup-storages/information | 
-[**GetListQuotaPackage1**](RelationalBackupStorageAPIApi.md#GetListQuotaPackage1) | **Get** /v1/backup-storages | 
-[**RenewBackupStorage1**](RelationalBackupStorageAPIApi.md#RenewBackupStorage1) | **Post** /v1/backup-storages/actions/renew | 
-[**ResizeBackupStorage1**](RelationalBackupStorageAPIApi.md#ResizeBackupStorage1) | **Post** /v1/backup-storages/actions/resize | 
+[**CreateRelationalBackUpStorage**](RelationalBackupStorageAPIApi.md#CreateRelationalBackUpStorage) | **Post** /vdb-relational/v1/payment/backup-storages | 
+[**DeleteBackupStorage**](RelationalBackupStorageAPIApi.md#DeleteBackupStorage) | **Post** /vdb-relational/v1/backup-storages/actions/deletions | 
+[**GetListBackupStorage**](RelationalBackupStorageAPIApi.md#GetListBackupStorage) | **Get** /vdb-relational/v1/backup-storages/information | 
+[**GetListQuotaPackage**](RelationalBackupStorageAPIApi.md#GetListQuotaPackage) | **Get** /vdb-relational/v1/backup-storages | 
+[**ResizeBackupStorage**](RelationalBackupStorageAPIApi.md#ResizeBackupStorage) | **Post** /vdb-relational/v1/backup-storages/actions/resize | 
 
 # **CreateRelationalBackUpStorage**
-> WrapContentListOrderResponse CreateRelationalBackUpStorage(ctx, body, optional)
+> WrapContentListOrderResponse CreateRelationalBackUpStorage(ctx, body, portalUserId, optional)
 
 
 ### Required Parameters
@@ -20,7 +19,8 @@ Method | HTTP request | Description
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**CreateBackupStorageRequest**](CreateBackupStorageRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
  **optional** | ***RelationalBackupStorageAPIApiCreateRelationalBackUpStorageOpts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
@@ -28,7 +28,8 @@ Optional parameters are passed through a pointer to a RelationalBackupStorageAPI
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **userType** | **optional.**|  | [default to ROOT_USER]
+
+ **userType** | **optional.**| ROOT_USER for Checkout flow or IAM_USER for Auto Payment flow. Available values: ROOT_USER, IAM_USER. Default value: ROOT_USER.  | 
 
 ### Return type
 
@@ -45,8 +46,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **DeleteBackupStorage1**
-> WrapContentListActionDbInstancesResponse DeleteBackupStorage1(ctx, body)
+# **DeleteBackupStorage**
+> WrapContentListActionDbInstancesResponse DeleteBackupStorage(ctx, body, portalUserId)
 
 
 ### Required Parameters
@@ -54,7 +55,8 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**DeleteBackupStorageRequest**](DeleteBackupStorageRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -71,8 +73,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetListBackupStorage1**
-> WrapContentListBackupStorageDetail GetListBackupStorage1(ctx, optional)
+# **GetListBackupStorage**
+> WrapContentListBackupStorageDetail GetListBackupStorage(ctx, portalUserId)
 
 
 ### Required Parameters
@@ -80,13 +82,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
- **optional** | ***RelationalBackupStorageAPIApiGetListBackupStorage1Opts** | optional parameters | nil if no parameters
-
-### Optional Parameters
-Optional parameters are passed through a pointer to a RelationalBackupStorageAPIApiGetListBackupStorage1Opts struct
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **engineGroup** | **optional.Int32**|  | [default to 1]
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -103,12 +99,16 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetListQuotaPackage1**
-> WrapContentListDbBackupPackageResponse GetListQuotaPackage1(ctx, )
+# **GetListQuotaPackage**
+> WrapContentListDbBackupPackageResponse GetListQuotaPackage(ctx, portalUserId)
 
 
 ### Required Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -125,8 +125,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **RenewBackupStorage1**
-> WrapContentListOrderResponse RenewBackupStorage1(ctx, body, optional)
+# **ResizeBackupStorage**
+> WrapContentListOrderResponse ResizeBackupStorage(ctx, body, portalUserId, optional)
 
 
 ### Required Parameters
@@ -134,49 +134,17 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
- **optional** | ***RelationalBackupStorageAPIApiRenewBackupStorage1Opts** | optional parameters | nil if no parameters
+  **body** | [**ResizeBackupStorageRequest**](ResizeBackupStorageRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
+ **optional** | ***RelationalBackupStorageAPIApiResizeBackupStorageOpts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
-Optional parameters are passed through a pointer to a RelationalBackupStorageAPIApiRenewBackupStorage1Opts struct
+Optional parameters are passed through a pointer to a RelationalBackupStorageAPIApiResizeBackupStorageOpts struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **userType** | **optional.**|  | [default to ROOT_USER]
 
-### Return type
-
-[**WrapContentListOrderResponse**](WrapContentListOrderResponse.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: */*
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **ResizeBackupStorage1**
-> WrapContentListOrderResponse ResizeBackupStorage1(ctx, body, optional)
-
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
- **optional** | ***RelationalBackupStorageAPIApiResizeBackupStorage1Opts** | optional parameters | nil if no parameters
-
-### Optional Parameters
-Optional parameters are passed through a pointer to a RelationalBackupStorageAPIApiResizeBackupStorage1Opts struct
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
- **userType** | **optional.**|  | [default to ROOT_USER]
+ **userType** | **optional.**| ROOT_USER for Checkout flow or IAM_USER for Auto Payment flow. Available values: ROOT_USER, IAM_USER. Default value: ROOT_USER.  | 
 
 ### Return type
 

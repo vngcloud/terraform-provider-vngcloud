@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/vngcloud/terraform-provider-vngcloud/client/vdbv2"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/vngcloud/terraform-provider-vngcloud/client/vdbv2"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -131,7 +132,7 @@ func resourceRelationalBackupRead(d *schema.ResourceData, m interface{}) error {
 
 	cli := m.(*client.Client)
 
-	dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalBackupAPIApi.GetDetailBackupById1(context.TODO(), d.Id())
+	dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalBackupAPIApi.GetDetailBackupById(context.TODO(), d.Id())
 	//if err != nil {
 	//	return err
 	//}
@@ -182,7 +183,7 @@ func resourceRelationalBackupCreate(d *schema.ResourceData, m interface{}) error
 	reqBody, _ := json.Marshal(createRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	createDbResult, httpResponse, _ := cli.Vdbv2Client.RelationalBackupAPIApi.CreateBackups1(context.TODO(), string(reqBody))
+	createDbResult, httpResponse, _ := cli.Vdbv2Client.RelationalBackupAPIApi.CreateBackups(context.TODO(), string(reqBody))
 	//if err != nil {
 	//	return err
 	//}
@@ -232,7 +233,7 @@ func resourceRelationalBackupStateRefreshFunc(cli *client.Client, id string) res
 	return func() (interface{}, string, error) {
 		log.Println("[DEBUG] State refresh")
 
-		dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalBackupAPIApi.GetDetailBackupById1(context.TODO(), id)
+		dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalBackupAPIApi.GetDetailBackupById(context.TODO(), id)
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
 			return nil, "", fmt.Errorf("error when refreshing backup state: %s", responseBody)
@@ -307,6 +308,7 @@ func generateRelationalRestoreBackupRequest(d *schema.ResourceData) RestoreBacku
 		PublicAccess:     d.Get("public_access").(bool),
 		VolumeSize:       d.Get("volume_size").(int),
 		VolumeType:       d.Get("volume_type").(string),
+		LocateZoneId:     d.Get("zone_id").(string),
 	}
 
 	instance := RestoreBackupInstance{
@@ -326,7 +328,7 @@ func generateRelationalRestoreBackupRequest(d *schema.ResourceData) RestoreBacku
 
 func resourceRelationalBackupDeleteStateRefreshFunc(cli *client.Client, backupId string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalBackupAPIApi.GetDetailBackupById1(context.TODO(), backupId)
+		dbResp, httpResponse, _ := cli.Vdbv2Client.RelationalBackupAPIApi.GetDetailBackupById(context.TODO(), backupId)
 		if httpResponse.StatusCode != http.StatusOK {
 			if httpResponse.StatusCode == http.StatusNotFound {
 				return vdbv2.BackupInfo{Status: "DELETED"}, "DELETED", nil
@@ -367,6 +369,7 @@ type RestoreBackupConfig struct {
 	RedisPassword        string   `json:"redisPassword,omitempty"`
 	RedisPasswordEnabled bool     `json:"redisPasswordEnabled,omitempty"`
 	IsPoc                bool     `json:"poc,omitempty"`
+	LocateZoneId         string   `json:"locateZoneId,omitempty"`
 }
 
 type RestoreBackupInstance struct {

@@ -52,4 +52,5 @@ type CreateDbInstanceRequest struct {
 	VolumeType           string            `json:"volumeType,omitempty"`
 	VolumeTypeZoneId     string            `json:"volumeTypeZoneId,omitempty"`
 	ZoneId               int32             `json:"zoneId,omitempty"`
+	LocateZoneId         string            `json:"locateZoneId,omitempty"`
 }

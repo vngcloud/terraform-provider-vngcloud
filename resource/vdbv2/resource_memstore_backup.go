@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/vngcloud/terraform-provider-vngcloud/client/vdbv2"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/vngcloud/terraform-provider-vngcloud/client/vdbv2"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -121,7 +122,7 @@ func resourceMemStoreBackupRead(d *schema.ResourceData, m interface{}) error {
 
 	cli := m.(*client.Client)
 
-	dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.GetDetailBackupById(context.TODO(), d.Id())
+	dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.GetDetailBackupById1(context.TODO(), d.Id())
 	//if err != nil {
 	//	return err
 	//}
@@ -172,7 +173,7 @@ func resourceMemStoreBackupCreate(d *schema.ResourceData, m interface{}) error {
 	reqBody, _ := json.Marshal(createRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	createDbResult, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.CreateBackups(context.TODO(), string(reqBody))
+	createDbResult, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.CreateBackups1(context.TODO(), string(reqBody))
 	//if err != nil {
 	//	return err
 	//}
@@ -221,7 +222,7 @@ func resourceMemStoreBackupStateRefreshFunc(cli *client.Client, id string) resou
 	return func() (interface{}, string, error) {
 		log.Println("[DEBUG] State refresh")
 
-		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.GetDetailBackupById(context.TODO(), id)
+		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.GetDetailBackupById1(context.TODO(), id)
 		if CheckErrorResponse(httpResponse) {
 			responseBody := GetResponseBody(httpResponse)
 			return nil, "", fmt.Errorf("error when refreshing backup state: %s", responseBody)
@@ -296,6 +297,7 @@ func generateMemStoreRestoreBackupRequest(d *schema.ResourceData) RestoreBackupR
 		PublicAccess:         d.Get("public_access").(bool),
 		RedisPassword:        d.Get("redis_password").(string),
 		RedisPasswordEnabled: d.Get("redis_password_enabled").(bool),
+		LocateZoneId:         d.Get("zone_id").(string),
 	}
 
 	instance := RestoreBackupInstance{
@@ -315,7 +317,7 @@ func generateMemStoreRestoreBackupRequest(d *schema.ResourceData) RestoreBackupR
 
 func resourceMemStoreBackupDeleteStateRefreshFunc(cli *client.Client, backupId string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.GetDetailBackupById(context.TODO(), backupId)
+		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.GetDetailBackupById1(context.TODO(), backupId)
 		if httpResponse.StatusCode != http.StatusOK {
 			if httpResponse.StatusCode == http.StatusNotFound {
 				return vdbv2.BackupInfo{Status: "DELETED"}, "DELETED", nil

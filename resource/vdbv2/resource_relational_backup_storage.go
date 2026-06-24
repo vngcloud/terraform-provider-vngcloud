@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vngcloud/terraform-provider-vngcloud/client"
 	"log"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/vngcloud/terraform-provider-vngcloud/client"
 )
 
 func ResourceRelationalBackupStorage() *schema.Resource {
@@ -48,7 +49,7 @@ func resourceRelationalBackupStorageRead(d *schema.ResourceData, m interface{}) 
 
 	cli := m.(*client.Client)
 
-	backupStorageResult, httpResponse, _ := cli.Vdbv2Client.RelationalBackupStorageAPIApi.GetListBackupStorage1(context.TODO(), nil)
+	backupStorageResult, httpResponse, _ := cli.Vdbv2Client.RelationalBackupStorageAPIApi.GetListBackupStorage(context.TODO())
 	//if err != nil {
 	//	return err
 	//}
@@ -134,7 +135,7 @@ func resourceRelationalBackupStorageResizeQuota(d *schema.ResourceData, m interf
 	reqBody, _ := json.Marshal(resizeQuotaRequest)
 	log.Println("[DEBUG] Resize quota request body " + string(reqBody))
 
-	_, httpResponse, _ := cli.Vdbv2Client.RelationalBackupStorageAPIApi.ResizeBackupStorage1(context.TODO(), string(reqBody), nil)
+	_, httpResponse, _ := cli.Vdbv2Client.RelationalBackupStorageAPIApi.ResizeBackupStorage(context.TODO(), string(reqBody), nil)
 	//if err != nil {
 	//	return err
 	//}
@@ -167,7 +168,7 @@ func resourceRelationalBackupStorageDelete(d *schema.ResourceData, m interface{}
 	reqBody, _ := json.Marshal(deleteBackupStorageRequest)
 	log.Println("[DEBUG] Delete request body " + string(reqBody))
 
-	_, httpResponse, _ := cli.Vdbv2Client.RelationalBackupStorageAPIApi.DeleteBackupStorage1(context.TODO(), string(reqBody))
+	_, httpResponse, _ := cli.Vdbv2Client.RelationalBackupStorageAPIApi.DeleteBackupStorage(context.TODO(), string(reqBody))
 	//if err != nil {
 	//	return err
 	//}

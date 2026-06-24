@@ -1,9 +1,10 @@
 package provider
 
 import (
+	"log"
+
 	"github.com/vngcloud/terraform-provider-vngcloud/resource/vdbv2"
 	"github.com/vngcloud/terraform-provider-vngcloud/resource/vks"
-	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
@@ -15,19 +16,23 @@ func Provider() *schema.Provider {
 	log.SetFlags(log.Lshortfile)
 	return &schema.Provider{
 		DataSourcesMap: map[string]*schema.Resource{
-			"vngcloud_vserver_project":             vserver.DataSourceProject(),
-			"vngcloud_vserver_flavor_zone":         vserver.DataSourceFlavorZone(),
-			"vngcloud_vserver_flavor":              vserver.DataSourceFlavor(),
-			"vngcloud_vserver_image":               vserver.DataSourceImage(),
-			"vngcloud_vserver_volume_type_zone":    vserver.DataSourceVolumeTypeZone(),
-			"vngcloud_vserver_volume_type":         vserver.DataSourceVolumeType(),
-			"vngcloud_vserver_server_group_policy": vserver.DataSourceServerGroupPolicy(),
-			"vngcloud_vserver_k8s_version":         vserver.DataSourceK8sVersion(),
-			"vngcloud_vserver_k8s_network_type":    vserver.DataSourceK8sNetworkType(),
-			"vngcloud_vlb_lb_packages":             vloadbalancing.DataSourceLBPackages(),
-			"vngcloud_vdb_backup_storage_package":  vdbv2.DataSourceBackupStoragePackage(),
-			"vngcloud_vdb_database_package":        vdbv2.DataSourceDatabasePackage(),
-			"vngcloud_vdb_database_volume_type":    vdbv2.DataSourceDatabaseVolumeType(),
+			"vngcloud_vserver_project":                    vserver.DataSourceProject(),
+			"vngcloud_vserver_flavor_zone":                vserver.DataSourceFlavorZone(),
+			"vngcloud_vserver_flavor":                     vserver.DataSourceFlavor(),
+			"vngcloud_vserver_image":                      vserver.DataSourceImage(),
+			"vngcloud_vserver_volume_type_zone":           vserver.DataSourceVolumeTypeZone(),
+			"vngcloud_vserver_volume_type":                vserver.DataSourceVolumeType(),
+			"vngcloud_vserver_server_group_policy":        vserver.DataSourceServerGroupPolicy(),
+			"vngcloud_vserver_k8s_version":                vserver.DataSourceK8sVersion(),
+			"vngcloud_vserver_k8s_network_type":           vserver.DataSourceK8sNetworkType(),
+			"vngcloud_vlb_lb_packages":                    vloadbalancing.DataSourceLBPackages(),
+			"vngcloud_vdb_backup_storage_package":         vdbv2.DataSourceBackupStoragePackage(),
+			"vngcloud_vdb_database_package":               vdbv2.DataSourceDatabasePackage(),
+			"vngcloud_vdb_database_volume_type":           vdbv2.DataSourceDatabaseVolumeType(),
+			"vngcloud_vdb_kafka_package":                  vdbv2.DataSourceKafkaPackage(),
+			"vngcloud_vdb_kafka_volume_type":              vdbv2.DataSourceKafkaVolumeType(),
+			"vngcloud_vdb_postgresql_cluster_package":     vdbv2.DataSourcePostgreSQLClusterPackage(),
+			"vngcloud_vdb_postgresql_cluster_volume_type": vdbv2.DataSourcePostgreSQLClusterVolumeType(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"vngcloud_vserver_volume":                            vserver.ResourceVolume(),
@@ -55,6 +60,12 @@ func Provider() *schema.Provider {
 			"vngcloud_vdb_memstore_backup":                       vdbv2.ResourceMemStoreBackup(),
 			"vngcloud_vdb_memstore_config_group":                 vdbv2.ResourceMemStoreConfigurationGroup(),
 			"vngcloud_vdb_memstore_backup_storage":               vdbv2.ResourceMemStoreBackupStorage(),
+			"vngcloud_vdb_kafka_config_group":                    vdbv2.ResourceKafkaConfigurationGroup(),
+			"vngcloud_vdb_kafka_cluster":                         vdbv2.ResourceKafkaCluster(),
+			"vngcloud_vdb_kafka_topic":                           vdbv2.ResourceKafkaTopic(),
+			"vngcloud_vdb_kafka_user":                            vdbv2.ResourceKafkaUser(),
+			"vngcloud_vdb_postgresql_cluster_config_group":       vdbv2.ResourcePostgreSQLCLusterConfigurationGroup(),
+			"vngcloud_vdb_postgresql_cluster":                    vdbv2.ResourcePostgreSQLCluster(),
 			"vngcloud_vserver_k8s":                               vserver.ResourceK8s(),
 			"vngcloud_vserver_cluster_node_group":                vserver.ResourceClusterNodeGroup(),
 			"vngcloud_vserver_attach_lb_to_cluster":              vserver.ResourceAttachLb(),
