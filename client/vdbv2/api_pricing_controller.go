@@ -26,12 +26,12 @@ type PricingControllerApiService service
 
 /*
 PricingControllerApiService
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param body
- * @param portalUserId
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param body
+
 @return CalculatePriceResponse
 */
-func (a *PricingControllerApiService) CalculatePrice(ctx context.Context, body CalculatePriceRequest, portalUserId int32) (CalculatePriceResponse, *http.Response, error) {
+func (a *PricingControllerApiService) CalculatePrice(ctx context.Context, body CalculatePriceRequest) (CalculatePriceResponse, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Post")
 		localVarPostBody    interface{}
@@ -64,7 +64,6 @@ func (a *PricingControllerApiService) CalculatePrice(ctx context.Context, body C
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
-	localVarHeaderParams["portal-user-id"] = parameterToString(portalUserId, "")
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)

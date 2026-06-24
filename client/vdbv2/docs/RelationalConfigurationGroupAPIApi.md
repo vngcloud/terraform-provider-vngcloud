@@ -1,18 +1,18 @@
 # {{classname}}
 
-All URIs are relative to *https://vdb-gateway.vngcloud.vn*
+All URIs are relative to *https:/vdb-gateway.vngcloud.vn*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CreateConfig1**](RelationalConfigurationGroupAPIApi.md#CreateConfig1) | **Post** /v1/configurations/create | 
-[**DeleteConfigs1**](RelationalConfigurationGroupAPIApi.md#DeleteConfigs1) | **Delete** /v1/configurations/delete | 
-[**GetConfigParams1**](RelationalConfigurationGroupAPIApi.md#GetConfigParams1) | **Get** /v1/configurations/params | 
-[**GetConfigsById1**](RelationalConfigurationGroupAPIApi.md#GetConfigsById1) | **Get** /v1/configurations/id | 
-[**GetListConfigs1**](RelationalConfigurationGroupAPIApi.md#GetListConfigs1) | **Get** /v1/configurations | 
-[**UpdateConfig1**](RelationalConfigurationGroupAPIApi.md#UpdateConfig1) | **Put** /v1/configurations/update | 
+[**CreateConfig**](RelationalConfigurationGroupAPIApi.md#CreateConfig) | **Post** /vdb-relational/v1/configurations/create | 
+[**DeleteConfigs1**](RelationalConfigurationGroupAPIApi.md#DeleteConfigs1) | **Delete** /vdb-relational/v1/configurations/delete | 
+[**GetConfigParams**](RelationalConfigurationGroupAPIApi.md#GetConfigParams) | **Get** /vdb-relational/v1/configurations/params | 
+[**GetConfigsById**](RelationalConfigurationGroupAPIApi.md#GetConfigsById) | **Get** /vdb-relational/v1/configurations/id | 
+[**GetListConfigs**](RelationalConfigurationGroupAPIApi.md#GetListConfigs) | **Get** /vdb-relational/v1/configurations | 
+[**UpdateConfig**](RelationalConfigurationGroupAPIApi.md#UpdateConfig) | **Put** /vdb-relational/v1/configurations/update | 
 
-# **CreateConfig1**
-> WrapContentItemConfigInfo CreateConfig1(ctx, body)
+# **CreateConfig**
+> WrapContentItemConfigInfo CreateConfig(ctx, body, portalUserId)
 
 
 ### Required Parameters
@@ -20,7 +20,8 @@ Method | HTTP request | Description
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**CreateConfigGroupRequest**](CreateConfigGroupRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -38,7 +39,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteConfigs1**
-> WrapContentListDeleteConfigResponse DeleteConfigs1(ctx, body)
+> WrapContentListDeleteConfigResponse DeleteConfigs1(ctx, body, portalUserId)
 
 
 ### Required Parameters
@@ -46,7 +47,8 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**[]DeleteConfigGroupRequest**](DeleteConfigGroupRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -63,8 +65,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetConfigParams1**
-> WrapContentListConfigurationParamInfo GetConfigParams1(ctx, datastoreType, datastoreVersion)
+# **GetConfigParams**
+> WrapContentListConfigurationParamInfo GetConfigParams(ctx, portalUserId, datastoreType, datastoreVersion, optional)
 
 
 ### Required Parameters
@@ -72,8 +74,19 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **datastoreType** | **string**|  | 
   **datastoreVersion** | **string**|  | 
+ **optional** | ***RelationalConfigurationGroupAPIApiGetConfigParamsOpts** | optional parameters | nil if no parameters
+
+### Optional Parameters
+Optional parameters are passed through a pointer to a RelationalConfigurationGroupAPIApiGetConfigParamsOpts struct
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+
+ **deployType** | **optional.String**|  | 
 
 ### Return type
 
@@ -90,8 +103,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetConfigsById1**
-> WrapContentItemConfigInfo GetConfigsById1(ctx, id)
+# **GetConfigsById**
+> WrapContentItemConfigInfo GetConfigsById(ctx, portalUserId, id)
 
 
 ### Required Parameters
@@ -99,6 +112,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **id** | **string**|  | 
 
 ### Return type
@@ -116,8 +130,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetListConfigs1**
-> WrapContentConfigInfoGatewayResponse GetListConfigs1(ctx, optional)
+# **GetListConfigs**
+> WrapContentConfigInfoGatewayResponse GetListConfigs(ctx, portalUserId, optional)
 
 
 ### Required Parameters
@@ -125,12 +139,14 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
- **optional** | ***RelationalConfigurationGroupAPIApiGetListConfigs1Opts** | optional parameters | nil if no parameters
+  **portalUserId** | **int32**|  | 
+ **optional** | ***RelationalConfigurationGroupAPIApiGetListConfigsOpts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
-Optional parameters are passed through a pointer to a RelationalConfigurationGroupAPIApiGetListConfigs1Opts struct
+Optional parameters are passed through a pointer to a RelationalConfigurationGroupAPIApiGetListConfigsOpts struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
+
  **pageNumber** | **optional.Int32**|  | [default to 1]
  **pageSize** | **optional.Int32**|  | [default to 10]
 
@@ -149,8 +165,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **UpdateConfig1**
-> WrapContentItemConfigInfo UpdateConfig1(ctx, body)
+# **UpdateConfig**
+> WrapContentItemConfigInfo UpdateConfig(ctx, body, portalUserId)
 
 
 ### Required Parameters
@@ -158,7 +174,8 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**UpdateConfigGroupRequest**](UpdateConfigGroupRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 

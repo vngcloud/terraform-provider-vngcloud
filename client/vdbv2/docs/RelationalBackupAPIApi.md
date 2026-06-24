@@ -1,19 +1,19 @@
 # {{classname}}
 
-All URIs are relative to *https://vdb-gateway.vngcloud.vn*
+All URIs are relative to *https:/vdb-gateway.vngcloud.vn*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CreateBackups1**](RelationalBackupAPIApi.md#CreateBackups1) | **Post** /v1/backups/create | 
-[**DeleteBackups1**](RelationalBackupAPIApi.md#DeleteBackups1) | **Delete** /v1/backups/{backupId}/delete | 
-[**GetDetailBackupById1**](RelationalBackupAPIApi.md#GetDetailBackupById1) | **Get** /v1/backups/detail/{backupId} | 
-[**GetFreeBackupUsage1**](RelationalBackupAPIApi.md#GetFreeBackupUsage1) | **Get** /v1/backups/free-backup | 
-[**GetListBackups1**](RelationalBackupAPIApi.md#GetListBackups1) | **Get** /v1/backups | 
-[**GetListBackupsByInstanceId1**](RelationalBackupAPIApi.md#GetListBackupsByInstanceId1) | **Get** /v1/backups/insId/{instanceId} | 
-[**RestoreBackup1**](RelationalBackupAPIApi.md#RestoreBackup1) | **Post** /v1/backups/{id}/restore | 
+[**CreateBackups**](RelationalBackupAPIApi.md#CreateBackups) | **Post** /vdb-relational/v1/backups/create | 
+[**DeleteBackups1**](RelationalBackupAPIApi.md#DeleteBackups1) | **Delete** /vdb-relational/v1/backups/{backupId}/delete | 
+[**GetDetailBackupById**](RelationalBackupAPIApi.md#GetDetailBackupById) | **Get** /vdb-relational/v1/backups/detail/{backupId} | 
+[**GetFreeBackupUsage**](RelationalBackupAPIApi.md#GetFreeBackupUsage) | **Get** /vdb-relational/v1/backups/free-backup | 
+[**GetListBackups**](RelationalBackupAPIApi.md#GetListBackups) | **Get** /vdb-relational/v1/backups | 
+[**GetListBackupsByInstanceId**](RelationalBackupAPIApi.md#GetListBackupsByInstanceId) | **Get** /vdb-relational/v1/backups/insId/{instanceId} | 
+[**RestoreBackup**](RelationalBackupAPIApi.md#RestoreBackup) | **Post** /vdb-relational/v1/backups/{id}/restore | 
 
-# **CreateBackups1**
-> WrapContentCreateBackupResponse CreateBackups1(ctx, body)
+# **CreateBackups**
+> WrapContentCreateBackupResponse CreateBackups(ctx, body, portalUserId)
 
 
 ### Required Parameters
@@ -21,7 +21,8 @@ Method | HTTP request | Description
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**CreateBackupRequest**](CreateBackupRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -39,7 +40,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteBackups1**
-> WrapContentListDeleteBackupResponse DeleteBackups1(ctx, body, backupId)
+> WrapContentListDeleteBackupResponse DeleteBackups1(ctx, body, backupId, portalUserId)
 
 
 ### Required Parameters
@@ -47,8 +48,9 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**[]DeleteBackupRequest**](DeleteBackupRequest.md)|  | 
   **backupId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -65,8 +67,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetDetailBackupById1**
-> WrapContentBackupInfo GetDetailBackupById1(ctx, backupId)
+# **GetDetailBackupById**
+> WrapContentBackupInfo GetDetailBackupById(ctx, portalUserId, backupId)
 
 
 ### Required Parameters
@@ -74,6 +76,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **backupId** | **string**|  | 
 
 ### Return type
@@ -91,12 +94,16 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetFreeBackupUsage1**
-> WrapContentFreeBackupStorageInfo GetFreeBackupUsage1(ctx, )
+# **GetFreeBackupUsage**
+> WrapContentFreeBackupStorageInfo GetFreeBackupUsage(ctx, portalUserId)
 
 
 ### Required Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -113,8 +120,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetListBackups1**
-> WrapContentBackupInfoGatewayResponse GetListBackups1(ctx, optional)
+# **GetListBackups**
+> WrapContentBackupInfoGatewayResponse GetListBackups(ctx, portalUserId, optional)
 
 
 ### Required Parameters
@@ -122,12 +129,14 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
- **optional** | ***RelationalBackupAPIApiGetListBackups1Opts** | optional parameters | nil if no parameters
+  **portalUserId** | **int32**|  | 
+ **optional** | ***RelationalBackupAPIApiGetListBackupsOpts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
-Optional parameters are passed through a pointer to a RelationalBackupAPIApiGetListBackups1Opts struct
+Optional parameters are passed through a pointer to a RelationalBackupAPIApiGetListBackupsOpts struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
+
  **pageNumber** | **optional.Int32**|  | [default to 1]
  **pageSize** | **optional.Int32**|  | [default to 10]
 
@@ -146,8 +155,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetListBackupsByInstanceId1**
-> WrapContentListBackupInfo GetListBackupsByInstanceId1(ctx, instanceId)
+# **GetListBackupsByInstanceId**
+> WrapContentListBackupInfo GetListBackupsByInstanceId(ctx, portalUserId, instanceId)
 
 
 ### Required Parameters
@@ -155,6 +164,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **instanceId** | **string**|  | 
 
 ### Return type
@@ -172,8 +182,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **RestoreBackup1**
-> WrapContentListOrderResponse RestoreBackup1(ctx, body, id, optional)
+# **RestoreBackup**
+> WrapContentListOrderResponse RestoreBackup(ctx, body, id, portalUserId, optional)
 
 
 ### Required Parameters
@@ -181,17 +191,19 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**RestoreBackupRequest**](RestoreBackupRequest.md)|  | 
   **id** | **string**|  | 
- **optional** | ***RelationalBackupAPIApiRestoreBackup1Opts** | optional parameters | nil if no parameters
+  **portalUserId** | **int32**|  | 
+ **optional** | ***RelationalBackupAPIApiRestoreBackupOpts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
-Optional parameters are passed through a pointer to a RelationalBackupAPIApiRestoreBackup1Opts struct
+Optional parameters are passed through a pointer to a RelationalBackupAPIApiRestoreBackupOpts struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **userType** | **optional.**|  | [default to ROOT_USER]
+
+ **userType** | **optional.**| ROOT_USER for Checkout flow or IAM_USER for Auto Payment flow. Available values: ROOT_USER, IAM_USER. Default value: ROOT_USER.  | 
 
 ### Return type
 

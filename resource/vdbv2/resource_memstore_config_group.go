@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/vngcloud/terraform-provider-vngcloud/client/vdbv2"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/vngcloud/terraform-provider-vngcloud/client/vdbv2"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
@@ -21,7 +22,12 @@ func ResourceMemStoreConfigurationGroup() *schema.Resource {
 		Read:   resourceMemStoreConfigurationGroupRead,
 		Delete: resourceMemStoreConfigurationGroupDelete,
 		Update: resourceMemStoreConfigurationGroupUpdate,
-
+		Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+				d.SetId(d.Id())
+				return []*schema.ResourceData{d}, nil
+			},
+		},
 		Schema: map[string]*schema.Schema{
 			"engine_type": {
 				Type:     schema.TypeString,
@@ -96,7 +102,7 @@ func resourceMemStoreConfigurationGroupCreate(d *schema.ResourceData, m interfac
 
 	body, _ := json.Marshal(createRequest)
 
-	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.CreateConfig(context.TODO(), string(body))
+	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.CreateConfig1(context.TODO(), string(body))
 
 	//if err != nil {
 	//	return err
@@ -126,7 +132,7 @@ func resourceMemStoreConfigurationGroupRead(d *schema.ResourceData, m interface{
 	cli := m.(*client.Client)
 	configID := d.Id()
 
-	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.GetConfigsById(context.TODO(), configID)
+	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.GetConfigsById1(context.TODO(), configID)
 	//if err != nil {
 	//	return err
 	//}
@@ -235,7 +241,7 @@ func resourceMemStoreConfigurationGroupUpdate(d *schema.ResourceData, m interfac
 
 	body, _ := json.Marshal(updateRequest)
 
-	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.UpdateConfig(context.TODO(), string(body))
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.UpdateConfig1(context.TODO(), string(body))
 
 	//if err != nil {
 	//	return err
@@ -270,7 +276,7 @@ func resourceMemStoreConfigurationGroupUpdate(d *schema.ResourceData, m interfac
 
 func resourceMemStoreConfigGroupDeleteStateRefreshFunc(cli *client.Client, configId string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.GetConfigsById(context.TODO(), configId)
+		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreConfigurationGroupAPIApi.GetConfigsById1(context.TODO(), configId)
 		if httpResponse.StatusCode != http.StatusOK {
 			if httpResponse.StatusCode == http.StatusNotFound {
 				return vdbv2.ItemConfigInfo{Status: "DELETED"}, "DELETED", nil

@@ -1,40 +1,39 @@
 # {{classname}}
 
-All URIs are relative to *https://vdb-gateway.vngcloud.vn*
+All URIs are relative to *https:/vdb-gateway.vngcloud.vn*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CreateRelationalDatabaseInstance**](RelationalDatabaseAPIApi.md#CreateRelationalDatabaseInstance) | **Post** /v1/payment/database-instances | 
-[**CreateRelationalDatabaseInstanceReplica**](RelationalDatabaseAPIApi.md#CreateRelationalDatabaseInstanceReplica) | **Post** /v1/database-instances/{id}/create-replicas | 
-[**DeleteDatabaseInstances1**](RelationalDatabaseAPIApi.md#DeleteDatabaseInstances1) | **Post** /v1/database-instances/{instanceId}/delete | 
-[**DetachReplica1**](RelationalDatabaseAPIApi.md#DetachReplica1) | **Post** /v1/database-instances/{instanceId}/detach-replica | 
-[**ExchangePocResource1**](RelationalDatabaseAPIApi.md#ExchangePocResource1) | **Post** /v1/database-instances/exchange-poc | 
-[**GetAllDatastore1**](RelationalDatabaseAPIApi.md#GetAllDatastore1) | **Get** /v1/database-instances/datastore | 
-[**GetAllInstanceFamily1**](RelationalDatabaseAPIApi.md#GetAllInstanceFamily1) | **Get** /v1/database-instances/families | 
-[**GetDBInstanceConfig1**](RelationalDatabaseAPIApi.md#GetDBInstanceConfig1) | **Get** /v1/database-instances/configuration | 
-[**GetDatabaseInstancesById1**](RelationalDatabaseAPIApi.md#GetDatabaseInstancesById1) | **Get** /v1/database-instances/id/{dbInstanceId} | 
-[**GetDatabaseInstancesByUser1**](RelationalDatabaseAPIApi.md#GetDatabaseInstancesByUser1) | **Get** /v1/database-instances | 
-[**GetEngine1**](RelationalDatabaseAPIApi.md#GetEngine1) | **Get** /v1/database-instances/engine | 
-[**GetFlavorCodes1**](RelationalDatabaseAPIApi.md#GetFlavorCodes1) | **Get** /v1/database-instances/flavor_zones/codes | 
-[**GetFlavors1**](RelationalDatabaseAPIApi.md#GetFlavors1) | **Get** /v1/database-instances/flavors | 
-[**GetHistoryDB1**](RelationalDatabaseAPIApi.md#GetHistoryDB1) | **Get** /v1/database-instances/{instanceId}/histories | 
-[**GetListNetwork1**](RelationalDatabaseAPIApi.md#GetListNetwork1) | **Get** /v1/database-instances/networks | 
-[**GetListReplicas1**](RelationalDatabaseAPIApi.md#GetListReplicas1) | **Get** /v1/database-instances/{replicaSourceId}/replicas | 
-[**GetSecurityRules**](RelationalDatabaseAPIApi.md#GetSecurityRules) | **Put** /v1/database-instances/{instanceId}/secrules | 
-[**GetSecurityRules2**](RelationalDatabaseAPIApi.md#GetSecurityRules2) | **Get** /v1/database-instances/{instanceId}/secrules | 
-[**GetVolumeTypes2**](RelationalDatabaseAPIApi.md#GetVolumeTypes2) | **Get** /v1/database-instances/volume/types | 
-[**ListNetwork1**](RelationalDatabaseAPIApi.md#ListNetwork1) | **Get** /v1/database-instances/networks/subnets | 
-[**RenewResource1**](RelationalDatabaseAPIApi.md#RenewResource1) | **Post** /v1/database-instances/{resourceId}/renew-resource | 
-[**ResizeInstance1**](RelationalDatabaseAPIApi.md#ResizeInstance1) | **Post** /v1/database-instances/{instanceId}/resize-instance | 
-[**ResizeStorage**](RelationalDatabaseAPIApi.md#ResizeStorage) | **Post** /v1/database-instances/{instanceId}/resize-storage | 
-[**RestartDatabaseInstances1**](RelationalDatabaseAPIApi.md#RestartDatabaseInstances1) | **Post** /v1/database-instances/{instanceId}/reboot | 
-[**StartDatabaseInstances1**](RelationalDatabaseAPIApi.md#StartDatabaseInstances1) | **Post** /v1/database-instances/{instanceId}/start | 
-[**StopDatabaseInstances1**](RelationalDatabaseAPIApi.md#StopDatabaseInstances1) | **Post** /v1/database-instances/{instanceId}/shutdown | 
-[**UpdateDatabaseConfigGroup1**](RelationalDatabaseAPIApi.md#UpdateDatabaseConfigGroup1) | **Put** /v1/database-instances/{instanceId}/update/config-group | 
-[**UpdateDatabaseSetting1**](RelationalDatabaseAPIApi.md#UpdateDatabaseSetting1) | **Put** /v1/database-instances/{instanceId}/update/setting | 
+[**CreateRelationalDatabaseInstance**](RelationalDatabaseAPIApi.md#CreateRelationalDatabaseInstance) | **Post** /vdb-relational/v1/payment/database-instances | 
+[**CreateRelationalDatabaseInstanceReplica**](RelationalDatabaseAPIApi.md#CreateRelationalDatabaseInstanceReplica) | **Post** /vdb-relational/v1/database-instances/{instanceId}/create-replicas | 
+[**DeleteDatabaseInstances**](RelationalDatabaseAPIApi.md#DeleteDatabaseInstances) | **Post** /vdb-relational/v1/database-instances/{instanceId}/delete | 
+[**DetachReplica**](RelationalDatabaseAPIApi.md#DetachReplica) | **Post** /vdb-relational/v1/database-instances/{instanceId}/detach-replica | 
+[**GetAllDatastore**](RelationalDatabaseAPIApi.md#GetAllDatastore) | **Get** /vdb-relational/v1/database-instances/datastore | 
+[**GetAllInstanceFamily**](RelationalDatabaseAPIApi.md#GetAllInstanceFamily) | **Get** /vdb-relational/v1/database-instances/families | 
+[**GetDBInstanceConfig**](RelationalDatabaseAPIApi.md#GetDBInstanceConfig) | **Get** /vdb-relational/v1/database-instances/configuration | 
+[**GetDatabaseInstancesById**](RelationalDatabaseAPIApi.md#GetDatabaseInstancesById) | **Get** /vdb-relational/v1/database-instances/id/{dbInstanceId} | 
+[**GetDatabaseInstancesByUser**](RelationalDatabaseAPIApi.md#GetDatabaseInstancesByUser) | **Get** /vdb-relational/v1/database-instances | 
+[**GetEngine**](RelationalDatabaseAPIApi.md#GetEngine) | **Get** /vdb-relational/v1/database-instances/engine | 
+[**GetFlavorCodes**](RelationalDatabaseAPIApi.md#GetFlavorCodes) | **Get** /vdb-relational/v1/database-instances/flavor_zones/codes | 
+[**GetFlavors**](RelationalDatabaseAPIApi.md#GetFlavors) | **Get** /vdb-relational/v1/database-instances/flavors | 
+[**GetHistoryDB**](RelationalDatabaseAPIApi.md#GetHistoryDB) | **Get** /vdb-relational/v1/database-instances/{instanceId}/histories | 
+[**GetListNetwork**](RelationalDatabaseAPIApi.md#GetListNetwork) | **Get** /vdb-relational/v1/database-instances/networks | 
+[**GetListReplicas**](RelationalDatabaseAPIApi.md#GetListReplicas) | **Get** /vdb-relational/v1/database-instances/{replicaSourceId}/replicas | 
+[**GetSecurityRules**](RelationalDatabaseAPIApi.md#GetSecurityRules) | **Get** /vdb-relational/v1/database-instances/{instanceId}/secrules | 
+[**GetVolumeTypes**](RelationalDatabaseAPIApi.md#GetVolumeTypes) | **Get** /vdb-relational/v1/database-instances/volume/types | 
+[**ListSubnet**](RelationalDatabaseAPIApi.md#ListSubnet) | **Get** /vdb-relational/v1/database-instances/networks/subnets | 
+[**ListZone**](RelationalDatabaseAPIApi.md#ListZone) | **Get** /vdb-relational/v1/database-instances/zones | 
+[**ResizeInstance**](RelationalDatabaseAPIApi.md#ResizeInstance) | **Post** /vdb-relational/v1/database-instances/{instanceId}/resize-instance | 
+[**ResizeStorage**](RelationalDatabaseAPIApi.md#ResizeStorage) | **Post** /vdb-relational/v1/database-instances/{instanceId}/resize-storage | 
+[**RestartDatabaseInstances**](RelationalDatabaseAPIApi.md#RestartDatabaseInstances) | **Post** /vdb-relational/v1/database-instances/{instanceId}/reboot | 
+[**StartDatabaseInstances**](RelationalDatabaseAPIApi.md#StartDatabaseInstances) | **Post** /vdb-relational/v1/database-instances/{instanceId}/start | 
+[**StopDatabaseInstances**](RelationalDatabaseAPIApi.md#StopDatabaseInstances) | **Post** /vdb-relational/v1/database-instances/{instanceId}/shutdown | 
+[**UpdateDatabaseConfigGroup**](RelationalDatabaseAPIApi.md#UpdateDatabaseConfigGroup) | **Put** /vdb-relational/v1/database-instances/{instanceId}/update/config-group | 
+[**UpdateDatabaseSetting**](RelationalDatabaseAPIApi.md#UpdateDatabaseSetting) | **Put** /vdb-relational/v1/database-instances/{instanceId}/update/setting | 
+[**UpdateSecurityGroupRules**](RelationalDatabaseAPIApi.md#UpdateSecurityGroupRules) | **Put** /vdb-relational/v1/database-instances/{instanceId}/secrules | 
 
 # **CreateRelationalDatabaseInstance**
-> WrapContentListOrderResponse CreateRelationalDatabaseInstance(ctx, body, optional)
+> WrapContentListOrderResponse CreateRelationalDatabaseInstance(ctx, body, portalUserId, optional)
 
 
 ### Required Parameters
@@ -42,7 +41,8 @@ Method | HTTP request | Description
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**CreateDbInstanceRequest**](CreateDbInstanceRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
  **optional** | ***RelationalDatabaseAPIApiCreateRelationalDatabaseInstanceOpts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
@@ -50,7 +50,8 @@ Optional parameters are passed through a pointer to a RelationalDatabaseAPIApiCr
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **userType** | **optional.**|  | [default to ROOT_USER]
+
+ **userType** | **optional.**| ROOT_USER for Checkout flow or IAM_USER for Auto Payment flow. Available values: ROOT_USER, IAM_USER. Default value: ROOT_USER.  | 
 
 ### Return type
 
@@ -68,7 +69,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **CreateRelationalDatabaseInstanceReplica**
-> WrapContentListOrderResponse CreateRelationalDatabaseInstanceReplica(ctx, body, id, optional)
+> WrapContentListOrderResponse CreateRelationalDatabaseInstanceReplica(ctx, body, instanceId, portalUserId, optional)
 
 
 ### Required Parameters
@@ -76,8 +77,9 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
-  **id** | **string**|  | 
+  **body** | [**CreateDbInstanceReplicaRequest**](CreateDbInstanceReplicaRequest.md)|  | 
+  **instanceId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
  **optional** | ***RelationalDatabaseAPIApiCreateRelationalDatabaseInstanceReplicaOpts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
@@ -86,7 +88,8 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **userType** | **optional.**|  | [default to ROOT_USER]
+
+ **userType** | **optional.**| ROOT_USER for Checkout flow or IAM_USER for Auto Payment flow. Available values: ROOT_USER, IAM_USER. Default value: ROOT_USER.  | 
 
 ### Return type
 
@@ -103,8 +106,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **DeleteDatabaseInstances1**
-> WrapContentListActionDbInstancesResponse DeleteDatabaseInstances1(ctx, body, instanceId)
+# **DeleteDatabaseInstances**
+> WrapContentListActionDbInstancesResponse DeleteDatabaseInstances(ctx, body, instanceId, portalUserId)
 
 
 ### Required Parameters
@@ -112,8 +115,9 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**DeleteDbInstanceRequest**](DeleteDbInstanceRequest.md)|  | 
   **instanceId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -130,8 +134,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **DetachReplica1**
-> WrapContentListActionDbInstancesResponse DetachReplica1(ctx, body, instanceId)
+# **DetachReplica**
+> WrapContentListActionDbInstancesResponse DetachReplica(ctx, body, instanceId, portalUserId)
 
 
 ### Required Parameters
@@ -139,8 +143,9 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**ActionDbInstanceRequest**](ActionDbInstanceRequest.md)|  | 
   **instanceId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -157,8 +162,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **ExchangePocResource1**
-> WrapContentListOrderResponse ExchangePocResource1(ctx, body, optional)
+# **GetAllDatastore**
+> WrapContentListEngineVersion GetAllDatastore(ctx, portalUserId)
 
 
 ### Required Parameters
@@ -166,37 +171,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
- **optional** | ***RelationalDatabaseAPIApiExchangePocResource1Opts** | optional parameters | nil if no parameters
-
-### Optional Parameters
-Optional parameters are passed through a pointer to a RelationalDatabaseAPIApiExchangePocResource1Opts struct
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
- **userType** | **optional.**|  | [default to ROOT_USER]
-
-### Return type
-
-[**WrapContentListOrderResponse**](WrapContentListOrderResponse.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: */*
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **GetAllDatastore1**
-> WrapContentListEngineVersion GetAllDatastore1(ctx, )
-
-
-### Required Parameters
-This endpoint does not need any parameter.
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -213,12 +188,16 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetAllInstanceFamily1**
-> WrapContentListInstanceFamily GetAllInstanceFamily1(ctx, )
+# **GetAllInstanceFamily**
+> WrapContentListInstanceFamily GetAllInstanceFamily(ctx, portalUserId)
 
 
 ### Required Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -235,12 +214,16 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetDBInstanceConfig1**
-> WrapContentListItemConfigInfo GetDBInstanceConfig1(ctx, )
+# **GetDBInstanceConfig**
+> WrapContentListItemConfigInfo GetDBInstanceConfig(ctx, portalUserId)
 
 
 ### Required Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -257,8 +240,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetDatabaseInstancesById1**
-> WrapContentDbInstanceInfo GetDatabaseInstancesById1(ctx, dbInstanceId)
+# **GetDatabaseInstancesById**
+> WrapContentDbInstanceInfo GetDatabaseInstancesById(ctx, portalUserId, dbInstanceId)
 
 
 ### Required Parameters
@@ -266,6 +249,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **dbInstanceId** | **string**|  | 
 
 ### Return type
@@ -283,8 +267,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetDatabaseInstancesByUser1**
-> WrapContentDatabaseInstancesGatewayResponse GetDatabaseInstancesByUser1(ctx, filterRequest, pageNumber, pageSize)
+# **GetDatabaseInstancesByUser**
+> WrapContentDatabaseInstancesGatewayResponse GetDatabaseInstancesByUser(ctx, portalUserId, filterRequest, pageNumber, pageSize)
 
 
 ### Required Parameters
@@ -292,6 +276,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **filterRequest** | [**FilterRequest**](.md)|  | 
   **pageNumber** | **int32**|  | 
   **pageSize** | **int32**|  | 
@@ -311,12 +296,16 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetEngine1**
-> WrapContentSetEngine GetEngine1(ctx, )
+# **GetEngine**
+> WrapContentSetEngine GetEngine(ctx, portalUserId)
 
 
 ### Required Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -333,8 +322,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetFlavorCodes1**
-> WrapContentSetFlavorCode GetFlavorCodes1(ctx, portalUserId)
+# **GetFlavorCodes**
+> WrapContentSetFlavorCode GetFlavorCodes(ctx, portalUserId)
 
 
 ### Required Parameters
@@ -359,8 +348,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetFlavors1**
-> WrapContentListFlavorInfo GetFlavors1(ctx, type_, version, portalUserId)
+# **GetFlavors**
+> WrapContentListFlavorInfo GetFlavors(ctx, type_, version, portalUserId, optional)
 
 
 ### Required Parameters
@@ -371,6 +360,16 @@ Name | Type | Description  | Notes
   **type_** | **string**|  | 
   **version** | **string**|  | 
   **portalUserId** | **int32**|  | 
+ **optional** | ***RelationalDatabaseAPIApiGetFlavorsOpts** | optional parameters | nil if no parameters
+
+### Optional Parameters
+Optional parameters are passed through a pointer to a RelationalDatabaseAPIApiGetFlavorsOpts struct
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+
+ **zoneId** | **optional.String**|  | [default to HCM03-1A]
 
 ### Return type
 
@@ -387,8 +386,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetHistoryDB1**
-> WrapContentDbInstancesHistoryGatewayResponse GetHistoryDB1(ctx, instanceId, optional)
+# **GetHistoryDB**
+> WrapContentDbInstancesHistoryGatewayResponse GetHistoryDB(ctx, instanceId, portalUserId, optional)
 
 
 ### Required Parameters
@@ -397,12 +396,14 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **instanceId** | **string**|  | 
- **optional** | ***RelationalDatabaseAPIApiGetHistoryDB1Opts** | optional parameters | nil if no parameters
+  **portalUserId** | **int32**|  | 
+ **optional** | ***RelationalDatabaseAPIApiGetHistoryDBOpts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
-Optional parameters are passed through a pointer to a RelationalDatabaseAPIApiGetHistoryDB1Opts struct
+Optional parameters are passed through a pointer to a RelationalDatabaseAPIApiGetHistoryDBOpts struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
+
 
  **pageNumber** | **optional.Int32**|  | [default to 1]
  **pageSize** | **optional.Int32**|  | [default to 10]
@@ -422,12 +423,16 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetListNetwork1**
-> WrapContentListNetworkResponse GetListNetwork1(ctx, )
+# **GetListNetwork**
+> WrapContentListNetworkResponse GetListNetwork(ctx, portalUserId)
 
 
 ### Required Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -444,8 +449,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetListReplicas1**
-> WrapContentObject GetListReplicas1(ctx, replicaSourceId)
+# **GetListReplicas**
+> WrapContentObject GetListReplicas(ctx, portalUserId, replicaSourceId)
 
 
 ### Required Parameters
@@ -453,6 +458,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **replicaSourceId** | **string**|  | 
 
 ### Return type
@@ -471,7 +477,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **GetSecurityRules**
-> WrapContentListSecurityGroupRuleEntity GetSecurityRules(ctx, body, instanceId)
+> WrapContentListSecurityGroupRuleEntity GetSecurityRules(ctx, portalUserId, instanceId)
 
 
 ### Required Parameters
@@ -479,33 +485,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**[]SecurityGroupRuleEntity**](SecurityGroupRuleEntity.md)|  | 
-  **instanceId** | **string**|  | 
-
-### Return type
-
-[**WrapContentListSecurityGroupRuleEntity**](WrapContentListSecurityGroupRuleEntity.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: */*
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **GetSecurityRules2**
-> WrapContentListSecurityGroupRuleEntity GetSecurityRules2(ctx, instanceId)
-
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **instanceId** | **string**|  | 
 
 ### Return type
@@ -523,8 +503,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetVolumeTypes2**
-> WrapContentVolumeTypeGatewayResponse GetVolumeTypes2(ctx, portalUserId)
+# **GetVolumeTypes**
+> WrapContentVolumeTypeGatewayResponse GetVolumeTypes(ctx, portalUserId, optional)
 
 
 ### Required Parameters
@@ -533,6 +513,14 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **portalUserId** | **int32**|  | 
+ **optional** | ***RelationalDatabaseAPIApiGetVolumeTypesOpts** | optional parameters | nil if no parameters
+
+### Optional Parameters
+Optional parameters are passed through a pointer to a RelationalDatabaseAPIApiGetVolumeTypesOpts struct
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **zoneId** | **optional.String**|  | [default to HCM03-1A]
 
 ### Return type
 
@@ -549,12 +537,24 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **ListNetwork1**
-> WrapContentListNetworkResponseV2 ListNetwork1(ctx, )
+# **ListSubnet**
+> WrapContentListNetworkResponseV2 ListSubnet(ctx, portalUserId, optional)
 
 
 ### Required Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
+ **optional** | ***RelationalDatabaseAPIApiListSubnetOpts** | optional parameters | nil if no parameters
+
+### Optional Parameters
+Optional parameters are passed through a pointer to a RelationalDatabaseAPIApiListSubnetOpts struct
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **zoneId** | **optional.String**|  | 
 
 ### Return type
 
@@ -571,30 +571,16 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **RenewResource1**
-> WrapContentListOrderResponse RenewResource1(ctx, body, resourceId, optional)
+# **ListZone**
+> WrapContentListZoneInfo ListZone(ctx, )
 
 
 ### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
-  **resourceId** | **string**|  | 
- **optional** | ***RelationalDatabaseAPIApiRenewResource1Opts** | optional parameters | nil if no parameters
-
-### Optional Parameters
-Optional parameters are passed through a pointer to a RelationalDatabaseAPIApiRenewResource1Opts struct
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
-
- **userType** | **optional.**|  | [default to ROOT_USER]
+This endpoint does not need any parameter.
 
 ### Return type
 
-[**WrapContentListOrderResponse**](WrapContentListOrderResponse.md)
+[**WrapContentListZoneInfo**](WrapContentListZoneInfo.md)
 
 ### Authorization
 
@@ -602,13 +588,13 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
+ - **Content-Type**: Not defined
  - **Accept**: */*
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **ResizeInstance1**
-> WrapContentListOrderResponse ResizeInstance1(ctx, body, instanceId, optional)
+# **ResizeInstance**
+> WrapContentListOrderResponse ResizeInstance(ctx, body, instanceId, portalUserId, optional)
 
 
 ### Required Parameters
@@ -616,17 +602,19 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**ResizeFlavorRequest**](ResizeFlavorRequest.md)|  | 
   **instanceId** | **string**|  | 
- **optional** | ***RelationalDatabaseAPIApiResizeInstance1Opts** | optional parameters | nil if no parameters
+  **portalUserId** | **int32**|  | 
+ **optional** | ***RelationalDatabaseAPIApiResizeInstanceOpts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
-Optional parameters are passed through a pointer to a RelationalDatabaseAPIApiResizeInstance1Opts struct
+Optional parameters are passed through a pointer to a RelationalDatabaseAPIApiResizeInstanceOpts struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **userType** | **optional.**|  | [default to ROOT_USER]
+
+ **userType** | **optional.**| ROOT_USER for Checkout flow or IAM_USER for Auto Payment flow. Available values: ROOT_USER, IAM_USER. Default value: ROOT_USER.  | 
 
 ### Return type
 
@@ -644,7 +632,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **ResizeStorage**
-> WrapContentListOrderResponse ResizeStorage(ctx, body, instanceId, optional)
+> WrapContentListOrderResponse ResizeStorage(ctx, body, instanceId, portalUserId, optional)
 
 
 ### Required Parameters
@@ -652,8 +640,9 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**ResizeVolumeRequest**](ResizeVolumeRequest.md)|  | 
   **instanceId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
  **optional** | ***RelationalDatabaseAPIApiResizeStorageOpts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
@@ -662,7 +651,8 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **userType** | **optional.**|  | [default to ROOT_USER]
+
+ **userType** | **optional.**| ROOT_USER for Checkout flow or IAM_USER for Auto Payment flow. Available values: ROOT_USER, IAM_USER. Default value: ROOT_USER.  | 
 
 ### Return type
 
@@ -679,8 +669,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **RestartDatabaseInstances1**
-> WrapContentListActionDbInstancesResponse RestartDatabaseInstances1(ctx, body, instanceId)
+# **RestartDatabaseInstances**
+> WrapContentListActionDbInstancesResponse RestartDatabaseInstances(ctx, body, instanceId, portalUserId)
 
 
 ### Required Parameters
@@ -688,8 +678,9 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**ActionDbInstanceRequest**](ActionDbInstanceRequest.md)|  | 
   **instanceId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -706,8 +697,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **StartDatabaseInstances1**
-> WrapContentListActionDbInstancesResponse StartDatabaseInstances1(ctx, body, instanceId)
+# **StartDatabaseInstances**
+> WrapContentListActionDbInstancesResponse StartDatabaseInstances(ctx, body, instanceId, portalUserId)
 
 
 ### Required Parameters
@@ -715,8 +706,9 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**ActionDbInstanceRequest**](ActionDbInstanceRequest.md)|  | 
   **instanceId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -733,8 +725,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **StopDatabaseInstances1**
-> WrapContentListActionDbInstancesResponse StopDatabaseInstances1(ctx, body, instanceId)
+# **StopDatabaseInstances**
+> WrapContentListActionDbInstancesResponse StopDatabaseInstances(ctx, body, instanceId, portalUserId)
 
 
 ### Required Parameters
@@ -742,8 +734,9 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**ActionDbInstanceRequest**](ActionDbInstanceRequest.md)|  | 
   **instanceId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -760,8 +753,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **UpdateDatabaseConfigGroup1**
-> WrapContentObject UpdateDatabaseConfigGroup1(ctx, body, instanceId)
+# **UpdateDatabaseConfigGroup**
+> WrapContentObject UpdateDatabaseConfigGroup(ctx, body, instanceId, portalUserId)
 
 
 ### Required Parameters
@@ -769,8 +762,9 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**UpdateDbConfigGroupRequest**](UpdateDbConfigGroupRequest.md)|  | 
   **instanceId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
@@ -787,8 +781,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **UpdateDatabaseSetting1**
-> WrapContentObject UpdateDatabaseSetting1(ctx, body, instanceId)
+# **UpdateDatabaseSetting**
+> WrapContentObject UpdateDatabaseSetting(ctx, body, instanceId, portalUserId)
 
 
 ### Required Parameters
@@ -796,12 +790,41 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**UpdateDbSettingRequest**](UpdateDbSettingRequest.md)|  | 
   **instanceId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
 [**WrapContentObject**](WrapContentObject.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: */*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **UpdateSecurityGroupRules**
+> WrapContentListSecurityGroupRuleEntity UpdateSecurityGroupRules(ctx, body, portalUserId, instanceId)
+
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **body** | [**[]UpdateSecurityGroupRuleDetail**](UpdateSecurityGroupRuleDetail.md)|  | 
+  **portalUserId** | **int32**|  | 
+  **instanceId** | **string**|  | 
+
+### Return type
+
+[**WrapContentListSecurityGroupRuleEntity**](WrapContentListSecurityGroupRuleEntity.md)
 
 ### Authorization
 

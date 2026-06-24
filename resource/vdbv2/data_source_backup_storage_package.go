@@ -36,7 +36,7 @@ func dataSourceBackupStoragePackageRead(d *schema.ResourceData, m interface{}) e
 
 	cli := m.(*client.Client)
 
-	listPackageResp, httpResponse, _ := cli.Vdbv2Client.RelationalBackupStorageAPIApi.GetListQuotaPackage1(context.TODO())
+	listPackageResp, httpResponse, _ := cli.Vdbv2Client.RelationalBackupStorageAPIApi.GetListQuotaPackage(context.TODO())
 	//if err != nil {
 	//	return err
 	//}

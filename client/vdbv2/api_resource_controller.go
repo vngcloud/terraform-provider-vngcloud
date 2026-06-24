@@ -12,11 +12,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/antihax/optional"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/antihax/optional"
 )
 
 // Linger please
@@ -29,7 +30,6 @@ type ResourceControllerApiService service
 /*
 ResourceControllerApiService
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param portalUserId
  * @param optional nil or *ResourceControllerApiGetListResourceOpts - Optional Parameters:
      * @param "ResourceType" (optional.String) -
      * @param "RenewType" (optional.String) -
@@ -43,7 +43,7 @@ type ResourceControllerApiGetListResourceOpts struct {
 	Status       optional.String
 }
 
-func (a *ResourceControllerApiService) GetListResource(ctx context.Context, portalUserId int32, localVarOptionals *ResourceControllerApiGetListResourceOpts) (WrapContentResourcesBillingInfo, *http.Response, error) {
+func (a *ResourceControllerApiService) GetListResource(ctx context.Context, localVarOptionals *ResourceControllerApiGetListResourceOpts) (WrapContentResourcesBillingInfo, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Get")
 		localVarPostBody    interface{}
@@ -85,7 +85,6 @@ func (a *ResourceControllerApiService) GetListResource(ctx context.Context, port
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
-	localVarHeaderParams["portal-user-id"] = parameterToString(portalUserId, "")
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -133,13 +132,11 @@ func (a *ResourceControllerApiService) GetListResource(ctx context.Context, port
 
 /*
 ResourceControllerApiService
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param body
- * @param portalUserId
- * @param artifactId
-
+  - @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  - @param body
+  - @param artifactId
 */
-func (a *ResourceControllerApiService) UpdateAutoRenew(ctx context.Context, body AutoRenewRequest, portalUserId int32, artifactId string) (*http.Response, error) {
+func (a *ResourceControllerApiService) UpdateAutoRenew(ctx context.Context, body AutoRenewRequest, artifactId string) (*http.Response, error) {
 	var (
 		localVarHttpMethod = strings.ToUpper("Put")
 		localVarPostBody   interface{}
@@ -172,7 +169,6 @@ func (a *ResourceControllerApiService) UpdateAutoRenew(ctx context.Context, body
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
-	localVarHeaderParams["portal-user-id"] = parameterToString(portalUserId, "")
 	// body params
 	localVarPostBody = &body
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)

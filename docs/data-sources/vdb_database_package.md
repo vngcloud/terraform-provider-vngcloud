@@ -17,6 +17,7 @@ data "vngcloud_vdb_database_package" "db_s_general_1x2" {
   engine_type = "MySQL"
   engine_version = "8.0"
   name = "db.s-general-1x2"
+  zone_id = "HCM03-1A"
 }
 ```
 
@@ -27,11 +28,14 @@ The following arguments are supported by the resource:
 - **name** (String, Required): Name of the package
 - **engine_type** (String, Required): Engine type (MySQL, PostgreSQL, MariaDB, Redis)
 - **engine_version** (String, Required): Version of the engine type
+- **zone_id** (String, Optional, Computed): Zone ID of the package. Default value: HCM03-1A. Allowed values: HCM03-1A, HCM03-1B, HCM03-1C
 
 
 ## Attributes Reference
 
 In addition to all arguments above, the following attributes are exported:
+- **id** (String, Computed):
+    - The ID of the package.
 
 - **cpu** (Int, Computed):
     - The number of CPU cores allocated to the resource. This field is computed and available after the data source is queried.

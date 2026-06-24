@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vngcloud/terraform-provider-vngcloud/client"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vdb"
 	"github.com/vngcloud/terraform-provider-vngcloud/client/vdbv2"
-	"log"
-	"net/http"
 )
 
 func ResourceMemStoreDatabase() *schema.Resource {
@@ -28,7 +29,7 @@ func ResourceMemStoreDatabase() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"action": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"backup_auto": {
 				Type:     schema.TypeBool,
@@ -162,6 +163,12 @@ func ResourceMemStoreDatabase() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"zone_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -170,7 +177,7 @@ func resourceMemStoreDatabaseStateRefreshFunc(cli *client.Client, id string) res
 	return func() (interface{}, string, error) {
 		log.Println("[DEBUG]  State refresh")
 
-		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById(context.TODO(), id)
+		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById1(context.TODO(), id)
 		//if err != nil {
 		//	return nil, "", fmt.Errorf("error when refreshing database state: %s", err)
 		//}
@@ -227,7 +234,7 @@ func resourceMemStoreDatabaseCreate(d *schema.ResourceData, m interface{}) error
 		reqBody, _ := json.Marshal(restoreRequest)
 		log.Println("[DEBUG]  Body: " + string(reqBody))
 
-		createDbResult, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.RestoreBackup(context.TODO(), string(reqBody), d.Get("backup_id").(string), nil)
+		createDbResult, httpResponse, _ := cli.Vdbv2Client.MemoryStoreBackupAPIApi.RestoreBackup1(context.TODO(), string(reqBody), d.Get("backup_id").(string), nil)
 		//if err != nil {
 		//	return fmt.Errorf("error when creating database: %s", err)
 		//}
@@ -293,6 +300,7 @@ func generateMemStoreCreateDatabaseRequest(d *schema.ResourceData) vdb.CreateDbI
 		ReplicaSourceId:      d.Get("replica_source_id").(string),
 		RedisPasswordEnabled: false,
 		RedisPassword:        "",
+		LocateZoneId:         d.Get("zone_id").(string),
 	}
 
 	if d.Get("replica_source_id").(string) == "" {
@@ -364,7 +372,7 @@ func resourceMemStoreDatabaseRead(d *schema.ResourceData, m interface{}) error {
 
 	cli := m.(*client.Client)
 
-	dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById(context.TODO(), d.Id())
+	dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById1(context.TODO(), d.Id())
 	//if err != nil {
 	//	return fmt.Errorf("error when getting database info: %s", err)
 	//}
@@ -403,6 +411,7 @@ func resourceMemStoreDatabaseRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("volume_type_zone_id", dbResp.Data.VolumeTypeZoneId)
 	d.Set("volume_used", dbResp.Data.VolumeUsed)
 	d.Set("zone_uuid", dbResp.Data.ZoneUUID)
+	d.Set("zone_id", dbResp.Data.ZoneId)
 
 	if dbResp.Data.Configuration != nil {
 		d.Set("config_id", dbResp.Data.Configuration.Id)
@@ -445,7 +454,7 @@ func resourceMemStoreDatabaseUpdate(d *schema.ResourceData, m interface{}) error
 		return resourceMemStoreResizeFlavor(d, m)
 	}
 
-	return nil
+	return resourceRelationalDatabaseRead(d, m)
 }
 
 func resourceMemStoreUpdateConfigGroup(d *schema.ResourceData, m interface{}) error {
@@ -457,7 +466,7 @@ func resourceMemStoreUpdateConfigGroup(d *schema.ResourceData, m interface{}) er
 	reqBody, _ := json.Marshal(updateRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateDatabaseConfigGroup(context.TODO(), string(reqBody), d.Id())
+	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateDatabaseConfigGroup1(context.TODO(), string(reqBody), d.Id())
 
 	//if err != nil {
 	//	return err
@@ -517,7 +526,7 @@ func resourceMemStoreUpdateSetting(d *schema.ResourceData, m interface{}) error 
 	reqBody, _ := json.Marshal(updateRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateDatabaseSetting(context.TODO(), string(reqBody), d.Id())
+	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.UpdateDatabaseSetting1(context.TODO(), string(reqBody), d.Id())
 
 	//if err != nil {
 	//	return err
@@ -563,7 +572,7 @@ func resourceMemStoreResizeFlavor(d *schema.ResourceData, m interface{}) error {
 	reqBody, _ := json.Marshal(updateRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.ResizeInstance(context.TODO(), string(reqBody), d.Id(), nil)
+	resp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.ResizeInstance1(context.TODO(), string(reqBody), d.Id(), nil)
 
 	//if err != nil {
 	//	return err
@@ -612,7 +621,7 @@ func resourceMemStoreDatabaseDelete(d *schema.ResourceData, m interface{}) error
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.DeleteDatabaseInstances(context.TODO(), string(reqBody), d.Id())
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.DeleteDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
 	//if err != nil {
 	//	return fmt.Errorf("error when deleting database: %s", err)
 	//}
@@ -644,7 +653,7 @@ func resourceMemStoreDatabaseDelete(d *schema.ResourceData, m interface{}) error
 
 func resourceMemStoreDatabaseDeleteStateRefreshFunc(cli *client.Client, id string) resource.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById(context.TODO(), id)
+		dbResp, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById1(context.TODO(), id)
 		if httpResponse.StatusCode != http.StatusOK {
 			if httpResponse.StatusCode == http.StatusNotFound {
 				return vdbv2.DbInstanceInfo{Status: "DELETED"}, "DELETED", nil
@@ -673,7 +682,7 @@ func resourceMemStoreDatabaseStart(d *schema.ResourceData, m interface{}) error 
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.StartDatabaseInstances(context.TODO(), string(reqBody), d.Id())
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.StartDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
 	//if err != nil {
 	//	return fmt.Errorf("error when starting database: %s", err)
 	//}
@@ -709,7 +718,7 @@ func resourceMemStoreDatabaseStop(d *schema.ResourceData, m interface{}) error {
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.StopDatabaseInstances(context.TODO(), string(reqBody), d.Id())
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.StopDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
 	//if err != nil {
 	//	return fmt.Errorf("error when stopping database: %s", err)
 	//}
@@ -745,7 +754,7 @@ func resourceMemStoreDatabaseReboot(d *schema.ResourceData, m interface{}) error
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.RestartDatabaseInstances(context.TODO(), string(reqBody), d.Id())
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.RestartDatabaseInstances1(context.TODO(), string(reqBody), d.Id())
 	//if err != nil {
 	//	return fmt.Errorf("error when rebooting database: %s", err)
 	//}
@@ -781,7 +790,7 @@ func resourceMemStoreDatabasePromote(d *schema.ResourceData, m interface{}) erro
 	reqBody, _ := json.Marshal(actionRequest)
 	log.Println("[DEBUG] Body: " + string(reqBody))
 
-	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.DetachReplica(context.TODO(), string(reqBody), d.Id())
+	_, httpResponse, _ := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.DetachReplica1(context.TODO(), string(reqBody), d.Id())
 	//if err != nil {
 	//	return fmt.Errorf("error when promoting database: %s", err)
 	//}
@@ -792,7 +801,7 @@ func resourceMemStoreDatabasePromote(d *schema.ResourceData, m interface{}) erro
 	}
 
 	err := resource.Retry(databasePromoteTimeout, func() *resource.RetryError {
-		dbResp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById(context.TODO(), d.Id())
+		dbResp, httpResponse, err := cli.Vdbv2Client.MemoryStoreDatabaseAPIApi.GetDatabaseInstancesById1(context.TODO(), d.Id())
 		if err != nil {
 			return resource.NonRetryableError(fmt.Errorf("error when refreshing database state: %s", err))
 		}

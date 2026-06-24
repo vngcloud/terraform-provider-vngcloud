@@ -1,0 +1,11 @@
+# ConfigGroupCreateRequest
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**Name** | **string** | Config Group Name | [optional] [default to null]
+**Description** | **string** | Config Group Description | [optional] [default to null]
+**Properties** | [**[]ConfigGroupPropertyDto**](ConfigGroupPropertyDto.md) | Config Group Properties | [optional] [default to null]
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+

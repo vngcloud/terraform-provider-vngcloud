@@ -1,6 +1,6 @@
 # {{classname}}
 
-All URIs are relative to *https://vdb-gateway.vngcloud.vn*
+All URIs are relative to *https:/vdb-gateway.vngcloud.vn*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -14,13 +14,13 @@ Method | HTTP request | Description
 [**DeleteUser**](KafkaClusterAPIApi.md#DeleteUser) | **Delete** /vdb-kafka/clusters/{clusterId}/users/{userId} | 
 [**GetClusterById**](KafkaClusterAPIApi.md#GetClusterById) | **Get** /vdb-kafka/clusters/{clusterId} | 
 [**GetTopicById**](KafkaClusterAPIApi.md#GetTopicById) | **Get** /vdb-kafka/clusters/{clusterId}/topics/{topicId} | 
-[**GetUserAuthenCreds**](KafkaClusterAPIApi.md#GetUserAuthenCreds) | **Get** /vdb-kafka/clusters/{clusterId}/users/{userId}/authen-creds | 
+[**GetUserAuthenCredential**](KafkaClusterAPIApi.md#GetUserAuthenCredential) | **Get** /vdb-kafka/clusters/{clusterId}/users/{userId}/authen-creds | 
 [**GetUserById**](KafkaClusterAPIApi.md#GetUserById) | **Get** /vdb-kafka/clusters/{clusterId}/users/{userId} | 
 [**ListClusters**](KafkaClusterAPIApi.md#ListClusters) | **Get** /vdb-kafka/clusters | 
 [**ListHistory**](KafkaClusterAPIApi.md#ListHistory) | **Get** /vdb-kafka/clusters/{clusterId}/history | 
 [**ListTopic**](KafkaClusterAPIApi.md#ListTopic) | **Get** /vdb-kafka/clusters/{clusterId}/topics | 
 [**ListUser**](KafkaClusterAPIApi.md#ListUser) | **Get** /vdb-kafka/clusters/{clusterId}/users | 
-[**RegenerateUserAuthenCreds**](KafkaClusterAPIApi.md#RegenerateUserAuthenCreds) | **Put** /vdb-kafka/clusters/{clusterId}/users/{userId}/regenerate-creds | 
+[**RegenerateUserAuthenCredential**](KafkaClusterAPIApi.md#RegenerateUserAuthenCredential) | **Put** /vdb-kafka/clusters/{clusterId}/users/{userId}/regenerate-creds | 
 [**UpdateAuthentication**](KafkaClusterAPIApi.md#UpdateAuthentication) | **Put** /vdb-kafka/clusters/{clusterId}/authentication | 
 [**UpdateBrokerCount**](KafkaClusterAPIApi.md#UpdateBrokerCount) | **Put** /vdb-kafka/clusters/{clusterId}/kafka-broker-count | 
 [**UpdateConfigGroup**](KafkaClusterAPIApi.md#UpdateConfigGroup) | **Put** /vdb-kafka/clusters/{clusterId}/config-group | 
@@ -31,7 +31,7 @@ Method | HTTP request | Description
 [**UpdateUser**](KafkaClusterAPIApi.md#UpdateUser) | **Put** /vdb-kafka/clusters/{clusterId}/users/{userId} | 
 
 # **CreateOrderCluster**
-> WrapContentListOrderResponse CreateOrderCluster(ctx, body, optional)
+> WrapContentListOrderResponse CreateOrderCluster(ctx, body, portalUserId, optional)
 
 
 ### Required Parameters
@@ -40,6 +40,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **body** | [**CreateKafkaClusterRequest**](CreateKafkaClusterRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
  **optional** | ***KafkaClusterAPIApiCreateOrderClusterOpts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
@@ -47,7 +48,8 @@ Optional parameters are passed through a pointer to a KafkaClusterAPIApiCreateOr
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **userType** | **optional.**|  | [default to ROOT_USER]
+
+ **userType** | **optional.**| ROOT_USER for Checkout flow or IAM_USER for Auto Payment flow. Available values: ROOT_USER, IAM_USER. Default value: ROOT_USER.  | 
 
 ### Return type
 
@@ -65,7 +67,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **CreateSecRule**
-> string CreateSecRule(ctx, body, clusterId)
+> SecurityGroupRuleDto CreateSecRule(ctx, body, clusterId, portalUserId)
 
 
 ### Required Parameters
@@ -73,12 +75,13 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**SecurityGroupRuleCreateRequest**](SecurityGroupRuleCreateRequest.md)|  | 
   **clusterId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
-**string**
+[**SecurityGroupRuleDto**](SecurityGroupRuleDto.md)
 
 ### Authorization
 
@@ -92,7 +95,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **CreateTopic**
-> string CreateTopic(ctx, body, clusterId)
+> TopicDto CreateTopic(ctx, body, portalUserId, clusterId)
 
 
 ### Required Parameters
@@ -100,12 +103,13 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**TopicCreateRequest**](TopicCreateRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
 
 ### Return type
 
-**string**
+[**TopicDto**](TopicDto.md)
 
 ### Authorization
 
@@ -119,7 +123,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **CreateUser**
-> string CreateUser(ctx, body, clusterId)
+> UserDto CreateUser(ctx, body, portalUserId, clusterId)
 
 
 ### Required Parameters
@@ -127,12 +131,13 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**UserCreateRequest**](UserCreateRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
 
 ### Return type
 
-**string**
+[**UserDto**](UserDto.md)
 
 ### Authorization
 
@@ -146,7 +151,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteCluster**
-> string DeleteCluster(ctx, clusterId)
+> string DeleteCluster(ctx, portalUserId, clusterId)
 
 
 ### Required Parameters
@@ -154,6 +159,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
 
 ### Return type
@@ -172,7 +178,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteSecRule**
-> string DeleteSecRule(ctx, clusterId, secGroupRuleId)
+> string DeleteSecRule(ctx, portalUserId, clusterId, secGroupRuleId)
 
 
 ### Required Parameters
@@ -180,6 +186,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
   **secGroupRuleId** | **string**|  | 
 
@@ -199,7 +206,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteTopic**
-> string DeleteTopic(ctx, clusterId, topicId)
+> string DeleteTopic(ctx, portalUserId, clusterId, topicId)
 
 
 ### Required Parameters
@@ -207,6 +214,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
   **topicId** | **string**|  | 
 
@@ -226,7 +234,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteUser**
-> string DeleteUser(ctx, clusterId, userId)
+> string DeleteUser(ctx, portalUserId, clusterId, userId)
 
 
 ### Required Parameters
@@ -234,6 +242,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
   **userId** | **string**|  | 
 
@@ -253,7 +262,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **GetClusterById**
-> string GetClusterById(ctx, clusterId)
+> KafkaCluster GetClusterById(ctx, portalUserId, clusterId)
 
 
 ### Required Parameters
@@ -261,11 +270,12 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
 
 ### Return type
 
-**string**
+[**KafkaCluster**](KafkaCluster.md)
 
 ### Authorization
 
@@ -279,7 +289,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **GetTopicById**
-> string GetTopicById(ctx, clusterId, topicId)
+> TopicDto GetTopicById(ctx, portalUserId, clusterId, topicId)
 
 
 ### Required Parameters
@@ -287,12 +297,13 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
   **topicId** | **string**|  | 
 
 ### Return type
 
-**string**
+[**TopicDto**](TopicDto.md)
 
 ### Authorization
 
@@ -305,8 +316,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **GetUserAuthenCreds**
-> []string GetUserAuthenCreds(ctx, clusterId, userId)
+# **GetUserAuthenCredential**
+> []string GetUserAuthenCredential(ctx, portalUserId, clusterId, userId)
 
 
 ### Required Parameters
@@ -314,6 +325,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
   **userId** | **string**|  | 
 
@@ -333,7 +345,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **GetUserById**
-> string GetUserById(ctx, clusterId, userId)
+> UserDto GetUserById(ctx, portalUserId, clusterId, userId)
 
 
 ### Required Parameters
@@ -341,12 +353,13 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
   **userId** | **string**|  | 
 
 ### Return type
 
-**string**
+[**UserDto**](UserDto.md)
 
 ### Authorization
 
@@ -360,15 +373,19 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **ListClusters**
-> string ListClusters(ctx, )
+> []KafkaCluster ListClusters(ctx, portalUserId)
 
 
 ### Required Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
-**string**
+[**[]KafkaCluster**](KafkaCluster.md)
 
 ### Authorization
 
@@ -382,7 +399,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **ListHistory**
-> string ListHistory(ctx, clusterId)
+> []HistoryDto ListHistory(ctx, portalUserId, clusterId)
 
 
 ### Required Parameters
@@ -390,11 +407,12 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
 
 ### Return type
 
-**string**
+[**[]HistoryDto**](HistoryDto.md)
 
 ### Authorization
 
@@ -408,7 +426,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **ListTopic**
-> string ListTopic(ctx, clusterId)
+> []TopicDto ListTopic(ctx, portalUserId, clusterId)
 
 
 ### Required Parameters
@@ -416,11 +434,12 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
 
 ### Return type
 
-**string**
+[**[]TopicDto**](TopicDto.md)
 
 ### Authorization
 
@@ -434,7 +453,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **ListUser**
-> string ListUser(ctx, clusterId)
+> []UserDto ListUser(ctx, portalUserId, clusterId)
 
 
 ### Required Parameters
@@ -442,11 +461,12 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
 
 ### Return type
 
-**string**
+[**[]UserDto**](UserDto.md)
 
 ### Authorization
 
@@ -459,8 +479,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **RegenerateUserAuthenCreds**
-> string RegenerateUserAuthenCreds(ctx, clusterId, userId)
+# **RegenerateUserAuthenCredential**
+> string RegenerateUserAuthenCredential(ctx, portalUserId, clusterId, userId)
 
 
 ### Required Parameters
@@ -468,6 +488,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
   **userId** | **string**|  | 
 
@@ -487,7 +508,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UpdateAuthentication**
-> string UpdateAuthentication(ctx, clusterId, mtlsAuthen, saslAuthen)
+> string UpdateAuthentication(ctx, clusterId, portalUserId, mtlsAuthen, saslAuthen)
 
 
 ### Required Parameters
@@ -496,6 +517,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **clusterId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
   **mtlsAuthen** | **bool**|  | 
   **saslAuthen** | **bool**|  | 
 
@@ -515,7 +537,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UpdateBrokerCount**
-> WrapContentListOrderResponse UpdateBrokerCount(ctx, clusterId, count, rebalance, optional)
+> WrapContentListOrderResponse UpdateBrokerCount(ctx, clusterId, portalUserId, count, rebalance, optional)
 
 
 ### Required Parameters
@@ -524,6 +546,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **clusterId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
   **count** | **int32**|  | 
   **rebalance** | **bool**|  | 
  **optional** | ***KafkaClusterAPIApiUpdateBrokerCountOpts** | optional parameters | nil if no parameters
@@ -535,7 +558,8 @@ Name | Type | Description  | Notes
 
 
 
- **userType** | **optional.String**|  | [default to ROOT_USER]
+
+ **userType** | **optional.String**| ROOT_USER for Checkout flow or IAM_USER for Auto Payment flow. Available values: ROOT_USER, IAM_USER. Default value: ROOT_USER.  | 
 
 ### Return type
 
@@ -553,7 +577,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UpdateConfigGroup**
-> string UpdateConfigGroup(ctx, clusterId, configGroupVersionId)
+> string UpdateConfigGroup(ctx, clusterId, portalUserId, configGroupVersionId)
 
 
 ### Required Parameters
@@ -562,6 +586,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **clusterId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
   **configGroupVersionId** | **string**|  | 
 
 ### Return type
@@ -580,7 +605,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UpdatePublicAccess**
-> string UpdatePublicAccess(ctx, clusterId, enable)
+> string UpdatePublicAccess(ctx, clusterId, portalUserId, enable)
 
 
 ### Required Parameters
@@ -589,6 +614,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **clusterId** | **string**|  | 
+  **portalUserId** | **int32**|  | 
   **enable** | **string**|  | 
 
 ### Return type
@@ -607,7 +633,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UpdateStorageSize**
-> WrapContentListOrderResponse UpdateStorageSize(ctx, clusterId, size, optional)
+> WrapContentListOrderResponse UpdateStorageSize(ctx, clusterId, size, portalUserId, optional)
 
 
 ### Required Parameters
@@ -617,6 +643,7 @@ Name | Type | Description  | Notes
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **clusterId** | **string**|  | 
   **size** | **int32**|  | 
+  **portalUserId** | **int32**|  | 
  **optional** | ***KafkaClusterAPIApiUpdateStorageSizeOpts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
@@ -625,7 +652,8 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **userType** | **optional.String**|  | [default to ROOT_USER]
+
+ **userType** | **optional.String**| ROOT_USER for Checkout flow or IAM_USER for Auto Payment flow. Available values: ROOT_USER, IAM_USER. Default value: ROOT_USER.  | 
 
 ### Return type
 
@@ -643,7 +671,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UpdateStorageType**
-> WrapContentListOrderResponse UpdateStorageType(ctx, clusterId, storageType, optional)
+> WrapContentListOrderResponse UpdateStorageType(ctx, clusterId, storageType, portalUserId, optional)
 
 
 ### Required Parameters
@@ -653,6 +681,7 @@ Name | Type | Description  | Notes
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **clusterId** | **string**|  | 
   **storageType** | **string**|  | 
+  **portalUserId** | **int32**|  | 
  **optional** | ***KafkaClusterAPIApiUpdateStorageTypeOpts** | optional parameters | nil if no parameters
 
 ### Optional Parameters
@@ -661,7 +690,8 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **userType** | **optional.String**|  | [default to ROOT_USER]
+
+ **userType** | **optional.String**| ROOT_USER for Checkout flow or IAM_USER for Auto Payment flow. Available values: ROOT_USER, IAM_USER. Default value: ROOT_USER.  | 
 
 ### Return type
 
@@ -679,7 +709,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UpdateTopic**
-> string UpdateTopic(ctx, body, clusterId, topicId)
+> string UpdateTopic(ctx, body, portalUserId, clusterId, topicId)
 
 
 ### Required Parameters
@@ -687,7 +717,8 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**TopicUpdateRequest**](TopicUpdateRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
   **topicId** | **string**|  | 
 
@@ -707,7 +738,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **UpdateUser**
-> string UpdateUser(ctx, body, clusterId, userId)
+> string UpdateUser(ctx, body, portalUserId, clusterId, userId)
 
 
 ### Required Parameters
@@ -715,7 +746,8 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**UserUpdatePermissionsRequest**](UserUpdatePermissionsRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
   **clusterId** | **string**|  | 
   **userId** | **string**|  | 
 

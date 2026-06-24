@@ -1,6 +1,6 @@
 # {{classname}}
 
-All URIs are relative to *https://vdb-gateway.vngcloud.vn*
+All URIs are relative to *https:/vdb-gateway.vngcloud.vn*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -12,7 +12,7 @@ Method | HTTP request | Description
 [**ListConfigGroup**](KafkaConfigurationGroupAPIApi.md#ListConfigGroup) | **Get** /vdb-kafka/config-groups | 
 
 # **CreateConfigGroup**
-> string CreateConfigGroup(ctx, body)
+> ConfigGroupDto CreateConfigGroup(ctx, body, portalUserId)
 
 
 ### Required Parameters
@@ -20,11 +20,12 @@ Method | HTTP request | Description
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**ConfigGroupCreateRequest**](ConfigGroupCreateRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
-**string**
+[**ConfigGroupDto**](ConfigGroupDto.md)
 
 ### Authorization
 
@@ -38,7 +39,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **CreateConfigGroupVersion**
-> string CreateConfigGroupVersion(ctx, body, configGroupId)
+> ConfigGroupVersionDto CreateConfigGroupVersion(ctx, body, portalUserId, configGroupId)
 
 
 ### Required Parameters
@@ -46,12 +47,13 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**string**](string.md)|  | 
+  **body** | [**ConfigGroupVersionCreateRequest**](ConfigGroupVersionCreateRequest.md)|  | 
+  **portalUserId** | **int32**|  | 
   **configGroupId** | **string**|  | 
 
 ### Return type
 
-**string**
+[**ConfigGroupVersionDto**](ConfigGroupVersionDto.md)
 
 ### Authorization
 
@@ -65,7 +67,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **DeleteConfigGroup**
-> string DeleteConfigGroup(ctx, configGroupId)
+> string DeleteConfigGroup(ctx, portalUserId, configGroupId)
 
 
 ### Required Parameters
@@ -73,6 +75,7 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **configGroupId** | **string**|  | 
 
 ### Return type
@@ -91,7 +94,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **GetConfigGroupById**
-> string GetConfigGroupById(ctx, configGroupId)
+> ConfigGroupDto GetConfigGroupById(ctx, portalUserId, configGroupId)
 
 
 ### Required Parameters
@@ -99,11 +102,12 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **configGroupId** | **string**|  | 
 
 ### Return type
 
-**string**
+[**ConfigGroupDto**](ConfigGroupDto.md)
 
 ### Authorization
 
@@ -117,7 +121,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **GetConfigGroupVersionById**
-> string GetConfigGroupVersionById(ctx, configGroupId, configGroupVersionId)
+> ConfigGroupVersionDto GetConfigGroupVersionById(ctx, portalUserId, configGroupId, configGroupVersionId)
 
 
 ### Required Parameters
@@ -125,12 +129,13 @@ No authorization required
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
   **configGroupId** | **string**|  | 
   **configGroupVersionId** | **string**|  | 
 
 ### Return type
 
-**string**
+[**ConfigGroupVersionDto**](ConfigGroupVersionDto.md)
 
 ### Authorization
 
@@ -144,15 +149,19 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **ListConfigGroup**
-> string ListConfigGroup(ctx, )
+> []ConfigGroupDto ListConfigGroup(ctx, portalUserId)
 
 
 ### Required Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 
-**string**
+[**[]ConfigGroupDto**](ConfigGroupDto.md)
 
 ### Authorization
 

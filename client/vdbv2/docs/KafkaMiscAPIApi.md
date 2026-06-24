@@ -1,17 +1,17 @@
 # {{classname}}
 
-All URIs are relative to *https://vdb-gateway.vngcloud.vn*
+All URIs are relative to *https:/vdb-gateway.vngcloud.vn*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**GetVolumeTypes1**](KafkaMiscAPIApi.md#GetVolumeTypes1) | **Get** /vdb-kafka/database/volume-types | 
+[**GetVolumeTypes2**](KafkaMiscAPIApi.md#GetVolumeTypes2) | **Get** /vdb-kafka/database/volume-types | 
 [**ListAppConfigs**](KafkaMiscAPIApi.md#ListAppConfigs) | **Get** /vdb-kafka/database/configs | 
 [**ListCode**](KafkaMiscAPIApi.md#ListCode) | **Get** /vdb-kafka/database/codes | 
 [**ListFamily**](KafkaMiscAPIApi.md#ListFamily) | **Get** /vdb-kafka/database/families | 
 [**ListFlavor**](KafkaMiscAPIApi.md#ListFlavor) | **Get** /vdb-kafka/database/flavors | 
 
-# **GetVolumeTypes1**
-> WrapContentVolumeTypeGatewayResponse GetVolumeTypes1(ctx, portalUserId)
+# **GetVolumeTypes2**
+> WrapContentVolumeTypeGatewayResponse GetVolumeTypes2(ctx, portalUserId)
 
 
 ### Required Parameters
@@ -89,11 +89,15 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **ListFamily**
-> WrapContentListInstanceFamily ListFamily(ctx, )
+> WrapContentListInstanceFamily ListFamily(ctx, portalUserId)
 
 
 ### Required Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **portalUserId** | **int32**|  | 
 
 ### Return type
 

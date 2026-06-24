@@ -3,6 +3,7 @@
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**ZoneId** | **string** |  | [optional] [default to null]
 **Id** | **string** |  | [optional] [default to null]
 **DbBackendId** | **int32** |  | [optional] [default to null]
 **Name** | **string** |  | [optional] [default to null]
@@ -59,6 +60,17 @@ Name | Type | Description | Notes
 **ProjectId** | **string** |  | [optional] [default to null]
 **SkuFlavor** | **string** |  | [optional] [default to null]
 **SkuVolume** | **string** |  | [optional] [default to null]
+**DeployType** | **string** |  | [optional] [default to null]
+**NumberOfNodes** | **int32** |  | [optional] [default to null]
+**PrivateRwIp** | **string** |  | [optional] [default to null]
+**PublicRwIp** | **string** |  | [optional] [default to null]
+**PrivateRoIp** | **string** |  | [optional] [default to null]
+**PublicRoIp** | **string** |  | [optional] [default to null]
+**EnableProxies** | **bool** |  | [optional] [default to null]
+**PoolMaxConnections** | **int32** |  | [optional] [default to null]
+**VolumeTypeId** | **string** |  | [optional] [default to null]
+**DomainName** | **string** |  | [optional] [default to null]
+**PortRo** | **int32** |  | [optional] [default to null]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

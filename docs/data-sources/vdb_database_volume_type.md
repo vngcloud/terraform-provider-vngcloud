@@ -16,6 +16,7 @@ description: |-
 ```terraform
 data "vngcloud_vdb_database_volume_type" "Gen2_NVMe2_IOPS3000" {
   type = "Gen2-NVMe2-IOPS3000"
+  zone_id = "HCM03-1A"
 }
 ```
 
@@ -25,12 +26,14 @@ The following arguments are supported by the resource:
 
 - **type** (String, Required):
     - The type of the volume. This field is required to query the data source.
-
+- **zone_id** (String, Optional, Computed): Zone ID of the volume type. Default value: HCM03-1A. Allowed values: HCM03-1A, HCM03-1B, HCM03-1C
 
 
 ## Attributes Reference
 
 In addition to all arguments above, the following attributes are exported:
+- **id** (String, Computed):
+    - The ID of the package.
 
 - **volume_type_zone_id** (String, Computed):
     - The ID of the zone where the volume type is located. This field is computed and available after the data source is queried.

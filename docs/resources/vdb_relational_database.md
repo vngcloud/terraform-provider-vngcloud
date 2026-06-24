@@ -32,6 +32,7 @@ resource "vngcloud_vdb_relational_database" "mysql_8_db" {
   volume_size = 20
   volume_type = data.vngcloud_vdb_database_volume_type.Gen2_NVMe2_IOPS3000.id
   allowed_ip_prefix = ["10.10.0.0/24"]
+  zone_id = "HCM03-1A"
 }
 ```
 
@@ -39,8 +40,8 @@ resource "vngcloud_vdb_relational_database" "mysql_8_db" {
 
 The following arguments are supported:
 
-- **action** (String, Required):
-    - The action to perform (start, stop, reboot) The initial value when creating the resource should be 'start'. This field is required.
+- **action** (String, Optional):
+    - The action to perform (start, stop, reboot).
 
 - **backup_auto** (Bool, Required):
     - Indicates if daily automatic backups are enabled. This field is required.
@@ -98,6 +99,8 @@ The following arguments are supported:
 
 - **is_poc** (Bool, Optional, ForceNew):
     - Is Poc Resource. This field is optional and cannot be changed after creation.
+
+- **zone_id** (String, Optional, ForceNew, Computed): Zone ID. Default value: HCM03-1A. Allowed values: HCM03-1A, HCM03-1B, HCM03-1C
 
 ## Attributes Reference
 
