@@ -92,6 +92,7 @@ var (
 		"REBALANCING_OUT",
 		"WAITING_REBALANCING_IN",
 		"REBALANCING_IN",
+		"CREATING_BILL",
 	}
 	kafkaClusterUpdateBrokerCountTarget = []string{"ACTIVE"}
 
@@ -100,6 +101,7 @@ var (
 		"UPDATING",
 		"WAITING_UPDATING_STORAGE_TYPE",
 		"UPDATING_STORAGE_TYPE",
+		"CREATING_BILL",
 	}
 	kafkaClusterUpdateStorageTypeTarget = []string{"ACTIVE"}
 
@@ -108,6 +110,7 @@ var (
 		"UPDATING",
 		"WAITING_UPDATING_STORAGE_SIZE",
 		"UPDATING_STORAGE_SIZE",
+		"CREATING_BILL",
 	}
 	kafkaClusterUpdateStorageSizeTarget = []string{"ACTIVE"}
 
