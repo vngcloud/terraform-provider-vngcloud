@@ -39,10 +39,11 @@ func ResourceCluster() *schema.Resource {
 			},
 		},
 
-		Create: resourceClusterCreate,
-		Read:   resourceClusterRead,
-		Update: resourceClusterUpdate,
-		Delete: resourceClusterDelete,
+		Create:        resourceClusterCreate,
+		Read:          resourceClusterRead,
+		Update:        resourceClusterUpdate,
+		Delete:        resourceClusterDelete,
+		CustomizeDiff: resourceClusterCustomizeDiff,
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 				cli := m.(*client.Client)
@@ -162,6 +163,8 @@ func ResourceCluster() *schema.Resource {
 								Type:     schema.TypeString,
 								Computed: true,
 							},
+							// Overrides schemaNodeGroup["taint"] (TypeSet) — see inlineNodeGroupTaintSchema.
+							"taint": inlineNodeGroupTaintSchema,
 						}),
 				},
 			},
@@ -858,6 +861,102 @@ func nodeGroupMapsEqual(a, b map[string]interface{}) bool {
 	return true
 }
 
+// taintDtoSetsEqual compares two taint slices as sets (order-independent, key+value+effect dedup)
+// instead of positionally — the inline node_group's taint is TypeList (see
+// inlineNodeGroupTaintSchema in resrouce_cluster_node_group.go), so a plain reflect.DeepEqual would
+// report a spurious change whenever the API returns taints in a different order than the config.
+// Mirrors the checkSecurityGroupsSame/CheckListStringEqual pattern already used for security_groups.
+//
+// The raw-length check below (before deduping) matters because the server guarantees no two
+// taints on the same node group share a key+effect pair, so `b` (sourced from server state) is
+// always duplicate-free; without this check, a config-side typo that duplicates a taint entry
+// could reduce to the same deduped set size as `b` and be misreported as "no change".
+func taintDtoSetsEqual(a, b []vks.NodeGroupTaintDto) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	toSet := func(taints []vks.NodeGroupTaintDto) map[string]bool {
+		set := make(map[string]bool, len(taints))
+		for _, t := range taints {
+			set[t.Key+"\x00"+t.Value+"\x00"+t.Effect] = true
+		}
+		return set
+	}
+	setA, setB := toSet(a), toSet(b)
+	if len(setA) != len(setB) {
+		return false
+	}
+	for k := range setA {
+		if !setB[k] {
+			return false
+		}
+	}
+	return true
+}
+
+// taintDtoSlicesEqualPositionally compares two taint slices element-by-element in order.
+func taintDtoSlicesEqualPositionally(a, b []vks.NodeGroupTaintDto) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// resourceClusterCustomizeDiff suppresses spurious plan diffs for the inline node_group's taint
+// when the only difference from prior state is ORDER. taint is TypeList (see
+// inlineNodeGroupTaintSchema), so Terraform's own diff is positional — if the API returns taints
+// in a different order than the config declares them, plan would otherwise show a diff every time
+// even though nothing meaningfully changed. changeNodeGroup's taintDtoSetsEqual check already
+// prevents sending an unnecessary PATCH at apply time; this does the equivalent at plan time via
+// d.Clear so the preview doesn't nag either. A genuine content change (not just reordering) is left
+// untouched and still shows normally.
+//
+// Pairs old/new node groups by raw slice index, assuming the list itself stays positionally
+// aligned between old and new — safe today because "node_group" is ForceNew: true, so any
+// structural change to the node_group list (add/remove/reorder a whole node group) forces a full
+// resource replacement rather than reaching this in-place diff path. If node_group's ForceNew is
+// ever relaxed, this index-based pairing would need to switch to matching by a stable identity
+// (e.g. node_group_id) instead.
+func resourceClusterCustomizeDiff(ctx context.Context, d *schema.ResourceDiff, m interface{}) error {
+	oldRaw, newRaw := d.GetChange("node_group")
+	oldNodeGroups, _ := oldRaw.([]interface{})
+	newNodeGroups, _ := newRaw.([]interface{})
+
+	n := len(oldNodeGroups)
+	if len(newNodeGroups) > n {
+		n = len(newNodeGroups)
+	}
+	for idx := 0; idx < n; idx++ {
+		var oldTaintsInput, newTaintsInput []interface{}
+		if idx < len(oldNodeGroups) {
+			if ng, ok := oldNodeGroups[idx].(map[string]interface{}); ok {
+				oldTaintsInput, _ = ng["taint"].([]interface{})
+			}
+		}
+		if idx < len(newNodeGroups) {
+			if ng, ok := newNodeGroups[idx].(map[string]interface{}); ok {
+				newTaintsInput, _ = ng["taint"].([]interface{})
+			}
+		}
+		oldTaints := getTaints(oldTaintsInput)
+		newTaints := getTaints(newTaintsInput)
+		if len(oldTaints) != len(newTaints) {
+			continue
+		}
+		if taintDtoSetsEqual(oldTaints, newTaints) && !taintDtoSlicesEqualPositionally(oldTaints, newTaints) {
+			if err := d.Clear(fmt.Sprintf("node_group.%d.taint", idx)); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
 	nodeGroups := d.Get("node_group").([]interface{})
@@ -886,11 +985,14 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 			numNodes = &num
 		}
 		var tains []vks.NodeGroupTaintDto
-		if taintSet, ok := nodeGroup["taint"].(*schema.Set); ok {
-			tains = getTaints(taintSet.List())
-		} else {
-			tains = nil
+		if taintsInput, ok := nodeGroup["taint"].([]interface{}); ok {
+			tains = getTaints(taintsInput)
 		}
+		var oldTaints []vks.NodeGroupTaintDto
+		if oldTaintsInput, ok := oldNodeGroup["taint"].([]interface{}); ok {
+			oldTaints = getTaints(oldTaintsInput)
+		}
+		taintChanged := !taintDtoSetsEqual(tains, oldTaints)
 		labels := getLabels(nodeGroup["labels"].(map[string]interface{}))
 
 		putFieldsChanged := !reflect.DeepEqual(nodeGroup["security_groups"], oldNodeGroup["security_groups"]) ||
@@ -934,7 +1036,7 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 		}
 
 		if !reflect.DeepEqual(nodeGroup["labels"], oldNodeGroup["labels"]) ||
-			!FieldsEqual(nodeGroup["taint"], oldNodeGroup["taint"]) ||
+			taintChanged ||
 			!reflect.DeepEqual(nodeGroup["tags"], oldNodeGroup["tags"]) {
 			tags := getLabels(nodeGroup["tags"].(map[string]interface{}))
 			patchRequest := vks.PatchNodeGroupMetadataDto{
@@ -1113,10 +1215,8 @@ func resourceNodeGroupForClusterStateRefreshFunc(cli *client.Client, clusterID s
 
 func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) (vks.CreateNodeGroupDto, error) {
 	var tains []vks.NodeGroupTaintDto
-	if taintSet, ok := nodeGroup["taint"].(*schema.Set); ok {
-		tains = getTaints(taintSet.List())
-	} else {
-		tains = nil
+	if taintsInput, ok := nodeGroup["taint"].([]interface{}); ok {
+		tains = getTaints(taintsInput)
 	}
 	secondarySubnets, errSecondarySubnets := getSecondarySubnets(nodeGroup["secondary_subnets"].([]interface{}))
 	if errSecondarySubnets != nil {
@@ -1229,6 +1329,12 @@ func resourceContainerClusterResourceV1() *schema.Resource {
 								Type:     schema.TypeString,
 								Computed: true,
 							},
+							// Overrides schemaNodeGroup["taint"] (TypeSet) — see inlineNodeGroupTaintSchema.
+							// Without this, this frozen historical schema would silently track whatever
+							// schemaNodeGroup["taint"]'s current type is (schemaNodeGroup is a shared,
+							// mutable package var), instead of the List-shaped taint this StateUpgrader
+							// actually needs to decode pre-existing raw state correctly.
+							"taint": inlineNodeGroupTaintSchema,
 						}),
 				},
 			},
@@ -1348,6 +1454,12 @@ func resourceContainerClusterResourceV2() *schema.Resource {
 								Type:     schema.TypeString,
 								Computed: true,
 							},
+							// Overrides schemaNodeGroup["taint"] (TypeSet) — see inlineNodeGroupTaintSchema.
+							// Without this, this frozen historical schema would silently track whatever
+							// schemaNodeGroup["taint"]'s current type is (schemaNodeGroup is a shared,
+							// mutable package var), instead of the List-shaped taint this StateUpgrader
+							// actually needs to decode pre-existing raw state correctly.
+							"taint": inlineNodeGroupTaintSchema,
 						}),
 				},
 			},
@@ -1494,6 +1606,12 @@ func resourceContainerClusterResourceV3() *schema.Resource {
 								Type:     schema.TypeString,
 								Computed: true,
 							},
+							// Overrides schemaNodeGroup["taint"] (TypeSet) — see inlineNodeGroupTaintSchema.
+							// Without this, this frozen historical schema would silently track whatever
+							// schemaNodeGroup["taint"]'s current type is (schemaNodeGroup is a shared,
+							// mutable package var), instead of the List-shaped taint this StateUpgrader
+							// actually needs to decode pre-existing raw state correctly.
+							"taint": inlineNodeGroupTaintSchema,
 						}),
 				},
 			},
