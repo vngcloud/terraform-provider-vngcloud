@@ -98,10 +98,44 @@ resource "vngcloud_vks_cluster" "primary" {
   * `auto_scale_config` - (Optional) Autoscaler configuration with `min_size` and `max_size`.
   * `upgrade_config` - (Optional) Upgrade strategy configuration.
   * `labels` - (Optional) Kubernetes labels as key/value map.
-  * `taint` - (Optional) List of Kubernetes taints with `key`, `value`, `effect`.
+  * `taint` - (Optional) List of Kubernetes taints with `key`, `value`, `effect`. Can be written either as repeated `taint { ... }` blocks or as a `taint = [{ key = "...", value = "...", effect = "NoSchedule" }]` list — both forms are supported (do not mix both in the same resource). Setting `taint = []` removes all taints; this is only expressible with the list form. If omitted, existing taints on the server are preserved.
   * `secondary_subnets` - (Optional) Additional subnets for CILIUM_NATIVE_ROUTING mode.
   * `subnet_id` - (Optional) Subnet ID for nodes.
   * `enabled_encryption_volume` - (Optional) Enable volume encryption. Default is false.
+---
+### **Clearing all taints on the inline `node_group`**
+
+The inline `node_group`'s `taint` supports both the classic repeated-block syntax and a list
+attribute syntax (Terraform's [Attributes as Blocks](https://developer.hashicorp.com/terraform/language/attr-as-blocks)
+behavior for this kind of field) — existing configs using `taint { ... }` blocks continue to work
+unchanged. The list attribute form is only needed when you want to explicitly clear all taints,
+since omitting every `taint { ... }` block is indistinguishable from never having configured
+taints at all — `taint = []` is the only way to express "remove all taints":
+
+```hcl
+# Existing block syntax — still valid, no changes needed
+taint {
+  key    = "key1"
+  value  = "value1"
+  effect = "PreferNoSchedule"
+}
+
+# Equivalent list attribute syntax
+taint = [
+  {
+    key    = "key1"
+    value  = "value1"
+    effect = "PreferNoSchedule"
+  }
+]
+
+# Explicitly clear all taints — only possible with the list form
+taint = []
+```
+
+A single resource cannot mix both forms for the same `taint` argument — use either `taint { ... }`
+blocks or a `taint = [...]` list, not both.
+
 ---
 ### **Some important notes when using VKS with Terraform:**
 

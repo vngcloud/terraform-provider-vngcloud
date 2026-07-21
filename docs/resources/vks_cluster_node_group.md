@@ -132,11 +132,45 @@ resource "vngcloud_vks_cluster_node_group" "primary" {
 * `security_groups` - (Optional) - Specifies the security group for your cluster. A security group acts as a virtual firewall, controlling inbound and outbound traffic for associated resources. You can find the Security Group ID on the vServer Portal and input it here.
 * `ssh_key_id` - (Required) - Specifies the SSH key for secure credentials to prove your identity when connecting to the server. You can import a key and get the SSH Key ID on the vServer Portal to input here
 * `labels` - (Optional) - Key/value pairs attached to objects like Pods. They specify identifying attributes meaningful to users but do not imply semantics to the core system.
-* `taint` - (Optional) - A taint consists of a key, value, and effect, expressed as key=value:effect.
+* `taint` - (Optional) - A list of Kubernetes taints to apply to each node. Can be written either as repeated `taint { ... }` blocks or as a `taint = [{ key = "key1", value = "value1", effect = "PreferNoSchedule" }]` list — both forms are supported (do not mix both in the same resource). Setting `taint = []` removes all taints; this is only expressible with the list form. If omitted, existing taints on the server are preserved.
     * `key`- (Required) - The key for the taint. Must be 63 characters or less, using letters (a-z, A-Z), numbers (0-9), hyphens (-), underscores (_), and periods (.). Must start and end with a letter, number, or underscore.
     * `value` - (Required) - The value for the taint. Must be 63 characters or less, using letters (a-z, A-Z), numbers (0-9), hyphens (-), underscores (_), and periods (.). Must start and end with a letter, number, or underscore.
     * `effect` - (Optional) - The effect for the taint. Accepted values are `NoSchedule`, `PreferNoSchedule`, and `NoExecute`.
 * `tags` - (Optional) Key-value pairs of cloud tags to apply to all VMs and volumes in the node group. Tags are synced to underlying infrastructure by the deputy controller. Keys containing hyphens or dots must be quoted in HCL (e.g. `"cost-center" = "infra"`). Setting `tags = {}` removes all tags. If omitted, existing tags on the server are preserved.
+---
+### **Clearing all taints**
+
+`taint` supports both the classic repeated-block syntax and a list attribute syntax (Terraform's
+[Attributes as Blocks](https://developer.hashicorp.com/terraform/language/attr-as-blocks)
+behavior for this kind of field) — existing configs using `taint { ... }` blocks continue to work
+unchanged. The list attribute form is only needed when you want to explicitly clear all taints,
+since omitting every `taint { ... }` block is indistinguishable from never having configured
+taints at all — `taint = []` is the only way to express "remove all taints":
+
+```hcl
+# Existing block syntax — still valid, no changes needed
+taint {
+  key    = "key1"
+  value  = "value1"
+  effect = "PreferNoSchedule"
+}
+
+# Equivalent list attribute syntax
+taint = [
+  {
+    key    = "key1"
+    value  = "value1"
+    effect = "PreferNoSchedule"
+  }
+]
+
+# Explicitly clear all taints — only possible with the list form
+taint = []
+```
+
+A single resource cannot mix both forms for the same `taint` argument — use either `taint { ... }`
+blocks or a `taint = [...]` list, not both.
+
 ---
 ### **Some important notes when using VKS with Terraform:**
 
