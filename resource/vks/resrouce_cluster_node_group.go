@@ -204,15 +204,18 @@ var schemaNodeGroup = map[string]*schema.Schema{
 		Description: `The map of Kubernetes labels (key/value pairs) to be applied to each node. These will added in addition to any default label(s) that Kubernetes may apply to the node.`,
 	},
 	"taint": {
-		Type:     schema.TypeList,
+		Type:     schema.TypeSet,
 		Optional: true,
 		Computed: true,
 		// Elem is a *Resource, so SDK v2's Auto ConfigMode would default to block syntax
 		// (taint { ... }) regardless of Optional/Computed; ConfigModeAttr forces attribute
 		// syntax (taint = [...]) instead, which is required so taint = [] can explicitly
 		// clear all taints (block syntax can never represent "explicitly empty").
+		// TypeSet (rather than TypeList) makes the diff order-independent: taints are
+		// compared by content (hashed on key+value+effect), not by position, so the API
+		// returning them in a different order than the config doesn't trigger a spurious update.
 		ConfigMode:  schema.SchemaConfigModeAttr,
-		Description: `List of Kubernetes taints to be applied to each node, e.g. taint = [{ key = "...", value = "...", effect = "NoSchedule" }]. Omit to leave existing taints unchanged; set taint = [] to explicitly remove all taints.`,
+		Description: `List of Kubernetes taints to be applied to each node, e.g. taint = [{ key = "...", value = "...", effect = "NoSchedule" }]. Omit to leave existing taints unchanged; set taint = [] to explicitly remove all taints. Order does not matter, and duplicate entries with identical key/value/effect are treated as a single taint.`,
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"key": {
@@ -630,10 +633,9 @@ func getSecondarySubnets(input []interface{}) ([]string, error) {
 }
 
 func getCreateNodeGroupRequest(d *schema.ResourceData) (vks.CreateNodeGroupDto, error) {
-	taintsInput, ok := d.Get("taint").([]interface{})
 	var tains []vks.NodeGroupTaintDto
-	if ok {
-		tains = getTaints(taintsInput)
+	if taintSet, ok := d.Get("taint").(*schema.Set); ok {
+		tains = getTaints(taintSet.List())
 	} else {
 		tains = nil
 	}
@@ -743,7 +745,12 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 	// Always sends all 3 fields when triggered so portal-side drift is corrected in the same call.
 	if d.HasChange("labels") || d.HasChange("taint") || d.HasChange("tags") {
 		labels := getLabels(d.Get("labels").(map[string]interface{}))
-		taints := getTaints(d.Get("taint").([]interface{}))
+		var taints []vks.NodeGroupTaintDto
+		if taintSet, ok := d.Get("taint").(*schema.Set); ok {
+			taints = getTaints(taintSet.List())
+		} else {
+			taints = nil
+		}
 		tags := getLabels(d.Get("tags").(map[string]interface{}))
 
 		patchRequest := vks.PatchNodeGroupMetadataDto{

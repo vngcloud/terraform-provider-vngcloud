@@ -39,3 +39,8 @@ description: |-
   [vks_cluster_node_group](https://registry.terraform.io/providers/vngcloud/vngcloud/latest/docs/resources/vks_cluster_node_group#clearing-all-taints)
   for details. Note: a single resource cannot mix both forms for the same `taint` argument —
   use either `taint { ... }` blocks or a `taint = [...]` list, not both.
+
+- `taint` diffing is now order-independent and content-based: reordering `taint` entries in
+  config no longer produces a plan diff, and two entries with identical `key`/`value`/`effect`
+  are treated as the same taint (duplicates are not sent to the API twice). Previously, taint
+  order mattered and could cause spurious in-place updates.

@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -45,6 +46,19 @@ func CheckListStringEqual(firstList []string, secondList []string) bool {
 		return true
 	}
 	return false
+}
+
+// FieldsEqual compares two ResourceData field values for equality, preferring the SDK's own
+// schema.Equal interface (implemented by *schema.Set) over reflect.DeepEqual when available —
+// mirrors the SDK's own HasChange implementation. reflect.DeepEqual alone is unsuitable for
+// *schema.Set: it carries an internal hash-func closure that differs between independently
+// constructed sets even when their content is identical, so DeepEqual would report a spurious
+// diff on every apply for any Set-typed field.
+func FieldsEqual(a, b interface{}) bool {
+	if eq, ok := a.(schema.Equal); ok {
+		return eq.Equal(b)
+	}
+	return reflect.DeepEqual(a, b)
 }
 
 func MergeSchemas(a, b map[string]*schema.Schema) map[string]*schema.Schema {

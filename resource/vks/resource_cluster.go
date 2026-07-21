@@ -464,8 +464,6 @@ func expandNodeGroupForCreating(node_group []interface{}, d *schema.ResourceData
 		log.Printf("node_group nil\n")
 		return []vks.CreateNodeGroupDto{}, nil
 	}
-	nodeGroupsJson, _ := json.Marshal(node_group)
-	log.Printf("%s\n", string(nodeGroupsJson))
 	createNodeGroupRequests := make([]vks.CreateNodeGroupDto, len(node_group))
 	for i, ng := range node_group {
 		nodeGroup, ok := ng.(map[string]interface{})
@@ -489,6 +487,8 @@ func expandNodeGroupForCreating(node_group []interface{}, d *schema.ResourceData
 		}
 		createNodeGroupRequests[i] = createNodeGroupRequest
 	}
+	nodeGroupsJson, _ := json.Marshal(createNodeGroupRequests)
+	log.Printf("%s\n", string(nodeGroupsJson))
 	return createNodeGroupRequests, nil
 }
 
@@ -840,13 +840,31 @@ func updateCluster(d *schema.ResourceData, m interface{}) error {
 	return resourceClusterRead(d, m)
 }
 
+// nodeGroupMapsEqual compares two node-group value maps for equality field-by-field via
+// FieldsEqual, instead of a single reflect.DeepEqual over the whole map — reflect.DeepEqual never
+// matches two independently-constructed *schema.Set values (the "taint" field) even when their
+// content is identical, so a whole-map DeepEqual would never short-circuit for any node group that
+// carries a taint.
+func nodeGroupMapsEqual(a, b map[string]interface{}) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for k, av := range a {
+		bv, ok := b[k]
+		if !ok || !FieldsEqual(av, bv) {
+			return false
+		}
+	}
+	return true
+}
+
 func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
 	nodeGroups := d.Get("node_group").([]interface{})
 	oldNodeGroupSch, _ := d.GetChange("node_group")
 	oldNodeGroups := oldNodeGroupSch.([]interface{})
 	for i, ng := range nodeGroups {
-		if reflect.DeepEqual(ng, oldNodeGroups[i]) {
+		if nodeGroupMapsEqual(ng.(map[string]interface{}), oldNodeGroups[i].(map[string]interface{})) {
 			continue
 		}
 		nodeGroup := ng.(map[string]interface{})
@@ -867,10 +885,9 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 			num := int32(nodeGroup["num_nodes"].(int))
 			numNodes = &num
 		}
-		taintsInput, ok := nodeGroup["taint"].([]interface{})
 		var tains []vks.NodeGroupTaintDto
-		if ok {
-			tains = getTaints(taintsInput)
+		if taintSet, ok := nodeGroup["taint"].(*schema.Set); ok {
+			tains = getTaints(taintSet.List())
 		} else {
 			tains = nil
 		}
@@ -917,7 +934,7 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 		}
 
 		if !reflect.DeepEqual(nodeGroup["labels"], oldNodeGroup["labels"]) ||
-			!reflect.DeepEqual(nodeGroup["taint"], oldNodeGroup["taint"]) ||
+			!FieldsEqual(nodeGroup["taint"], oldNodeGroup["taint"]) ||
 			!reflect.DeepEqual(nodeGroup["tags"], oldNodeGroup["tags"]) {
 			tags := getLabels(nodeGroup["tags"].(map[string]interface{}))
 			patchRequest := vks.PatchNodeGroupMetadataDto{
@@ -1095,10 +1112,9 @@ func resourceNodeGroupForClusterStateRefreshFunc(cli *client.Client, clusterID s
 }
 
 func getCreateNodeGroupRequestForCluster(nodeGroup map[string]interface{}) (vks.CreateNodeGroupDto, error) {
-	taintsInput, ok := nodeGroup["taint"].([]interface{})
 	var tains []vks.NodeGroupTaintDto
-	if ok {
-		tains = getTaints(taintsInput)
+	if taintSet, ok := nodeGroup["taint"].(*schema.Set); ok {
+		tains = getTaints(taintSet.List())
 	} else {
 		tains = nil
 	}
