@@ -204,10 +204,15 @@ var schemaNodeGroup = map[string]*schema.Schema{
 		Description: `The map of Kubernetes labels (key/value pairs) to be applied to each node. These will added in addition to any default label(s) that Kubernetes may apply to the node.`,
 	},
 	"taint": {
-		Type:        schema.TypeList,
-		Optional:    true,
-		Computed:    true,
-		Description: `List of Kubernetes taints to be applied to each node.`,
+		Type:     schema.TypeList,
+		Optional: true,
+		Computed: true,
+		// Elem is a *Resource, so SDK v2's Auto ConfigMode would default to block syntax
+		// (taint { ... }) regardless of Optional/Computed; ConfigModeAttr forces attribute
+		// syntax (taint = [...]) instead, which is required so taint = [] can explicitly
+		// clear all taints (block syntax can never represent "explicitly empty").
+		ConfigMode:  schema.SchemaConfigModeAttr,
+		Description: `List of Kubernetes taints to be applied to each node, e.g. taint = [{ key = "...", value = "...", effect = "NoSchedule" }]. Omit to leave existing taints unchanged; set taint = [] to explicitly remove all taints.`,
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"key": {
@@ -427,7 +432,7 @@ func resourceClusterNodeGroupRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	// Import taints
-	if resp.Taints != nil && len(resp.Taints) > 0 {
+	if resp.Taints != nil {
 		taints := make([]interface{}, len(resp.Taints))
 		for i, taint := range resp.Taints {
 			taints[i] = map[string]interface{}{

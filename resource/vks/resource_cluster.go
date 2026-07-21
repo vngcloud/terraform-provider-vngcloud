@@ -428,7 +428,7 @@ func updateNodeGroupData(cli *client.Client, d *schema.ResourceData, clusterId s
 		}
 
 		// Import taints
-		if clusterNodeGroupDetail.Taints != nil && len(clusterNodeGroupDetail.Taints) > 0 {
+		if clusterNodeGroupDetail.Taints != nil {
 			taints := make([]interface{}, len(clusterNodeGroupDetail.Taints))
 			for j, taint := range clusterNodeGroupDetail.Taints {
 				taints[j] = map[string]interface{}{
