@@ -67,6 +67,54 @@ func ResourceClusterNodeGroup() *schema.Resource {
 	}
 }
 
+// inlineNodeGroupTaintSchema overrides schemaNodeGroup["taint"] (TypeSet) for the INLINE
+// node_group block on vngcloud_vks_cluster only (see ResourceCluster's node_group Elem, which
+// merges this in after schemaNodeGroup). TypeSet + ConfigModeAttr, while correct for the
+// standalone vngcloud_vks_cluster_node_group resource (a top-level attribute), is silently
+// decoded as empty by terraform-plugin-sdk/v2 (confirmed on v2.6.1 through v2.40.1) when nested
+// inside another block the way node_group is — any add/remove/edit of a specific taint on the
+// inline node_group would go undetected or misapplied. TypeList does not have this bug when
+// nested. Order-independence for the inline case is instead handled in Go at apply time (see
+// taintDtoSetsEqual in resource_cluster.go), the same pattern already used for security_groups
+// via checkSecurityGroupsSame — not by the schema type.
+//
+// WARNING: resourceClusterCustomizeDiff (resource_cluster.go) calls d.Clear on a path ending in
+// ".taint", and the vendored SDK's Clear matches diff keys by plain string prefix (no delimiter
+// boundary check). Do not add another field to this schema whose name starts with "taint" (e.g.
+// "taint_policy") without checking that call site — it would also get silently cleared.
+var inlineNodeGroupTaintSchema = &schema.Schema{
+	Type:     schema.TypeList,
+	Optional: true,
+	Computed: true,
+	// Elem is a *Resource, so SDK v2's Auto ConfigMode would default to block syntax
+	// (taint { ... }) regardless of Optional/Computed; ConfigModeAttr forces attribute
+	// syntax (taint = [...]) instead, which is required so taint = [] can explicitly
+	// clear all taints (block syntax can never represent "explicitly empty").
+	ConfigMode:  schema.SchemaConfigModeAttr,
+	Description: `List of Kubernetes taints to be applied to each node, e.g. taint = [{ key = "...", value = "...", effect = "NoSchedule" }]. Omit to leave existing taints unchanged; set taint = [] to explicitly remove all taints.`,
+	Elem: &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"key": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: `Key for taint.`,
+			},
+			"value": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: `Value for taint.`,
+			},
+			"effect": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				Default:      "NoSchedule",
+				ValidateFunc: validation.StringInSlice([]string{"NoSchedule", "PreferNoSchedule", "NoExecute"}, false),
+				Description:  `Effect for taint.`,
+			},
+		},
+	},
+}
+
 var schemaNodeGroup = map[string]*schema.Schema{
 	"name": {
 		Type:     schema.TypeString,

@@ -98,7 +98,7 @@ resource "vngcloud_vks_cluster" "primary" {
   * `auto_scale_config` - (Optional) Autoscaler configuration with `min_size` and `max_size`.
   * `upgrade_config` - (Optional) Upgrade strategy configuration.
   * `labels` - (Optional) Kubernetes labels as key/value map.
-  * `taint` - (Optional) Set of Kubernetes taints with `key`, `value`, `effect` — order does not matter, and duplicate entries with identical `key`+`value`+`effect` are treated as a single taint. Can be written either as repeated `taint { ... }` blocks or as a `taint = [{ key = "...", value = "...", effect = "NoSchedule" }]` list — both forms are supported (do not mix both in the same resource). Setting `taint = []` removes all taints; this is only expressible with the list form. If omitted, existing taints on the server are preserved.
+  * `taint` - (Optional) List of Kubernetes taints with `key`, `value`, `effect` — order does not matter (the provider ignores pure reordering when comparing against the server). Can be written either as repeated `taint { ... }` blocks or as a `taint = [{ key = "...", value = "...", effect = "NoSchedule" }]` list — both forms are supported (do not mix both in the same resource). Setting `taint = []` removes all taints; this is only expressible with the list form. If omitted, existing taints on the server are preserved.
   * `secondary_subnets` - (Optional) Additional subnets for CILIUM_NATIVE_ROUTING mode.
   * `subnet_id` - (Optional) Subnet ID for nodes.
   * `enabled_encryption_volume` - (Optional) Enable volume encryption. Default is false.
@@ -108,11 +108,11 @@ resource "vngcloud_vks_cluster" "primary" {
 The inline `node_group`'s `taint` supports both the classic repeated-block syntax and a list
 attribute syntax (Terraform's [Attributes as Blocks](https://developer.hashicorp.com/terraform/language/attr-as-blocks)
 behavior for this kind of field) — existing configs using `taint { ... }` blocks continue to work
-unchanged. Taints are compared as a set, so the order you list them in does not affect the plan,
-and duplicate `key`+`value`+`effect` entries collapse to one. The list attribute form is only
-needed when you want to explicitly clear all taints, since omitting every `taint { ... }` block is
-indistinguishable from never having configured taints at all — `taint = []` is the only way to
-express "remove all taints":
+unchanged. Reordering `taint` entries (e.g. because the server returns them in a different order
+than declared) does not produce a plan diff. The list attribute form is only needed when you want
+to explicitly clear all taints, since omitting every `taint { ... }` block is indistinguishable
+from never having configured taints at all — `taint = []` is the only way to express "remove all
+taints":
 
 ```hcl
 # Existing block syntax — still valid, no changes needed
