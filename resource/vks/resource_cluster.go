@@ -632,6 +632,10 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 			healingConfig["unhealthy_range"] = cfg.UnhealthyRange
 		}
 		d.Set("auto_healing_config", []interface{}{healingConfig})
+	} else {
+		// BE #31050: GET may now return autoHealingConfig=null (omitted on create);
+		// clear state so it matches the API, consistent with auto_upgrade_config above.
+		d.Set("auto_healing_config", nil)
 	}
 	log.Printf("GetConfig\n")
 	configResp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdKubeconfigGet(context.TODO(), clusterID, nil)
