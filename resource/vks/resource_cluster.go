@@ -135,10 +135,15 @@ func ResourceCluster() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
+			// Backend-owned since issue 30917: for CILIUM_NATIVE_ROUTING the Create Cluster API no longer
+			// accepts this input — the backend auto-selects the secondary subnet from the primary subnet and
+			// ignores any client value. Kept Optional (so existing configs that still list it don't error) but
+			// Computed (state is populated from the API), and NOT ForceNew (a mismatch between a stale config
+			// value and the auto-selected value must never force a cluster replacement).
 			"secondary_subnets": {
 				Type:     schema.TypeList,
 				Optional: true,
-				ForceNew: true,
+				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -197,11 +202,11 @@ func ResourceCluster() *schema.Resource {
 				Computed: true,
 			},
 			"az_strategy": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "SINGLE",
+				Type:         schema.TypeString,
+				Optional:     true,
+				Default:      "SINGLE",
 				ValidateFunc: validation.StringInSlice([]string{"SINGLE", "MULTI"}, false),
-				ForceNew: true,
+				ForceNew:     true,
 				Description:  "Availability zone strategy: SINGLE or MULTI. Default is SINGLE.",
 			},
 			"list_subnet_ids": {
@@ -210,7 +215,7 @@ func ResourceCluster() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-				ForceNew: true,
+				ForceNew:    true,
 				Description: "List of subnet IDs, required if az_strategy is MULTI.",
 			},
 			"auto_healing_config": {
@@ -291,10 +296,6 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 	if errNodeGroup != nil {
 		return errNodeGroup
 	}
-	secondarySubnets, errSecondarySubnets := getSecondarySubnets(d.Get("secondary_subnets").([]interface{}))
-	if errSecondarySubnets != nil {
-		return errSecondarySubnets
-	}
 	autoUpgradeConfig, errorUpgradeConfig := getAuToUpgradeConfig(d.Get("auto_upgrade_config").([]interface{}))
 	if errorUpgradeConfig != nil {
 		return errorUpgradeConfig
@@ -319,14 +320,15 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 		Cidr:                       d.Get("cidr").(string),
 		EnabledLoadBalancerPlugin:  d.Get("enabled_load_balancer_plugin").(bool),
 		EnabledBlockStoreCsiPlugin: d.Get("enabled_block_store_csi_plugin").(bool),
-		SecondarySubnets:           secondarySubnets,
-		NodeNetmaskSize:            int32(d.Get("node_netmask_size").(int)),
-		NodeGroups:                 createNodeGroupRequests,
-		AutoUpgradeConfig:          autoUpgradeConfig,
-		AutoHealingConfig:          autoHealingConfig,
-		ReleaseChannel:             d.Get("release_channel").(string),
-		AzStrategy:                 d.Get("az_strategy").(string),
-		ListSubnetIds:              listSubnetIds,
+		// secondary_subnets omitted intentionally: backend-owned since issue 30917 (auto-selected for
+		// CILIUM_NATIVE_ROUTING, ignored on input). NodeNetmaskSize is still sent — backend uses it to filter.
+		NodeNetmaskSize:   int32(d.Get("node_netmask_size").(int)),
+		NodeGroups:        createNodeGroupRequests,
+		AutoUpgradeConfig: autoUpgradeConfig,
+		AutoHealingConfig: autoHealingConfig,
+		ReleaseChannel:    d.Get("release_channel").(string),
+		AzStrategy:        d.Get("az_strategy").(string),
+		ListSubnetIds:     listSubnetIds,
 	}
 
 	request := vks.V1ClusterControllerApiV1ClustersPostOpts{
@@ -576,10 +578,10 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("white_list_node_cidr", whiteListCIDRCluster)
 	}
 	if resp.NetworkType == "CILIUM_NATIVE_ROUTING" {
-		if !checkSecondarySubnetsSame(d, resp.SecondarySubnets) {
-			d.Set("secondary_subnets", resp.SecondarySubnets)
-			d.Set("node_netmask_size", resp.NodeNetmaskSize)
-		}
+		// secondary_subnets is backend-owned since issue 30917: always mirror the auto-selected value
+		// from the API into state (it is a Computed attribute, not a user input anymore).
+		d.Set("secondary_subnets", resp.SecondarySubnets)
+		d.Set("node_netmask_size", resp.NodeNetmaskSize)
 	} else {
 		d.Set("cidr", cluster.Cidr)
 	}
@@ -958,6 +960,16 @@ func resourceClusterCustomizeDiff(ctx context.Context, d *schema.ResourceDiff, m
 			}
 		}
 	}
+
+	// Cluster-level secondary_subnets is backend-owned since issue 30917: the Create Cluster API
+	// auto-selects it for CILIUM_NATIVE_ROUTING and ignores any client value. On an existing resource,
+	// suppress any plan diff for a stale user-configured value so it never fights the auto-selected value
+	// read back into state. Guard on a non-empty Id so a fresh create still shows "known after apply".
+	if d.Id() != "" {
+		if err := d.Clear("secondary_subnets"); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -1130,8 +1142,6 @@ func getAuToUpgradeConfig(input []interface{}) (*vks.AutoUpgradeConfigDto, error
 		Time:     autoUpgradeConfig["time"].(string),
 	}, nil
 }
-
-
 
 func getListSubnetIds(input []interface{}) ([]string, error) {
 	listSubnetIds := make([]string, len(input))

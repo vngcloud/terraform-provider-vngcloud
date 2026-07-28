@@ -70,7 +70,7 @@ resource "vngcloud_vks_cluster" "primary" {
 * `subnet_id` - (Optional) The subnet ID for the cluster. You need create a Subnet on vServer and put the Subnet's ID on this field. **Required if `az_strategy` is `"SINGLE"`**.
 * `list_subnet_ids` (Optional) List of subnet IDs, **required if `az_strategy` is `"MULTI"`**. **Currently only available in HCM zone.**
 * `cidr` -  (Required) Specifies the CIDR block for the cluster using `TIGERA` or `CILIUM_OVERLAY` network. You can enter a private IP CIDR from the following options: 10.0.0.0 - 10.255.0.0, 172.16.0.0 - 172.24.0.0, or 192.168.0.0. The default value is "172.16.0.0/16".
-* `secondary_subnets` - (Optional) Specifies additional subnets to be useds in Cilium's VPC Native Routing mode.
+* `secondary_subnets` - (Optional, Computed) Secondary subnets used in Cilium's VPC Native Routing mode (`CILIUM_NATIVE_ROUTING`). **The backend now auto-selects this from the cluster's primary subnet — any value you set here is ignored, and the selected CIDR is exported back into state.** It is effectively read-only; you no longer choose it. If the primary subnet has no eligible secondary subnet (none with a netmask ≤ `node_netmask_size`, or all already used by your other clusters/node groups), the create request fails with a `400` from the API.
 * `node_netmask_size` - (Optional) Specifies the node CIDR mask size used in Cilium's VPC Native Routing mode. The default value is 25. You can enter a number from the following options: 24, 25, 26.
 * `enabled_load_balancer_plugin` - (Optional) Enables/ Disable the attachment of load balancers (both network and application) via Kubernetes YAML. The default value is "true".
 * `enabled_block_store_csi_plugin` - (Optional) Enable/ Disable Automatically deploys and manages the BlockStore Persistent Disk CSI Driver via Kubernetes YAML. The default value is "true".
@@ -99,7 +99,7 @@ resource "vngcloud_vks_cluster" "primary" {
   * `upgrade_config` - (Optional) Upgrade strategy configuration.
   * `labels` - (Optional) Kubernetes labels as key/value map.
   * `taint` - (Optional) List of Kubernetes taints with `key`, `value`, `effect` — order does not matter (the provider ignores pure reordering when comparing against the server). Can be written either as repeated `taint { ... }` blocks or as a `taint = [{ key = "...", value = "...", effect = "NoSchedule" }]` list — both forms are supported (do not mix both in the same resource). Setting `taint = []` removes all taints; this is only expressible with the list form. If omitted, existing taints on the server are preserved.
-  * `secondary_subnets` - (Optional) Additional subnets for CILIUM_NATIVE_ROUTING mode.
+  * `secondary_subnets` - (Optional) Additional subnets for CILIUM_NATIVE_ROUTING mode. Unlike the cluster-level field, this node-group-level field is still user-provided (you choose it as before).
   * `subnet_id` - (Optional) Subnet ID for nodes.
   * `enabled_encryption_volume` - (Optional) Enable volume encryption. Default is false.
 ---
@@ -155,7 +155,6 @@ When using **Terraform** to create a **Cluster** and **Node Group** on the VKS s
     * `list_subnet_ids`&#x20;
     * `cidr`&#x20;
     * `node_group`&#x20;
-    * `secondary_subnets`&#x20;
     * `node_netmask_size`&#x20;
     * `release_channel`&#x20;
 
@@ -163,6 +162,7 @@ When using **Terraform** to create a **Cluster** and **Node Group** on the VKS s
     * `version` — cluster upgrade
     * `auto_upgrade_config` — maintenance window
     * `auto_healing_config` — applied via a dedicated PATCH API call; the cluster continues running during the update
+    * `secondary_subnets` — backend-owned (auto-selected for `CILIUM_NATIVE_ROUTING`); not settable, never forces recreation
 * For the resource `vngcloud_vks_cluster_node_group`, the fields that, when modified, will cause the system to delete and recreate the Node Group include:
     * `cluster_id`&#x20;
     * `name`&#x20;
@@ -373,7 +373,8 @@ resource "vngcloud_vks_cluster" "primary" {
   vpc_id    = "net-70ef12d4-d619-43fc-88f0-1c1511683123"
   az_strategy = "SINGLE"
   subnet_id = "sub-0725ef54-a32e-404c-96f2-34745239c123"
-  secondary_subnets = ["10.200.27.0/24", "10.200.28.0/24"]
+  # secondary_subnets is no longer set at the cluster level: the backend auto-selects it from the
+  # primary subnet for CILIUM_NATIVE_ROUTING and exports the chosen CIDR back into state.
   node_netmask_size = 25
   enabled_load_balancer_plugin = true
   enabled_block_store_csi_plugin = true
