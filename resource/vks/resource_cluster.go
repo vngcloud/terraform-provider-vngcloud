@@ -995,20 +995,16 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 		taintChanged := !taintDtoSetsEqual(tains, oldTaints)
 		labels := getLabels(nodeGroup["labels"].(map[string]interface{}))
 
+		autoScaleChanged := !reflect.DeepEqual(nodeGroup["auto_scale_config"], oldNodeGroup["auto_scale_config"])
 		putFieldsChanged := !reflect.DeepEqual(nodeGroup["security_groups"], oldNodeGroup["security_groups"]) ||
-			!reflect.DeepEqual(nodeGroup["auto_scale_config"], oldNodeGroup["auto_scale_config"]) ||
+			autoScaleChanged ||
 			int32(oldNodeGroup["num_nodes"].(int)) != int32(nodeGroup["num_nodes"].(int)) ||
 			!reflect.DeepEqual(nodeGroup["upgrade_config"], oldNodeGroup["upgrade_config"])
 
 		if putFieldsChanged {
-			updateNodeGroupRequest := vks.UpdateNodeGroupDto{
-				AutoScaleConfig: autoScaleConfig,
-				NumNodes:        numNodes,
-				UpgradeConfig:   &upgradeConfig,
-				SecurityGroups:  securityGroups,
-			}
+			body := buildNodeGroupUpdateBody(autoScaleChanged, autoScaleConfig, numNodes, &upgradeConfig, securityGroups)
 			requestPutOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdPutOpts{
-				Body: optional.NewInterface(updateNodeGroupRequest),
+				Body: optional.NewInterface(body),
 			}
 			resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdPut(context.TODO(), d.Id(), nodeGroup["node_group_id"].(string), &requestPutOpts)
 			if CheckErrorResponse(httpResponse) {

@@ -364,6 +364,31 @@ func getAutoScaleConfig(input []interface{}) *vks.NodeGroupAutoScaleConfigDto {
 	}
 }
 
+// buildNodeGroupUpdateBody builds the PUT body for a node group update, controlling the tri-state
+// of autoScaleConfig that the struct's `omitempty` tag cannot express:
+//   - autoScaleChanged == false            -> key omitted    -> backend leaves autoscale untouched
+//   - autoScaleChanged == true, asc != nil -> object          -> set/update autoscale
+//   - autoScaleChanged == true, asc == nil -> JSON null        -> disable autoscale
+//
+// A map is used instead of vks.UpdateNodeGroupDto because a typed-nil pointer in a map marshals to
+// `null`, whereas the struct field's omitempty would drop the key entirely. numNodes is added only
+// when non-nil to preserve the struct's original omitempty behavior; upgradeConfig/securityGroups
+// have no omitempty in the struct so they are always sent.
+func buildNodeGroupUpdateBody(autoScaleChanged bool, asc *vks.NodeGroupAutoScaleConfigDto,
+	numNodes *int32, upgradeConfig *vks.NodeGroupUpgradeConfigDto, securityGroups []string) map[string]interface{} {
+	body := map[string]interface{}{
+		"upgradeConfig":  upgradeConfig,
+		"securityGroups": securityGroups,
+	}
+	if numNodes != nil {
+		body["numNodes"] = numNodes
+	}
+	if autoScaleChanged {
+		body["autoScaleConfig"] = asc // asc nil -> null (disable); non-nil -> object (update)
+	}
+	return body
+}
+
 func getLabels(input map[string]interface{}) map[string]string {
 	labels := make(map[string]string, len(input))
 
@@ -748,14 +773,9 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 			num := int32(d.Get("num_nodes").(int))
 			numNodes = &num
 		}
-		updateNodeGroupRequest := vks.UpdateNodeGroupDto{
-			AutoScaleConfig: autoScaleConfig,
-			NumNodes:        numNodes,
-			UpgradeConfig:   &upgradeConfig,
-			SecurityGroups:  securityGroups,
-		}
+		body := buildNodeGroupUpdateBody(d.HasChange("auto_scale_config"), autoScaleConfig, numNodes, &upgradeConfig, securityGroups)
 		requestPutOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdPutOpts{
-			Body: optional.NewInterface(updateNodeGroupRequest),
+			Body: optional.NewInterface(body),
 		}
 		resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdPut(context.TODO(), clusterId, clusterNodeGroupId, &requestPutOpts)
 		if CheckErrorResponse(httpResponse) {
