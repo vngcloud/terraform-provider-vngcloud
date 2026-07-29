@@ -116,9 +116,10 @@ func ResourceCluster() *schema.Resource {
 				ForceNew: true,
 			},
 			"subnet_id": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
+				Type:          schema.TypeString,
+				Optional:      true,
+				ForceNew:      true,
+				ConflictsWith: []string{"list_subnet_ids"},
 			},
 			"cidr": {
 				Type:     schema.TypeString,
@@ -215,8 +216,9 @@ func ResourceCluster() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-				ForceNew:    true,
-				Description: "List of subnet IDs, required if az_strategy is MULTI.",
+				ForceNew:      true,
+				ConflictsWith: []string{"subnet_id"},
+				Description:   "List of subnet IDs, required if az_strategy is MULTI.",
 			},
 			"auto_healing_config": {
 				Type:     schema.TypeList,
@@ -305,18 +307,26 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 	if errListSubnetIds != nil {
 		return errListSubnetIds
 	}
+	// subnetId is deprecated (#30753): always send the subnet via listSubnetIds. When a SINGLE config
+	// still uses the singular subnet_id, fold it into the list so the provider never depends on the
+	// old field being accepted once the backend removes it from the request.
+	if len(listSubnetIds) == 0 {
+		if subnetId := d.Get("subnet_id").(string); subnetId != "" {
+			listSubnetIds = []string{subnetId}
+		}
+	}
 
 	autoHealingConfig := getAutoHealingConfig(d.Get("auto_healing_config").([]interface{}))
 
 	createClusterRequest := vks.CreateClusterComboDto{
-		Name:                       d.Get("name").(string),
-		Description:                d.Get("description").(string),
-		Version:                    d.Get("version").(string),
-		EnablePrivateCluster:       d.Get("enable_private_cluster").(bool),
-		EnabledServiceEndpoint:     d.Get("enable_service_endpoint").(bool),
-		NetworkType:                d.Get("network_type").(string),
-		VpcId:                      d.Get("vpc_id").(string),
-		SubnetId:                   d.Get("subnet_id").(string),
+		Name:                   d.Get("name").(string),
+		Description:            d.Get("description").(string),
+		Version:                d.Get("version").(string),
+		EnablePrivateCluster:   d.Get("enable_private_cluster").(bool),
+		EnabledServiceEndpoint: d.Get("enable_service_endpoint").(bool),
+		NetworkType:            d.Get("network_type").(string),
+		VpcId:                  d.Get("vpc_id").(string),
+		// SubnetId omitted intentionally (#30753): deprecated, folded into ListSubnetIds above.
 		Cidr:                       d.Get("cidr").(string),
 		EnabledLoadBalancerPlugin:  d.Get("enabled_load_balancer_plugin").(bool),
 		EnabledBlockStoreCsiPlugin: d.Get("enabled_block_store_csi_plugin").(bool),
@@ -594,7 +604,14 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 	if azStrategy == "MULTI" {
 		d.Set("list_subnet_ids", cluster.ListSubnetIds)
 	} else {
-		d.Set("subnet_id", cluster.SubnetId)
+		subnetId := cluster.SubnetId
+		if subnetId == "" && len(cluster.ListSubnetIds) > 0 {
+			// subnetId is @Deprecated (#30753); once the backend drops it from the response, derive it
+			// from listSubnetIds[0] (backend guarantees subnetId == listSubnetIds[0]) so a SINGLE config
+			// using subnet_id does not drift into a forced replacement.
+			subnetId = cluster.ListSubnetIds[0]
+		}
+		d.Set("subnet_id", subnetId)
 	}
 	d.Set("network_type", cluster.NetworkType)
 	d.Set("name", cluster.Name)
