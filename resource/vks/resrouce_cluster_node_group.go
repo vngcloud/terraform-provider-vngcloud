@@ -899,29 +899,37 @@ func resourceClusterNodeGroupUpdate(d *schema.ResourceData, m interface{}) error
 
 func resourceClusterNodeGroupDelete(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
-	resp, httpResponse, err := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdDelete(context.TODO(), d.Get("cluster_id").(string), d.Id(), nil)
+	if err := deleteNodeGroupAndWait(cli, d.Get("cluster_id").(string), d.Id(), d.Timeout(schema.TimeoutCreate)); err != nil {
+		return err
+	}
+	d.SetId("")
+	return nil
+}
+
+// deleteNodeGroupAndWait deletes a single node group and blocks until the backend confirms
+// removal. A 404 on the initial delete call is treated as already-deleted so retries/duplicate
+// calls (e.g. cluster delete cleaning up leftover node groups) are idempotent.
+func deleteNodeGroupAndWait(cli *client.Client, clusterId string, nodeGroupId string, timeout time.Duration) error {
+	_, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdDelete(context.TODO(), clusterId, nodeGroupId, nil)
+	if httpResponse != nil && httpResponse.StatusCode == http.StatusNotFound {
+		return nil
+	}
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
-		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
-		return errorResponse
+		return fmt.Errorf("request fail with errMsg : %s", responseBody)
 	}
-	respJSON, _ := json.Marshal(resp)
-	log.Printf("-------------------------------------\n")
-	log.Printf("%s\n", string(respJSON))
-	log.Printf("-------------------------------------\n")
 	stateConf := &resource.StateChangeConf{
 		Pending:    DELETING,
 		Target:     DELETED,
-		Refresh:    resourceClusterNodeGroupDeleteStateRefreshFunc(cli, d.Get("cluster_id").(string), d.Id()),
-		Timeout:    d.Timeout(schema.TimeoutCreate),
+		Refresh:    resourceClusterNodeGroupDeleteStateRefreshFunc(cli, clusterId, nodeGroupId),
+		Timeout:    timeout,
 		Delay:      10 * time.Second,
 		MinTimeout: 1 * time.Second,
 	}
-	_, err = stateConf.WaitForState()
+	_, err := stateConf.WaitForState()
 	if err != nil {
-		return fmt.Errorf("Error waiting for instance (%s) to be created: %s", d.Id(), err)
+		return fmt.Errorf("error waiting for node group (%s) to be deleted: %s", nodeGroupId, err)
 	}
-	d.SetId("")
 	return nil
 }
 

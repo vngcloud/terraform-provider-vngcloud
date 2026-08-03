@@ -1128,8 +1128,33 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 	return resourceClusterRead(d, m)
 }
 
+// deleteRemainingNodeGroups removes any node groups still attached to the cluster before the
+// cluster itself is deleted. The backend now rejects cluster delete while node groups remain
+// attached; this covers node groups declared via the inline `node_group` block (which has no
+// separate Terraform resource, so nothing else forces them to be deleted first) as well as any
+// orphaned node groups not tracked by Terraform state.
+func deleteRemainingNodeGroups(cli *client.Client, clusterId string, timeout time.Duration) error {
+	resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsGet(context.TODO(), clusterId, nil)
+	if httpResponse == nil || httpResponse.StatusCode != http.StatusOK {
+		log.Printf("[WARN] could not list node groups for cluster %s before delete, skipping pre-delete cleanup", clusterId)
+		return nil
+	}
+	for _, nodeGroup := range resp.Items {
+		log.Printf("[INFO] deleting node group %s attached to cluster %s before cluster delete", nodeGroup.Id, clusterId)
+		if err := deleteNodeGroupAndWait(cli, clusterId, nodeGroup.Id, timeout); err != nil {
+			return fmt.Errorf("failed to delete node group %s before deleting cluster %s: %s", nodeGroup.Id, clusterId, err)
+		}
+	}
+	return nil
+}
+
 func resourceClusterDelete(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
+
+	if err := deleteRemainingNodeGroups(cli, d.Id(), d.Timeout(schema.TimeoutCreate)); err != nil {
+		return err
+	}
+
 	resp, httpResponse, err := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdDelete(context.TODO(), d.Id(), nil)
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
