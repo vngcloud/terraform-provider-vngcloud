@@ -116,8 +116,12 @@ func ResourceCluster() *schema.Resource {
 				ForceNew: true,
 			},
 			"subnet_id": {
-				Type:          schema.TypeString,
-				Optional:      true,
+				Type:     schema.TypeString,
+				Optional: true,
+				// Computed: Read always mirrors the backend-resolved subnetId (== listSubnetIds[0])
+				// into state even when the user only configures list_subnet_ids. Without Computed,
+				// Terraform treats an unconfigured subnet_id as "must be empty" and forces a replace.
+				Computed:      true,
 				ForceNew:      true,
 				ConflictsWith: []string{"list_subnet_ids"},
 			},
@@ -213,6 +217,10 @@ func ResourceCluster() *schema.Resource {
 			"list_subnet_ids": {
 				Type:     schema.TypeList,
 				Optional: true,
+				// Computed: symmetric with subnet_id — Read now mirrors both fields unconditionally
+				// (backend #30753 always returns both), so a config declaring only subnet_id must not
+				// see list_subnet_ids as drifted/forced-empty.
+				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -307,10 +315,13 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 	if errListSubnetIds != nil {
 		return errListSubnetIds
 	}
-	// subnetId is deprecated (#30753): always send the subnet via listSubnetIds. When a SINGLE config
-	// still uses the singular subnet_id, fold it into the list so the provider never depends on the
-	// old field being accepted once the backend removes it from the request.
-	if len(listSubnetIds) == 0 {
+	azStrategy := d.Get("az_strategy").(string)
+	// subnetId is deprecated (#30753): fold it into listSubnetIds only for the SINGLE path (its
+	// intended backward-compat case). Do NOT fold under MULTI — backend has an explicit guard that
+	// returns "listSubnetIds is required when azStrategy is MULTI" for a MULTI + subnetId-only
+	// request; folding here would turn that into a populated 1-element list and misroute it into the
+	// zone-diversity error path instead of that clearer, purpose-built message.
+	if len(listSubnetIds) == 0 && azStrategy != "MULTI" {
 		if subnetId := d.Get("subnet_id").(string); subnetId != "" {
 			listSubnetIds = []string{subnetId}
 		}
@@ -337,7 +348,7 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 		AutoUpgradeConfig: autoUpgradeConfig,
 		AutoHealingConfig: autoHealingConfig,
 		ReleaseChannel:    d.Get("release_channel").(string),
-		AzStrategy:        d.Get("az_strategy").(string),
+		AzStrategy:        azStrategy,
 		ListSubnetIds:     listSubnetIds,
 	}
 
@@ -491,7 +502,19 @@ func expandNodeGroupForCreating(node_group []interface{}, d *schema.ResourceData
 		}
 
 		if nodeGroup["subnet_id"] == nil || nodeGroup["subnet_id"] == "" {
-			nodeGroup["subnet_id"] = d.Get("subnet_id").(string)
+			subnetId := d.Get("subnet_id").(string)
+			if subnetId == "" {
+				// Cluster configured via list_subnet_ids only (no singular subnet_id) — fall back to
+				// the first configured subnet, mirroring the backend's own inheritance rule (first
+				// resolved subnet, #30753 point 4) since the cluster doesn't exist yet to query its
+				// resolved value.
+				if listSubnetIds, ok := d.Get("list_subnet_ids").([]interface{}); ok && len(listSubnetIds) > 0 {
+					if s, ok := listSubnetIds[0].(string); ok {
+						subnetId = s
+					}
+				}
+			}
+			nodeGroup["subnet_id"] = subnetId
 		}
 
 		setDefaultValueByZoneForNodeGroup(nodeGroup, m, d.Get("vpc_id").(string))
@@ -601,18 +624,23 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 		azStrategy = "SINGLE"
 	}
 	d.Set("az_strategy", azStrategy)
-	if azStrategy == "MULTI" {
-		d.Set("list_subnet_ids", cluster.ListSubnetIds)
-	} else {
-		subnetId := cluster.SubnetId
-		if subnetId == "" && len(cluster.ListSubnetIds) > 0 {
-			// subnetId is @Deprecated (#30753); once the backend drops it from the response, derive it
-			// from listSubnetIds[0] (backend guarantees subnetId == listSubnetIds[0]) so a SINGLE config
-			// using subnet_id does not drift into a forced replacement.
-			subnetId = cluster.ListSubnetIds[0]
-		}
-		d.Set("subnet_id", subnetId)
+
+	// Backend (#30753) always returns both subnetId and listSubnetIds regardless of az_strategy
+	// (subnetId == listSubnetIds[0]). Mirror both into state unconditionally so a config using only
+	// one of the two fields still sees the other's resolved value instead of a null.
+	listSubnetIds := cluster.ListSubnetIds
+	subnetId := cluster.SubnetId
+	if len(listSubnetIds) == 0 && subnetId != "" {
+		// Legacy backend / legacy cluster: response only carries subnetId.
+		listSubnetIds = []string{subnetId}
 	}
+	if subnetId == "" && len(listSubnetIds) > 0 {
+		// subnetId is @Deprecated; once the backend drops it from the response entirely, derive it
+		// from listSubnetIds[0] (backend guarantees subnetId == listSubnetIds[0]).
+		subnetId = listSubnetIds[0]
+	}
+	d.Set("subnet_id", subnetId)
+	d.Set("list_subnet_ids", listSubnetIds)
 	d.Set("network_type", cluster.NetworkType)
 	d.Set("name", cluster.Name)
 	d.Set("enabled_load_balancer_plugin", cluster.EnabledLoadBalancerPlugin)
