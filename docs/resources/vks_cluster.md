@@ -82,7 +82,6 @@ resource "vngcloud_vks_cluster" "primary" {
     * `max_unhealthy` - (Optional) Maximum number or percentage of unhealthy nodes allowed before remediation is triggered. Accepts an absolute integer from 1 to 1000 (e.g. `"3"`) or a percentage from 1% to 100% (e.g. `"20%"`). **Mutually exclusive with `unhealthy_range`** — exactly one of the two must be specified; Terraform enforces this at plan time.
     * `unhealthy_range` - (Optional) Range (inclusive) of unhealthy nodes allowed before remediation is triggered. Format: `"[N-M]"` where N ≤ M, e.g. `"[2-5]"`. **Mutually exclusive with `max_unhealthy`** — exactly one of the two must be specified; Terraform enforces this at plan time.
     * `timeout_unhealthy` - (Optional, Computed) Time in minutes to wait before considering a node unhealthy. Valid range: 1–180. When set to `0` or omitted, the server retains the existing value.
-    * `remediation_timeout` - (Computed) Read-only. Timeout in minutes for remediation of an unhealthy node, as configured on the server. This field is managed entirely by the server and **cannot be set via Terraform**.
 * `poc` - (Optional) Allows the creation of POC cluster.
 * `node_group` - (Optional) List of node groups to create inline with the cluster. Each `node_group` block supports:
   * `name` - (Required) Name of the node group.
