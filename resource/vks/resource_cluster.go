@@ -118,7 +118,12 @@ func ResourceCluster() *schema.Resource {
 			"subnet_id": {
 				Type:     schema.TypeString,
 				Optional: true,
-				ForceNew: true,
+				// Computed: Read always mirrors the backend-resolved subnetId (== listSubnetIds[0])
+				// into state even when the user only configures list_subnet_ids. Without Computed,
+				// Terraform treats an unconfigured subnet_id as "must be empty" and forces a replace.
+				Computed:      true,
+				ForceNew:      true,
+				ConflictsWith: []string{"list_subnet_ids"},
 			},
 			"cidr": {
 				Type:     schema.TypeString,
@@ -135,10 +140,15 @@ func ResourceCluster() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
+			// Backend-owned since issue 30917: for CILIUM_NATIVE_ROUTING the Create Cluster API no longer
+			// accepts this input — the backend auto-selects the secondary subnet from the primary subnet and
+			// ignores any client value. Kept Optional (so existing configs that still list it don't error) but
+			// Computed (state is populated from the API), and NOT ForceNew (a mismatch between a stale config
+			// value and the auto-selected value must never force a cluster replacement).
 			"secondary_subnets": {
 				Type:     schema.TypeList,
 				Optional: true,
-				ForceNew: true,
+				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -197,21 +207,26 @@ func ResourceCluster() *schema.Resource {
 				Computed: true,
 			},
 			"az_strategy": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "SINGLE",
+				Type:         schema.TypeString,
+				Optional:     true,
+				Default:      "SINGLE",
 				ValidateFunc: validation.StringInSlice([]string{"SINGLE", "MULTI"}, false),
-				ForceNew: true,
+				ForceNew:     true,
 				Description:  "Availability zone strategy: SINGLE or MULTI. Default is SINGLE.",
 			},
 			"list_subnet_ids": {
 				Type:     schema.TypeList,
 				Optional: true,
+				// Computed: symmetric with subnet_id — Read now mirrors both fields unconditionally
+				// (backend #30753 always returns both), so a config declaring only subnet_id must not
+				// see list_subnet_ids as drifted/forced-empty.
+				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-				ForceNew: true,
-				Description: "List of subnet IDs, required if az_strategy is MULTI.",
+				ForceNew:      true,
+				ConflictsWith: []string{"subnet_id"},
+				Description:   "List of subnet IDs, required if az_strategy is MULTI.",
 			},
 			"auto_healing_config": {
 				Type:     schema.TypeList,
@@ -291,10 +306,6 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 	if errNodeGroup != nil {
 		return errNodeGroup
 	}
-	secondarySubnets, errSecondarySubnets := getSecondarySubnets(d.Get("secondary_subnets").([]interface{}))
-	if errSecondarySubnets != nil {
-		return errSecondarySubnets
-	}
 	autoUpgradeConfig, errorUpgradeConfig := getAuToUpgradeConfig(d.Get("auto_upgrade_config").([]interface{}))
 	if errorUpgradeConfig != nil {
 		return errorUpgradeConfig
@@ -304,29 +315,41 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 	if errListSubnetIds != nil {
 		return errListSubnetIds
 	}
+	azStrategy := d.Get("az_strategy").(string)
+	// subnetId is deprecated (#30753): fold it into listSubnetIds only for the SINGLE path (its
+	// intended backward-compat case). Do NOT fold under MULTI — backend has an explicit guard that
+	// returns "listSubnetIds is required when azStrategy is MULTI" for a MULTI + subnetId-only
+	// request; folding here would turn that into a populated 1-element list and misroute it into the
+	// zone-diversity error path instead of that clearer, purpose-built message.
+	if len(listSubnetIds) == 0 && azStrategy != "MULTI" {
+		if subnetId := d.Get("subnet_id").(string); subnetId != "" {
+			listSubnetIds = []string{subnetId}
+		}
+	}
 
 	autoHealingConfig := getAutoHealingConfig(d.Get("auto_healing_config").([]interface{}))
 
 	createClusterRequest := vks.CreateClusterComboDto{
-		Name:                       d.Get("name").(string),
-		Description:                d.Get("description").(string),
-		Version:                    d.Get("version").(string),
-		EnablePrivateCluster:       d.Get("enable_private_cluster").(bool),
-		EnabledServiceEndpoint:     d.Get("enable_service_endpoint").(bool),
-		NetworkType:                d.Get("network_type").(string),
-		VpcId:                      d.Get("vpc_id").(string),
-		SubnetId:                   d.Get("subnet_id").(string),
+		Name:                   d.Get("name").(string),
+		Description:            d.Get("description").(string),
+		Version:                d.Get("version").(string),
+		EnablePrivateCluster:   d.Get("enable_private_cluster").(bool),
+		EnabledServiceEndpoint: d.Get("enable_service_endpoint").(bool),
+		NetworkType:            d.Get("network_type").(string),
+		VpcId:                  d.Get("vpc_id").(string),
+		// SubnetId omitted intentionally (#30753): deprecated, folded into ListSubnetIds above.
 		Cidr:                       d.Get("cidr").(string),
 		EnabledLoadBalancerPlugin:  d.Get("enabled_load_balancer_plugin").(bool),
 		EnabledBlockStoreCsiPlugin: d.Get("enabled_block_store_csi_plugin").(bool),
-		SecondarySubnets:           secondarySubnets,
-		NodeNetmaskSize:            int32(d.Get("node_netmask_size").(int)),
-		NodeGroups:                 createNodeGroupRequests,
-		AutoUpgradeConfig:          autoUpgradeConfig,
-		AutoHealingConfig:          autoHealingConfig,
-		ReleaseChannel:             d.Get("release_channel").(string),
-		AzStrategy:                 d.Get("az_strategy").(string),
-		ListSubnetIds:              listSubnetIds,
+		// secondary_subnets omitted intentionally: backend-owned since issue 30917 (auto-selected for
+		// CILIUM_NATIVE_ROUTING, ignored on input). NodeNetmaskSize is still sent — backend uses it to filter.
+		NodeNetmaskSize:   int32(d.Get("node_netmask_size").(int)),
+		NodeGroups:        createNodeGroupRequests,
+		AutoUpgradeConfig: autoUpgradeConfig,
+		AutoHealingConfig: autoHealingConfig,
+		ReleaseChannel:    d.Get("release_channel").(string),
+		AzStrategy:        azStrategy,
+		ListSubnetIds:     listSubnetIds,
 	}
 
 	request := vks.V1ClusterControllerApiV1ClustersPostOpts{
@@ -479,7 +502,19 @@ func expandNodeGroupForCreating(node_group []interface{}, d *schema.ResourceData
 		}
 
 		if nodeGroup["subnet_id"] == nil || nodeGroup["subnet_id"] == "" {
-			nodeGroup["subnet_id"] = d.Get("subnet_id").(string)
+			subnetId := d.Get("subnet_id").(string)
+			if subnetId == "" {
+				// Cluster configured via list_subnet_ids only (no singular subnet_id) — fall back to
+				// the first configured subnet, mirroring the backend's own inheritance rule (first
+				// resolved subnet, #30753 point 4) since the cluster doesn't exist yet to query its
+				// resolved value.
+				if listSubnetIds, ok := d.Get("list_subnet_ids").([]interface{}); ok && len(listSubnetIds) > 0 {
+					if s, ok := listSubnetIds[0].(string); ok {
+						subnetId = s
+					}
+				}
+			}
+			nodeGroup["subnet_id"] = subnetId
 		}
 
 		setDefaultValueByZoneForNodeGroup(nodeGroup, m, d.Get("vpc_id").(string))
@@ -576,10 +611,10 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("white_list_node_cidr", whiteListCIDRCluster)
 	}
 	if resp.NetworkType == "CILIUM_NATIVE_ROUTING" {
-		if !checkSecondarySubnetsSame(d, resp.SecondarySubnets) {
-			d.Set("secondary_subnets", resp.SecondarySubnets)
-			d.Set("node_netmask_size", resp.NodeNetmaskSize)
-		}
+		// secondary_subnets is backend-owned since issue 30917: always mirror the auto-selected value
+		// from the API into state (it is a Computed attribute, not a user input anymore).
+		d.Set("secondary_subnets", resp.SecondarySubnets)
+		d.Set("node_netmask_size", resp.NodeNetmaskSize)
 	} else {
 		d.Set("cidr", cluster.Cidr)
 	}
@@ -589,11 +624,23 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 		azStrategy = "SINGLE"
 	}
 	d.Set("az_strategy", azStrategy)
-	if azStrategy == "MULTI" {
-		d.Set("list_subnet_ids", cluster.ListSubnetIds)
-	} else {
-		d.Set("subnet_id", cluster.SubnetId)
+
+	// Backend (#30753) always returns both subnetId and listSubnetIds regardless of az_strategy
+	// (subnetId == listSubnetIds[0]). Mirror both into state unconditionally so a config using only
+	// one of the two fields still sees the other's resolved value instead of a null.
+	listSubnetIds := cluster.ListSubnetIds
+	subnetId := cluster.SubnetId
+	if len(listSubnetIds) == 0 && subnetId != "" {
+		// Legacy backend / legacy cluster: response only carries subnetId.
+		listSubnetIds = []string{subnetId}
 	}
+	if subnetId == "" && len(listSubnetIds) > 0 {
+		// subnetId is @Deprecated; once the backend drops it from the response entirely, derive it
+		// from listSubnetIds[0] (backend guarantees subnetId == listSubnetIds[0]).
+		subnetId = listSubnetIds[0]
+	}
+	d.Set("subnet_id", subnetId)
+	d.Set("list_subnet_ids", listSubnetIds)
 	d.Set("network_type", cluster.NetworkType)
 	d.Set("name", cluster.Name)
 	d.Set("enabled_load_balancer_plugin", cluster.EnabledLoadBalancerPlugin)
@@ -632,6 +679,10 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 			healingConfig["unhealthy_range"] = cfg.UnhealthyRange
 		}
 		d.Set("auto_healing_config", []interface{}{healingConfig})
+	} else {
+		// BE #31050: GET may now return autoHealingConfig=null (omitted on create);
+		// clear state so it matches the API, consistent with auto_upgrade_config above.
+		d.Set("auto_healing_config", nil)
 	}
 	log.Printf("GetConfig\n")
 	configResp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdKubeconfigGet(context.TODO(), clusterID, nil)
@@ -954,6 +1005,16 @@ func resourceClusterCustomizeDiff(ctx context.Context, d *schema.ResourceDiff, m
 			}
 		}
 	}
+
+	// Cluster-level secondary_subnets is backend-owned since issue 30917: the Create Cluster API
+	// auto-selects it for CILIUM_NATIVE_ROUTING and ignores any client value. On an existing resource,
+	// suppress any plan diff for a stale user-configured value so it never fights the auto-selected value
+	// read back into state. Guard on a non-empty Id so a fresh create still shows "known after apply".
+	if d.Id() != "" {
+		if err := d.Clear("secondary_subnets"); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -995,20 +1056,16 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 		taintChanged := !taintDtoSetsEqual(tains, oldTaints)
 		labels := getLabels(nodeGroup["labels"].(map[string]interface{}))
 
+		autoScaleChanged := !reflect.DeepEqual(nodeGroup["auto_scale_config"], oldNodeGroup["auto_scale_config"])
 		putFieldsChanged := !reflect.DeepEqual(nodeGroup["security_groups"], oldNodeGroup["security_groups"]) ||
-			!reflect.DeepEqual(nodeGroup["auto_scale_config"], oldNodeGroup["auto_scale_config"]) ||
+			autoScaleChanged ||
 			int32(oldNodeGroup["num_nodes"].(int)) != int32(nodeGroup["num_nodes"].(int)) ||
 			!reflect.DeepEqual(nodeGroup["upgrade_config"], oldNodeGroup["upgrade_config"])
 
 		if putFieldsChanged {
-			updateNodeGroupRequest := vks.UpdateNodeGroupDto{
-				AutoScaleConfig: autoScaleConfig,
-				NumNodes:        numNodes,
-				UpgradeConfig:   &upgradeConfig,
-				SecurityGroups:  securityGroups,
-			}
+			body := buildNodeGroupUpdateBody(autoScaleChanged, autoScaleConfig, numNodes, &upgradeConfig, securityGroups)
 			requestPutOpts := vks.V1NodeGroupControllerApiV1ClustersClusterIdNodeGroupsNodeGroupIdPutOpts{
-				Body: optional.NewInterface(updateNodeGroupRequest),
+				Body: optional.NewInterface(body),
 			}
 			resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsNodeGroupIdPut(context.TODO(), d.Id(), nodeGroup["node_group_id"].(string), &requestPutOpts)
 			if CheckErrorResponse(httpResponse) {
@@ -1071,8 +1128,33 @@ func changeNodeGroup(d *schema.ResourceData, m interface{}) error {
 	return resourceClusterRead(d, m)
 }
 
+// deleteRemainingNodeGroups removes any node groups still attached to the cluster before the
+// cluster itself is deleted. The backend now rejects cluster delete while node groups remain
+// attached; this covers node groups declared via the inline `node_group` block (which has no
+// separate Terraform resource, so nothing else forces them to be deleted first) as well as any
+// orphaned node groups not tracked by Terraform state.
+func deleteRemainingNodeGroups(cli *client.Client, clusterId string, timeout time.Duration) error {
+	resp, httpResponse, _ := cli.VksClient.V1NodeGroupControllerApi.V1ClustersClusterIdNodeGroupsGet(context.TODO(), clusterId, nil)
+	if httpResponse == nil || httpResponse.StatusCode != http.StatusOK {
+		log.Printf("[WARN] could not list node groups for cluster %s before delete, skipping pre-delete cleanup", clusterId)
+		return nil
+	}
+	for _, nodeGroup := range resp.Items {
+		log.Printf("[INFO] deleting node group %s attached to cluster %s before cluster delete", nodeGroup.Id, clusterId)
+		if err := deleteNodeGroupAndWait(cli, clusterId, nodeGroup.Id, timeout); err != nil {
+			return fmt.Errorf("failed to delete node group %s before deleting cluster %s: %s", nodeGroup.Id, clusterId, err)
+		}
+	}
+	return nil
+}
+
 func resourceClusterDelete(d *schema.ResourceData, m interface{}) error {
 	cli := m.(*client.Client)
+
+	if err := deleteRemainingNodeGroups(cli, d.Id(), d.Timeout(schema.TimeoutCreate)); err != nil {
+		return err
+	}
+
 	resp, httpResponse, err := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdDelete(context.TODO(), d.Id(), nil)
 	if CheckErrorResponse(httpResponse) {
 		responseBody := GetResponseBody(httpResponse)
@@ -1130,8 +1212,6 @@ func getAuToUpgradeConfig(input []interface{}) (*vks.AutoUpgradeConfigDto, error
 		Time:     autoUpgradeConfig["time"].(string),
 	}, nil
 }
-
-
 
 func getListSubnetIds(input []interface{}) ([]string, error) {
 	listSubnetIds := make([]string, len(input))
