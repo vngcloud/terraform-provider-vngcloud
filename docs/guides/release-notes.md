@@ -6,6 +6,26 @@ description: |-
 
 # Release Notes
 
+## v1.3.19
+
+### Enhancements
+
+- `vngcloud_vks_cluster` now accepts `list_subnet_ids` for both `SINGLE` and `MULTI` `az_strategy`
+  (previously `MULTI`-only). `subnet_id` still works for backward compatibility — set one, not both.
+  A `node_group` without its own `subnet_id` now correctly inherits the cluster's subnet either way.
+- `auto_scale_config` update now distinguishes three cases based on the change relative to state:
+  no `auto_scale_config` before and still none → unchanged, nothing sent; existing config removed
+  from HCL → explicit disable sent; block present with changes → `min_size`/`max_size` updated.
+
+### Bug Fixes
+
+- Fixed spurious "force replacement" on `vngcloud_vks_cluster` configured with only
+  `list_subnet_ids` (no `subnet_id`).
+- Fixed cluster delete failing when node groups were still attached — they're now removed first.
+- Fixed `auto_healing_config` not clearing in state when the API reports it as unset.
+- `secondary_subnets` (`CILIUM_NATIVE_ROUTING`) is now backend-owned/computed, avoiding a stale-value
+  force-replace.
+
 ## v1.3.18
 
 ### Enhancements
