@@ -85,8 +85,8 @@ The following arguments are supported:
 - **backup_id** (String, Optional, ForceNew):
     - The ID of the backup for restoration. This field is optional and cannot be changed after creation.
 
-- **is_poc** (Bool, Optional, ForceNew):
-    - Is Poc Resource. This field is optional and cannot be changed after creation.
+- **is_poc** (Bool, Optional):
+    - Is Poc Resource. This field is optional.
 
 - **zone_id** (String, Optional, ForceNew, Computed): Zone ID. Default value: HCM03-1A. Allowed values: HCM03-1A, HCM03-1B, HCM03-1C
 

@@ -103,7 +103,6 @@ func ResourcePostgreSQLCluster() *schema.Resource {
 			"is_poc": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				ForceNew: true,
 			},
 			"backup_id": {
 				Type:     schema.TypeString,
@@ -437,7 +436,6 @@ func resourcePostgreSQLClusterResize(d *schema.ResourceData, m interface{}, resi
 
 	body := vdbv2.ResizePostgreClusterRequest{
 		Type_: resizeType,
-		IsPoc: d.Get("is_poc").(bool),
 	}
 	switch resizeType {
 	case "NUMBER-OF-NODES":
