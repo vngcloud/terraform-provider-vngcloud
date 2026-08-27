@@ -6,6 +6,12 @@ description: |-
 
 # Release Notes
 
+## v1.3.20
+
+### Bug Fixes
+
+- Fix the `is_poc` flag behavior for `vDB` Resources. This flag is no longer `ForceNew` and can be edited after creation.
+
 ## v1.3.19
 
 ### Enhancements
