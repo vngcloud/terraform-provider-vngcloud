@@ -83,7 +83,7 @@ The following arguments are supported:
 - **db_name** (String, Required, ForceNew):
     - The name of the initial database. This field is required and cannot be changed after creation.
 
-- **is_poc** (Bool, Optional, ForceNew):
+- **is_poc** (Bool, Optional):
     - Set to `true` if paying with PoC Credit. Cannot be changed after creation.
 
 - **backup_id** (String, Optional, ForceNew):

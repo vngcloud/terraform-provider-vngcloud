@@ -167,7 +167,6 @@ func ResourceRelationalDatabase() *schema.Resource {
 			"is_poc": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				ForceNew: true,
 			},
 			"zone_id": {
 				Type:     schema.TypeString,
@@ -904,7 +903,6 @@ func resourceRelationalDatabasePromote(d *schema.ResourceData, m interface{}) er
 
 func generateResizeVolumeDatabaseRequest(d *schema.ResourceData) ResizeRequest {
 	config := ResizeConfig{
-		IsPoc:      d.Get("is_poc").(bool),
 		VolumeSize: d.Get("volume_size").(int),
 		VolumeType: d.Get("volume_type").(string),
 	}
@@ -926,7 +924,6 @@ func generateResizeVolumeDatabaseRequest(d *schema.ResourceData) ResizeRequest {
 
 func generateResizeFlavorDatabaseRequest(d *schema.ResourceData) ResizeRequest {
 	config := ResizeConfig{
-		IsPoc:     d.Get("is_poc").(bool),
 		PackageID: d.Get("package_id").(string),
 	}
 

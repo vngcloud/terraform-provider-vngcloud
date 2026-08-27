@@ -161,7 +161,6 @@ func ResourceMemStoreDatabase() *schema.Resource {
 			"is_poc": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				ForceNew: true,
 			},
 			"zone_id": {
 				Type:     schema.TypeString,
