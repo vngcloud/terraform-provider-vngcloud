@@ -8,6 +8,15 @@ description: |-
 
 ## v1.3.20
 
+### Enhancements
+
+- `vngcloud_vks_cluster` now supports an opt-in `logging_config` block to stream Kubernetes
+  control-plane logs (`AUDIT`, `API_SERVER`, `CONTROLLER_MANAGER`, `SCHEDULER`) to an **OpenSearch**
+  or **Kafka** sink. Clusters that don't declare the block are unaffected and show no plan diff.
+  Set `enabled = false` (or remove the block) to disable; `password` is write-only and never read
+  back from the API. Requires the control-plane logging feature to be enabled for your account.
+  See [vks_cluster](https://registry.terraform.io/providers/vngcloud/vngcloud/latest/docs/resources/vks_cluster#logging_config).
+
 ### Bug Fixes
 
 - Fix the `is_poc` flag behavior for `vDB` Resources. This flag is no longer `ForceNew` and can be edited after creation.
