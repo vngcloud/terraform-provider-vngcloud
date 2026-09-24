@@ -82,6 +82,16 @@ resource "vngcloud_vks_cluster" "primary" {
     * `max_unhealthy` - (Optional) Maximum number or percentage of unhealthy nodes allowed before remediation is triggered. Accepts an absolute integer from 1 to 1000 (e.g. `"3"`) or a percentage from 1% to 100% (e.g. `"20%"`). **Mutually exclusive with `unhealthy_range`** — exactly one of the two must be specified; Terraform enforces this at plan time.
     * `unhealthy_range` - (Optional) Range (inclusive) of unhealthy nodes allowed before remediation is triggered. Format: `"[N-M]"` where N ≤ M, e.g. `"[2-5]"`. **Mutually exclusive with `max_unhealthy`** — exactly one of the two must be specified; Terraform enforces this at plan time.
     * `timeout_unhealthy` - (Optional, Computed) Time in minutes to wait before considering a node unhealthy. Valid range: 1–180. When set to `0` or omitted, the server retains the existing value.
+* `logging_config` - (Optional) Configures shipping of Kubernetes control-plane logs to an external sink. **This block is entirely opt-in** — omitting it leaves the cluster's logging untouched and produces no plan diff. **This feature must be enabled for your account.** If it is not: on create the block is silently ignored (which will surface as a persistent plan diff), and on update the API returns `403`. Supports the following attributes:
+    * `enabled` - (Required) Whether logging is enabled. Set to `false` to disable logging while keeping the block, mirroring the API. Removing the whole `logging_config` block also disables logging.
+    * `type` - (Required) The sink type. One of `OPENSEARCH` or `KAFKA`.
+    * `components` - (Required) Set of control-plane components whose logs are shipped (at least one). Any of `AUDIT`, `API_SERVER`, `CONTROLLER_MANAGER`, `SCHEDULER`. **Note:** `API_SERVER`, `CONTROLLER_MANAGER`, and `SCHEDULER` are gated behind a separate account feature flag; if it is not enabled, using them returns a `400`.
+    * `opensearch_cluster_id` - (Optional) The target OpenSearch cluster ID. Required when `type = "OPENSEARCH"`.
+    * `username` - (Optional) Username for the OpenSearch sink. Required when `type = "OPENSEARCH"`.
+    * `password` - (Optional, Sensitive) Password for the OpenSearch sink. Required when `type = "OPENSEARCH"`. **Write-only**: the API never returns this value, so Terraform preserves the value from your configuration and does not report drift on it. Changing it in your configuration sends the new password on the next apply.
+    * `kafka_cluster_id` - (Optional) The target Kafka cluster ID. Required when `type = "KAFKA"`.
+    * `kafka_user_id` - (Optional) The Kafka user ID. Required when `type = "KAFKA"`. The user must have `produceConsumeAll = true` or `produceAll = true`.
+    * `authen_mode` - (Optional) Kafka authentication mode: `SASL` or `MTLS` (case-insensitive). Required when `type = "KAFKA"`. The API returns this value in lowercase, but Terraform treats the two forms as equal and does not report drift.
 * `poc` - (Optional) Allows the creation of POC cluster.
 * `node_group` - (Optional) List of node groups to create inline with the cluster. Each `node_group` block supports:
   * `name` - (Required) Name of the node group.
