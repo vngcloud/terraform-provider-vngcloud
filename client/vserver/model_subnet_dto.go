@@ -14,15 +14,16 @@ import (
 )
 
 type SubnetDto struct {
-	Cidr                   string    `json:"cidr,omitempty"`
-	CreatedAt              time.Time `json:"createdAt,omitempty"`
-	DeletedAt              time.Time `json:"deletedAt,omitempty"`
-	InterfaceAclPolicyUuid string    `json:"interfaceAclPolicyUuid,omitempty"`
-	Name                   string    `json:"name,omitempty"`
-	NetworkUuid            string    `json:"networkUuid,omitempty"`
-	RouteTableUuid         string    `json:"routeTableUuid,omitempty"`
-	Status                 string    `json:"status,omitempty"`
-	UpdatedAt              time.Time `json:"updatedAt,omitempty"`
-	Uuid                   string    `json:"uuid,omitempty"`
-	Zone                   *Zone     `json:"zone,omitempty"`
+	Cidr                   string               `json:"cidr,omitempty"`
+	CreatedAt              time.Time            `json:"createdAt,omitempty"`
+	DeletedAt              time.Time            `json:"deletedAt,omitempty"`
+	InterfaceAclPolicyUuid string               `json:"interfaceAclPolicyUuid,omitempty"`
+	Name                   string               `json:"name,omitempty"`
+	NetworkUuid            string               `json:"networkUuid,omitempty"`
+	RouteTableUuid         string               `json:"routeTableUuid,omitempty"`
+	Status                 string               `json:"status,omitempty"`
+	UpdatedAt              time.Time            `json:"updatedAt,omitempty"`
+	Uuid                   string               `json:"uuid,omitempty"`
+	Zone                   *Zone                `json:"zone,omitempty"`
+	SecondarySubnets       []SecondarySubnetDto `json:"secondarySubnets,omitempty"`
 }
