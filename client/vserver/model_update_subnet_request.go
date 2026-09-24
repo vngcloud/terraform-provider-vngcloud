@@ -13,4 +13,8 @@ package vserver
 type UpdateSubnetRequest struct {
 	// Name of the subnet
 	Name string `json:"name"`
+	// Desired secondary subnet list (the backend diffs it by cidr).
+	// No omitempty: when all secondaries are removed (empty list) we still must
+	// send [] so the backend treats it as "delete all"; otherwise it drifts forever.
+	SecondarySubnetRequests []CreateSecondarySubnetRequest `json:"secondarySubnetRequests"`
 }
