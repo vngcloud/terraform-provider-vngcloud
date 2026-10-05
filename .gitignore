@@ -29,3 +29,5 @@ terraform.tfstate.backup
 /Godeps/
 
 # End of https://www.toptal.com/developers/gitignore/api/go
+examples/terraform.tfvars
+examples/.vngcloud_credentials
