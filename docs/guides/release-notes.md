@@ -6,7 +6,7 @@ description: |-
 
 # Release Notes
 
-## v1.3.21
+## v1.3.22
 
 ### Enhancements
 
