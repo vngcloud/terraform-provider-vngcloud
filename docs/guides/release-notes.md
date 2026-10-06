@@ -21,17 +21,9 @@ description: |-
 
 ### Enhancements
 
-- `vngcloud_vserver_subnet` now supports **Secondary Subnets** via a repeated `secondary_subnet`
-  block (`name` + `cidr` each). Secondary subnets are created together with the primary subnet,
-  can be added or removed on update, and their `uuid` is computed and refreshed from the API.
-  The subnet `name` is also no longer `ForceNew` and can be renamed in place.
-  See [vserver_subnet](https://registry.terraform.io/providers/vngcloud/vngcloud/latest/docs/resources/vserver_subnet).
-- `vngcloud_vserver_server` now lets you turn a Floating IP on or off for a **running** server:
-  flip `attach_floating` and apply — a new floating IP is auto-attached, or the existing one
-  detached, without rebuilding the server.
-- Terraform state now stays closer to your actual infrastructure: subnets soft-deleted on the
-  backend (GET still returns `200` with status `DELETED`) are dropped from state instead of
-  lingering, and secondary subnets are re-synced from the API on every read.
+- Adds support for Secondary Subnet on `vngcloud_vserver_subnet`.
+- Lets you turn a Floating IP on or off for a running server via `attach_floating` on `vngcloud_vserver_server`.
+- Keeps Terraform state more closely in sync with your actual infrastructure.
 
 ## v1.3.20
 
