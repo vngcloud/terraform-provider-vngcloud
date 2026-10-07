@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/antihax/optional"
@@ -267,6 +268,71 @@ func ResourceCluster() *schema.Resource {
 					},
 				},
 			},
+			"logging_config": {
+				Type:     schema.TypeList,
+				MaxItems: 1,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						// Required to mirror the API (@NotNull). Set to false to disable logging.
+						"enabled": {
+							Type:     schema.TypeBool,
+							Required: true,
+						},
+						"type": {
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"OPENSEARCH", "KAFKA"}, false),
+						},
+						// Required (>=1): the API rejects an empty component list.
+						"components": {
+							Type:     schema.TypeSet,
+							Required: true,
+							MinItems: 1,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+								ValidateFunc: validation.StringInSlice(
+									[]string{"AUDIT", "API_SERVER", "CONTROLLER_MANAGER", "SCHEDULER"}, false),
+							},
+						},
+						// OpenSearch sink.
+						"opensearch_cluster_id": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"username": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						// Write-only: the API never returns password, so it is preserved from prior
+						// state on Read to avoid perpetual drift.
+						"password": {
+							Type:      schema.TypeString,
+							Optional:  true,
+							Sensitive: true,
+						},
+						// Kafka sink.
+						"kafka_cluster_id": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"kafka_user_id": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"authen_mode": {
+							Type:         schema.TypeString,
+							Optional:     true,
+							ValidateFunc: validation.StringInSlice([]string{"SASL", "MTLS"}, true),
+							// API returns authenMode lowercase (sasl/mtls) while input is uppercase;
+							// treat them as equal to avoid a spurious diff.
+							DiffSuppressFunc: func(k, oldVal, newVal string, d *schema.ResourceData) bool {
+								return strings.EqualFold(oldVal, newVal)
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -276,9 +342,8 @@ func resourceClusterStateRefreshFunc(cli *client.Client, clusterID string) resou
 		if httpResponse.StatusCode != http.StatusOK {
 			return nil, "", fmt.Errorf("Error : %s", GetResponseBody(httpResponse))
 		}
-		respJSON, _ := json.Marshal(resp)
 		log.Printf("-------------------------------------\n")
-		log.Printf("%s\n", string(respJSON))
+		log.Printf("%s\n", redactedClusterJSON(resp))
 		log.Printf("-------------------------------------\n")
 		cluster := resp
 		return cluster, cluster.Status, nil
@@ -329,6 +394,8 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 
 	autoHealingConfig := getAutoHealingConfig(d.Get("auto_healing_config").([]interface{}))
 
+	loggingConfig := getLoggingConfig(d.Get("logging_config").([]interface{}))
+
 	createClusterRequest := vks.CreateClusterComboDto{
 		Name:                   d.Get("name").(string),
 		Description:            d.Get("description").(string),
@@ -347,6 +414,7 @@ func resourceClusterCreate(d *schema.ResourceData, m interface{}) error {
 		NodeGroups:        createNodeGroupRequests,
 		AutoUpgradeConfig: autoUpgradeConfig,
 		AutoHealingConfig: autoHealingConfig,
+		LoggingConfig:     loggingConfig,
 		ReleaseChannel:    d.Get("release_channel").(string),
 		AzStrategy:        azStrategy,
 		ListSubnetIds:     listSubnetIds,
@@ -592,9 +660,8 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
 		return errorResponse
 	}
-	respJSON, _ := json.Marshal(resp)
 	log.Printf("-------------------------------------\n")
-	log.Printf("%s\n", string(respJSON))
+	log.Printf("%s\n", redactedClusterJSON(resp))
 	log.Printf("-------------------------------------\n")
 	cluster := resp
 	d.Set("version", cluster.Version)
@@ -684,6 +751,46 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 		// clear state so it matches the API, consistent with auto_upgrade_config above.
 		d.Set("auto_healing_config", nil)
 	}
+	// The backend is asymmetric about disabled logging: creating with enabled=false
+	// persists nothing (GET returns null), while disabling an existing config via PATCH
+	// leaves an enabled=false entity (GET returns the object). To converge in every
+	// case we consult what the practitioner still declares.
+	configList := d.Get("logging_config").([]interface{})
+	configHasLoggingBlock := len(configList) > 0
+	configLoggingEnabled := false
+	if configHasLoggingBlock && configList[0] != nil {
+		configLoggingEnabled, _ = configList[0].(map[string]interface{})["enabled"].(bool)
+	}
+	switch {
+	case resp.LoggingConfig != nil && (resp.LoggingConfig.Enabled || configHasLoggingBlock):
+		// Server has an entity that is either enabled, or disabled-but-still-declared.
+		// Reflect it faithfully (including the real enabled flag) so drift is detected.
+		lc := resp.LoggingConfig
+		loggingConfig := map[string]interface{}{
+			"enabled":               lc.Enabled,
+			"type":                  lc.Type_,
+			"opensearch_cluster_id": lc.OpensearchClusterId,
+			"username":              lc.Username,
+			"kafka_cluster_id":      lc.KafkaClusterId,
+			"kafka_user_id":         lc.KafkaUserId,
+			// Stored raw; the DiffSuppressFunc handles the uppercase/lowercase mismatch.
+			"authen_mode": lc.AuthenMode,
+			"components":  lc.Components,
+			// Password is write-only (never returned by the API). Preserve the value
+			// already in state so d.Set does not clobber it to "" and cause drift.
+			"password": d.Get("logging_config.0.password"),
+		}
+		d.Set("logging_config", []interface{}{loggingConfig})
+	case resp.LoggingConfig == nil && configHasLoggingBlock && !configLoggingEnabled:
+		// Declared with enabled=false: the backend persists nothing for a disabled config,
+		// so keep the practitioner's disabled block untouched to stay convergent.
+	default:
+		// Covers: never configured; disabled by removing the block; and the case where the
+		// practitioner declares enabled=true but the server has nothing (e.g. the logging
+		// feature is not enabled for the account, so the backend silently drops it). Emptying
+		// state surfaces the last case as a visible diff instead of hiding a non-functional config.
+		d.Set("logging_config", nil)
+	}
 	log.Printf("GetConfig\n")
 	configResp, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdKubeconfigGet(context.TODO(), clusterID, nil)
 	log.Printf("-------------------------------------\n")
@@ -707,41 +814,77 @@ func resourceClusterRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceClusterUpdate(d *schema.ResourceData, m interface{}) error {
-	if d.HasChange("auto_upgrade_config") {
-		err := updateAutoUpgradeConfig(d, m)
-		if err != nil {
+	cli := m.(*client.Client)
+	timeout := d.Timeout(schema.TimeoutUpdate)
+
+	// Several update steps are async: the backend accepts the request, moves the cluster to
+	// WAITING_UPDATE/UPDATING, and a worker settles it back to ACTIVE. A subsequent step is
+	// rejected with 409 while the cluster is not ACTIVE. So when a single apply changes multiple
+	// fields, wait for the cluster to be ACTIVE before each step.
+	step := func(changed bool, fn func(*schema.ResourceData, interface{}) error) error {
+		if !changed {
+			return nil
+		}
+		if err := waitClusterActive(cli, d.Id(), timeout); err != nil {
 			return err
 		}
+		return fn(d, m)
 	}
-	if d.HasChange("auto_healing_config") {
-		err := updateAutoHealingConfig(d, m)
-		if err != nil {
-			return err
-		}
+
+	if err := step(d.HasChange("auto_upgrade_config"), updateAutoUpgradeConfig); err != nil {
+		return err
 	}
-	if d.HasChange("white_list_node_cidr") || d.HasChange("version") ||
-		d.HasChange("enabled_load_balancer_plugin") || d.HasChange("enabled_block_store_csi_plugin") {
-		err := updateCluster(d, m)
-		if err != nil {
-			return err
-		}
+	if err := step(d.HasChange("auto_healing_config"), updateAutoHealingConfig); err != nil {
+		return err
 	}
-	if d.HasChange("node_group") {
-		err := changeNodeGroup(d, m)
-		if err != nil {
-			return err
-		}
+	if err := step(d.HasChange("logging_config"), updateLoggingConfig); err != nil {
+		return err
+	}
+	if err := step(d.HasChange("white_list_node_cidr") || d.HasChange("version") ||
+		d.HasChange("enabled_load_balancer_plugin") || d.HasChange("enabled_block_store_csi_plugin"),
+		updateCluster); err != nil {
+		return err
+	}
+	if err := step(d.HasChange("node_group"), changeNodeGroup); err != nil {
+		return err
 	}
 	if d.HasChange("poc") {
 		if d.Get("poc").(bool) {
 			return fmt.Errorf("Cannot change poc from false to true")
 		}
-		err := stopPoc(d, m)
-		if err != nil {
+		if err := step(true, stopPoc); err != nil {
 			return err
 		}
 	}
 	return resourceClusterRead(d, m)
+}
+
+// waitClusterActive blocks until the cluster settles to ACTIVE from any async-update
+// transition, so the next mutation is not rejected with 409.
+func waitClusterActive(cli *client.Client, clusterID string, timeout time.Duration) error {
+	stateConf := &resource.StateChangeConf{
+		Pending:    PENDING_UPDATE,
+		Target:     ACTIVE,
+		Refresh:    resourceClusterStateRefreshFunc(cli, clusterID),
+		Timeout:    timeout,
+		Delay:      0, // backend sets WAITING_UPDATE synchronously before returning 202
+		MinTimeout: 5 * time.Second,
+	}
+	_, err := stateConf.WaitForState()
+	return err
+}
+
+// redactedClusterJSON marshals the cluster detail for logging with the write-only logging
+// password removed, per the "no credential logging" rule. The API contractually never returns
+// the password, so this is defense-in-depth against a future backend that echoes it.
+func redactedClusterJSON(resp vks.ClusterDetailDto) string {
+	if resp.LoggingConfig != nil && resp.LoggingConfig.Password != "" {
+		lc := *resp.LoggingConfig // copy so the response used later is not mutated
+		lc.Password = ""
+		resp.LoggingConfig = &lc
+	}
+	respJSON, _ := json.Marshal(resp)
+	return string(respJSON)
 }
 
 func stopPoc(d *schema.ResourceData, m interface{}) error {
@@ -822,6 +965,78 @@ func updateAutoHealingConfig(d *schema.ResourceData, m interface{}) error {
 	return resourceClusterRead(d, m)
 }
 
+// updateLoggingConfig applies changes to the logging_config block via the dedicated
+// PATCH endpoint. PATCH has merge semantics (unsent fields keep their prior value),
+// so we send only the fields that make up the desired state. Removing the block
+// entirely disables logging.
+func updateLoggingConfig(d *schema.ResourceData, m interface{}) error {
+	cli := m.(*client.Client)
+
+	body := map[string]interface{}{}
+	loggingList := d.Get("logging_config").([]interface{})
+	if len(loggingList) == 0 || loggingList[0] == nil {
+		// Block removed from config → disable logging.
+		body["enabled"] = false
+	} else {
+		cfg := loggingList[0].(map[string]interface{})
+		body["enabled"] = cfg["enabled"].(bool)
+		if v, ok := cfg["type"].(string); ok && v != "" {
+			body["type"] = v
+		}
+		if v, ok := cfg["components"].(*schema.Set); ok && v.Len() > 0 {
+			components := make([]string, 0, v.Len())
+			for _, c := range v.List() {
+				components = append(components, c.(string))
+			}
+			body["components"] = components
+		}
+		if v, ok := cfg["opensearch_cluster_id"].(string); ok && v != "" {
+			body["opensearchClusterId"] = v
+		}
+		if v, ok := cfg["username"].(string); ok && v != "" {
+			body["username"] = v
+		}
+		if v, ok := cfg["kafka_cluster_id"].(string); ok && v != "" {
+			body["kafkaClusterId"] = v
+		}
+		if v, ok := cfg["kafka_user_id"].(string); ok && v != "" {
+			body["kafkaUserId"] = v
+		}
+		if v, ok := cfg["authen_mode"].(string); ok && v != "" {
+			body["authenMode"] = strings.ToUpper(v)
+		}
+		// Send password whenever it is set. Disabling deletes the config row on the backend,
+		// so re-enabling is a "first enable" that requires the full config (incl. password) —
+		// gating on HasChange would omit an unchanged password and get rejected with 400.
+		// Re-sending the same value on an ordinary update is idempotent.
+		if v, ok := cfg["password"].(string); ok && v != "" {
+			body["password"] = v
+		}
+	}
+
+	request := vks.V1ClusterControllerApiV1ClustersClusterIdLoggingPatchOpts{
+		Body: optional.NewInterface(body),
+	}
+	_, httpResponse, _ := cli.VksClient.V1ClusterControllerApi.V1ClustersClusterIdLoggingPatch(context.TODO(), d.Id(), &request)
+	if CheckErrorResponse(httpResponse) {
+		responseBody := GetResponseBody(httpResponse)
+		errorResponse := fmt.Errorf("request fail with errMsg : %s", responseBody)
+		oldLoggingConfig, _ := d.GetChange("logging_config")
+		d.Set("logging_config", oldLoggingConfig)
+		return errorResponse
+	}
+
+	// PATCH returns 202 Accepted; the cluster transitions through WAITING_UPDATE
+	// before settling back to ACTIVE.
+	if err := waitClusterActive(cli, d.Id(), d.Timeout(schema.TimeoutUpdate)); err != nil {
+		return fmt.Errorf("error waiting for logging config update on cluster (%s): %s", d.Id(), err)
+	}
+	// No Read here: resourceClusterUpdate performs a single final resourceClusterRead after all
+	// steps, so reading again would be redundant (Read is expensive: cluster + kubeconfig + node
+	// group GETs). The end-wait above still leaves the cluster ACTIVE for that final Read.
+	return nil
+}
+
 func getAutoHealingConfig(input []interface{}) *vks.ClusterAutoHealingConfigDto {
 	if len(input) == 0 || input[0] == nil {
 		return nil
@@ -838,6 +1053,45 @@ func getAutoHealingConfig(input []interface{}) *vks.ClusterAutoHealingConfigDto 
 		dto.MaxUnhealthy = v
 	} else if v, ok := cfg["unhealthy_range"].(string); ok && v != "" {
 		dto.UnhealthyRange = v
+	}
+	return dto
+}
+
+// getLoggingConfig builds the logging DTO from the logging_config block for the
+// create request. Returns nil when the block is absent so loggingConfig is omitted
+// from the request body entirely — clusters created without logging see an
+// unchanged payload.
+func getLoggingConfig(input []interface{}) *vks.ClusterLoggingConfigDto {
+	if len(input) == 0 || input[0] == nil {
+		return nil
+	}
+	cfg := input[0].(map[string]interface{})
+	dto := &vks.ClusterLoggingConfigDto{
+		Enabled: cfg["enabled"].(bool),
+		Type_:   cfg["type"].(string),
+	}
+	if v, ok := cfg["components"].(*schema.Set); ok && v.Len() > 0 {
+		for _, c := range v.List() {
+			dto.Components = append(dto.Components, c.(string))
+		}
+	}
+	if v, ok := cfg["opensearch_cluster_id"].(string); ok && v != "" {
+		dto.OpensearchClusterId = v
+	}
+	if v, ok := cfg["username"].(string); ok && v != "" {
+		dto.Username = v
+	}
+	if v, ok := cfg["password"].(string); ok && v != "" {
+		dto.Password = v
+	}
+	if v, ok := cfg["kafka_cluster_id"].(string); ok && v != "" {
+		dto.KafkaClusterId = v
+	}
+	if v, ok := cfg["kafka_user_id"].(string); ok && v != "" {
+		dto.KafkaUserId = v
+	}
+	if v, ok := cfg["authen_mode"].(string); ok && v != "" {
+		dto.AuthenMode = strings.ToUpper(v)
 	}
 	return dto
 }

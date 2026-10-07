@@ -34,4 +34,5 @@ type ClusterDetailDto struct {
 	AzStrategy                 string                `json:"azStrategy,omitempty"`
 	ListSubnetIds              []string                     `json:"listSubnetIds,omitempty"`
 	AutoHealingConfig          *ClusterAutoHealingConfigDto `json:"autoHealingConfig,omitempty"`
+	LoggingConfig              *ClusterLoggingConfigDto     `json:"loggingConfig,omitempty"`
 }
