@@ -507,8 +507,401 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkspaceDto'
+  "/v1/clusters/{clusterId}/addons":
+    post:
+      tags:
+      - V 1 Cluster Addon Controller
+      summary: Create a cluster add-on
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateAddonRequestDto"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AddonResponseDto"
+        '400':
+          description: Invalid request
+        '404':
+          description: Cluster not found
+        '409':
+          description: Add-on already exists
+  "/v1/clusters/{clusterId}/addons/{addonName}":
+    get:
+      tags:
+      - V 1 Cluster Addon Controller
+      summary: Describe a cluster add-on
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: addonName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AddonResponseDto"
+        '404':
+          description: Cluster or add-on not found
+    delete:
+      tags:
+      - V 1 Cluster Addon Controller
+      summary: Delete a cluster add-on
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: addonName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: preserve
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+        description: Keep the Helm release in the cluster.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AddonResponseDto"
+        '404':
+          description: Cluster or add-on not found
+        '409':
+          description: Add-on is changing
+  "/v1/clusters/{clusterId}/addons/{addonName}/update":
+    post:
+      tags:
+      - V 1 Cluster Addon Controller
+      summary: Update the version or configuration of a cluster add-on
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: addonName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateAddonRequestDto"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UpdateResponseDto"
+        '404':
+          description: Cluster or add-on not found
+        '400':
+          description: Invalid request
+        '409':
+          description: An update is already in progress
+  "/v1/clusters/{clusterId}/updates/{updateId}":
+    get:
+      tags:
+      - V 1 Cluster Update Controller
+      summary: Describe an update
+      parameters:
+      - name: clusterId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: updateId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: addonName
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Set this to the add-on name when describing an add-on update.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UpdateResponseDto"
+        '404':
+          description: Cluster or update not found
+  "/v1/addon-versions":
+    get:
+      tags:
+      - V 1 Addon Catalog Controller
+      summary: List add-ons and their versions
+      parameters:
+      - name: addonName
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: kubernetesVersion
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DescribeAddonVersionsResponseDto"
 components:
   schemas:
+    AddonDto:
+      type: object
+      properties:
+        addonName:
+          type: string
+        clusterId:
+          type: string
+        status:
+          type: string
+        addonVersion:
+          type: string
+        health:
+          "$ref": "#/components/schemas/AddonHealthDto"
+        owner:
+          type: string
+        publisher:
+          type: string
+        configurationValues:
+          type: string
+        namespaceConfig:
+          "$ref": "#/components/schemas/NamespaceConfigDto"
+        createdAt:
+          type: string
+          format: date-time
+        modifiedAt:
+          type: string
+          format: date-time
+    AddonHealthDto:
+      type: object
+      properties:
+        issues:
+          type: array
+          items:
+            "$ref": "#/components/schemas/AddonIssueDto"
+    AddonInfoDto:
+      type: object
+      properties:
+        addonName:
+          type: string
+        displayName:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        owner:
+          type: string
+        publisher:
+          type: string
+        defaultNamespace:
+          type: string
+        addonVersions:
+          type: array
+          items:
+            "$ref": "#/components/schemas/AddonVersionInfoDto"
+    AddonIssueDto:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        resourceIds:
+          type: array
+          items:
+            type: string
+    AddonResponseDto:
+      type: object
+      properties:
+        addon:
+          "$ref": "#/components/schemas/AddonDto"
+    AddonVersionInfoDto:
+      type: object
+      properties:
+        addonVersion:
+          type: string
+        status:
+          type: string
+        architecture:
+          type: array
+          items:
+            type: string
+        computeTypes:
+          type: array
+          items:
+            type: string
+        compatibilities:
+          type: array
+          items:
+            "$ref": "#/components/schemas/CompatibilityDto"
+        requiresConfiguration:
+          type: boolean
+        defaultNamespace:
+          type: string
+        releasedAt:
+          type: string
+          format: date-time
+    CompatibilityDto:
+      type: object
+      properties:
+        clusterVersion:
+          type: string
+        defaultVersion:
+          type: boolean
+    CreateAddonRequestDto:
+      type: object
+      properties:
+        addonName:
+          type: string
+          pattern: "^[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$"
+        addonVersion:
+          type: string
+          pattern: "^v?[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.]+)?-vks\\.[0-9]+$"
+          description: Defaults to the recommended version for the cluster minor.
+        configurationValues:
+          type: string
+          maxLength: 65536
+          description: Configuration as JSON or YAML.
+        resolveConflicts:
+          type: string
+          enum:
+          - NONE
+          - OVERWRITE
+          - PRESERVE
+        namespaceConfig:
+          "$ref": "#/components/schemas/NamespaceConfigDto"
+        clientRequestToken:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: Idempotency key, unique per cluster.
+      required:
+      - addonName
+    DescribeAddonVersionsResponseDto:
+      type: object
+      properties:
+        addons:
+          type: array
+          items:
+            "$ref": "#/components/schemas/AddonInfoDto"
+    NamespaceConfigDto:
+      type: object
+      properties:
+        namespace:
+          type: string
+          minLength: 1
+          maxLength: 63
+          pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+      required:
+      - namespace
+    UpdateAddonRequestDto:
+      type: object
+      properties:
+        addonVersion:
+          type: string
+          pattern: "^v?[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.]+)?-vks\\.[0-9]+$"
+          description: Omit to retain the current version.
+        configurationValues:
+          type: string
+          maxLength: 65536
+          description: Omit to retain the current values. An empty string clears them.
+          x-go-pointer: true
+        resolveConflicts:
+          type: string
+          enum:
+          - NONE
+          - OVERWRITE
+          - PRESERVE
+        clientRequestToken:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: Idempotency key, unique per cluster.
+    UpdateDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        params:
+          type: array
+          items:
+            "$ref": "#/components/schemas/UpdateParamDto"
+        errors:
+          type: array
+          items:
+            "$ref": "#/components/schemas/UpdateErrorDto"
+        createdAt:
+          type: string
+          format: date-time
+    UpdateErrorDto:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        errorMessage:
+          type: string
+        resourceIds:
+          type: array
+          items:
+            type: string
+    UpdateParamDto:
+      type: object
+      properties:
+        type:
+          type: string
+        value:
+          type: string
+    UpdateResponseDto:
+      type: object
+      properties:
+        update:
+          "$ref": "#/components/schemas/UpdateDto"
     ClusterDetailDto:
       type: object
       properties:

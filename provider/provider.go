@@ -33,6 +33,7 @@ func Provider() *schema.Provider {
 			"vngcloud_vdb_kafka_volume_type":              vdbv2.DataSourceKafkaVolumeType(),
 			"vngcloud_vdb_postgresql_cluster_package":     vdbv2.DataSourcePostgreSQLClusterPackage(),
 			"vngcloud_vdb_postgresql_cluster_volume_type": vdbv2.DataSourcePostgreSQLClusterVolumeType(),
+			"vngcloud_vks_addon_version":                  vks.DataSourceAddonVersion(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"vngcloud_vserver_volume":                            vserver.ResourceVolume(),
@@ -75,6 +76,7 @@ func Provider() *schema.Provider {
 			"vngcloud_vserver_internal_interface_attach":         vserver.ResourceAttachInternalInterface(),
 			"vngcloud_vks_cluster":                               vks.ResourceCluster(),
 			"vngcloud_vks_cluster_node_group":                    vks.ResourceClusterNodeGroup(),
+			"vngcloud_vks_cluster_addon":                         vks.ResourceClusterAddon(),
 		},
 		Schema: map[string]*schema.Schema{
 			"token_url": {

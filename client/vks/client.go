@@ -44,7 +44,13 @@ type APIClient struct {
 
 	// API Services
 
+	V1AddonCatalogControllerApi *V1AddonCatalogControllerApiService
+
+	V1ClusterAddonControllerApi *V1ClusterAddonControllerApiService
+
 	V1ClusterControllerApi *V1ClusterControllerApiService
+
+	V1ClusterUpdateControllerApi *V1ClusterUpdateControllerApiService
 
 	V1NodeGroupControllerApi *V1NodeGroupControllerApiService
 
@@ -69,7 +75,10 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.common.client = c
 
 	// API Services
+	c.V1AddonCatalogControllerApi = (*V1AddonCatalogControllerApiService)(&c.common)
+	c.V1ClusterAddonControllerApi = (*V1ClusterAddonControllerApiService)(&c.common)
 	c.V1ClusterControllerApi = (*V1ClusterControllerApiService)(&c.common)
+	c.V1ClusterUpdateControllerApi = (*V1ClusterUpdateControllerApiService)(&c.common)
 	c.V1NodeGroupControllerApi = (*V1NodeGroupControllerApiService)(&c.common)
 	c.V1NodeGroupImageControllerApi = (*V1NodeGroupImageControllerApiService)(&c.common)
 	c.V1WorkspaceControllerApi = (*V1WorkspaceControllerApiService)(&c.common)

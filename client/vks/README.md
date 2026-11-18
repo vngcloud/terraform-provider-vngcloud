@@ -66,3 +66,30 @@ Class | Method | HTTP request | Description
 ## Author
 
 
+
+### Regenerate the VKS add-on client
+
+Run these commands from this directory with Swagger Codegen CLI 3.0.70.
+The model template uses `x-go-pointer` to send an explicitly empty configuration
+string while omitting an unset configuration. The API template escapes path
+parameters and propagates JSON decode errors on successful HTTP responses.
+
+```sh
+codegen_jar=/absolute/path/to/swagger-codegen-cli-3.0.70.jar
+output_dir=$(mktemp -d)
+mkdir "$output_dir/templates"
+unzip -p "$codegen_jar" handlebars/go/model.mustache |
+  sed 's/{{{datatype}}} `json:/{{#vendorExtensions.x-go-pointer}}*{{\/vendorExtensions.x-go-pointer}}{{{datatype}}} `json:/' \
+  > "$output_dir/templates/model.mustache"
+unzip -p "$codegen_jar" handlebars/go/api.mustache |
+  sed -e 's/localVarHttpResponse, nil$/localVarHttpResponse, err/' \
+      -e 's/fmt.Sprintf("%v", {{paramName}}), -1)/url.PathEscape(fmt.Sprintf("%v", {{paramName}})), -1)/' \
+  > "$output_dir/templates/api.mustache"
+java -jar "$codegen_jar" generate -i api/swagger.yaml -l go \
+  --additional-properties packageName=vks -t "$output_dir/templates" -o "$output_dir/generated"
+gofmt -w "$output_dir/generated"/*.go
+```
+
+Copy the generated add-on, catalog, and update controllers and their models.
+Use the generated service declarations and initializers in `client.go`, keeping
+the existing `Config()` accessor and other local client changes.
